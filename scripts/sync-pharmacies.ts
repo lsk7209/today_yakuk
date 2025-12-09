@@ -175,7 +175,7 @@ async function upsertRecords(
   if (!records.length) return;
   const { error } = await supabase
     .from("pharmacies")
-    .upsert(records, { onConflict: "hpid" });
+    .upsert(records as PharmacyInsert[], { onConflict: "hpid" });
   if (error) {
     throw error;
   }
@@ -204,7 +204,7 @@ async function main() {
 
   const records = allItems
     .filter((item) => item.hpid && item.dutyName)
-    .map(mapToRecord);
+    .map(mapToRecord) as PharmacyInsert[];
 
   console.info(`총 ${records.length}건 Upsert 진행...`);
   for (let i = 0; i < records.length; i += UPSERT_BATCH_SIZE) {
