@@ -29,19 +29,6 @@ type PharmacyRecord = {
   updated_at: string;
 };
 
-type Database = {
-  public: {
-    Tables: {
-      pharmacies: {
-        Row: PharmacyRecord;
-        Insert: PharmacyRecord;
-        Update: Partial<PharmacyRecord>;
-        Relationships: [];
-      };
-    };
-  };
-};
-
 type ApiResponse = {
   totalCount: number;
   items: Record<string, string | undefined>[];
@@ -166,16 +153,14 @@ async function fetchPage(pageNo: number): Promise<ApiResponse> {
   return { totalCount, items };
 }
 
-type PharmacyInsert = Database["public"]["Tables"]["pharmacies"]["Insert"];
-
 async function upsertRecords(
-  supabase: SupabaseClient<Database>,
-  records: PharmacyInsert[],
+  supabase: SupabaseClient,
+  records: PharmacyRecord[],
 ) {
   if (!records.length) return;
   const { error } = await supabase
     .from("pharmacies")
-    .upsert(records as PharmacyInsert[], { onConflict: "hpid" });
+    .upsert(records as unknown[], { onConflict: "hpid" });
   if (error) {
     throw error;
   }
@@ -183,10 +168,7 @@ async function upsertRecords(
 
 async function main() {
   ensureEnv();
-  const supabase = createClient<Database>(
-    supabaseUrl as string,
-    supabaseServiceKey as string,
-  );
+  const supabase = createClient(supabaseUrl as string, supabaseServiceKey as string);
 
   const allItems: Record<string, string | undefined>[] = [];
   console.info("첫 페이지 수집 중...");
@@ -204,7 +186,7 @@ async function main() {
 
   const records = allItems
     .filter((item) => item.hpid && item.dutyName)
-    .map(mapToRecord) as PharmacyInsert[];
+    .map(mapToRecord);
 
   console.info(`총 ${records.length}건 Upsert 진행...`);
   for (let i = 0; i < records.length; i += UPSERT_BATCH_SIZE) {
