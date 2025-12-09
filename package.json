@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sync": "TS_NODE_TRANSPILE_ONLY=1 node --loader ts-node/esm --no-warnings=ExperimentalLoader scripts/sync-pharmacies.ts",
+    "sync": "ts-node --compiler-options '{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}' scripts/sync-pharmacies.ts",
     "sitemap": "next-sitemap",
     "postbuild": "next-sitemap"
   },
