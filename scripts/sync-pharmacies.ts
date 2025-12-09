@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { XMLParser } from "fast-xml-parser";
 
 const API_URL =
@@ -27,6 +27,19 @@ type PharmacyRecord = {
   province?: string | null;
   city?: string | null;
   updated_at: string;
+};
+
+type Database = {
+  public: {
+    Tables: {
+      pharmacies: {
+        Row: PharmacyRecord;
+        Insert: PharmacyRecord;
+        Update: Partial<PharmacyRecord>;
+        Relationships: [];
+      };
+    };
+  };
 };
 
 type ApiResponse = {
@@ -154,7 +167,7 @@ async function fetchPage(pageNo: number): Promise<ApiResponse> {
 }
 
 async function upsertRecords(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient<Database>,
   records: PharmacyRecord[],
 ) {
   if (!records.length) return;
@@ -168,7 +181,10 @@ async function upsertRecords(
 
 async function main() {
   ensureEnv();
-  const supabase = createClient(supabaseUrl as string, supabaseServiceKey as string);
+  const supabase = createClient<Database>(
+    supabaseUrl as string,
+    supabaseServiceKey as string,
+  );
 
   const allItems: Record<string, string | undefined>[] = [];
   console.info("첫 페이지 수집 중...");
