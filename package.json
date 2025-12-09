@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sync": "ts-node scripts/sync-pharmacies.ts",
+    "sync": "node -r ts-node/register/transpile-only scripts/sync-pharmacies.ts",
     "sitemap": "next-sitemap",
     "postbuild": "next-sitemap"
   },
