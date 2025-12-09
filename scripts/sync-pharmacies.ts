@@ -166,9 +166,11 @@ async function fetchPage(pageNo: number): Promise<ApiResponse> {
   return { totalCount, items };
 }
 
+type PharmacyInsert = Database["public"]["Tables"]["pharmacies"]["Insert"];
+
 async function upsertRecords(
   supabase: SupabaseClient<Database>,
-  records: PharmacyRecord[],
+  records: PharmacyInsert[],
 ) {
   if (!records.length) return;
   const { error } = await supabase
