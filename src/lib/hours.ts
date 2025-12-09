@@ -1,10 +1,10 @@
 import { OperatingHours } from "@/types/pharmacy";
 
-type Status =
-  | { label: "영업 중"; tone: "success"; closesAt?: string }
-  | { label: "곧 종료"; tone: "warning"; closesAt?: string }
-  | { label: "영업 종료"; tone: "muted"; closesAt?: string }
-  | { label: "정보 없음"; tone: "muted" };
+type Status = {
+  label: "영업 중" | "곧 종료" | "영업 종료" | "정보 없음";
+  tone: "success" | "warning" | "muted";
+  closesAt?: string;
+};
 
 export const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 const TONE_COLOR: Record<Status["tone"], string> = {
