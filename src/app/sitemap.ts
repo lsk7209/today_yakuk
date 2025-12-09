@@ -13,14 +13,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${siteUrl}/`,
       lastModified: new Date(),
       priority: 0.8,
-      changefreq: "daily",
+      changeFrequency: "daily",
     },
   ];
 
   const dynamicEntries: MetadataRoute.Sitemap = items.map((item) => ({
     url: `${siteUrl}/pharmacy/${item.hpid}`,
     lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
-    changefreq: "weekly",
+    changeFrequency: "weekly",
     priority: 0.9,
   }));
 
