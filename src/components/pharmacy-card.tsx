@@ -69,7 +69,7 @@ export function PharmacyCard({ pharmacy }: { pharmacy: Pharmacy }) {
   );
 }
 
-function dayKeyFromIntl(intlKey: string): keyof Pharmacy["operating_hours"] {
+function dayKeyFromIntl(intlKey: string): string {
   const lower = intlKey.toLowerCase();
   if (lower.startsWith("sun")) return "sun";
   if (lower.startsWith("mon")) return "mon";
