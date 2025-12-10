@@ -95,7 +95,7 @@ export default function RootLayout({
         <div className="min-h-screen flex flex-col">
           <header className="border-b border-[var(--border)] bg-white/80 backdrop-blur">
             <div className="container flex items-center justify-between py-4">
-              <div className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-90">
                 <div className="h-10 w-10 rounded-full bg-brand-100 border border-brand-200 flex items-center justify-center text-brand-700 font-semibold">
                   약
                 </div>
@@ -105,7 +105,7 @@ export default function RootLayout({
                   </p>
                   <p className="text-lg font-semibold">오늘약국</p>
                 </div>
-              </div>
+              </Link>
               <nav className="flex items-center gap-4 text-sm text-[var(--muted)]">
                 <Link href="/" className="hover:text-brand-700">
                   홈
