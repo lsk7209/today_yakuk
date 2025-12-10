@@ -18,7 +18,6 @@ const provinces = [
 
 export default function Home() {
   const [geoMessage, setGeoMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [showRegionPrompt, setShowRegionPrompt] = useState(false);
 
   const regionGrid = useMemo(
@@ -39,33 +38,6 @@ export default function Home() {
     ),
     [showRegionPrompt],
   );
-
-  const handleGeoLocate = () => {
-    if (!("geolocation" in navigator)) {
-      setGeoMessage("GPS를 사용할 수 없습니다. 지역별 찾기를 이용해주세요.");
-      setShowRegionPrompt(true);
-      return;
-    }
-    setLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLoading(false);
-        const { latitude, longitude } = pos.coords;
-        setGeoMessage(
-          `현재 위치 인식 완료 (위도 ${latitude.toFixed(
-            3,
-          )}, 경도 ${longitude.toFixed(3)}) · 인근 약국을 불러옵니다.`,
-        );
-        // 추후: 위경도 기반 리스트로 라우팅 혹은 서버 요청
-      },
-      () => {
-        setLoading(false);
-        setGeoMessage("권한이 거부되었습니다. '지역 선택' 메뉴로 바로 이동하세요.");
-        setShowRegionPrompt(true);
-      },
-      { enableHighAccuracy: true, timeout: 8000 },
-    );
-  };
 
   return (
     <div className="container py-10 sm:py-16 flex flex-col gap-12">

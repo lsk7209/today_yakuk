@@ -75,7 +75,7 @@ export function PharmacyListInfinite({
       if (data.items?.length === 0) {
         setError("더 이상 불러올 약국이 없습니다.");
       }
-    } catch (err) {
+    } catch {
       setError("네트워크 오류로 데이터를 불러오지 못했습니다.");
     } finally {
       setLoading(false);

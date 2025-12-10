@@ -45,7 +45,7 @@ export default function NearbyPage() {
           setItems(data.items ?? []);
           setStatus("success");
           setMessage(data.items.length ? null : "반경 3km 내 영업 약국이 없습니다.");
-        } catch (e) {
+        } catch {
           setStatus("error");
           setMessage("데이터를 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.");
         }

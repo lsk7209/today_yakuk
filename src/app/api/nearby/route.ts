@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { distanceKm, getPharmacyByHpid } from "@/lib/data/pharmacies";
+import { distanceKm } from "@/lib/data/pharmacies";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 
 export async function GET(request: Request) {
