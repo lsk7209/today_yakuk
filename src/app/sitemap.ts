@@ -3,7 +3,7 @@ import { getPharmacyCount, getPharmacyHpidsChunk } from "@/lib/data/pharmacies";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "http://localhost:3000";
+  "https://todaypharm.kr";
 
 const CHUNK_SIZE = 10000;
 
@@ -13,8 +13,8 @@ export async function generateSitemaps() {
   return Array.from({ length: chunks }, (_, i) => ({ id: i }));
 }
 
-export default async function sitemap(props: { id: Promise<string> }): Promise<MetadataRoute.Sitemap> {
-  const id = Number(await props.id);
+export default async function sitemap(props: { id: string }): Promise<MetadataRoute.Sitemap> {
+  const id = Number(props.id);
   const offset = id * CHUNK_SIZE;
   const items = await getPharmacyHpidsChunk(offset, CHUNK_SIZE);
 

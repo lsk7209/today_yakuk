@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://todaypharm.kr";
 
 export default function robots(): MetadataRoute.Robots {
   return {
