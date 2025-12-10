@@ -38,8 +38,9 @@ const PROVINCE_MAP: Record<string, string> = {
   제주특별자치도: "제주특별자치도",
 };
 
-function normalizeProvince(input: string): string | null {
-  const trimmed = (input ?? "").trim();
+function normalizeProvince(input: unknown): string | null {
+  if (typeof input !== "string") return null;
+  const trimmed = input.trim();
   if (!trimmed) return null;
   return PROVINCE_MAP[trimmed] ?? trimmed;
 }
