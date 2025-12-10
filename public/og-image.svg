@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" stop-opacity="0.92" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)" />
+  <g transform="translate(120 140)" fill="#ecfdf3">
+    <rect x="0" y="0" width="220" height="220" rx="48" fill="rgba(255,255,255,0.08)" filter="url(#shadow)" />
+    <rect x="24" y="24" width="172" height="172" rx="36" fill="rgba(255,255,255,0.14)" />
+    <text x="110" y="128" text-anchor="middle" font-family="Pretendard, -apple-system, 'Segoe UI', sans-serif" font-size="88" font-weight="700" fill="#ecfdf3">약</text>
+  </g>
+  <g transform="translate(380 180)">
+    <text x="0" y="0" font-family="Pretendard, -apple-system, 'Segoe UI', sans-serif" font-size="20" font-weight="600" letter-spacing="0.08em" fill="#a7f3d0">
+      TODAY PHARMACY
+    </text>
+    <text x="0" y="58" font-family="Pretendard, -apple-system, 'Segoe UI', sans-serif" font-size="60" font-weight="800" fill="#ecfdf3">
+      오늘 열어둔 약국만 빠르게
+    </text>
+    <text x="0" y="120" font-family="Pretendard, -apple-system, 'Segoe UI', sans-serif" font-size="30" font-weight="500" fill="#d1fae5">
+      내 주변 · 야간 · 주말 · 공휴일 실시간 영업 정보
+    </text>
+    <text x="0" y="174" font-family="Pretendard, -apple-system, 'Segoe UI', sans-serif" font-size="22" font-weight="500" fill="#bae6fd">
+      todaypharm.kr
+    </text>
+  </g>
+</svg>
+
