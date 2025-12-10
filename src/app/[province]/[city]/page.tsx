@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getPharmaciesByRegion } from "@/lib/data/pharmacies";
-import { PharmacyListView } from "@/components/pharmacy-list-view";
+import { getPharmaciesByRegionPaginated } from "@/lib/data/pharmacies";
+import { PharmacyListInfinite } from "@/components/pharmacy-list-infinite";
 
 type Params = {
   province: string;
@@ -11,9 +11,9 @@ export default async function ProvinceCityPage({ params }: { params: Params }) {
   const province = decodeURIComponent(params.province);
   const city = decodeURIComponent(params.city);
 
-  const list = await getPharmaciesByRegion(province, city);
+  const { items, total } = await getPharmaciesByRegionPaginated(province, city, 20, 0);
 
-  if (!list.length) {
+  if (!items.length) {
     return notFound();
   }
 
@@ -31,7 +31,13 @@ export default async function ProvinceCityPage({ params }: { params: Params }) {
         </div>
       </header>
 
-      <PharmacyListView list={list} />
+      <PharmacyListInfinite
+        province={province}
+        city={city === "전체" ? undefined : city}
+        initialItems={items}
+        total={total}
+        pageSize={20}
+      />
     </div>
   );
 }

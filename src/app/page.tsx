@@ -87,14 +87,13 @@ export default function Home() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={handleGeoLocate}
-                className="relative inline-flex items-center justify-center rounded-full bg-brand-600 text-white px-6 py-4 text-base font-semibold hover:bg-brand-700 transition shadow-lg pulse-ring disabled:opacity-70 disabled:cursor-not-allowed"
-                disabled={loading}
+              <Link
+                href="/nearby"
+                className="relative inline-flex items-center justify-center rounded-full bg-brand-600 text-white px-6 py-4 text-base font-semibold hover:bg-brand-700 transition shadow-lg pulse-ring"
               >
                 <LocateFixed className="mr-2 h-5 w-5" />
-                {loading ? "위치 확인 중..." : "내 주변 문 연 약국 찾기"}
-              </button>
+                내 주변 문 연 약국 찾기
+              </Link>
               <Link
                 href="/서울/전체"
                 className="inline-flex items-center justify-center rounded-full border border-[var(--border)] bg-white px-6 py-4 text-base font-semibold text-[var(--foreground)] hover:border-brand-200 hover:shadow-sm"

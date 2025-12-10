@@ -89,6 +89,41 @@ export async function getPharmaciesByRegion(
   }
 }
 
+export async function getPharmaciesByRegionPaginated(
+  province: string,
+  city: string | undefined,
+  limit = 20,
+  offset = 0,
+): Promise<{ items: Pharmacy[]; total: number }> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const normalizedProvince = normalizeProvince(province);
+    if (!normalizedProvince) return { items: [], total: 0 };
+
+    let query = supabase
+      .from("pharmacies")
+      .select("*", { count: "exact" })
+      .eq("province", normalizedProvince)
+      .order("name", { ascending: true })
+      .range(offset, offset + limit - 1);
+
+    if (city && city !== "전체") {
+      query = query.eq("city", city);
+    }
+
+    const { data, error, count } = await query;
+    if (error) {
+      console.error("pharmacies paginated fetch error", error);
+      return { items: [], total: 0 };
+    }
+
+    return { items: (data as Pharmacy[]) ?? [], total: count ?? 0 };
+  } catch (e) {
+    console.error("pharmacies paginated fetch exception", e);
+    return { items: [], total: 0 };
+  }
+}
+
 export async function getAllPharmacyHpids(): Promise<
   { hpid: string; updated_at: string | null }[]
 > {
@@ -141,7 +176,7 @@ function toRad(num: number) {
   return (num * Math.PI) / 180;
 }
 
-function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+export function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
