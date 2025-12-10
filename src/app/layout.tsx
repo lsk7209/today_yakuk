@@ -121,6 +121,9 @@ export default function RootLayout({
                 <Link href="/about" className="hover:text-brand-700">
                   소개
                 </Link>
+              <Link href="/guide" className="hover:text-brand-700">
+                가이드
+              </Link>
                 <Link href="/contact" className="hover:text-brand-700">
                   문의
                 </Link>
