@@ -24,6 +24,8 @@ type Props = {
   initialOffset?: number;
 };
 
+type RenderPharmacy = Pharmacy & { distanceKm?: number };
+
 export function PharmacyListInfinite({
   province,
   city,
@@ -36,20 +38,44 @@ export function PharmacyListInfinite({
   const [filter, setFilter] = useState<FilterKey>("all");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const [sortMode, setSortMode] = useState<"default" | "distance">("default");
   const hasMore = items.length < total;
 
+  const itemsWithDistance: RenderPharmacy[] = useMemo(() => {
+    if (!userLocation) return items;
+    return items.map((item) => {
+      if (item.latitude == null || item.longitude == null) return item;
+      const distanceKm = haversine(
+        userLocation.lat,
+        userLocation.lon,
+        item.latitude,
+        item.longitude,
+      );
+      return { ...item, distanceKm };
+    });
+  }, [items, userLocation]);
+
   const filtered = useMemo(() => {
-    return items.filter((item) => {
+    const base = itemsWithDistance.filter((item) => {
       if (filter === "all") return true;
       if (filter === "open") return getOperatingStatus(item.operating_hours).label === "영업 중";
       if (filter === "night") return isNightShift(item);
       if (filter === "holiday") return isHolidayOpen(item);
       return true;
     });
-  }, [items, filter]);
+    if (sortMode === "distance" && userLocation) {
+      return base.slice().sort((a, b) => {
+        return (a.distanceKm ?? Number.POSITIVE_INFINITY) - (b.distanceKm ?? Number.POSITIVE_INFINITY);
+      });
+    }
+    return base;
+  }, [itemsWithDistance, filter, sortMode, userLocation]);
 
   const withAds = useMemo(() => {
-    const blocks: Array<Pharmacy | { ad: true; id: string }> = [];
+    const blocks: Array<RenderPharmacy | { ad: true; id: string }> = [];
     filtered.forEach((item, idx) => {
       blocks.push(item);
       if ((idx + 1) % 5 === 0) {
@@ -58,6 +84,31 @@ export function PharmacyListInfinite({
     });
     return blocks;
   }, [filtered]);
+
+  const requestLocation = useCallback(() => {
+    if (locationLoading) return;
+    if (!("geolocation" in navigator)) {
+      setLocationError("위치 정보를 지원하지 않는 기기입니다.");
+      return;
+    }
+    setLocationLoading(true);
+    setLocationError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+        setLocationLoading(false);
+      },
+      (err) => {
+        setLocationLoading(false);
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocationError("위치 권한이 거부되었습니다.");
+        } else {
+          setLocationError("위치 정보를 확인하지 못했습니다.");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 8000 },
+    );
+  }, [locationLoading]);
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -105,6 +156,31 @@ export function PharmacyListInfinite({
             );
           })}
         </div>
+        <div className="flex flex-wrap items-center gap-2 px-2 pb-3 text-xs text-[var(--muted)]">
+          <button
+            onClick={requestLocation}
+            disabled={locationLoading}
+            className={`rounded-full px-3 py-1 font-semibold border ${
+              userLocation
+                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
+            } ${locationLoading ? "opacity-60" : ""}`}
+          >
+            {userLocation ? "거리 표시 활성" : "거리 표시 (권한 필요)"}
+          </button>
+          <button
+            onClick={() => setSortMode((prev) => (prev === "distance" ? "default" : "distance"))}
+            disabled={!userLocation}
+            className={`rounded-full px-3 py-1 font-semibold border ${
+              sortMode === "distance"
+                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
+            } ${!userLocation ? "opacity-60 pointer-events-none" : ""}`}
+          >
+            거리순 정렬
+          </button>
+          {locationError ? <span className="text-amber-700">{locationError}</span> : null}
+        </div>
       </div>
 
       {withAds.length === 0 ? (
@@ -118,7 +194,7 @@ export function PharmacyListInfinite({
               <AdsPlaceholder key={item.id} />
             ) : (
               <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
-                <PharmacyCard pharmacy={item} />
+                <PharmacyCard pharmacy={item} distanceKm={item.distanceKm} />
               </div>
             ),
           )}
@@ -176,5 +252,17 @@ function isHolidayOpen(pharmacy: Pharmacy) {
   const open = hhmmToMinutes(slot?.open);
   const close = hhmmToMinutes(slot?.close);
   return open !== null && close !== null;
+}
+
+function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const R = 6371; // km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 }
 
