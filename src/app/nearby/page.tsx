@@ -7,19 +7,17 @@ import { PharmacyCard } from "@/components/pharmacy-card";
 import { AdsPlaceholder } from "@/components/ads-placeholder";
 import { getOperatingStatus } from "@/lib/hours";
 
+type NearbyPharmacy = PharmacyCardProps["pharmacy"] & { distanceKm?: number };
+
 type NearbyResponse = {
-  items: Array<
-    {
-      distanceKm?: number;
-    } & PharmacyCardProps["pharmacy"]
-  >;
+  items: NearbyPharmacy[];
   total: number;
 };
 
 import type { PharmacyCardProps } from "@/components/pharmacy-card";
 
 export default function NearbyPage() {
-  const [items, setItems] = useState<PharmacyCardProps["pharmacy"][]>([]);
+  const [items, setItems] = useState<NearbyPharmacy[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
   const [message, setMessage] = useState<string | null>(null);
   const [radiusKm, setRadiusKm] = useState(3);
