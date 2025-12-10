@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { buildArticleJsonLd } from "@/lib/seo";
 
 const metaTitle = "처방전 준비와 약국 방문 전 점검 7가지 | 오늘약국";
 const metaDescription =
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
     description: metaDescription,
     url: "/blog/prescription-prep-tips",
     type: "article",
+    images: ["/og-image.svg"],
   },
 };
 
@@ -43,6 +45,12 @@ const faqs = [
 ];
 
 export default function BlogPrescriptionPrepTips() {
+  const articleJsonLd = buildArticleJsonLd({
+    title: metaTitle,
+    description: metaDescription,
+    slug: "/blog/prescription-prep-tips",
+  });
+
   return (
     <div className="container py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
@@ -139,6 +147,11 @@ export default function BlogPrescriptionPrepTips() {
           </div>
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
     </div>
   );
 }

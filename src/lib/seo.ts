@@ -115,3 +115,24 @@ export function buildPharmacyJsonLd(pharmacy: Pharmacy) {
   };
 }
 
+export function buildArticleJsonLd(params: {
+  title: string;
+  description: string;
+  slug: string;
+  type?: "Article" | "BlogPosting";
+}) {
+  const { title, description, slug, type = "BlogPosting" } = params;
+  const url = `${siteUrl}${slug.startsWith("/") ? slug : `/${slug}`}`;
+  const now = new Date().toISOString();
+  return {
+    "@context": "https://schema.org",
+    "@type": type,
+    headline: title,
+    description,
+    datePublished: now,
+    dateModified: now,
+    mainEntityOfPage: url,
+    url,
+  };
+}
+

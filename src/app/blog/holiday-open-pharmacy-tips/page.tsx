@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { buildArticleJsonLd } from "@/lib/seo";
 
 const metaTitle = "공휴일에도 열려 있는 약국을 빨리 찾는 5가지 방법 | 오늘약국";
 const metaDescription =
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
     description: metaDescription,
     url: "/blog/holiday-open-pharmacy-tips",
     type: "article",
+    images: ["/og-image.svg"],
   },
 };
 
@@ -61,6 +63,12 @@ const faqs = [
 ];
 
 export default function BlogHolidayOpenPharmacyTips() {
+  const articleJsonLd = buildArticleJsonLd({
+    title: metaTitle,
+    description: metaDescription,
+    slug: "/blog/holiday-open-pharmacy-tips",
+  });
+
   return (
     <div className="container py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
@@ -167,6 +175,11 @@ export default function BlogHolidayOpenPharmacyTips() {
           </li>
         </ul>
       </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
     </div>
   );
 }
