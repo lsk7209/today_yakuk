@@ -22,6 +22,9 @@ const geistMono = localFont({
 const googleVerification =
   process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION ||
   "_U2SIVpJyJOB7BDkrQSxnHPyPGbLebmxu4bSNzWskmA";
+const naverVerification =
+  process.env.NEXT_PUBLIC_NAVER_VERIFICATION ||
+  "2a315bda80bb7e187f5438ab9b88649fa91e8906";
 const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
 
 export const metadata: Metadata = {
@@ -67,6 +70,9 @@ export default function RootLayout({
       <head>
         {googleVerification ? (
           <meta name="google-site-verification" content={googleVerification} />
+        ) : null}
+        {naverVerification ? (
+          <meta name="naver-site-verification" content={naverVerification} />
         ) : null}
         {gaId ? (
           <>
