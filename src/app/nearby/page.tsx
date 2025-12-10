@@ -77,18 +77,22 @@ export default function NearbyPage() {
     });
   }, [items, sortMode]);
 
+  const topThree = sorted.slice(0, 3);
+  const rest = sorted.slice(3);
+  const listForAds = topThree.length ? rest : sorted;
+
   const adsInserted = useMemo(() => {
-    const blocks: Array<{ ad: true; id: string } | (PharmacyCardProps["pharmacy"] & { distanceKm?: number })> = [];
-    sorted.forEach((p, idx) => {
+    const blocks: Array<
+      { ad: true; id: string } | (PharmacyCardProps["pharmacy"] & { distanceKm?: number })
+    > = [];
+    listForAds.forEach((p, idx) => {
       blocks.push(p);
       if ((idx + 1) % 5 === 0) {
         blocks.push({ ad: true, id: `ad-${idx}` });
       }
     });
     return blocks;
-  }, [sorted]);
-
-  const topThree = sorted.slice(0, 3);
+  }, [listForAds]);
 
   return (
     <div className="container py-10 sm:py-14 space-y-6">
