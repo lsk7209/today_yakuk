@@ -70,6 +70,40 @@ async function Content({
   const mapQuery = encodeURIComponent(`${pharmacy.name} ${pharmacy.address}`);
   const mapUrl = `https://map.naver.com/p/search/${mapQuery}`;
   const descriptions = generateDescription(pharmacy);
+  const faqList = [
+    {
+      q: "지금 영업 중인가요?",
+      a: `현재 상태는 '${status.label}'입니다. 상세 영업시간은 요일별 표와 종료 예정 시간에서 확인하세요.`,
+    },
+    {
+      q: "전화 연결이 가능한가요?",
+      a: pharmacy.tel
+        ? `전화 버튼으로 바로 연결할 수 있습니다. 번호: ${pharmacy.tel}`
+        : "전화번호가 등록되어 있지 않습니다. 방문 전 지도 검색을 활용해 주세요.",
+    },
+    {
+      q: "근처 대체 약국도 있나요?",
+      a: nearby.length
+        ? "아래 '반경 2km 내 다른 약국'과 '이 약국이 문 닫았나요?' 섹션에서 대체 약국을 확인하세요."
+        : "현재 반경 2km 내 추천 약국 정보가 없습니다.",
+    },
+    {
+      q: "반경/거리 정보는 어떻게 계산되나요?",
+      a: "브라우저 위치 기준 직선거리를 표시합니다. 실제 이동 시간은 지도 길찾기로 확인하세요.",
+    },
+  ];
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqList.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.a,
+      },
+    })),
+  };
 
   return (
     <div className="container py-10 sm:py-14 space-y-8">
@@ -242,6 +276,24 @@ async function Content({
         )}
       </section>
 
+      <section className="space-y-3">
+        <div className="flex items-center gap-2">
+          <AlertCircle className="h-5 w-5 text-brand-700" />
+          <h2 className="text-xl font-semibold">자주 묻는 질문</h2>
+        </div>
+        <div className="space-y-2">
+          {faqList.map((faq) => (
+            <div
+              key={faq.q}
+              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+            >
+              <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
+              <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[min(480px,calc(100%-2rem))] z-30">
         <div className="rounded-full border border-brand-200 bg-white shadow-2xl px-4 py-3 flex items-center justify-between gap-3">
           <div>
@@ -274,6 +326,12 @@ async function Content({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(buildPharmacyJsonLd(pharmacy)),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqJsonLd),
         }}
       />
     </div>

@@ -110,7 +110,7 @@ export function buildPharmacyJsonLd(pharmacy: Pharmacy) {
             longitude: pharmacy.longitude,
           }
         : undefined,
-    url: `${siteUrl}/pharmacy/${pharmacy.id}`,
+    url: `${siteUrl}/pharmacy/${pharmacy.hpid}`,
     openingHoursSpecification,
   };
 }
