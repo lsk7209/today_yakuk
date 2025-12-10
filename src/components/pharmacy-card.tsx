@@ -3,7 +3,9 @@ import { Phone, MapPin, Clock } from "lucide-react";
 import { Pharmacy } from "@/types/pharmacy";
 import { formatHourRange, getBadgeClass, getOperatingStatus } from "@/lib/hours";
 
-export function PharmacyCard({ pharmacy }: { pharmacy: Pharmacy }) {
+export type PharmacyCardProps = { pharmacy: Pharmacy };
+
+export function PharmacyCard({ pharmacy }: PharmacyCardProps) {
   const status = getOperatingStatus(pharmacy.operating_hours);
   const todayIntl = new Date().toLocaleString("en-US", {
     weekday: "short",
