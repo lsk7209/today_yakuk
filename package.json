@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "sync": "ts-node --project tsconfig.sync.json scripts/sync-pharmacies.ts",
+    "publish:queue": "ts-node --project tsconfig.sync.json scripts/publish-queue.ts",
     "sitemap": "next-sitemap",
     "postbuild": "next-sitemap"
   },

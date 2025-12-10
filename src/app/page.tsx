@@ -53,9 +53,23 @@ export default function Home() {
                 내 주변 문 연 약국 찾기
               </h1>
               <p className="text-base text-[var(--muted)]">
-                GPS 권한 한 번으로 야간·주말·공휴일 영업 약국을 즉시 확인하세요. 거부하셔도
-                지역 선택 그리드가 바로 나타나도록 설계했습니다.
+                한 번의 권한 요청으로 야간·주말·공휴일 영업 약국을 바로 보여줍니다.
+                권한 거부 시에도 지역 선택으로 즉시 이동할 수 있게 설계했습니다.
               </p>
+              <div className="flex flex-wrap gap-2 text-xs text-[var(--muted)]">
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-emerald-700 font-semibold">
+                  <ShieldCheck className="h-3 w-3" />
+                  공공데이터 실시간 갱신
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1">
+                  <MapPin className="h-3 w-3 text-brand-600" />
+                  반경 기반 추천
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1">
+                  <Sparkles className="h-3 w-3 text-brand-600" />
+                  종료 임박 알림
+                </span>
+              </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
