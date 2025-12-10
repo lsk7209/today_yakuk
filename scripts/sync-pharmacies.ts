@@ -29,6 +29,23 @@ type PharmacyRecord = {
   updated_at: string;
 };
 
+type Database = {
+  public: {
+    Tables: {
+      pharmacies: {
+        Row: PharmacyRecord;
+        Insert: PharmacyRecord;
+        Update: Partial<PharmacyRecord>;
+        Relationships: [];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
+};
+
 type ApiResponse = {
   totalCount: number;
   items: Record<string, string | undefined>[];
@@ -100,9 +117,7 @@ function extractRegion(address?: string): { province?: string | null; city?: str
   const cityRaw = tokens[1] ?? null;
 
   const province =
-    provinceRaw === "경기" || provinceRaw === "경기도"
-      ? "경기도"
-      : provinceRaw ?? null;
+    provinceRaw === "경기도" ? "경기" : provinceRaw === "경기" ? "경기" : provinceRaw ?? null;
 
   return {
     province,
@@ -154,13 +169,13 @@ async function fetchPage(pageNo: number): Promise<ApiResponse> {
 }
 
 async function upsertRecords(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   records: PharmacyRecord[],
 ) {
   if (!records.length) return;
   const { error } = await supabase
     .from("pharmacies")
-    .upsert(records as unknown[], { onConflict: "hpid" });
+    .upsert(records, { onConflict: "hpid" });
   if (error) {
     throw error;
   }
@@ -168,7 +183,10 @@ async function upsertRecords(
 
 async function main() {
   ensureEnv();
-  const supabase = createClient(supabaseUrl as string, supabaseServiceKey as string);
+  const supabase = createClient<Database>(
+    supabaseUrl as string,
+    supabaseServiceKey as string,
+  );
 
   const allItems: Record<string, string | undefined>[] = [];
   console.info("첫 페이지 수집 중...");
