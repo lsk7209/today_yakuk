@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { buildArticleJsonLd } from "@/lib/seo";
 
 const metaTitle = "전화·길찾기 활용 팁: 헛걸음 줄이기 | 오늘약국";
 const metaDescription =
@@ -9,6 +10,12 @@ export const metadata: Metadata = {
   title: metaTitle,
   description: metaDescription,
   alternates: { canonical: "/guide/call-navigation-tips" },
+  openGraph: {
+    title: metaTitle,
+    description: metaDescription,
+    url: "/guide/call-navigation-tips",
+    images: ["/og-image.svg"],
+  },
 };
 
 const tips = [
@@ -50,6 +57,25 @@ const faqs = [
 ];
 
 export default function GuideCallNavigationTipsPage() {
+  const articleJsonLd = buildArticleJsonLd({
+    title: metaTitle,
+    description: metaDescription,
+    slug: "/guide/call-navigation-tips",
+    type: "Article",
+  });
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.a,
+      },
+    })),
+  };
+
   return (
     <div className="container py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
@@ -133,6 +159,15 @@ export default function GuideCallNavigationTipsPage() {
           </div>
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
     </div>
   );
 }

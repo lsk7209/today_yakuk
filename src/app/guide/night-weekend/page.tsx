@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { buildArticleJsonLd } from "@/lib/seo";
 
 const metaTitle = "야간·주말 약국 찾기 완전 가이드 | 오늘약국";
 const metaDescription =
@@ -10,6 +11,12 @@ export const metadata: Metadata = {
   description: metaDescription,
   alternates: {
     canonical: "/guide/night-weekend",
+  },
+  openGraph: {
+    title: metaTitle,
+    description: metaDescription,
+    url: "/guide/night-weekend",
+    images: ["/og-image.svg"],
   },
 };
 
@@ -56,6 +63,25 @@ const faqs = [
 ];
 
 export default function GuideNightWeekendPage() {
+  const articleJsonLd = buildArticleJsonLd({
+    title: metaTitle,
+    description: metaDescription,
+    slug: "/guide/night-weekend",
+    type: "Article",
+  });
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.a,
+      },
+    })),
+  };
+
   return (
     <div className="container py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
@@ -145,6 +171,15 @@ export default function GuideNightWeekendPage() {
           </div>
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
     </div>
   );
 }
