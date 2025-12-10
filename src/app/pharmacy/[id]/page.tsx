@@ -119,7 +119,7 @@ async function Content({
       <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5 shadow-sm space-y-3">
         <div className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-brand-700" />
-          <h2 className="text-xl font-semibold text-brand-800">AI 요약 설명</h2>
+          <h2 className="text-xl font-semibold text-brand-800">{pharmacy.name} 요약 설명</h2>
         </div>
         <p className="text-sm text-emerald-900">
           {descriptions[0]}
