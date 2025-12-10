@@ -26,8 +26,8 @@ export function getSeoulNow(): Date {
 }
 
 function hhmmToMinutes(value: string | null | undefined): number | null {
-  if (!value) return null;
-  const str = value.trim();
+  if (value === null || value === undefined) return null;
+  const str = String(value).trim();
   if (str.length < 3) return null;
   const hours = Number(str.slice(0, -2));
   const mins = Number(str.slice(-2));
