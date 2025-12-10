@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { LocateFixed, ShieldCheck, MapPin, Smartphone, Sparkles } from "lucide-react";
 import { AdsPlaceholder } from "@/components/ads-placeholder";
 
@@ -17,8 +17,7 @@ const provinces = [
 ];
 
 export default function Home() {
-  const [geoMessage, setGeoMessage] = useState<string | null>(null);
-  const [showRegionPrompt, setShowRegionPrompt] = useState(false);
+  const showRegionPrompt = true;
 
   const regionGrid = useMemo(
     () => (
@@ -74,11 +73,6 @@ export default function Home() {
               </Link>
             </div>
             <AdsPlaceholder label="광고 표시 영역" />
-            {geoMessage ? (
-              <p className="text-sm text-brand-600 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3">
-                {geoMessage}
-              </p>
-            ) : null}
             <div className="grid grid-cols-2 gap-4 text-sm text-[var(--muted)]">
               <div className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm">
                 <p className="text-xs uppercase tracking-wide text-brand-700 flex items-center gap-1">
