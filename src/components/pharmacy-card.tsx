@@ -3,9 +3,9 @@ import { Phone, MapPin, Clock } from "lucide-react";
 import { Pharmacy } from "@/types/pharmacy";
 import { formatHourRange, getBadgeClass, getOperatingStatus } from "@/lib/hours";
 
-export type PharmacyCardProps = { pharmacy: Pharmacy };
+export type PharmacyCardProps = { pharmacy: Pharmacy; distanceKm?: number };
 
-export function PharmacyCard({ pharmacy }: PharmacyCardProps) {
+export function PharmacyCard({ pharmacy, distanceKm }: PharmacyCardProps) {
   const status = getOperatingStatus(pharmacy.operating_hours);
   const todayIntl = new Date().toLocaleString("en-US", {
     weekday: "short",
@@ -48,7 +48,7 @@ export function PharmacyCard({ pharmacy }: PharmacyCardProps) {
             지역: {pharmacy.city ?? pharmacy.province ?? "정보 없음"}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1 border border-dashed border-[var(--border)]">
-            거리: 준비 중
+            거리: {distanceKm !== undefined ? `${distanceKm.toFixed(1)} km` : "준비 중"}
           </span>
           {pharmacy.tel ? (
             <a

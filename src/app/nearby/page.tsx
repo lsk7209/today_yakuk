@@ -63,7 +63,7 @@ export default function NearbyPage() {
   }, []);
 
   const adsInserted = useMemo(() => {
-    const blocks: Array<{ ad: true; id: string } | PharmacyCardProps["pharmacy"]> = [];
+    const blocks: Array<{ ad: true; id: string } | (PharmacyCardProps["pharmacy"] & { distanceKm?: number })> = [];
     items.forEach((p, idx) => {
       blocks.push(p);
       if ((idx + 1) % 5 === 0) {
@@ -138,7 +138,7 @@ export default function NearbyPage() {
               <AdsPlaceholder key={item.id} />
             ) : (
               <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
-                <PharmacyCard pharmacy={item} />
+                <PharmacyCard pharmacy={item} distanceKm={item.distanceKm} />
               </div>
             ),
           )}
