@@ -8,7 +8,7 @@ const siteUrl =
 const CHUNK_SIZE = 10000;
 
 export async function generateSitemaps() {
-  const total = await getPharmacyCount();
+  const total = await safeGetPharmacyCount();
   const chunks = Math.max(1, Math.ceil(total / CHUNK_SIZE));
   return Array.from({ length: chunks }, (_, i) => ({ id: i }));
 }
@@ -16,7 +16,7 @@ export async function generateSitemaps() {
 export default async function sitemap(props: { id: string }): Promise<MetadataRoute.Sitemap> {
   const id = Number(props.id);
   const offset = id * CHUNK_SIZE;
-  const items = await getPharmacyHpidsChunk(offset, CHUNK_SIZE);
+  const items = await safeGetPharmacyChunk(offset, CHUNK_SIZE);
 
   const staticEntries: MetadataRoute.Sitemap =
     id === 0
@@ -36,5 +36,26 @@ export default async function sitemap(props: { id: string }): Promise<MetadataRo
   }));
 
   return [...staticEntries, ...dynamicEntries];
+}
+
+async function safeGetPharmacyCount() {
+  try {
+    const total = await getPharmacyCount();
+    if (Number.isFinite(total) && total >= 0) return total;
+    return 0;
+  } catch (error) {
+    console.error("sitemap: getPharmacyCount failed", error);
+    return 0;
+  }
+}
+
+async function safeGetPharmacyChunk(offset: number, limit: number) {
+  try {
+    const items = await getPharmacyHpidsChunk(offset, limit);
+    return Array.isArray(items) ? items : [];
+  } catch (error) {
+    console.error("sitemap: getPharmacyHpidsChunk failed", error);
+    return [];
+  }
 }
 
