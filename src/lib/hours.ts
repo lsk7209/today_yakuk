@@ -77,8 +77,8 @@ export function formatHourRange(slot?: { open: string | null; close: string | nu
 }
 
 export function formatHHMM(value?: string | null) {
-  if (!value || value.length < 3) return value ?? "";
-  const str = value.padStart(4, "0");
+  if (!value || String(value).length < 3) return value ? String(value) : "";
+  const str = String(value).padStart(4, "0");
   return `${str.slice(0, 2)}:${str.slice(2)}`;
 }
 
