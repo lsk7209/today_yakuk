@@ -16,6 +16,18 @@ const guides = [
     slug: "night-weekend",
     tags: ["야간", "주말", "공휴일"],
   },
+  {
+    title: "공휴일 대비 약국 이용 체크리스트",
+    description: "공휴일 영업 여부 확인, 종료 임박 시간, 대체 약국 찾기 팁을 모았습니다.",
+    slug: "holiday-checklist",
+    tags: ["공휴일", "체크리스트"],
+  },
+  {
+    title: "전화·길찾기 활용 팁: 헛걸음 방지",
+    description: "전화로 영업/재고 확인 후 바로 길찾기 실행하는 실전 흐름을 안내합니다.",
+    slug: "call-navigation-tips",
+    tags: ["전화", "길찾기", "반경검색"],
+  },
 ];
 
 export default function GuideIndexPage() {

@@ -15,6 +15,20 @@ const posts = [
     slug: "holiday-open-pharmacy-tips",
     tags: ["공휴일", "야간", "반경검색"],
   },
+  {
+    title: "심야 약국 찾기 체크리스트: 헛걸음 방지",
+    description:
+      "심야 시간대 종료 임박 확인, 전화/길찾기 활용, 반경 확장 탐색으로 빠르게 찾는 방법을 소개합니다.",
+    slug: "night-pharmacy-checklist",
+    tags: ["심야", "체크리스트"],
+  },
+  {
+    title: "처방전 준비와 약국 방문 전 점검 7가지",
+    description:
+      "공휴일·야간에 처방전 준비, 신분증/보험증 확인, 대기 시간 단축 팁을 정리했습니다.",
+    slug: "prescription-prep-tips",
+    tags: ["처방전", "공휴일", "준비"],
+  },
 ];
 
 export default function BlogIndexPage() {
