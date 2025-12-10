@@ -19,7 +19,9 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "";
+const googleVerification =
+  process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION ||
+  "_U2SIVpJyJOB7BDkrQSxnHPyPGbLebmxu4bSNzWskmA";
 const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
 
 export const metadata: Metadata = {
