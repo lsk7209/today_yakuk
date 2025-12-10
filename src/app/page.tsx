@@ -86,7 +86,7 @@ export default function Home() {
                 지역별 바로 찾기
               </Link>
             </div>
-            <AdsPlaceholder label="광고 표시 영역" />
+            <AdsPlaceholder label="광고 표시 영역" height={160} />
             <div className="grid grid-cols-2 gap-4 text-sm text-[var(--muted)]">
               <div className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm">
                 <p className="text-xs uppercase tracking-wide text-brand-700 flex items-center gap-1">

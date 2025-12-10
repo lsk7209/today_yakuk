@@ -116,7 +116,7 @@ async function Content({
         </p>
       </header>
 
-      <AdsPlaceholder label="광고 표시 영역 (ATF)" />
+      <AdsPlaceholder label="광고 표시 영역 (ATF)" height={160} />
 
       <section className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-3">
         <div className="flex flex-wrap gap-2 text-sm text-[var(--muted)]">
@@ -142,7 +142,7 @@ async function Content({
             지도에서 보기
           </Link>
         </div>
-        <AdsPlaceholder label="광고 표시 영역 (CTA 하단)" />
+        <AdsPlaceholder label="광고 표시 영역 (CTA 하단)" height={160} />
         <div className="space-y-2 text-sm text-[var(--muted)]">
           {descriptions.map((line) => (
             <p key={line}>{line}</p>
@@ -185,7 +185,7 @@ async function Content({
         </div>
       </section>
 
-      <AdsPlaceholder label="중간 광고 영역" />
+      <AdsPlaceholder label="중간 광고 영역" height={160} />
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">

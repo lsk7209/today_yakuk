@@ -211,10 +211,10 @@ export default function NearbyPage() {
       ) : null}
 
       {adsInserted.length > 0 ? (
-        <div className="space-y-4">
+              <div className="space-y-4">
           {adsInserted.map((item) =>
             "ad" in item ? (
-              <AdsPlaceholder key={item.id} />
+                    <AdsPlaceholder key={item.id} height={150} />
             ) : (
               <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
                 <PharmacyCard pharmacy={item} distanceKm={item.distanceKm} />
