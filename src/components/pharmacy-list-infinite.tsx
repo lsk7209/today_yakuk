@@ -21,6 +21,7 @@ type Props = {
   initialItems: Pharmacy[];
   total: number;
   pageSize?: number;
+  initialOffset?: number;
 };
 
 export function PharmacyListInfinite({
@@ -29,6 +30,7 @@ export function PharmacyListInfinite({
   initialItems,
   total,
   pageSize = 20,
+  initialOffset = 0,
 }: Props) {
   const [items, setItems] = useState<Pharmacy[]>(initialItems);
   const [filter, setFilter] = useState<FilterKey>("all");
@@ -65,7 +67,7 @@ export function PharmacyListInfinite({
       const qs = new URLSearchParams({
         province,
         city: city ?? "",
-        offset: String(items.length),
+        offset: String(initialOffset + items.length),
         limit: String(pageSize),
       });
       const res = await fetch(`/api/pharmacies?${qs.toString()}`);

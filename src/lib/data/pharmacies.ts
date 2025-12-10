@@ -144,6 +144,43 @@ export async function getAllPharmacyHpids(): Promise<
   }
 }
 
+export async function getPharmacyCount(): Promise<number> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { count, error } = await supabase.from("pharmacies").select("hpid", { count: "exact", head: true });
+    if (error) {
+      console.error("pharmacy count fetch error", error);
+      return 0;
+    }
+    return count ?? 0;
+  } catch (e) {
+    console.error("pharmacy count fetch exception", e);
+    return 0;
+  }
+}
+
+export async function getPharmacyHpidsChunk(
+  offset: number,
+  limit: number,
+): Promise<{ hpid: string; updated_at: string | null }[]> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("pharmacies")
+      .select("hpid, updated_at")
+      .order("hpid", { ascending: true })
+      .range(offset, offset + limit - 1);
+    if (error) {
+      console.error("pharmacy hpid chunk fetch error", error);
+      return [];
+    }
+    return data ?? [];
+  } catch (e) {
+    console.error("pharmacy hpid chunk fetch exception", e);
+    return [];
+  }
+}
+
 export function findNearbyWithinKm(
   target: Pharmacy,
   list: Pharmacy[],
