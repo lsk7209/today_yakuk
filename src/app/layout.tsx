@@ -108,9 +108,6 @@ export default function RootLayout({
                   약
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-brand-700">
-                    TodayPharmacy
-                  </p>
                   <p className="text-lg font-semibold">오늘약국</p>
                 </div>
               </Link>
