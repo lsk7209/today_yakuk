@@ -8,6 +8,7 @@ import {
 } from "@/lib/hours";
 import { Pharmacy } from "@/types/pharmacy";
 import { AdsPlaceholder } from "@/components/ads-placeholder";
+import { getPublishedContentBySlug } from "@/lib/data/content";
 import {
   buildPharmacyJsonLd,
   dynamicDescription,
@@ -36,9 +37,10 @@ const DAY_LABELS: [keyof NonNullable<Pharmacy["operating_hours"]>, string][] = [
 export async function generateMetadata({ params }: { params: Params }) {
   const pharmacy = await getPharmacyByHpid(params.id);
   if (!pharmacy) return {};
+  const aiContent = await getPublishedContentBySlug(params.id);
   return {
-    title: dynamicTitle(pharmacy),
-    description: dynamicDescription(pharmacy),
+    title: aiContent?.title ?? dynamicTitle(pharmacy),
+    description: aiContent?.ai_summary ?? dynamicDescription(pharmacy),
     alternates: {
       canonical: `/pharmacy/${pharmacy.hpid}`,
     },
@@ -58,6 +60,8 @@ async function Content({
   const [pharmacy] = await Promise.all([pharmacyPromise]);
   if (!pharmacy) return notFound();
 
+  const aiContent = await getPublishedContentBySlug(pharmacy.hpid);
+
   // Fetch region mates lazily; if province not present, fallback to empty array.
   const regionList =
     pharmacy.province && pharmacy.city
@@ -69,29 +73,39 @@ async function Content({
 
   const mapQuery = encodeURIComponent(`${pharmacy.name} ${pharmacy.address}`);
   const mapUrl = `https://map.naver.com/p/search/${mapQuery}`;
-  const descriptions = generateDescription(pharmacy);
-  const faqList = [
-    {
-      q: "지금 영업 중인가요?",
-      a: `현재 상태는 '${status.label}'입니다. 상세 영업시간은 요일별 표와 종료 예정 시간에서 확인하세요.`,
-    },
-    {
-      q: "전화 연결이 가능한가요?",
-      a: pharmacy.tel
-        ? `전화 버튼으로 바로 연결할 수 있습니다. 번호: ${pharmacy.tel}`
-        : "전화번호가 등록되어 있지 않습니다. 방문 전 지도 검색을 활용해 주세요.",
-    },
-    {
-      q: "근처 대체 약국도 있나요?",
-      a: nearby.length
-        ? "아래 '반경 2km 내 다른 약국'과 '이 약국이 문 닫았나요?' 섹션에서 대체 약국을 확인하세요."
-        : "현재 반경 2km 내 추천 약국 정보가 없습니다.",
-    },
-    {
-      q: "반경/거리 정보는 어떻게 계산되나요?",
-      a: "브라우저 위치 기준 직선거리를 표시합니다. 실제 이동 시간은 지도 길찾기로 확인하세요.",
-    },
-  ];
+  const descriptions = aiContent
+    ? [
+        aiContent.ai_summary ?? dynamicDescription(pharmacy),
+        ...(aiContent.ai_bullets ?? []),
+      ]
+    : generateDescription(pharmacy);
+
+  const faqList =
+    aiContent?.ai_faq?.map((f) => ({ q: f.question, a: f.answer })) ??
+    [
+      {
+        q: "지금 영업 중인가요?",
+        a: `현재 상태는 '${status.label}'입니다. 상세 영업시간은 요일별 표와 종료 예정 시간에서 확인하세요.`,
+      },
+      {
+        q: "전화 연결이 가능한가요?",
+        a: pharmacy.tel
+          ? `전화 버튼으로 바로 연결할 수 있습니다. 번호: ${pharmacy.tel}`
+          : "전화번호가 등록되어 있지 않습니다. 방문 전 지도 검색을 활용해 주세요.",
+      },
+      {
+        q: "근처 대체 약국도 있나요?",
+        a: nearby.length
+          ? "아래 '반경 2km 내 다른 약국'과 '이 약국이 문 닫았나요?' 섹션에서 대체 약국을 확인하세요."
+          : "현재 반경 2km 내 추천 약국 정보가 없습니다.",
+      },
+      {
+        q: "반경/거리 정보는 어떻게 계산되나요?",
+        a: "브라우저 위치 기준 직선거리를 표시합니다. 실제 이동 시간은 지도 길찾기로 확인하세요.",
+      },
+    ];
+
+  const extraSections = aiContent?.extra_sections ?? [];
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -293,6 +307,23 @@ async function Content({
           ))}
         </div>
       </section>
+
+      {extraSections.length ? (
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold">추가 안내</h2>
+          <div className="space-y-3">
+            {extraSections.map((section) => (
+              <div
+                key={section.title}
+                className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-2"
+              >
+                <h3 className="text-lg font-semibold">{section.title}</h3>
+                <p className="text-sm text-[var(--muted)] leading-relaxed">{section.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[min(480px,calc(100%-2rem))] z-30">
         <div className="rounded-full border border-brand-200 bg-white shadow-2xl px-4 py-3 flex items-center justify-between gap-3">
