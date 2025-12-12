@@ -13,7 +13,7 @@ export type ContentItem = {
   ai_faq: { question: string; answer: string }[] | null;
   ai_cta: string | null;
   extra_sections: { title: string; body: string }[] | null;
-  status: "pending" | "published" | "failed";
+  status: "pending" | "review" | "published" | "failed";
   publish_at: string;
   published_at: string | null;
   updated_at: string;
