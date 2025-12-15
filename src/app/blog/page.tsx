@@ -29,6 +29,24 @@ const posts = [
     slug: "prescription-prep-tips",
     tags: ["처방전", "공휴일", "준비"],
   },
+  {
+    title: "심야 약국 헛걸음 막는 거리·반경 활용법",
+    description: "반경 2/3/5km 설정과 거리순 정렬로 심야 헛걸음을 최소화하는 실전 팁을 제공합니다.",
+    slug: "night-radius-tips",
+    tags: ["심야", "반경검색"],
+  },
+  {
+    title: "어린이 해열제 구비 체크포인트",
+    description: "연령·체중별 용량, 계량 스푼, 보관법, 부작용 주의점까지 한 번에 정리했습니다.",
+    slug: "kids-fever-meds-check",
+    tags: ["어린이", "해열제"],
+  },
+  {
+    title: "여름 휴가철 응급 상비약 리스트",
+    description: "벌레·햇빛·소화불량·멍/찰과상 대비 휴대용 키트 구성과 약국 활용 팁을 알려드립니다.",
+    slug: "summer-first-aid-kit",
+    tags: ["여름", "여행", "상비약"],
+  },
 ];
 
 export default function BlogIndexPage() {

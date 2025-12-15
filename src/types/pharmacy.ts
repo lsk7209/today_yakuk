@@ -16,6 +16,7 @@ export type Pharmacy = {
   longitude?: number | null;
   operating_hours?: OperatingHours | null;
   description_raw?: string | null;
+  gemini_summary?: string | null;
   province?: string | null;
   city?: string | null;
   updated_at?: string | null;

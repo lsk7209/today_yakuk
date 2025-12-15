@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getPharmacyCount, getPharmacyHpidsChunk } from "@/lib/data/pharmacies";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
@@ -18,6 +19,34 @@ export default async function sitemap(props: { id: string }): Promise<MetadataRo
   const offset = id * CHUNK_SIZE;
   const items = await safeGetPharmacyChunk(offset, CHUNK_SIZE);
 
+  // content_queue에서 published_at 정보 가져오기 (컨텐츠 업데이트 시간 반영)
+  const supabase = getSupabaseServerClient();
+  const hpids = items.map((item) => item.hpid).filter((h): h is string => h !== null);
+  const { data: contentDates } = hpids.length > 0
+    ? await supabase
+        .from("content_queue")
+        .select("hpid, published_at, updated_at")
+        .in("hpid", hpids)
+        .eq("status", "published")
+    : { data: null, error: null };
+
+  // hpid별 최신 업데이트 시간 매핑
+  const contentDateMap = new Map<string, Date>();
+  if (contentDates) {
+    for (const content of contentDates) {
+      if (content.hpid) {
+        const dateStr = content.published_at || content.updated_at;
+        if (dateStr) {
+          const date = new Date(dateStr);
+          const existing = contentDateMap.get(content.hpid);
+          if (!existing || date > existing) {
+            contentDateMap.set(content.hpid, date);
+          }
+        }
+      }
+    }
+  }
+
   const staticEntries: MetadataRoute.Sitemap =
     id === 0
       ? [
@@ -28,12 +57,23 @@ export default async function sitemap(props: { id: string }): Promise<MetadataRo
         ]
       : [];
 
-  const dynamicEntries: MetadataRoute.Sitemap = items.map((item) => ({
-    url: `${siteUrl}/pharmacy/${item.hpid}`,
-    lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
-    changeFrequency: "weekly",
-    priority: 0.9,
-  }));
+  const dynamicEntries: MetadataRoute.Sitemap = items.map((item) => {
+    // content_queue의 published_at이 있으면 우선 사용 (컨텐츠 업데이트 시간 반영)
+    // 없으면 pharmacies의 updated_at 사용
+    const contentDate = contentDateMap.get(item.hpid);
+    const lastModified = contentDate
+      ? contentDate
+      : item.updated_at
+        ? new Date(item.updated_at)
+        : new Date();
+
+    return {
+      url: `${siteUrl}/pharmacy/${item.hpid}`,
+      lastModified,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    };
+  });
 
   return [...staticEntries, ...dynamicEntries];
 }

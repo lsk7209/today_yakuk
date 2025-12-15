@@ -4,6 +4,7 @@ type Status = {
   label: "영업 중" | "곧 종료" | "영업 종료" | "정보 없음";
   tone: "success" | "warning" | "muted";
   closesAt?: string;
+  emoji?: string; // 이모지 추가
 };
 
 export const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
@@ -59,16 +60,23 @@ export function getOperatingStatus(
         label: "곧 종료",
         tone: "warning",
         closesAt: slot?.close ?? undefined,
+        emoji: "🟠",
       };
     }
     return {
       label: "영업 중",
       tone: "success",
       closesAt: slot?.close ?? undefined,
+      emoji: "🟢",
     };
   }
 
-  return { label: "영업 종료", tone: "muted", closesAt: slot?.close ?? undefined };
+  return { 
+    label: "영업 종료", 
+    tone: "muted", 
+    closesAt: slot?.close ?? undefined,
+    emoji: "⚪",
+  };
 }
 
 export function formatHourRange(slot?: { open: string | null; close: string | null }): string {

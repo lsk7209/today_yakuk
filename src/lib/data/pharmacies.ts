@@ -129,10 +129,12 @@ export async function getAllPharmacyHpids(): Promise<
 > {
   try {
     const supabase = getSupabaseServerClient();
+    // Note: This function may return a large dataset.
+    // Consider using getPharmacyHpidsChunk for pagination instead.
     const { data, error } = await supabase
       .from("pharmacies")
       .select("hpid, updated_at")
-      .limit(5000);
+      .order("hpid", { ascending: true });
     if (error) {
       console.error("pharmacy hpid fetch error", error);
       return [];

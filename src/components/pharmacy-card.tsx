@@ -27,7 +27,7 @@ export function PharmacyCard({ pharmacy, distanceKm }: PharmacyCardProps) {
             </p>
           </div>
           <span className={getBadgeClass(status)}>
-            <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden />
+            {status.emoji && <span aria-hidden>{status.emoji}</span>}
             {status.label}
             {status.closesAt ? (
               <span className="text-[10px] text-slate-600">({status.closesAt} 종료)</span>

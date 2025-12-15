@@ -123,8 +123,10 @@ main().catch((err) => {
 async function generateContent(item: ContentQueue) {
   const prompt = buildPrompt(item);
 
+  // Google Gemini API 문서 참고: https://ai.google.dev/gemini-api/docs/api-key
+  // v1beta 엔드포인트와 최신 모델 사용
   const res = await fetch(
-    "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent",
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
     {
       method: "POST",
       headers: {

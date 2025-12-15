@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Phone, MapPin, Navigation, Clock, AlertCircle } from "lucide-react";
+import { Phone, MapPin, Navigation, Clock, AlertCircle, Sparkles } from "lucide-react";
 import {
   formatHourRange,
   getBadgeClass,
@@ -8,6 +8,7 @@ import {
 } from "@/lib/hours";
 import { Pharmacy } from "@/types/pharmacy";
 import { AdsPlaceholder } from "@/components/ads-placeholder";
+import { StickyFab } from "@/components/sticky-fab";
 import { getPublishedContentByHpid, getPublishedContentBySlug } from "@/lib/data/content";
 import {
   buildPharmacyJsonLd,
@@ -20,6 +21,7 @@ import {
   getPharmacyByHpid,
   getPharmaciesByRegion,
 } from "@/lib/data/pharmacies";
+import { generatePharmacyContent } from "@/lib/gemini";
 
 type Params = { id: string };
 
@@ -38,6 +40,8 @@ export async function generateMetadata({ params }: { params: Params }) {
   const pharmacy = await getPharmacyByHpid(params.id);
   if (!pharmacy) return {};
   const aiContent = await getPublishedContentByHpid(params.id);
+  
+  // Gemini 생성 컨텐츠가 있으면 우선 사용 (메타데이터 생성 시에는 API 호출하지 않음 - 성능 고려)
   return {
     title: aiContent?.title ?? dynamicTitle(pharmacy),
     description: aiContent?.ai_summary ?? dynamicDescription(pharmacy),
@@ -60,8 +64,6 @@ async function Content({
   const [pharmacy] = await Promise.all([pharmacyPromise]);
   if (!pharmacy) return notFound();
 
-  const aiContent = await getPublishedContentByHpid(pharmacy.hpid);
-
   // Fetch region mates lazily; if province not present, fallback to empty array.
   const regionList =
     pharmacy.province && pharmacy.city
@@ -69,22 +71,54 @@ async function Content({
       : [];
   const nearby = findNearbyWithinKm(pharmacy, regionList);
 
+  // 기존 content_queue에서 컨텐츠 가져오기
+  const aiContent = await getPublishedContentByHpid(pharmacy.hpid);
+
+  // 기존 컨텐츠가 없거나 불완전한 경우, Gemini API로 실시간 생성
+  const needsGeneration = !aiContent || !aiContent.ai_summary || !aiContent.ai_faq || aiContent.ai_faq.length === 0;
+  const geminiContent = needsGeneration
+    ? await generatePharmacyContent(pharmacy, nearby)
+    : null;
+
   const status = getOperatingStatus(pharmacy.operating_hours);
 
   const mapQuery = encodeURIComponent(`${pharmacy.name} ${pharmacy.address}`);
   const mapUrl = `https://map.naver.com/p/search/${mapQuery}`;
-  const aiBullets =
-    aiContent?.ai_bullets?.map((b) => ("text" in b ? b.text : (b as any).text ?? String(b)))) ?? [];
-  const aiFaq =
-    aiContent?.ai_faq?.map((f) => ({
-      question: "question" in f ? f.question : (f as any).q,
-      answer: "answer" in f ? f.answer : (f as any).a,
-    })) ?? [];
+  type FAQItem = { question: string; answer: string };
+  type BulletItem = { text: string };
 
-  const descriptions = aiContent
-    ? [aiContent.ai_summary ?? dynamicDescription(pharmacy), ...aiBullets]
-    : generateDescription(pharmacy);
+  // 컨텐츠 병합: Gemini 생성 컨텐츠 우선, 없으면 기존 컨텐츠 사용
+  const finalSummary = geminiContent?.summary ?? aiContent?.ai_summary ?? dynamicDescription(pharmacy);
+  const finalDetailedDescription = geminiContent?.detailed_description ?? null;
 
+  const aiBullets: string[] =
+    geminiContent?.bullets ??
+    aiContent?.ai_bullets?.map((b) => {
+      if (typeof b === "string") return b;
+      if (typeof b === "object" && b !== null && "text" in b) {
+        return (b as BulletItem).text;
+      }
+      return String(b);
+    }) ?? [];
+
+  const localTips = geminiContent?.local_tips ?? [];
+  const nearbyLandmarks = geminiContent?.nearby_landmarks ?? [];
+
+  const aiFaq: FAQItem[] =
+    geminiContent?.faq?.map((f) => ({ question: f.question, answer: f.answer })) ??
+    aiContent?.ai_faq?.map((f) => {
+      if (typeof f === "object" && f !== null) {
+        if ("question" in f && "answer" in f) {
+          return { question: f.question, answer: f.answer };
+        }
+        if ("q" in f && "a" in f) {
+          return { question: (f as { q: string; a: string }).q, answer: (f as { q: string; a: string }).a };
+        }
+      }
+      return { question: "", answer: "" };
+    }).filter((f) => f.question && f.answer) ?? [];
+
+  // FAQ가 없으면 기본 FAQ 생성
   const faqList =
     aiFaq.length > 0
       ? aiFaq
@@ -111,16 +145,24 @@ async function Content({
           },
         ];
 
-  const extraSections = aiContent?.extra_sections ?? [];
+  // 추가 섹션 병합
+  const extraSections = [
+    ...(geminiContent?.extra_sections ?? []),
+    ...(aiContent?.extra_sections ?? []),
+  ];
+
+  const descriptions = aiContent
+    ? [finalSummary, ...aiBullets]
+    : generateDescription(pharmacy);
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: faqList.map((faq) => ({
       "@type": "Question",
-      name: (faq as any).q ?? (faq as any).question,
+      name: faq.question,
       acceptedAnswer: {
         "@type": "Answer",
-        text: (faq as any).a ?? (faq as any).answer,
+        text: faq.answer,
       },
     })),
   };
@@ -128,7 +170,10 @@ async function Content({
   return (
     <div className="container py-10 sm:py-14 space-y-8">
       <header className="space-y-2">
-        <span className={getBadgeClass(status)}>{status.label}</span>
+        <span className={getBadgeClass(status)}>
+          {status.emoji && <span aria-hidden>{status.emoji}</span>}
+          {status.label}
+        </span>
         <h1 className="text-3xl font-bold">{pharmacy.name}</h1>
         <p className="text-sm text-[var(--muted)] flex items-center gap-2">
           <MapPin className="h-4 w-4 text-brand-600" />
@@ -137,6 +182,19 @@ async function Content({
       </header>
 
       <AdsPlaceholder label="광고 표시 영역 (ATF)" height={160} />
+
+      {/* AI 생성 요약 (gemini_summary 또는 content_queue) */}
+      {(pharmacy.gemini_summary || finalSummary) && (
+        <section className="rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-5 shadow-sm">
+          <div className="flex items-start gap-2 mb-2">
+            <Sparkles className="h-5 w-5 text-brand-600 flex-shrink-0 mt-0.5" />
+            <h2 className="text-lg font-semibold text-brand-800">약국 소개</h2>
+          </div>
+          <p className="text-sm text-[var(--foreground)] leading-relaxed whitespace-pre-line">
+            {pharmacy.gemini_summary || finalSummary}
+          </p>
+        </section>
+      )}
 
       <section className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-3">
         <div className="flex flex-wrap gap-2 text-sm text-[var(--muted)]">
@@ -174,15 +232,48 @@ async function Content({
         <div className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-brand-700" />
           <h2 className="text-xl font-semibold text-brand-800">{pharmacy.name} 요약 설명</h2>
+          {geminiContent && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-200 px-2 py-1 text-xs font-semibold text-emerald-800">
+              <Sparkles className="h-3 w-3" />
+              AI 생성
+            </span>
+          )}
         </div>
         <p className="text-sm text-emerald-900">
-          {descriptions[0]}
+          {finalSummary}
         </p>
-        <ul className="text-sm text-emerald-900 list-disc list-inside space-y-1">
-          {descriptions.slice(1).map((line) => (
-            <li key={line}>{line}</li>
-          ))}
-        </ul>
+        {finalDetailedDescription && (
+          <p className="text-sm text-emerald-900 leading-relaxed mt-2">
+            {finalDetailedDescription}
+          </p>
+        )}
+        {aiBullets.length > 0 && (
+          <ul className="text-sm text-emerald-900 list-disc list-inside space-y-1 mt-2">
+            {aiBullets.map((bullet, idx) => (
+              <li key={idx}>{bullet}</li>
+            ))}
+          </ul>
+        )}
+        {localTips.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-emerald-200">
+            <p className="text-xs font-semibold text-emerald-800 mb-2">💡 지역 이용 팁</p>
+            <ul className="text-sm text-emerald-900 list-disc list-inside space-y-1">
+              {localTips.map((tip, idx) => (
+                <li key={idx}>{tip}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {nearbyLandmarks.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-emerald-200">
+            <p className="text-xs font-semibold text-emerald-800 mb-2">📍 주변 주요 시설</p>
+            <ul className="text-sm text-emerald-900 list-disc list-inside space-y-1">
+              {nearbyLandmarks.map((landmark, idx) => (
+                <li key={idx}>{landmark}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
       <section className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-4">
@@ -304,44 +395,39 @@ async function Content({
         <div className="space-y-2">
           {faqList.map((faq) => (
             <div
-              key={(faq as any).question ?? (faq as any).q}
+              key={faq.question}
               className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
             >
               <h3 className="font-semibold text-[var(--foreground)] mb-1">
-                {(faq as any).question ?? (faq as any).q}
+                {faq.question}
               </h3>
               <p className="text-sm text-[var(--muted)] leading-relaxed">
-                {(faq as any).answer ?? (faq as any).a}
+                {faq.answer}
               </p>
             </div>
           ))}
         </div>
       </section>
 
-      {extraSections.length ? (
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold">추가 안내</h2>
-          <div className="space-y-3">
-            {extraSections.map((section) => (
-              <div
-                key={section.title}
-                className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-2"
-              >
-                <h3 className="text-lg font-semibold">{section.title}</h3>
-                <p className="text-sm text-[var(--muted)] leading-relaxed">{section.body}</p>
-              </div>
-            ))}
+      {geminiContent?.cta && (
+        <section className="rounded-2xl border border-brand-200 bg-brand-50 p-5 shadow-sm">
+          <div className="flex items-start gap-3">
+            <Sparkles className="h-5 w-5 text-brand-700 flex-shrink-0 mt-0.5" />
+            <div>
+              <h2 className="text-lg font-semibold text-brand-800 mb-2">이 약국을 추천합니다</h2>
+              <p className="text-sm text-brand-900 leading-relaxed">{geminiContent.cta}</p>
+            </div>
           </div>
         </section>
-      ) : null}
+      )}
 
-      {extraSections.length ? (
+      {extraSections.length > 0 && (
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">추가 안내</h2>
           <div className="space-y-3">
-            {extraSections.map((section) => (
+            {extraSections.map((section, idx) => (
               <div
-                key={section.title}
+                key={`${section.title}-${idx}`}
                 className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-2"
               >
                 <h3 className="text-lg font-semibold">{section.title}</h3>
@@ -350,7 +436,7 @@ async function Content({
             ))}
           </div>
         </section>
-      ) : null}
+      )}
 
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[min(480px,calc(100%-2rem))] z-30">
         <div className="rounded-full border border-brand-200 bg-white shadow-2xl px-4 py-3 flex items-center justify-between gap-3">
@@ -392,6 +478,9 @@ async function Content({
           __html: JSON.stringify(faqJsonLd),
         }}
       />
+      
+      {/* Sticky FAB (모바일 전용) */}
+      <StickyFab tel={pharmacy.tel} mapUrl={mapUrl} />
     </div>
   );
 }

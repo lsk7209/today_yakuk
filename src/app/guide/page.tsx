@@ -28,6 +28,24 @@ const guides = [
     slug: "call-navigation-tips",
     tags: ["전화", "길찾기", "반경검색"],
   },
+  {
+    title: "반경 2/3/5/10km 선택 기준과 활용법",
+    description: "심야·공휴일 상황별로 반경을 조정하고 거리순 정렬을 쓰는 기준을 설명합니다.",
+    slug: "radius-selection",
+    tags: ["반경", "거리순"],
+  },
+  {
+    title: "전화 스크립트: 영업·재고 확인 템플릿",
+    description: "영업 여부, 조기 마감, 재고 확인을 빠르게 묻는 한국어 스크립트를 제공합니다.",
+    slug: "call-scripts",
+    tags: ["전화", "스크립트"],
+  },
+  {
+    title: "여름 휴가철 휴대용 응급 키트 구성법",
+    description: "벌레·햇빛·소화불량·상처 대비 휴대용 키트 구성과 반경 검색 활용 팁을 안내합니다.",
+    slug: "summer-emergency-kit",
+    tags: ["여름", "상비약", "여행"],
+  },
 ];
 
 export default function GuideIndexPage() {

@@ -1,13 +1,19 @@
-name: Scheduled Publish
+name: Generate Pharmacy Content
 
 on:
   schedule:
-    # 5회/일: 00:00, 04:00, 08:00, 12:00, 16:00 UTC (KST 09/13/17/21/01)
-    - cron: "0 0,4,8,12,16 * * *"
+    # 하루 2회: 02:00, 14:00 UTC (KST 11:00, 23:00)
+    # 하루 최대 20건 생성 (2회 × 10건)
+    - cron: "0 2,14 * * *"
   workflow_dispatch:
+    inputs:
+      limit:
+        description: "생성할 컨텐츠 개수"
+        required: false
+        default: "10"
 
 jobs:
-  publish:
+  generate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,8 +28,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Publish queued content
-        run: npm run publish:queue
+      - name: Generate pharmacy content
+        run: npm run generate:content ${{ github.event.inputs.limit || '10' }}
         env:
           # 실제 GitHub Secrets에 있는 변수 사용
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}

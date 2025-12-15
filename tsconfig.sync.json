@@ -3,8 +3,15 @@
   "compilerOptions": {
     "module": "CommonJS",
     "moduleResolution": "node",
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["scripts/**/*.ts"]
+  "include": ["scripts/**/*.ts", "src/**/*.ts"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 }
 
