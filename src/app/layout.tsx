@@ -19,12 +19,8 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-const googleVerification =
-  process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION ||
-  "_U2SIVpJyJOB7BDkrQSxnHPyPGbLebmxu4bSNzWskmA";
-const naverVerification =
-  process.env.NEXT_PUBLIC_NAVER_VERIFICATION ||
-  "2a315bda80bb7e187f5438ab9b88649fa91e8906";
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION;
+const naverVerification = process.env.NEXT_PUBLIC_NAVER_VERIFICATION;
 const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
 
 export const metadata: Metadata = {
@@ -33,8 +29,8 @@ export const metadata: Metadata = {
     default: "오늘약국 | 실시간 영업 약국 검색",
     template: "%s | 오늘약국",
   },
-  description:
-    "지금 문 연 약국을 빠르게 찾고, 영업 시간과 위치를 한 번에 확인하세요. 모바일 친화적 지도/검색을 제공하는 오늘약국 서비스입니다.",
+  // Naver는 description이 너무 길면 잘릴 수 있어 80자 내로 유지 (상세 맥락은 본문/구조화 데이터로 보완)
+  description: "지금 문 연 약국을 빠르게 찾고 영업시간·위치를 확인하세요.",
   keywords: [
     "오늘약국",
     "실시간 약국",
@@ -55,6 +51,26 @@ export const metadata: Metadata = {
     locale: "ko_KR",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "오늘약국 | 실시간 영업 약국 검색",
+    description: "지금 문 연 약국을 빠르게 찾고 영업시간·위치를 확인하세요.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
+  verification: {
+    google: googleVerification,
+    other: naverVerification ? { "naver-site-verification": naverVerification } : undefined,
+  },
   icons: {
     icon: "/favicon.ico",
   },
@@ -68,12 +84,6 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
-        {googleVerification ? (
-          <meta name="google-site-verification" content={googleVerification} />
-        ) : null}
-        {naverVerification ? (
-          <meta name="naver-site-verification" content={naverVerification} />
-        ) : null}
         {gaId ? (
           <>
             <Script

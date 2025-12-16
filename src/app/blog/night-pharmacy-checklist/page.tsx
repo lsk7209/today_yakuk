@@ -1,23 +1,36 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 
 const metaTitle = "심야 약국 찾기 체크리스트: 헛걸음 방지 | 오늘약국";
 const metaDescription =
   "심야 시간대 종료 임박 확인, 전화/길찾기 활용, 반경 확장 탐색으로 빠르게 약국을 찾는 방법을 정리했습니다.";
 
-export const metadata: Metadata = {
-  title: metaTitle,
-  description: metaDescription,
-  alternates: { canonical: "/blog/night-pharmacy-checklist" },
-  openGraph: {
-    title: metaTitle,
-    description: metaDescription,
-    url: "/blog/night-pharmacy-checklist",
-    type: "article",
-    images: ["/og-image.svg"],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const title = metaTitle;
+  const description = metaDescription;
+  const canonical = "/blog/night-pharmacy-checklist";
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: "article",
+      images: [
+        {
+          url: `/api/og?title=${encodeURIComponent(title)}`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+  };
+}
 
 const checklist = [
   "심야 필터/영업중 필터로 열려 있는 약국만 보기",
@@ -49,9 +62,34 @@ export default function BlogNightPharmacyChecklist() {
     slug: "/blog/night-pharmacy-checklist",
   });
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "홈",
+        item: "/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "블로그",
+        item: "/blog",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "심야 약국 찾기 체크리스트",
+        item: "/blog/night-pharmacy-checklist",
+      },
+    ],
+  };
+
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
-      <header className="space-y-3">
+    <article className="container py-10 sm:py-14 space-y-10">
+      <header className="space-y-3" aria-label="글 머리말">
         <p className="text-sm font-semibold text-brand-700">블로그 · 심야 체크리스트</p>
         <h1 className="text-3xl font-bold leading-tight">심야 약국 찾기 체크리스트: 헛걸음 방지</h1>
         <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
@@ -108,15 +146,17 @@ export default function BlogNightPharmacyChecklist() {
 
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">자주 묻는 질문</h2>
-        <div className="space-y-3">
+        <div className="space-y-3" aria-label="FAQ">
           {faqs.map((faq) => (
-            <div
+            <details
               key={faq.q}
               className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
             >
-              <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
-              <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
-            </div>
+              <summary className="cursor-pointer font-semibold text-[var(--foreground)]">
+                {faq.q}
+              </summary>
+              <p className="mt-2 text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
+            </details>
           ))}
         </div>
       </section>
@@ -146,11 +186,9 @@ export default function BlogNightPharmacyChecklist() {
         </div>
       </section>
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
-      />
-    </div>
+      <JsonLd id="jsonld-article" data={articleJsonLd as unknown as Record<string, unknown>} />
+      <JsonLd id="jsonld-breadcrumb" data={breadcrumbJsonLd} />
+    </article>
   );
 }
 
