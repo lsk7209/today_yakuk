@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
-import fetch from "node-fetch";
 import { z } from "zod";
 
 type ContentQueue = {
