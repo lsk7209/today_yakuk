@@ -30,6 +30,7 @@ import { StickyFab } from "@/components/sticky-fab";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getPublishedContentByHpid } from "@/lib/data/content";
 import { CopyButton } from "@/components/copy-button";
+import { SeoulNowBadge } from "@/components/seoul-now-badge";
 import {
   buildPharmacyJsonLd,
   dynamicDescription,
@@ -529,7 +530,12 @@ async function Content({
             </div>
             <h2 className="text-2xl font-black text-gray-900">요일별 영업시간</h2>
           </div>
-          <span className="text-sm font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">KST 기준</span>
+          <div className="flex items-center gap-2">
+            <SeoulNowBadge initialIso={now.toISOString()} />
+            <span className="text-sm font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">
+              KST 기준
+            </span>
+          </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {DAY_LABELS.map(([key, label]) => {

@@ -22,8 +22,8 @@ export default async function sitemap(props: { id: string }): Promise<MetadataRo
   // content_queue에서 published_at 정보 가져오기 (컨텐츠 업데이트 시간 반영)
   const supabase = getSupabaseServerClient();
   const hpids = items.map((item) => item.hpid).filter((h): h is string => h !== null);
-  let contentDates: Array<{ hpid: string | null; published_at: string | null; updated_at: string | null }> | null =
-    null;
+  type ContentDateRow = { hpid: string | null; published_at: string | null; updated_at: string | null };
+  let contentDates: ContentDateRow[] = [];
   if (hpids.length > 0) {
     const { data, error } = await supabase
       .from("content_queue")
@@ -33,22 +33,20 @@ export default async function sitemap(props: { id: string }): Promise<MetadataRo
 
     // 초기 배포에서 content_queue가 아직 없을 수 있음 → sitemap은 pharmacies 기반으로 계속 생성
     if (!error || (error as { code?: string }).code !== "PGRST205") {
-      contentDates = (data as typeof contentDates) ?? null;
+      contentDates = (data as ContentDateRow[]) ?? [];
     }
   }
 
   // hpid별 최신 업데이트 시간 매핑
   const contentDateMap = new Map<string, Date>();
-  if (contentDates) {
-    for (const content of contentDates) {
-      if (content.hpid) {
-        const dateStr = content.published_at || content.updated_at;
-        if (dateStr) {
-          const date = new Date(dateStr);
-          const existing = contentDateMap.get(content.hpid);
-          if (!existing || date > existing) {
-            contentDateMap.set(content.hpid, date);
-          }
+  for (const content of contentDates) {
+    if (content.hpid) {
+      const dateStr = content.published_at || content.updated_at;
+      if (dateStr) {
+        const date = new Date(dateStr);
+        const existing = contentDateMap.get(content.hpid);
+        if (!existing || date > existing) {
+          contentDateMap.set(content.hpid, date);
         }
       }
     }
