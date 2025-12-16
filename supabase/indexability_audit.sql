@@ -25,7 +25,7 @@ with base as (
     -- 운영시간 유효성(jsonb에서 open/close 하나라도 존재)
     exists (
       select 1
-      from jsonb_each(operating_hours) as kv(day, slot)
+      from jsonb_each(coalesce(operating_hours, '{}'::jsonb)) as kv(day, slot)
       where coalesce(slot->>'open', '') <> '' and coalesce(slot->>'close', '') <> ''
     ) as has_hours
   from pharmacies
@@ -52,7 +52,7 @@ with base as (
     (tel is not null and length(regexp_replace(tel, '\D', '', 'g')) >= 8) as has_tel,
     exists (
       select 1
-      from jsonb_each(operating_hours) as kv(day, slot)
+      from jsonb_each(coalesce(operating_hours, '{}'::jsonb)) as kv(day, slot)
       where coalesce(slot->>'open', '') <> '' and coalesce(slot->>'close', '') <> ''
     ) as has_hours
   from pharmacies
@@ -74,7 +74,7 @@ with base as (
     (tel is not null and length(regexp_replace(tel, '\D', '', 'g')) >= 8) as has_tel,
     exists (
       select 1
-      from jsonb_each(operating_hours) as kv(day, slot)
+      from jsonb_each(coalesce(operating_hours, '{}'::jsonb)) as kv(day, slot)
       where coalesce(slot->>'open', '') <> '' and coalesce(slot->>'close', '') <> ''
     ) as has_hours
   from pharmacies
