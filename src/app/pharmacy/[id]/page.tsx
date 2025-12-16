@@ -192,7 +192,6 @@ async function Content({
 
   // 컨텐츠 병합: Gemini 생성 컨텐츠 우선, 없으면 기존 컨텐츠 사용
   const finalSummary = geminiContent?.summary ?? aiContent?.ai_summary ?? dynamicDescription(pharmacy);
-  const finalDetailedDescription = geminiContent?.detailed_description ?? null;
 
   const aiBullets: string[] =
     geminiContent?.bullets ??
@@ -461,13 +460,7 @@ async function Content({
             {finalSummary}
           </p>
         </div>
-        {finalDetailedDescription && (
-          <div className="bg-white rounded-xl p-4 border border-gray-200">
-            <p className="text-base text-gray-800 leading-relaxed">
-              {finalDetailedDescription}
-            </p>
-          </div>
-        )}
+        {/* 중복 방지: 요약+주요특징 2개 블록만 유지 */}
         {aiBullets.length > 0 && (
           <div className="bg-white rounded-xl p-5 border-2 border-emerald-100 space-y-3">
             <div className="flex items-center gap-2 mb-2">
