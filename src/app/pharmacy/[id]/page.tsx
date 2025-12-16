@@ -606,7 +606,7 @@ async function Content({
             </h2>
           </div>
           <span className="text-sm font-bold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-full border border-purple-200">
-            ⭐ 추천 리스트
+            목록
           </span>
         </div>
         {nearby.length ? (
@@ -648,7 +648,7 @@ async function Content({
           </div>
         ) : (
           <div className="mt-4 p-5 bg-gray-50 rounded-xl border border-gray-200">
-            <p className="text-base text-gray-600 text-center font-medium">주변 추천 약국 정보가 없습니다.</p>
+            <p className="text-base text-gray-600 text-center font-medium">주변 약국 정보가 없습니다.</p>
           </div>
         )}
       </section>
@@ -774,18 +774,17 @@ async function Content({
       </section>
 
       {geminiContent?.cta && (
-        <section className="rounded-2xl border-2 border-brand-300 bg-gradient-to-br from-brand-50 via-emerald-50 to-brand-100 p-6 shadow-lg">
+        <section className="rounded-2xl border-2 border-gray-200 bg-gray-50 p-6 shadow-md">
           <div className="flex items-start gap-4">
-            <div className="rounded-full bg-brand-200 p-3">
-              <Star className="h-6 w-6 text-brand-800 fill-brand-800" />
+            <div className="rounded-full bg-gray-200 p-3">
+              <Info className="h-6 w-6 text-gray-700" />
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-black text-brand-900 mb-3 flex items-center gap-2">
-                <span>⭐</span>
-                <span>이 약국을 추천합니다</span>
+              <h2 className="text-2xl font-black text-gray-900 mb-3">
+                이용 안내
               </h2>
-              <div className="bg-white/90 rounded-xl p-4 border border-brand-200">
-                <p className="text-base text-brand-900 leading-relaxed font-semibold">
+              <div className="bg-white rounded-xl p-4 border border-gray-200">
+                <p className="text-base text-gray-800 leading-relaxed">
                   {geminiContent.cta}
                 </p>
               </div>

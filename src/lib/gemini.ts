@@ -294,14 +294,14 @@ ${nearbyInfo || "주변 약국 정보 없음"}
     },
     {
       "question": "${pharmacy.name} ${regionKeywordString} 주차는 가능한가요?",
-      "answer": "${fullAddress} 위치 특성을 고려하여 주차 가능 여부를 추론하되, 확실하지 않으면 '방문 전 전화 문의를 권장합니다'로 답변"
+      "answer": "${fullAddress} 위치 특성을 고려하여 주차 가능 여부를 추론하되, 확실하지 않으면 '방문 전 전화로 확인해 주세요'로 답변"
     },
     {
       "question": "${pharmacy.name} 전화 상담이 가능한가요?",
       "answer": "${pharmacy.tel ? `${pharmacy.tel}로 전화 상담이 가능합니다.` : "전화번호가 등록되어 있지 않아 방문을 통해 문의하시기 바랍니다."}"
     }
   ],
-  "cta": "${pharmacy.name} ${regionKeywordString} 방문 또는 ${pharmacy.tel ? `전화(${pharmacy.tel})` : "방문"} 문의를 통해 필요한 의약품과 건강 상담을 받으실 수 있습니다.",
+  "cta": "${pharmacy.name}의 주소·전화·영업시간 정보를 확인한 뒤 방문해 주세요. ${pharmacy.tel ? `재고/운영 문의는 ${pharmacy.tel}로 확인할 수 있습니다.` : "전화번호 정보가 없으면 지도에서 확인해 주세요."}",
   "extra_sections": [
     {
       "title": "${regionKeywordString} 약국 이용 안내",
