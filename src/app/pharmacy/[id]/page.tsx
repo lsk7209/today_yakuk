@@ -444,10 +444,7 @@ async function Content({
           <div className="rounded-full bg-brand-100 p-2">
             <Info className="h-5 w-5 text-brand-700" />
           </div>
-          <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-            <span>📋</span>
-            <span>{pharmacy.name} 상세 정보</span>
-          </h2>
+          <h2 className="text-2xl font-black text-gray-900">{pharmacy.name} 상세 정보</h2>
           {geminiContent ? (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-800 border border-emerald-200 shadow-sm">
               <Sparkles className="h-3.5 w-3.5" />
@@ -530,10 +527,7 @@ async function Content({
             <div className="rounded-full bg-blue-100 p-2">
               <Calendar className="h-5 w-5 text-blue-700" />
             </div>
-            <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-              <span>📅</span>
-              <span>요일별 영업시간</span>
-            </h2>
+            <h2 className="text-2xl font-black text-gray-900">요일별 영업시간</h2>
           </div>
           <span className="text-sm font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">KST 기준</span>
         </div>
@@ -550,7 +544,7 @@ async function Content({
               fri: "금",
               sat: "토",
               sun: "일",
-              holiday: "🎉",
+              holiday: "공휴",
             };
             return (
               <div
@@ -647,14 +641,10 @@ async function Content({
           <div className="rounded-full bg-amber-100 p-2">
             <AlertCircle className="h-5 w-5 text-amber-700" />
           </div>
-          <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-            <span>⚠️</span>
-            <span>이 약국이 문 닫았나요?</span>
-          </h2>
+          <h2 className="text-2xl font-black text-gray-900">이 약국이 문 닫았나요?</h2>
         </div>
         <div className="bg-white/80 rounded-xl p-4 border border-amber-200">
           <p className="text-base text-gray-800 leading-relaxed font-semibold flex items-center gap-2">
-            <span>💡</span>
             <span>반경 2km 내 영업 중인 약국을 바로 확인하세요. 혼잡 시 빠른 대안 방문을 돕습니다.</span>
           </p>
         </div>
@@ -799,10 +789,7 @@ async function Content({
                   key={`${section.title}-${idx}`}
                   className="rounded-xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-white p-5 shadow-sm hover:shadow-md transition-all"
                 >
-                  <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center gap-2">
-                    <span className="text-indigo-600">📌</span>
-                    <span>{section.title}</span>
-                  </h3>
+                  <h3 className="text-lg font-black text-gray-900 mb-3">{section.title}</h3>
                   <div className="bg-white rounded-lg p-4 border border-gray-100">
                     <p
                       className="text-base text-gray-800 leading-relaxed"
