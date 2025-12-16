@@ -803,31 +803,27 @@ async function Content({
         </section>
       )}
 
-      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[min(480px,calc(100%-2rem))] z-30">
-        <div className="rounded-full border border-brand-200 bg-white shadow-2xl px-4 py-3 flex items-center justify-between gap-3">
-          <div>
-            <p className="text-base font-semibold">{pharmacy.name}</p>
-            <p className="text-sm text-[var(--muted)] truncate">{pharmacy.address}</p>
-          </div>
-          <div className="flex gap-2">
-            <Link
-              href={mapUrl}
-              className="inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold hover:border-brand-200"
-              target="_blank"
+      {/* 하단 고정 액션: 모바일은 StickyFab만 사용(겹침 방지), 데스크톱은 버튼 2개만 노출 */}
+      <div className="hidden sm:block fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
+        <div className="rounded-full border border-gray-200 bg-white shadow-xl px-4 py-3 flex items-center gap-2">
+          <Link
+            href={mapUrl}
+            className="inline-flex items-center gap-2 rounded-full border-2 border-brand-600 bg-white px-5 py-2 text-sm font-black text-brand-700 hover:bg-brand-50"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Navigation className="h-4 w-4" />
+            길찾기
+          </Link>
+          {pharmacy.tel ? (
+            <a
+              href={`tel:${pharmacy.tel}`}
+              className="inline-flex items-center gap-2 rounded-full bg-brand-700 text-white px-5 py-2 text-sm font-black hover:bg-brand-800"
             >
-              <Navigation className="h-4 w-4" />
-              길찾기
-            </Link>
-            {pharmacy.tel ? (
-              <a
-                href={`tel:${pharmacy.tel}`}
-                className="inline-flex items-center gap-1 rounded-full bg-brand-600 text-white px-4 py-2 text-sm font-semibold hover:bg-brand-700"
-              >
-                <Phone className="h-4 w-4" />
-                전화
-              </a>
-            ) : null}
-          </div>
+              <Phone className="h-4 w-4" />
+              전화 걸기
+            </a>
+          ) : null}
         </div>
       </div>
 
