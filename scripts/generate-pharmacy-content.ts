@@ -116,6 +116,76 @@ type ContentQueueInsert = {
   publish_at: string;
 };
 
+function normalizeTextForSimilarity(input: string): string {
+  return input
+    .replace(/[^\p{L}\p{N}\s:~\-]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function tokenizeKorean(input: string): string[] {
+  const stop = new Set([
+    "약국",
+    "위치",
+    "운영",
+    "영업",
+    "시간",
+    "정보",
+    "확인",
+    "가능",
+    "입니다",
+    "있습니다",
+    "합니다",
+    "위해",
+    "및",
+    "또는",
+    "통해",
+    "방문",
+    "문의",
+    "오늘",
+    "지역",
+    "주민",
+  ]);
+  return normalizeTextForSimilarity(input)
+    .split(" ")
+    .map((t) => t.trim())
+    .filter((t) => t.length >= 2 && !stop.has(t));
+}
+
+function jaccardSimilarity(a: string, b: string): number {
+  const A = new Set(tokenizeKorean(a));
+  const B = new Set(tokenizeKorean(b));
+  if (A.size === 0 || B.size === 0) return 0;
+  let inter = 0;
+  for (const t of A) if (B.has(t)) inter++;
+  const union = A.size + B.size - inter;
+  return union === 0 ? 0 : inter / union;
+}
+
+async function getRecentSummariesForDedupe(supabase: ReturnType<typeof createClient>, limit = 200) {
+  try {
+    const { data, error } = await supabase
+      .from("content_queue")
+      .select("ai_summary")
+      .not("ai_summary", "is", null)
+      .order("published_at", { ascending: false })
+      .limit(limit);
+    if (error) return [];
+    return (data ?? []).map((r) => (r as { ai_summary?: string | null }).ai_summary).filter(Boolean) as string[];
+  } catch {
+    return [];
+  }
+}
+
+function pickNearDuplicates(newSummary: string, existing: string[], threshold = 0.58): string[] {
+  const scored = existing
+    .map((s) => ({ s, sim: jaccardSimilarity(newSummary, s) }))
+    .filter((x) => x.sim >= threshold)
+    .sort((a, b) => b.sim - a.sim);
+  return scored.slice(0, 3).map((x) => x.s);
+}
+
 function ensureEnv() {
   if (!supabaseUrl) throw new Error("SUPABASE_URL 또는 NEXT_PUBLIC_SUPABASE_URL이 필요합니다.");
   if (!supabaseServiceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY가 필요합니다.");
@@ -166,7 +236,19 @@ async function generateAndQueueContent(
 
     // Gemini API로 컨텐츠 생성
     console.info(`[GENERATE] ${pharmacy.name} (${pharmacy.hpid})...`);
-    const geminiContent = await generatePharmacyContent(pharmacy, nearby);
+    const recentSummaries = await getRecentSummariesForDedupe(supabase, 200);
+    let geminiContent = await generatePharmacyContent(pharmacy, nearby);
+
+    // 내부 중복(유사 문장) 방지: 요약이 기존과 너무 비슷하면 1회 재생성
+    if (geminiContent?.summary && recentSummaries.length) {
+      const nearDups = pickNearDuplicates(geminiContent.summary, recentSummaries);
+      if (nearDups.length) {
+        console.info(
+          `[DEDUPE] ${pharmacy.name} (${pharmacy.hpid}): 유사 요약 감지 → 문장 구조 변경 재생성`,
+        );
+        geminiContent = await generatePharmacyContent(pharmacy, nearby, { avoidSummaries: nearDups });
+      }
+    }
 
     if (!geminiContent) {
       console.warn(`[WARN] ${pharmacy.name} (${pharmacy.hpid}): Gemini API 호출 실패`);

@@ -1,6 +1,7 @@
 // dotenv를 먼저 로드 (.env.local 우선)
 import dotenv from "dotenv";
 import path from "path";
+import * as fs from "fs";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config(); // .env도 로드
 
@@ -120,6 +121,78 @@ type ContentQueueInsert = {
   publish_at: string;
 };
 
+function normalizeTextForSimilarity(input: string): string {
+  return input
+    .replace(/[^\p{L}\p{N}\s:~\-]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function tokenizeKorean(input: string): string[] {
+  const stop = new Set([
+    "약국",
+    "위치",
+    "운영",
+    "영업",
+    "시간",
+    "정보",
+    "확인",
+    "가능",
+    "입니다",
+    "있습니다",
+    "합니다",
+    "위해",
+    "및",
+    "또는",
+    "통해",
+    "방문",
+    "문의",
+    "오늘",
+    "지역",
+    "주민",
+  ]);
+  return normalizeTextForSimilarity(input)
+    .split(" ")
+    .map((t) => t.trim())
+    .filter((t) => t.length >= 2 && !stop.has(t));
+}
+
+function jaccardSimilarity(a: string, b: string): number {
+  const A = new Set(tokenizeKorean(a));
+  const B = new Set(tokenizeKorean(b));
+  if (A.size === 0 || B.size === 0) return 0;
+  let inter = 0;
+  for (const t of A) if (B.has(t)) inter++;
+  const union = A.size + B.size - inter;
+  return union === 0 ? 0 : inter / union;
+}
+
+async function getRecentSummariesForDedupe(supabase: ReturnType<typeof createClient>, limit = 200) {
+  try {
+    const { data, error } = await supabase
+      .from("content_queue")
+      .select("ai_summary")
+      .not("ai_summary", "is", null)
+      .order("published_at", { ascending: false })
+      .limit(limit);
+    if (error) return [];
+    return (data ?? [])
+      .map((r) => (r as { ai_summary?: string | null }).ai_summary)
+      .filter(Boolean) as string[];
+  } catch {
+    return [];
+  }
+}
+
+function pickNearDuplicates(newSummary: string, existing: string[], threshold = 0.58): string[] {
+  const scored = existing
+    .map((s) => ({ s, sim: jaccardSimilarity(newSummary, s) }))
+    .filter((x) => x.sim >= threshold)
+    .sort((a, b) => b.sim - a.sim);
+  return scored.slice(0, 3).map((x) => x.s);
+}
+
 function ensureEnv() {
   if (!supabaseUrl) throw new Error("SUPABASE_URL 또는 NEXT_PUBLIC_SUPABASE_URL이 필요합니다.");
   if (!supabaseServiceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY가 필요합니다.");
@@ -177,7 +250,17 @@ async function generateSinglePharmacyContent(hpid: string): Promise<void> {
 
     // Gemini API로 컨텐츠 생성
     console.info("Gemini API로 컨텐츠 생성 중...");
-    const geminiContent = await generatePharmacyContent(pharmacy, nearby);
+    const recentSummaries = await getRecentSummariesForDedupe(supabase, 200);
+    let geminiContent = await generatePharmacyContent(pharmacy, nearby);
+
+    // 내부 중복(유사 문장) 방지: 요약이 기존과 너무 비슷하면 1회 재생성
+    if (geminiContent?.summary && recentSummaries.length) {
+      const nearDups = pickNearDuplicates(geminiContent.summary, recentSummaries);
+      if (nearDups.length) {
+        console.info("유사 요약 감지 → 문장 구조 변경 재생성");
+        geminiContent = await generatePharmacyContent(pharmacy, nearby, { avoidSummaries: nearDups });
+      }
+    }
 
     if (!geminiContent) {
       console.error("❌ Gemini API 호출 실패");
@@ -245,28 +328,60 @@ async function generateSinglePharmacyContent(hpid: string): Promise<void> {
       publish_at: publishAt,
     };
 
-    // 기존 항목이 있으면 업데이트, 없으면 생성
-    if (existing) {
-      const { error } = await supabase
-        .from("content_queue")
-        .update({
-          ...queueItem,
-          updated_at: new Date().toISOString(),
-          published_at: publishAt,
-        })
-        .eq("id", existing.id);
+    // content_queue 테이블에 저장 시도
+    try {
+      if (existing) {
+        const { error } = await supabase
+          .from("content_queue")
+          .update({
+            ...queueItem,
+            updated_at: new Date().toISOString(),
+            published_at: publishAt,
+          })
+          .eq("id", existing.id);
 
-      if (error) throw error;
-      console.info(`✅ 컨텐츠 업데이트 완료! (ID: ${existing.id})\n`);
-    } else {
-      const { data: inserted, error } = await supabase
-        .from("content_queue")
-        .insert(queueItem)
-        .select("id")
-        .single();
+        if (error) throw error;
+        console.info(`✅ 컨텐츠 업데이트 완료! (ID: ${existing.id})\n`);
+      } else {
+        const { data: inserted, error } = await supabase
+          .from("content_queue")
+          .insert(queueItem)
+          .select("id")
+          .single();
 
-      if (error) throw error;
-      console.info(`✅ 컨텐츠 생성 완료! (ID: ${inserted.id})\n`);
+        if (error) throw error;
+        console.info(`✅ 컨텐츠 생성 완료! (ID: ${inserted.id})\n`);
+      }
+    } catch (queueError: any) {
+      // content_queue 테이블이 없거나 오류가 발생한 경우
+      if (queueError?.code === "PGRST205" || queueError?.message?.includes("content_queue")) {
+        console.warn(`⚠️  content_queue 테이블이 없습니다. 생성된 콘텐츠를 JSON 파일로 저장합니다.\n`);
+        
+        // JSON 파일로 저장
+        const fs = require("fs");
+        const outputDir = path.join(process.cwd(), "generated-content");
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        const outputFile = path.join(outputDir, `${hpid}.json`);
+        const outputData = {
+          hpid,
+          pharmacy_name: pharmacy.name,
+          generated_at: new Date().toISOString(),
+          content: geminiContent,
+          queue_item: queueItem,
+        };
+        
+        fs.writeFileSync(outputFile, JSON.stringify(outputData, null, 2));
+        
+        console.info(`✅ JSON 파일 저장 완료: ${outputFile}\n`);
+        console.warn(`⚠️  content_queue 테이블을 생성하려면 다음 SQL을 Supabase에서 실행하세요:\n`);
+        console.warn(`   파일: supabase/content_queue.sql\n`);
+        console.warn(`   또는 Supabase Dashboard → SQL Editor에서 실행하세요.\n`);
+      } else {
+        throw queueError;
+      }
     }
 
     // pharmacies 테이블의 updated_at도 업데이트하여 sitemap에 반영
@@ -280,14 +395,19 @@ async function generateSinglePharmacyContent(hpid: string): Promise<void> {
 
     console.info(`🌐 상세 페이지 확인: ${siteUrl}/pharmacy/${pharmacy.hpid}`);
     console.info("\n=== 완료 ===\n");
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ 오류 발생:`, error);
-    // 실패한 경우 status를 failed로 업데이트
+    // 실패한 경우 status를 failed로 업데이트 (content_queue가 있는 경우만)
     if (existing) {
-      await supabase
-        .from("content_queue")
-        .update({ status: "failed", updated_at: new Date().toISOString() })
-        .eq("id", existing.id);
+      try {
+        await supabase
+          .from("content_queue")
+          .update({ status: "failed", updated_at: new Date().toISOString() })
+          .eq("id", existing.id);
+      } catch (updateError) {
+        // content_queue 테이블이 없으면 무시
+        console.warn(`⚠️  content_queue 업데이트 실패 (무시됨)`);
+      }
     }
     throw error;
   }
