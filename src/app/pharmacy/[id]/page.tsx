@@ -188,7 +188,9 @@ async function Content({
     todayOpen && todayClose ? `${todayOpen} ~ ${todayClose}` : "정보 없음";
 
   const mapAddress = getMapSearchAddress(pharmacy.address);
-  const mapQuery = encodeURIComponent(`${pharmacy.name} ${mapAddress || ""}`.trim());
+  // 네이버 지도 검색은 "약국명 + 주소"보다 주소 단독이 더 안정적으로 매칭되는 경우가 많습니다.
+  // 주소가 없을 때만 약국명으로 폴백합니다.
+  const mapQuery = encodeURIComponent((mapAddress || pharmacy.name).trim());
   const mapUrl = `https://map.naver.com/p/search/${mapQuery}`;
   type FAQItem = { question: string; answer: string };
   type BulletItem = { text: string };
