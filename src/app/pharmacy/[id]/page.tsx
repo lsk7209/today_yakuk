@@ -240,7 +240,7 @@ async function Content({
             question: "근처 대체 약국도 있나요?",
             answer: nearby.length
               ? "아래 '반경 2km 내 다른 약국'과 '이 약국이 문 닫았나요?' 섹션에서 대체 약국을 확인하세요."
-              : "현재 반경 2km 내 추천 약국 정보가 없습니다.",
+              : "현재 반경 2km 내 약국 정보가 없습니다.",
           },
           {
             question: "반경/거리 정보는 어떻게 계산되나요?",
@@ -288,14 +288,13 @@ async function Content({
               {status.emoji && <span aria-hidden>{status.emoji}</span>}
               {status.label}
             </span>
-            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 leading-tight mt-2 flex items-center gap-2">
-              <span>🏥</span>
-              <span>{pharmacy.name}</span>
+            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 leading-tight mt-2">
+              {pharmacy.name}
             </h1>
             <p className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-3 bg-gray-50 rounded-lg px-4 py-2 border border-gray-200">
               <MapPin className="h-5 w-5 text-brand-600 flex-shrink-0" />
               <span className="flex-1">
-                <span className="text-gray-500 font-medium">📍 주소:</span>{" "}
+                <span className="text-gray-500 font-medium">주소:</span>{" "}
                 <span className="text-gray-900 font-bold">{pharmacy.address}</span>
               </span>
               <CopyButton text={pharmacy.address} label="주소 복사" />
@@ -304,7 +303,7 @@ async function Content({
               <p className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-2 bg-brand-50 rounded-lg px-4 py-2 border border-brand-200">
                 <Phone className="h-5 w-5 text-brand-600 flex-shrink-0" />
                 <span className="flex-1">
-                  <span className="text-gray-600 font-medium">📞 전화:</span>{" "}
+                  <span className="text-gray-600 font-medium">전화:</span>{" "}
                   <a
                     href={`tel:${pharmacy.tel}`}
                     className="text-brand-700 font-black hover:text-brand-800 underline decoration-2"
@@ -340,7 +339,7 @@ async function Content({
             <p className="text-sm font-bold text-gray-600">오늘 영업시간</p>
             <p className="text-xl font-black text-gray-900 mt-1">{todayHoursText}</p>
             <p className="text-xs text-gray-500 mt-2">
-              영업시간은 변동될 수 있습니다. 방문 전 전화 확인을 권장합니다.
+              영업시간은 변동될 수 있습니다. 방문 전 전화로 운영 여부를 확인해 주세요.
             </p>
           </div>
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
@@ -395,7 +394,7 @@ async function Content({
         <div className="flex flex-wrap gap-3 text-sm">
           <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-4 py-2 text-gray-800 font-bold shadow-sm border border-emerald-200">
             <Clock className="h-4 w-4 text-emerald-700" />
-            <span>⏰ 영업 상태:</span>
+            <span>영업 상태:</span>
             <span className="text-emerald-700">{status.label}</span>
           </span>
           {pharmacy.tel ? (
@@ -404,7 +403,7 @@ async function Content({
               href={`tel:${pharmacy.tel}`}
             >
               <Phone className="h-4 w-4" />
-              <span>📞 전화 걸기</span>
+              <span>전화 걸기</span>
             </a>
           ) : null}
           <Link
@@ -413,7 +412,7 @@ async function Content({
             target="_blank"
           >
             <Navigation className="h-4 w-4" />
-            <span>🗺️ 지도에서 보기</span>
+            <span>지도에서 보기</span>
             <ExternalLink className="h-3 w-3" />
           </Link>
         </div>
@@ -473,7 +472,7 @@ async function Content({
           <div className="bg-white rounded-xl p-5 border-2 border-emerald-100 space-y-3">
             <div className="flex items-center gap-2 mb-2">
               <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
-              <h3 className="text-lg font-black text-gray-900">⭐ 주요 특징</h3>
+              <h3 className="text-lg font-black text-gray-900">주요 특징</h3>
             </div>
             <ul className="space-y-3">
               {aiBullets.map((bullet, idx) => {
@@ -543,7 +542,7 @@ async function Content({
               <span>요일별 영업시간</span>
             </h2>
           </div>
-          <span className="text-sm font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">⏰ KST 기준</span>
+          <span className="text-sm font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">KST 기준</span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {DAY_LABELS.map(([key, label]) => {
@@ -600,10 +599,7 @@ async function Content({
             <div className="rounded-full bg-purple-100 p-2">
               <MapPin className="h-5 w-5 text-purple-700" />
             </div>
-            <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-              <span>🏥</span>
-              <span>반경 2km 내 다른 약국</span>
-            </h2>
+            <h2 className="text-2xl font-black text-gray-900">반경 2km 내 다른 약국</h2>
           </div>
           <span className="text-sm font-bold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-full border border-purple-200">
             목록
@@ -639,7 +635,7 @@ async function Content({
                       <span className="text-lg font-black text-brand-700 bg-brand-50 px-3 py-1.5 rounded-full border-2 border-brand-200">
                         {dist} km
                       </span>
-                      <span className="text-xs text-gray-500 mt-1">📍 거리</span>
+                      <span className="text-xs text-gray-500 mt-1">거리</span>
                     </div>
                   </div>
                 </Link>
@@ -713,7 +709,7 @@ async function Content({
                         <span className="text-lg font-black text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-full border-2 border-emerald-300">
                           {dist} km
                         </span>
-                        <span className="text-xs text-gray-500 mt-1">📍 거리</span>
+                        <span className="text-xs text-gray-500 mt-1">거리</span>
                       </div>
                     </div>
                   </Link>
@@ -733,10 +729,7 @@ async function Content({
           <div className="rounded-full bg-blue-100 p-2">
             <HelpCircle className="h-5 w-5 text-blue-700" />
           </div>
-          <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-            <span>❓</span>
-            <span>자주 묻는 질문</span>
-          </h2>
+          <h2 className="text-2xl font-black text-gray-900">자주 묻는 질문</h2>
         </div>
         <div className="space-y-3 mt-4">
           {faqList.map((faq, idx) => {
@@ -799,10 +792,7 @@ async function Content({
             <div className="rounded-full bg-indigo-100 p-2">
               <Info className="h-5 w-5 text-indigo-700" />
             </div>
-            <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-              <span>ℹ️</span>
-              <span>추가 안내</span>
-            </h2>
+          <h2 className="text-2xl font-black text-gray-900">추가 안내</h2>
           </div>
           <div className="space-y-4 mt-4">
             {extraSections.map((section, idx) => {
