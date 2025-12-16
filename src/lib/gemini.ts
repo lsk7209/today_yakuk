@@ -2,6 +2,7 @@ import { Pharmacy } from "@/types/pharmacy";
 import { formatHHMM, getOperatingStatus, DAY_KEYS, getSeoulNow } from "@/lib/hours";
 
 const geminiApiKey = process.env.GEMINI_API_KEY;
+const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
 
 export type GeminiContentResponse = {
   summary?: string;
@@ -34,7 +35,7 @@ export async function generatePharmacyContent(
     // v1beta 엔드포인트와 최신 모델 사용
     // 헤더에 x-goog-api-key로 API 키 전달
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+      `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`,
       {
         method: "POST",
         headers: {

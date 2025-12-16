@@ -24,6 +24,7 @@ const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const geminiApiKey = process.env.GEMINI_API_KEY;
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://todaypharm.kr").replace(/\/$/, "");
+const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
 
 const GeminiResponse = z.object({
   summary: z.string().optional(),
@@ -126,7 +127,7 @@ async function generateContent(item: ContentQueue) {
   // Google Gemini API 문서 참고: https://ai.google.dev/gemini-api/docs/api-key
   // v1beta 엔드포인트와 최신 모델 사용
   const res = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+    `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`,
     {
       method: "POST",
       headers: {
