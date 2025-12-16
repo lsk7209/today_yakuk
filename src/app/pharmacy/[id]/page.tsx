@@ -212,7 +212,7 @@ async function Content({
 
       <AdsPlaceholder label="광고 표시 영역 (ATF)" height={160} />
 
-      {/* AI 생성 요약 (gemini_summary 또는 content_queue) */}
+      {/* 요약 (gemini_summary 또는 content_queue) */}
       {(pharmacy.gemini_summary || finalSummary) && (
         <section className="rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-5 shadow-sm">
           <div className="flex items-start gap-2 mb-2">
@@ -261,12 +261,12 @@ async function Content({
         <div className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-brand-700" />
           <h2 className="text-xl font-semibold text-brand-800">{pharmacy.name} 요약 설명</h2>
-          {geminiContent && (
+          {geminiContent ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-200 px-2 py-1 text-xs font-semibold text-emerald-800">
               <Sparkles className="h-3 w-3" />
-              AI 생성
+              요약
             </span>
-          )}
+          ) : null}
         </div>
         <p className="text-sm text-emerald-900">
           {finalSummary}
