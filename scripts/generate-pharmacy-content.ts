@@ -370,7 +370,18 @@ async function generateBatchContent(limit: number = 10): Promise<void> {
     .limit(limit * 3); // 여유있게 가져오기
 
   if (queryError) {
-    throw new Error(`약국 조회 실패: ${queryError.message}`);
+    const msg = queryError.message ?? "";
+    if (msg.toLowerCase().includes("invalid api key")) {
+      throw new Error(
+        [
+          "약국 조회 실패: Supabase 인증키가 유효하지 않습니다.",
+          "- GitHub Secrets의 `SUPABASE_SERVICE_ROLE_KEY` 값을 확인하세요.",
+          "- Supabase Dashboard → Project Settings → API → `service_role` key 로 교체해야 합니다.",
+          "- `NEXT_PUBLIC_SUPABASE_URL`도 같은 프로젝트의 URL인지 함께 확인하세요.",
+        ].join("\n"),
+      );
+    }
+    throw new Error(`약국 조회 실패: ${msg}`);
   }
 
   if (!allPharmacies || allPharmacies.length === 0) {
