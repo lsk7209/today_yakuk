@@ -7,7 +7,16 @@ function hasUsefulHours(hours?: OperatingHours | null): boolean {
 
 function hasPhone(tel?: string | null): boolean {
   if (!tel) return false;
-  return tel.replace(/\D/g, "").length >= 8;
+  const digits = tel.replace(/\D/g, "");
+  // 대한민국 전화번호(대표): 02(9~10자리), 0xx(10~11자리), 070/050x 등 포함
+  if (digits.length < 9 || digits.length > 11) return false;
+  if (!digits.startsWith("0")) return false;
+
+  // 플레이스홀더/가짜 번호 방어 (예: 031-000-0000)
+  if (/^0+$/.test(digits)) return false;
+  if (/0{7,}/.test(digits)) return false;
+
+  return true;
 }
 
 function hasAddress(address?: string | null): boolean {

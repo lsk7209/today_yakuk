@@ -21,7 +21,13 @@ with base as (
     -- address 유효성(길이 기반)
     (address is not null and length(btrim(address)) >= 8) as has_address,
     -- 전화 유효성(숫자 8자리 이상)
-    (tel is not null and length(regexp_replace(tel, '\D', '', 'g')) >= 8) as has_tel,
+    (
+      tel is not null
+      and length(regexp_replace(tel, '\D', '', 'g')) between 9 and 11
+      and left(regexp_replace(tel, '\D', '', 'g'), 1) = '0'
+      and regexp_replace(tel, '\D', '', 'g') !~ '^0+$'
+      and regexp_replace(tel, '\D', '', 'g') !~ '0{7,}'
+    ) as has_tel,
     -- 운영시간 유효성(jsonb에서 open/close 하나라도 존재)
     exists (
       select 1
@@ -49,7 +55,13 @@ with base as (
     tel,
     operating_hours,
     (address is not null and length(btrim(address)) >= 8) as has_address,
-    (tel is not null and length(regexp_replace(tel, '\D', '', 'g')) >= 8) as has_tel,
+    (
+      tel is not null
+      and length(regexp_replace(tel, '\D', '', 'g')) between 9 and 11
+      and left(regexp_replace(tel, '\D', '', 'g'), 1) = '0'
+      and regexp_replace(tel, '\D', '', 'g') !~ '^0+$'
+      and regexp_replace(tel, '\D', '', 'g') !~ '0{7,}'
+    ) as has_tel,
     exists (
       select 1
       from jsonb_each(coalesce(operating_hours, '{}'::jsonb)) as kv(day, slot)
@@ -71,7 +83,13 @@ with base as (
     tel,
     operating_hours,
     (address is not null and length(btrim(address)) >= 8) as has_address,
-    (tel is not null and length(regexp_replace(tel, '\D', '', 'g')) >= 8) as has_tel,
+    (
+      tel is not null
+      and length(regexp_replace(tel, '\D', '', 'g')) between 9 and 11
+      and left(regexp_replace(tel, '\D', '', 'g'), 1) = '0'
+      and regexp_replace(tel, '\D', '', 'g') !~ '^0+$'
+      and regexp_replace(tel, '\D', '', 'g') !~ '0{7,}'
+    ) as has_tel,
     exists (
       select 1
       from jsonb_each(coalesce(operating_hours, '{}'::jsonb)) as kv(day, slot)
