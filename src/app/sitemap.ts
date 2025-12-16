@@ -22,13 +22,16 @@ export default async function sitemap(props: { id: string }): Promise<MetadataRo
   // content_queue에서 published_at 정보 가져오기 (컨텐츠 업데이트 시간 반영)
   const supabase = getSupabaseServerClient();
   const hpids = items.map((item) => item.hpid).filter((h): h is string => h !== null);
-  const { data: contentDates } = hpids.length > 0
-    ? await supabase
-        .from("content_queue")
-        .select("hpid, published_at, updated_at")
-        .in("hpid", hpids)
-        .eq("status", "published")
-    : { data: null, error: null };
+  const contentDates =
+    hpids.length > 0
+      ? (
+          await supabase
+            .from("content_queue")
+            .select("hpid, published_at, updated_at")
+            .in("hpid", hpids)
+            .eq("status", "published")
+        ).data
+      : null;
 
   // hpid별 최신 업데이트 시간 매핑
   const contentDateMap = new Map<string, Date>();

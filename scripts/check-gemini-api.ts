@@ -12,12 +12,15 @@ if (!geminiApiKey) {
   process.exit(1);
 }
 
-console.info("API 키 확인:", geminiApiKey.substring(0, 10) + "...");
+// process.exit(1) 이후에는 실행되지 않지만, 클로저/함수 스코프에서 타입이 다시 넓어지는 것을 방지
+const apiKey: string = geminiApiKey;
+
+console.info("API 키 확인:", apiKey.substring(0, 10) + "...");
 console.info("\n사용 가능한 모델 목록 조회 중...\n");
 
 async function checkModels() {
   try {
-    const listUrl = `https://generativelanguage.googleapis.com/v1/models?key=${encodeURIComponent(geminiApiKey)}`;
+    const listUrl = `https://generativelanguage.googleapis.com/v1/models?key=${encodeURIComponent(apiKey)}`;
     const listResponse = await fetch(listUrl);
     
     if (listResponse.ok) {
