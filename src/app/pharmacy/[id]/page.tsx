@@ -264,7 +264,7 @@ async function Content({
           {status.label}
         </span>
         <h1 className="text-3xl font-bold">{pharmacy.name}</h1>
-        <p className="text-sm text-[var(--muted)] flex items-center gap-2">
+        <p className="text-base text-[var(--muted)] flex items-center gap-2">
           <MapPin className="h-4 w-4 text-brand-600" />
           {pharmacy.address}
         </p>
@@ -279,7 +279,7 @@ async function Content({
             <Sparkles className="h-5 w-5 text-brand-600 flex-shrink-0 mt-0.5" />
             <h2 className="text-lg font-semibold text-brand-800">약국 소개</h2>
           </div>
-          <p className="text-sm text-[var(--foreground)] leading-relaxed whitespace-pre-line">
+          <p className="text-base text-[var(--foreground)] leading-relaxed whitespace-pre-line">
             {pharmacy.gemini_summary || finalSummary}
           </p>
         </section>
@@ -310,7 +310,7 @@ async function Content({
           </Link>
         </div>
         <AdsPlaceholder label="광고 표시 영역 (CTA 하단)" height={160} />
-        <div className="space-y-2 text-sm text-[var(--muted)]">
+        <div className="space-y-2 text-base text-[var(--muted)] leading-relaxed">
           {descriptions.map((line) => (
             <p key={line}>{line}</p>
           ))}
@@ -322,22 +322,22 @@ async function Content({
           <AlertCircle className="h-5 w-5 text-brand-700" />
           <h2 className="text-xl font-semibold text-brand-800">{pharmacy.name} 요약 설명</h2>
           {geminiContent ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-200 px-2 py-1 text-xs font-semibold text-emerald-800">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-200 px-2 py-1 text-sm font-semibold text-emerald-800">
               <Sparkles className="h-3 w-3" />
               요약
             </span>
           ) : null}
         </div>
-        <p className="text-sm text-emerald-900">
+        <p className="text-base text-emerald-900 leading-relaxed">
           {finalSummary}
         </p>
         {finalDetailedDescription && (
-          <p className="text-sm text-emerald-900 leading-relaxed mt-2">
+          <p className="text-base text-emerald-900 leading-relaxed mt-2">
             {finalDetailedDescription}
           </p>
         )}
         {aiBullets.length > 0 && (
-          <ul className="text-sm text-emerald-900 list-disc list-inside space-y-1 mt-2">
+          <ul className="text-base text-emerald-900 list-disc list-inside space-y-1 mt-2">
             {aiBullets.map((bullet, idx) => (
               <li key={idx}>{bullet}</li>
             ))}
@@ -345,8 +345,8 @@ async function Content({
         )}
         {localTips.length > 0 && (
           <div className="mt-3 pt-3 border-t border-emerald-200">
-            <p className="text-xs font-semibold text-emerald-800 mb-2">💡 지역 이용 팁</p>
-            <ul className="text-sm text-emerald-900 list-disc list-inside space-y-1">
+            <p className="text-sm font-semibold text-emerald-800 mb-2">💡 지역 이용 팁</p>
+            <ul className="text-base text-emerald-900 list-disc list-inside space-y-1">
               {localTips.map((tip, idx) => (
                 <li key={idx}>{tip}</li>
               ))}
@@ -355,8 +355,8 @@ async function Content({
         )}
         {nearbyLandmarks.length > 0 && (
           <div className="mt-3 pt-3 border-t border-emerald-200">
-            <p className="text-xs font-semibold text-emerald-800 mb-2">📍 주변 주요 시설</p>
-            <ul className="text-sm text-emerald-900 list-disc list-inside space-y-1">
+            <p className="text-sm font-semibold text-emerald-800 mb-2">📍 주변 주요 시설</p>
+            <ul className="text-base text-emerald-900 list-disc list-inside space-y-1">
               {nearbyLandmarks.map((landmark, idx) => (
                 <li key={idx}>{landmark}</li>
               ))}
@@ -368,15 +368,15 @@ async function Content({
       <section className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">요일별 영업시간</h2>
-          <span className="text-xs text-[var(--muted)]">KST 기준</span>
+          <span className="text-sm text-[var(--muted)]">KST 기준</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-base">
           {DAY_LABELS.map(([key, label]) => (
             <div
               key={key}
               className="rounded-xl border border-[var(--border)] bg-slate-50 px-3 py-2"
             >
-              <p className="text-xs font-semibold text-brand-700 mb-1">{label}</p>
+              <p className="text-sm font-semibold text-brand-700 mb-1">{label}</p>
               <p className="text-[var(--muted)]">
                 {formatHourRange(pharmacy.operating_hours?.[key])}
               </p>
@@ -390,7 +390,7 @@ async function Content({
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">반경 2km 내 다른 약국</h2>
-          <span className="text-xs text-[var(--muted)]">추천 리스트</span>
+          <span className="text-sm text-[var(--muted)]">추천 리스트</span>
         </div>
         {nearby.length ? (
           <div className="space-y-3">
@@ -402,10 +402,10 @@ async function Content({
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold">{p.name}</p>
-                    <p className="text-xs text-[var(--muted)]">{p.address}</p>
+                    <p className="text-base font-semibold">{p.name}</p>
+                    <p className="text-sm text-[var(--muted)]">{p.address}</p>
                   </div>
-                  <span className="text-xs text-brand-700">
+                  <span className="text-sm text-brand-700">
                     {distanceKm(
                       pharmacy.latitude,
                       pharmacy.longitude,
@@ -419,7 +419,7 @@ async function Content({
             ))}
           </div>
         ) : (
-          <p className="text-sm text-[var(--muted)]">주변 추천 약국 정보가 없습니다.</p>
+          <p className="text-base text-[var(--muted)]">주변 추천 약국 정보가 없습니다.</p>
         )}
       </section>
 
@@ -428,7 +428,7 @@ async function Content({
           <AlertCircle className="h-5 w-5 text-amber-600" />
           <h2 className="text-xl font-semibold">이 약국이 문 닫았나요?</h2>
         </div>
-        <p className="text-sm text-[var(--muted)]">
+        <p className="text-base text-[var(--muted)] leading-relaxed">
           반경 2km 내 영업 중인 약국을 바로 확인하세요. 혼잡 시 빠른 대안 방문을 돕습니다.
         </p>
         {nearby.length ? (
@@ -439,7 +439,7 @@ async function Content({
               );
               if (!nearbyOpen.length) {
                 return (
-                  <p className="text-sm text-[var(--muted)]">
+                  <p className="text-base text-[var(--muted)]">
                     현재 영업 중인 대체 약국 정보를 찾지 못했습니다.
                   </p>
                 );
@@ -452,10 +452,10 @@ async function Content({
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-semibold">{p.name}</p>
-                      <p className="text-xs text-[var(--muted)]">{p.address}</p>
+                      <p className="text-base font-semibold">{p.name}</p>
+                      <p className="text-sm text-[var(--muted)]">{p.address}</p>
                     </div>
-                    <span className="text-xs text-brand-700">
+                    <span className="text-sm text-brand-700">
                       {distanceKm(
                         pharmacy.latitude,
                         pharmacy.longitude,
@@ -470,7 +470,7 @@ async function Content({
             })()}
           </div>
         ) : (
-          <p className="text-sm text-[var(--muted)]">
+          <p className="text-base text-[var(--muted)]">
             현재 영업 중인 대체 약국 정보를 찾지 못했습니다.
           </p>
         )}
@@ -490,7 +490,7 @@ async function Content({
               <summary className="font-semibold text-[var(--foreground)] cursor-pointer list-none">
                 {faq.question}
               </summary>
-              <div className="mt-2 text-sm text-[var(--muted)] leading-relaxed">
+              <div className="mt-2 text-base text-[var(--muted)] leading-relaxed">
                 {faq.answer}
               </div>
             </details>
@@ -504,7 +504,7 @@ async function Content({
             <Sparkles className="h-5 w-5 text-brand-700 flex-shrink-0 mt-0.5" />
             <div>
               <h2 className="text-lg font-semibold text-brand-800 mb-2">이 약국을 추천합니다</h2>
-              <p className="text-sm text-brand-900 leading-relaxed">{geminiContent.cta}</p>
+              <p className="text-base text-brand-900 leading-relaxed">{geminiContent.cta}</p>
             </div>
           </div>
         </section>
@@ -520,7 +520,7 @@ async function Content({
                 className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-2"
               >
                 <h3 className="text-lg font-semibold">{section.title}</h3>
-                <p className="text-sm text-[var(--muted)] leading-relaxed">{section.body}</p>
+                <p className="text-base text-[var(--muted)] leading-relaxed">{section.body}</p>
               </div>
             ))}
           </div>
@@ -530,8 +530,8 @@ async function Content({
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[min(480px,calc(100%-2rem))] z-30">
         <div className="rounded-full border border-brand-200 bg-white shadow-2xl px-4 py-3 flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold">{pharmacy.name}</p>
-            <p className="text-xs text-[var(--muted)] truncate">{pharmacy.address}</p>
+            <p className="text-base font-semibold">{pharmacy.name}</p>
+            <p className="text-sm text-[var(--muted)] truncate">{pharmacy.address}</p>
           </div>
           <div className="flex gap-2">
             <Link
