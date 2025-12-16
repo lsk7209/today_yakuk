@@ -43,6 +43,7 @@ import {
   getPharmaciesByRegion,
 } from "@/lib/data/pharmacies";
 import { generatePharmacyContent } from "@/lib/gemini";
+import { getMapSearchAddress } from "@/lib/map";
 
 type Params = { id: string };
 const siteUrl = getSiteUrl();
@@ -186,7 +187,8 @@ async function Content({
   const todayHoursText =
     todayOpen && todayClose ? `${todayOpen} ~ ${todayClose}` : "정보 없음";
 
-  const mapQuery = encodeURIComponent(`${pharmacy.name} ${pharmacy.address}`);
+  const mapAddress = getMapSearchAddress(pharmacy.address);
+  const mapQuery = encodeURIComponent(`${pharmacy.name} ${mapAddress || ""}`.trim());
   const mapUrl = `https://map.naver.com/p/search/${mapQuery}`;
   type FAQItem = { question: string; answer: string };
   type BulletItem = { text: string };
