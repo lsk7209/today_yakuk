@@ -4,6 +4,44 @@ import { formatHHMM, getOperatingStatus, DAY_KEYS, getSeoulNow } from "@/lib/hou
 const geminiApiKey = process.env.GEMINI_API_KEY;
 const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
 
+function sleep(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryableStatus(status: number) {
+  return status === 429 || status === 500 || status === 502 || status === 503 || status === 504;
+}
+
+async function fetchGeminiWithRetry(url: string, init: RequestInit) {
+  // 과부하/레이트리밋 상황에서 자동 재시도 (지수 백오프 + 지터)
+  const maxAttempts = 5; // 1회 + 재시도 4회
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const response = await fetch(url, init);
+    if (response.ok) return response;
+
+    if (!isRetryableStatus(response.status) || attempt === maxAttempts) {
+      return response;
+    }
+
+    // Retry-After(초)를 존중하되, 너무 길면 상한을 둠
+    const retryAfterHeader = response.headers.get("retry-after");
+    const retryAfterSec = retryAfterHeader ? Number(retryAfterHeader) : NaN;
+    const retryAfterMs = Number.isFinite(retryAfterSec) ? Math.max(0, retryAfterSec) * 1000 : 0;
+
+    const base = 800 * Math.pow(2, attempt - 1); // 800ms, 1600ms, 3200ms...
+    const jitter = Math.floor(Math.random() * 250);
+    const waitMs = Math.min(15_000, Math.max(base + jitter, retryAfterMs));
+
+    console.warn(
+      `[Gemini] 일시 오류(${response.status})로 재시도합니다. (${attempt}/${maxAttempts}, 대기 ${waitMs}ms)`,
+    );
+    await sleep(waitMs);
+  }
+
+  // 이 경로는 사실상 도달하지 않지만 타입 안정성을 위해 남김
+  return fetch(url, init);
+}
+
 export type GeminiContentResponse = {
   summary?: string;
   bullets?: string[];
@@ -43,31 +81,29 @@ export async function generatePharmacyContent(
     // 참고: https://ai.google.dev/gemini-api/docs/api-key
     // v1beta 엔드포인트와 최신 모델 사용
     // 헤더에 x-goog-api-key로 API 키 전달
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": geminiApiKey,
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          safetySettings: [
-            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_LOW_AND_ABOVE" },
-            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_LOW_AND_ABOVE" },
-            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_LOW_AND_ABOVE" },
-            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_LOW_AND_ABOVE" },
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 8192, // JSON 응답이 충분히 생성되도록 증가
-          },
-        }),
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`;
+    const response = await fetchGeminiWithRetry(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": geminiApiKey,
       },
-    );
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        safetySettings: [
+          { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_LOW_AND_ABOVE" },
+          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_LOW_AND_ABOVE" },
+          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_LOW_AND_ABOVE" },
+          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_LOW_AND_ABOVE" },
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 8192, // JSON 응답이 충분히 생성되도록 증가
+        },
+      }),
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -101,8 +137,8 @@ export async function generatePharmacyContent(
 
     // 디버깅: 전체 응답 확인 (개발 환경에서만)
     if (process.env.NODE_ENV === "development") {
-      console.log("Gemini response length:", text.length);
-      console.log("Gemini response preview:", text.substring(0, 500));
+      console.info("Gemini response length:", text.length);
+      console.info("Gemini response preview:", text.substring(0, 500));
     }
 
     // JSON 추출 (마크다운 코드 블록 제거)
