@@ -588,62 +588,6 @@ async function Content({
 
       <AdsPlaceholder label="중간 광고 영역" height={160} />
 
-      <section className="space-y-4 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
-        <div className="flex items-center justify-between pb-3 border-b-2 border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="rounded-full bg-purple-100 p-2">
-              <MapPin className="h-5 w-5 text-purple-700" />
-            </div>
-            <h2 className="text-2xl font-black text-gray-900">반경 2km 내 다른 약국</h2>
-          </div>
-          <span className="text-sm font-bold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-full border border-purple-200">
-            목록
-          </span>
-        </div>
-        {nearby.length ? (
-          <div className="space-y-3 mt-4">
-            {nearby.slice(0, 3).map((p) => {
-              const dist = distanceKm(
-                pharmacy.latitude,
-                pharmacy.longitude,
-                p.latitude,
-                p.longitude,
-              ).toFixed(1);
-              return (
-                <Link
-                  key={p.hpid}
-                  href={`/pharmacy/${p.hpid}`}
-                  className="block rounded-xl border-2 border-gray-200 bg-gradient-to-r from-white to-gray-50 p-5 shadow-md hover:border-brand-400 hover:shadow-xl transition-all transform hover:scale-[1.02]"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Building2 className="h-5 w-5 text-brand-600 flex-shrink-0" />
-                        <p className="text-lg font-black text-gray-900">{p.name}</p>
-                      </div>
-                      <p className="text-sm text-gray-700 font-medium flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5 text-gray-500" />
-                        <span>{p.address}</span>
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <span className="text-lg font-black text-brand-700 bg-brand-50 px-3 py-1.5 rounded-full border-2 border-brand-200">
-                        {dist} km
-                      </span>
-                      <span className="text-xs text-gray-500 mt-1">거리</span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="mt-4 p-5 bg-gray-50 rounded-xl border border-gray-200">
-            <p className="text-base text-gray-600 text-center font-medium">주변 약국 정보가 없습니다.</p>
-          </div>
-        )}
-      </section>
-
       <section className="space-y-4 rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-md">
         <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
           <div className="rounded-full bg-amber-100 p-2">
@@ -810,6 +754,62 @@ async function Content({
           </div>
         </section>
       )}
+
+      <section className="space-y-4 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-purple-100 p-2">
+              <MapPin className="h-5 w-5 text-purple-700" />
+            </div>
+            <h2 className="text-2xl font-black text-gray-900">반경 2km 내 다른 약국</h2>
+          </div>
+          <span className="text-sm font-bold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-full border border-purple-200">
+            목록
+          </span>
+        </div>
+        {nearby.length ? (
+          <div className="space-y-3 mt-4">
+            {nearby.slice(0, 3).map((p) => {
+              const dist = distanceKm(
+                pharmacy.latitude,
+                pharmacy.longitude,
+                p.latitude,
+                p.longitude,
+              ).toFixed(1);
+              return (
+                <Link
+                  key={p.hpid}
+                  href={`/pharmacy/${p.hpid}`}
+                  className="block rounded-xl border-2 border-gray-200 bg-gradient-to-r from-white to-gray-50 p-5 shadow-md hover:border-brand-400 hover:shadow-xl transition-all transform hover:scale-[1.02]"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Building2 className="h-5 w-5 text-brand-600 flex-shrink-0" />
+                        <p className="text-lg font-black text-gray-900">{p.name}</p>
+                      </div>
+                      <p className="text-sm text-gray-700 font-medium flex items-center gap-1">
+                        <MapPin className="h-3.5 w-3.5 text-gray-500" />
+                        <span>{p.address}</span>
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-lg font-black text-brand-700 bg-brand-50 px-3 py-1.5 rounded-full border-2 border-brand-200">
+                        {dist} km
+                      </span>
+                      <span className="text-xs text-gray-500 mt-1">거리</span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="mt-4 p-5 bg-gray-50 rounded-xl border border-gray-200">
+            <p className="text-base text-gray-600 text-center font-medium">주변 약국 정보가 없습니다.</p>
+          </div>
+        )}
+      </section>
 
       {/* 하단 고정 액션: 모바일은 StickyFab만 사용(겹침 방지), 데스크톱은 버튼 2개만 노출 */}
       <div className="hidden sm:block fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
