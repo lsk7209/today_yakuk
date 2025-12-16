@@ -50,11 +50,11 @@ const guides = [
 
 export default function GuideIndexPage() {
   return (
-    <div className="container py-10 sm:py-14 space-y-8">
+    <div className="container py-10 sm:py-14 space-y-8 bg-white min-h-screen">
       <header className="space-y-3">
-        <p className="text-sm font-semibold text-brand-700">가이드</p>
-        <h1 className="text-3xl font-bold leading-tight">약국 이용 가이드 모음</h1>
-        <p className="text-base text-[var(--muted)]">
+        <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">가이드</p>
+        <h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">약국 이용 가이드 모음</h1>
+        <p className="text-base text-gray-600 leading-relaxed">
           야간·주말·공휴일에 문 연 약국을 더 빨리, 안전하게 찾기 위한 실전 팁을 정리했습니다.
         </p>
       </header>
@@ -64,21 +64,23 @@ export default function GuideIndexPage() {
           <Link
             key={guide.slug}
             href={`/guide/${guide.slug}`}
-            className="group rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm hover:shadow-md transition"
+            className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg hover:border-brand-300 transition-all"
           >
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-4">
               {guide.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700"
+                  className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-            <h2 className="text-xl font-semibold group-hover:text-brand-700">{guide.title}</h2>
-            <p className="mt-2 text-sm text-[var(--muted)]">{guide.description}</p>
-            <div className="mt-4 text-sm font-semibold text-brand-700">바로 읽기 →</div>
+            <h2 className="text-xl font-bold text-gray-900 group-hover:text-brand-700 transition-colors">{guide.title}</h2>
+            <p className="mt-2 text-sm text-gray-600 leading-relaxed">{guide.description}</p>
+            <div className="mt-4 text-sm font-bold text-brand-700 flex items-center gap-1">
+              바로 읽기 <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </div>
           </Link>
         ))}
       </div>

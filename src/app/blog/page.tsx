@@ -51,11 +51,11 @@ const posts = [
 
 export default function BlogIndexPage() {
   return (
-    <div className="container py-10 sm:py-14 space-y-8">
+    <div className="container py-10 sm:py-14 space-y-8 bg-white min-h-screen">
       <header className="space-y-3">
-        <p className="text-sm font-semibold text-brand-700">블로그</p>
-        <h1 className="text-3xl font-bold leading-tight">약국 이용 인사이트</h1>
-        <p className="text-base text-[var(--muted)]">
+        <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">블로그</p>
+        <h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">약국 이용 인사이트</h1>
+        <p className="text-base text-gray-600 leading-relaxed">
           공휴일·야간에도 빠르게 문 연 약국을 찾기 위한 실전 팁과 체크리스트를 공유합니다.
         </p>
       </header>
@@ -65,21 +65,23 @@ export default function BlogIndexPage() {
           <Link
             key={post.slug}
             href={`/blog/${post.slug}`}
-            className="group rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm hover:shadow-md transition"
+            className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg hover:border-brand-300 transition-all"
           >
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-4">
               {post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700"
+                  className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-            <h2 className="text-xl font-semibold group-hover:text-brand-700">{post.title}</h2>
-            <p className="mt-2 text-sm text-[var(--muted)] leading-relaxed">{post.description}</p>
-            <div className="mt-4 text-sm font-semibold text-brand-700">자세히 보기 →</div>
+            <h2 className="text-xl font-bold text-gray-900 group-hover:text-brand-700 transition-colors">{post.title}</h2>
+            <p className="mt-2 text-sm text-gray-600 leading-relaxed">{post.description}</p>
+            <div className="mt-4 text-sm font-bold text-brand-700 flex items-center gap-1">
+              자세히 보기 <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </div>
           </Link>
         ))}
       </div>

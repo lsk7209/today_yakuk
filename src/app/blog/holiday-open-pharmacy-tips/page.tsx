@@ -70,21 +70,21 @@ export default function BlogHolidayOpenPharmacyTips() {
   });
 
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="container py-10 sm:py-14 space-y-10 bg-white min-h-screen">
       <header className="space-y-3">
-        <p className="text-sm font-semibold text-brand-700">블로그 · 공휴일 팁</p>
-        <h1 className="text-3xl font-bold leading-tight">공휴일에도 열려 있는 약국을 빨리 찾는 5가지 방법</h1>
-        <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
+        <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">블로그 · 공휴일 팁</p>
+        <h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">공휴일에도 열려 있는 약국을 빨리 찾는 5가지 방법</h1>
+        <p className="text-base text-gray-600 leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
           <Link
             href="/nearby"
-            className="inline-flex items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-brand-700"
+            className="inline-flex items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-bold text-white shadow-md hover:bg-brand-700 transition-colors"
           >
             내 주변 바로 찾기
           </Link>
           <Link
             href="/guide/night-weekend"
-            className="inline-flex items-center rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--foreground)] hover:border-brand-200"
+            className="inline-flex items-center rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:border-brand-300 hover:bg-gray-50 transition-colors"
           >
             야간/주말 가이드 보기
           </Link>
@@ -95,17 +95,17 @@ export default function BlogHolidayOpenPharmacyTips() {
         {tips.map((tip) => (
           <div
             key={tip.title}
-            className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2"
+            className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-2 hover:shadow-md transition-shadow"
           >
-            <h2 className="text-xl font-semibold">{tip.title}</h2>
-            <p className="text-[var(--muted)] leading-relaxed">{tip.detail}</p>
+            <h2 className="text-xl font-bold text-gray-900">{tip.title}</h2>
+            <p className="text-gray-600 leading-relaxed">{tip.detail}</p>
           </div>
         ))}
       </section>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
-        <h2 className="text-xl font-semibold text-brand-800">바로 실행 체크리스트</h2>
-        <ul className="list-disc list-inside space-y-1 text-emerald-900">
+      <section className="rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm space-y-3">
+        <h2 className="text-xl font-bold text-gray-900">바로 실행 체크리스트</h2>
+        <ul className="list-disc list-inside space-y-2 text-gray-700">
           <li>위치 권한 허용 → 반경 2km로 검색 시작</li>
           <li>종료 임박 여부 확인 후 우선 방문</li>
           <li>전화로 영업/재고 확인 → 길찾기 실행</li>
@@ -114,38 +114,38 @@ export default function BlogHolidayOpenPharmacyTips() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold">자주 묻는 질문</h2>
+        <h2 className="text-xl font-bold text-gray-900">자주 묻는 질문</h2>
         <div className="space-y-3">
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
             >
-              <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
-              <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
+              <h3 className="font-bold text-gray-900 mb-2">{faq.q}</h3>
+              <p className="text-sm text-gray-700 leading-relaxed">{faq.a}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
+      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold">다음 단계</h2>
-            <p className="text-sm text-[var(--muted)]">
+            <h2 className="text-xl font-bold text-gray-900">다음 단계</h2>
+            <p className="text-sm text-gray-600 mt-1">
               내 주변 검색으로 바로 찾거나, 지역 리스트에서 공휴일 영업 약국을 확인해 보세요.
             </p>
           </div>
           <div className="flex gap-2">
             <Link
               href="/nearby"
-              className="inline-flex items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-brand-700"
+              className="inline-flex items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-bold text-white shadow-md hover:bg-brand-700 transition-colors"
             >
               내 주변 찾기
             </Link>
             <Link
               href="/인천/전체"
-              className="inline-flex items-center rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--foreground)] hover:border-brand-200"
+              className="inline-flex items-center rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:border-brand-300 hover:bg-gray-50 transition-colors"
             >
               인천 리스트
             </Link>
@@ -153,9 +153,9 @@ export default function BlogHolidayOpenPharmacyTips() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-dashed border-[var(--border)] bg-slate-50 p-5 shadow-sm">
-        <h2 className="text-lg font-semibold mb-2">참고 링크</h2>
-        <ul className="list-disc list-inside text-sm text-[var(--muted)] space-y-1">
+      <section className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-5 shadow-sm">
+        <h2 className="text-lg font-bold text-gray-900 mb-2">참고 링크</h2>
+        <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
           <li>
             공공데이터포털 약국 영업 정보:{' '}
             <a
