@@ -135,7 +135,9 @@ async function publishPending(limit = 2) {
 
 async function main() {
   ensureEnv();
-  await publishPending();
+  const limitRaw = process.env.PUBLISH_LIMIT ?? "2";
+  const limit = Number.isFinite(Number(limitRaw)) ? Math.max(1, Math.min(10, Number(limitRaw))) : 2;
+  await publishPending(limit);
 }
 
 main().catch((err) => {

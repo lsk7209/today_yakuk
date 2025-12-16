@@ -2,8 +2,8 @@ name: Scheduled Publish
 
 on:
   schedule:
-    # 5회/일: 00:00, 04:00, 08:00, 12:00, 16:00 UTC (KST 09/13/17/21/01)
-    - cron: "0 0,4,8,12,16 * * *"
+    # 2시간마다 1회 (UTC 기준). 생성(pending)된 콘텐츠를 일정량씩 published로 전환합니다.
+    - cron: "0 */2 * * *"
   workflow_dispatch:
 
 jobs:
@@ -48,7 +48,10 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.5-flash-lite
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          # 한 번에 발행할 개수 (너무 크면 급격한 페이지 증가로 보일 수 있어 제한)
+          PUBLISH_LIMIT: "2"
           # SUPABASE_URL은 NEXT_PUBLIC_SUPABASE_URL과 동일하게 설정
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
 

@@ -186,6 +186,24 @@ function pickNearDuplicates(newSummary: string, existing: string[], threshold = 
   return scored.slice(0, 3).map((x) => x.s);
 }
 
+function hashStringToUint(input: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function computePublishAt(hpid: string, now = new Date()): string {
+  // 같은 날/같은 HPID는 같은 분산값(재현 가능). 10분~250분 사이로 분산.
+  const dayKey = now.toISOString().slice(0, 10);
+  const seed = `${dayKey}:${hpid}`;
+  const minutes = 10 + (hashStringToUint(seed) % 241);
+  const d = new Date(now.getTime() + minutes * 60 * 1000);
+  return d.toISOString();
+}
+
 function ensureEnv() {
   if (!supabaseUrl) throw new Error("SUPABASE_URL 또는 NEXT_PUBLIC_SUPABASE_URL이 필요합니다.");
   if (!supabaseServiceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY가 필요합니다.");
@@ -287,8 +305,8 @@ async function generateAndQueueContent(
     // 슬러그 생성
     const slug = `pharmacy-${pharmacy.hpid}`;
 
-    // 발행 시간 설정 (즉시 발행)
-    const publishAt = new Date().toISOString();
+    // 발행 시간 설정 (정기 발행을 위해 pending + publish_at 분산)
+    const publishAt = computePublishAt(pharmacy.hpid, new Date());
 
     const queueItem: ContentQueueInsert = {
       hpid: pharmacy.hpid,
@@ -302,7 +320,7 @@ async function generateAndQueueContent(
       ai_faq: geminiContent.faq ?? null,
       ai_cta: geminiContent.cta ?? null,
       extra_sections: geminiContent.extra_sections ?? null,
-      status: "published", // 즉시 발행
+      status: "pending",
       publish_at: publishAt,
     };
 
