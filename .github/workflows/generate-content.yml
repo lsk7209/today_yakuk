@@ -3,18 +3,21 @@ name: Generate Pharmacy Content
 on:
   schedule:
     # 하루 2회: 02:00, 14:00 UTC (KST 11:00, 23:00)
-    # 하루 최대 20건 생성 (2회 × 10건)
+    # 하루 12건 생성 (2회 × 6건) — 과도한 대량 생성 신호를 피하면서도 충분히 공격적인 속도
     - cron: "0 2,14 * * *"
   workflow_dispatch:
     inputs:
       limit:
         description: "생성할 컨텐츠 개수"
         required: false
-        default: "10"
+        default: "6"
 
 jobs:
   generate:
     runs-on: ubuntu-latest
+    concurrency:
+      group: generate-content
+      cancel-in-progress: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,7 +32,7 @@ jobs:
         run: npm ci
 
       - name: Generate pharmacy content
-        run: npm run generate:content ${{ github.event.inputs.limit || '10' }}
+        run: npm run generate:content ${{ github.event.inputs.limit || '6' }}
         env:
           # 실제 GitHub Secrets에 있는 변수 사용
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}

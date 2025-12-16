@@ -9,6 +9,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    concurrency:
+      group: scheduled-publish
+      cancel-in-progress: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,8 +53,8 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: gemini-2.5-flash-lite
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
-          # 한 번에 발행할 개수 (너무 크면 급격한 페이지 증가로 보일 수 있어 제한)
-          PUBLISH_LIMIT: "2"
+          # 한 번에 발행할 개수: 2시간마다 1건(=일 12건)로 '공격적이지만 안정적' 분산 발행
+          PUBLISH_LIMIT: "1"
           # SUPABASE_URL은 NEXT_PUBLIC_SUPABASE_URL과 동일하게 설정
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
 
