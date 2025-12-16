@@ -1,4 +1,7 @@
 -- 콘텐츠 발행 큐 테이블
+-- gen_random_uuid() 사용을 위해 pgcrypto 확장이 필요합니다.
+create extension if not exists "pgcrypto";
+
 create table if not exists content_queue (
   id uuid primary key default gen_random_uuid(),
   hpid text, -- 약국 상세 페이지와 매핑할 경우 사용
