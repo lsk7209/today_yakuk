@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Phone, MapPin, Navigation, Clock, AlertCircle, Sparkles } from "lucide-react";
+import { Phone, MapPin, Navigation, Clock, AlertCircle, Sparkles, Info, CheckCircle2, Star, Building2, Calendar, HelpCircle, ExternalLink } from "lucide-react";
 import {
   formatHourRange,
   formatHHMM,
@@ -265,11 +265,31 @@ async function Content({
               {status.emoji && <span aria-hidden>{status.emoji}</span>}
               {status.label}
             </span>
-            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 leading-tight mt-2">{pharmacy.name}</h1>
-            <p className="text-base text-gray-600 flex items-center gap-2 mt-2">
-              <MapPin className="h-4 w-4 text-brand-600 flex-shrink-0" />
-              <span>{pharmacy.address}</span>
+            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 leading-tight mt-2 flex items-center gap-2">
+              <span>🏥</span>
+              <span>{pharmacy.name}</span>
+            </h1>
+            <p className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-3 bg-gray-50 rounded-lg px-4 py-2 border border-gray-200">
+              <MapPin className="h-5 w-5 text-brand-600 flex-shrink-0" />
+              <span className="flex-1">
+                <span className="text-gray-500 font-medium">📍 주소:</span>{" "}
+                <span className="text-gray-900 font-bold">{pharmacy.address}</span>
+              </span>
             </p>
+            {pharmacy.tel && (
+              <p className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-2 bg-brand-50 rounded-lg px-4 py-2 border border-brand-200">
+                <Phone className="h-5 w-5 text-brand-600 flex-shrink-0" />
+                <span className="flex-1">
+                  <span className="text-gray-600 font-medium">📞 전화:</span>{" "}
+                  <a
+                    href={`tel:${pharmacy.tel}`}
+                    className="text-brand-700 font-black hover:text-brand-800 underline decoration-2"
+                  >
+                    {pharmacy.tel}
+                  </a>
+                </span>
+              </p>
+            )}
           </div>
         </div>
       </header>
@@ -278,120 +298,216 @@ async function Content({
 
       {/* 요약 (gemini_summary 또는 content_queue) */}
       {(pharmacy.gemini_summary || finalSummary) && (
-        <section className="rounded-2xl border border-gray-200 bg-gradient-to-br from-emerald-50 to-white p-6 shadow-sm">
-          <div className="flex items-start gap-3 mb-3">
-            <Sparkles className="h-5 w-5 text-brand-600 flex-shrink-0 mt-0.5" />
-            <h2 className="text-lg font-bold text-gray-900">약국 소개</h2>
+        <section className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/30 p-6 shadow-md">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="rounded-full bg-emerald-100 p-2">
+              <Sparkles className="h-5 w-5 text-emerald-700 flex-shrink-0" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
+                <span>✨</span>
+                <span>약국 소개</span>
+              </h2>
+            </div>
           </div>
-          <p className="text-base text-gray-700 leading-relaxed whitespace-pre-line">
-            {pharmacy.gemini_summary || finalSummary}
-          </p>
+          <div className="bg-white/80 rounded-xl p-4 border border-emerald-100">
+            <p className="text-base text-gray-800 leading-relaxed whitespace-pre-line">
+              {pharmacy.gemini_summary || finalSummary}
+            </p>
+          </div>
         </section>
       )}
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
-        <div className="flex flex-wrap gap-2 text-sm">
-          <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5 text-gray-700 font-semibold">
-            <Clock className="h-4 w-4" />
-            영업 상태: {status.label}
+      <section className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md space-y-5">
+        <div className="flex flex-wrap gap-3 text-sm">
+          <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-4 py-2 text-gray-800 font-bold shadow-sm border border-emerald-200">
+            <Clock className="h-4 w-4 text-emerald-700" />
+            <span>⏰ 영업 상태:</span>
+            <span className="text-emerald-700">{status.label}</span>
           </span>
           {pharmacy.tel ? (
             <a
-              className="inline-flex items-center gap-1 rounded-full bg-brand-600 text-white px-4 py-1.5 font-bold hover:bg-brand-700 transition-colors shadow-sm"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-600 to-brand-700 text-white px-5 py-2 font-black hover:from-brand-700 hover:to-brand-800 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
               href={`tel:${pharmacy.tel}`}
             >
               <Phone className="h-4 w-4" />
-              전화 걸기
+              <span>📞 전화 걸기</span>
             </a>
           ) : null}
           <Link
-            className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-white px-4 py-1.5 font-semibold text-gray-700 hover:border-brand-300 hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border-2 border-gray-300 bg-white px-5 py-2 font-bold text-gray-700 hover:border-brand-400 hover:bg-brand-50 transition-all shadow-sm hover:shadow-md"
             href={mapUrl}
             target="_blank"
           >
             <Navigation className="h-4 w-4" />
-            지도에서 보기
+            <span>🗺️ 지도에서 보기</span>
+            <ExternalLink className="h-3 w-3" />
           </Link>
         </div>
         <AdsPlaceholder label="광고 표시 영역 (CTA 하단)" height={160} />
-        <div className="space-y-3 text-base text-gray-700 leading-relaxed">
-          {descriptions.map((line) => (
-            <p key={line}>{line}</p>
-          ))}
+        <div className="space-y-4 text-base text-gray-800 leading-relaxed">
+          {descriptions.map((line, idx) => {
+            // 중요 정보(전화번호, 영업시간, 주소) 강조
+            const highlighted = line
+              .replace(/(\d{2,3}-\d{3,4}-\d{4})/g, '<strong class="text-brand-700 font-black">$1</strong>')
+              .replace(/(\d{2}:\d{2})/g, '<strong class="text-emerald-700 font-bold">$1</strong>')
+              .replace(/(서울특별시|강남구|세곡동)/g, '<strong class="text-gray-900 font-bold">$1</strong>');
+            return (
+              <div
+                key={idx}
+                className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+              >
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <p
+                  className="flex-1"
+                  dangerouslySetInnerHTML={{ __html: highlighted }}
+                />
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm space-y-4">
-        <div className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-brand-600" />
-          <h2 className="text-xl font-bold text-gray-900">{pharmacy.name} 상세 정보</h2>
+      <section className="rounded-2xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-white p-6 shadow-md space-y-5">
+        <div className="flex items-center gap-3 pb-3 border-b-2 border-gray-200">
+          <div className="rounded-full bg-brand-100 p-2">
+            <Info className="h-5 w-5 text-brand-700" />
+          </div>
+          <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+            <span>📋</span>
+            <span>{pharmacy.name} 상세 정보</span>
+          </h2>
           {geminiContent ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700">
-              <Sparkles className="h-3 w-3" />
-              AI 요약
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-800 border border-emerald-200 shadow-sm">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>✨ AI 요약</span>
             </span>
           ) : null}
         </div>
-        <p className="text-base text-gray-700 leading-relaxed">
-          {finalSummary}
-        </p>
-        {finalDetailedDescription && (
-          <p className="text-base text-gray-700 leading-relaxed mt-3">
-            {finalDetailedDescription}
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <p className="text-base text-gray-800 leading-relaxed font-medium">
+            {finalSummary}
           </p>
+        </div>
+        {finalDetailedDescription && (
+          <div className="bg-white rounded-xl p-4 border border-gray-200">
+            <p className="text-base text-gray-800 leading-relaxed">
+              {finalDetailedDescription}
+            </p>
+          </div>
         )}
         {aiBullets.length > 0 && (
-          <ul className="text-base text-gray-700 list-disc list-inside space-y-2 mt-3">
-            {aiBullets.map((bullet, idx) => (
-              <li key={idx}>{bullet}</li>
-            ))}
-          </ul>
+          <div className="bg-white rounded-xl p-5 border-2 border-emerald-100 space-y-3">
+            <div className="flex items-center gap-2 mb-2">
+              <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
+              <h3 className="text-lg font-black text-gray-900">⭐ 주요 특징</h3>
+            </div>
+            <ul className="space-y-3">
+              {aiBullets.map((bullet, idx) => {
+                // 중요 정보 강조
+                const highlighted = bullet
+                  .replace(/(\d{2}:\d{2})/g, '<strong class="text-emerald-700 font-black">$1</strong>')
+                  .replace(/(평일|토요일|일요일|공휴일)/g, '<strong class="text-brand-700 font-bold">$1</strong>')
+                  .replace(/(서울특별시|강남구|세곡동)/g, '<strong class="text-gray-900 font-bold">$1</strong>');
+                return (
+                  <li key={idx} className="flex items-start gap-3 text-base text-gray-800 leading-relaxed">
+                    <div className="rounded-full bg-emerald-100 p-1 mt-1 flex-shrink-0">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-700" />
+                    </div>
+                    <span dangerouslySetInnerHTML={{ __html: highlighted }} />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         )}
         {localTips.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <p className="text-sm font-bold text-gray-900 mb-2">💡 지역 이용 팁</p>
-            <ul className="text-base text-gray-700 list-disc list-inside space-y-2">
+          <div className="mt-5 pt-5 border-t-2 border-gray-200 bg-amber-50 rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="text-2xl">💡</div>
+              <h3 className="text-lg font-black text-gray-900">지역 이용 팁</h3>
+            </div>
+            <ul className="space-y-3">
               {localTips.map((tip, idx) => (
-                <li key={idx}>{tip}</li>
+                <li key={idx} className="flex items-start gap-3 text-base text-gray-800 leading-relaxed">
+                  <span className="text-amber-600 font-black mt-0.5">•</span>
+                  <span>{tip}</span>
+                </li>
               ))}
             </ul>
           </div>
         )}
         {nearbyLandmarks.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <p className="text-sm font-bold text-gray-900 mb-2">📍 주변 주요 시설</p>
-            <ul className="text-base text-gray-700 list-disc list-inside space-y-2">
+          <div className="mt-5 pt-5 border-t-2 border-gray-200 bg-blue-50 rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="text-2xl">📍</div>
+              <h3 className="text-lg font-black text-gray-900">주변 주요 시설</h3>
+            </div>
+            <ul className="space-y-3">
               {nearbyLandmarks.map((landmark, idx) => (
-                <li key={idx}>{landmark}</li>
+                <li key={idx} className="flex items-start gap-3 text-base text-gray-800 leading-relaxed">
+                  <Building2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span>{landmark}</span>
+                </li>
               ))}
             </ul>
           </div>
         )}
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">요일별 영업시간</h2>
-          <span className="text-sm text-gray-500">KST 기준</span>
+      <section className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md space-y-5">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-blue-100 p-2">
+              <Calendar className="h-5 w-5 text-blue-700" />
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+              <span>📅</span>
+              <span>요일별 영업시간</span>
+            </h2>
+          </div>
+          <span className="text-sm font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">⏰ KST 기준</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {DAY_LABELS.map(([key, label]) => {
             const todayKey = DAY_KEYS[getSeoulNow().getDay()];
             const isToday = key === todayKey;
+            const hours = formatHourRange(pharmacy.operating_hours?.[key]);
+            const dayEmojis: Record<string, string> = {
+              mon: "월",
+              tue: "화",
+              wed: "수",
+              thu: "목",
+              fri: "금",
+              sat: "토",
+              sun: "일",
+              holiday: "🎉",
+            };
             return (
               <div
                 key={key}
-                className={`rounded-xl border px-4 py-3 ${
+                className={`rounded-xl border-2 px-4 py-4 transition-all ${
                   isToday
-                    ? "border-brand-500 bg-emerald-50"
-                    : "border-gray-200 bg-gray-50"
+                    ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 shadow-lg scale-105"
+                    : "border-gray-200 bg-gray-50 hover:border-gray-300 hover:shadow-md"
                 }`}
               >
-                <p className={`text-sm font-bold mb-1 ${isToday ? "text-brand-700" : "text-gray-700"}`}>
-                  {label}
-                </p>
-                <p className={`text-sm ${isToday ? "text-brand-900 font-semibold" : "text-gray-600"}`}>
-                  {formatHourRange(pharmacy.operating_hours?.[key])}
+                <div className="flex items-center gap-2 mb-2">
+                  <p className={`text-base font-black ${isToday ? "text-emerald-800" : "text-gray-800"}`}>
+                    {dayEmojis[key] || label}
+                  </p>
+                  {isToday && (
+                    <span className="text-xs font-black text-emerald-700 bg-emerald-200 px-2 py-0.5 rounded-full">
+                      오늘
+                    </span>
+                  )}
+                </div>
+                <p className={`text-sm font-bold ${isToday ? "text-emerald-900" : "text-gray-700"}`}>
+                  {hours === "정보 없음" ? (
+                    <span className="text-gray-400">—</span>
+                  ) : (
+                    <span className={isToday ? "text-emerald-800" : ""}>{hours}</span>
+                  )}
                 </p>
               </div>
             );
@@ -401,50 +517,81 @@ async function Content({
 
       <AdsPlaceholder label="중간 광고 영역" height={160} />
 
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">반경 2km 내 다른 약국</h2>
-          <span className="text-sm text-gray-500">추천 리스트</span>
+      <section className="space-y-4 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-purple-100 p-2">
+              <MapPin className="h-5 w-5 text-purple-700" />
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+              <span>🏥</span>
+              <span>반경 2km 내 다른 약국</span>
+            </h2>
+          </div>
+          <span className="text-sm font-bold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-full border border-purple-200">
+            ⭐ 추천 리스트
+          </span>
         </div>
         {nearby.length ? (
-          <div className="space-y-3">
-            {nearby.slice(0, 3).map((p) => (
-              <Link
-                key={p.hpid}
-                href={`/pharmacy/${p.hpid}`}
-                className="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:border-brand-300 hover:shadow-md transition-all"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-base font-bold text-gray-900">{p.name}</p>
-                    <p className="text-sm text-gray-600 mt-1">{p.address}</p>
+          <div className="space-y-3 mt-4">
+            {nearby.slice(0, 3).map((p) => {
+              const dist = distanceKm(
+                pharmacy.latitude,
+                pharmacy.longitude,
+                p.latitude,
+                p.longitude,
+              ).toFixed(1);
+              return (
+                <Link
+                  key={p.hpid}
+                  href={`/pharmacy/${p.hpid}`}
+                  className="block rounded-xl border-2 border-gray-200 bg-gradient-to-r from-white to-gray-50 p-5 shadow-md hover:border-brand-400 hover:shadow-xl transition-all transform hover:scale-[1.02]"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Building2 className="h-5 w-5 text-brand-600 flex-shrink-0" />
+                        <p className="text-lg font-black text-gray-900">{p.name}</p>
+                      </div>
+                      <p className="text-sm text-gray-700 font-medium flex items-center gap-1">
+                        <MapPin className="h-3.5 w-3.5 text-gray-500" />
+                        <span>{p.address}</span>
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-lg font-black text-brand-700 bg-brand-50 px-3 py-1.5 rounded-full border-2 border-brand-200">
+                        {dist} km
+                      </span>
+                      <span className="text-xs text-gray-500 mt-1">📍 거리</span>
+                    </div>
                   </div>
-                  <span className="text-sm font-semibold text-brand-600 ml-4">
-                    {distanceKm(
-                      pharmacy.latitude,
-                      pharmacy.longitude,
-                      p.latitude,
-                      p.longitude,
-                    ).toFixed(1)}{" "}
-                    km
-                  </span>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         ) : (
-          <p className="text-base text-gray-600">주변 추천 약국 정보가 없습니다.</p>
+          <div className="mt-4 p-5 bg-gray-50 rounded-xl border border-gray-200">
+            <p className="text-base text-gray-600 text-center font-medium">주변 추천 약국 정보가 없습니다.</p>
+          </div>
         )}
       </section>
 
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-amber-600" />
-          <h2 className="text-xl font-bold text-gray-900">이 약국이 문 닫았나요?</h2>
+      <section className="space-y-4 rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-md">
+        <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
+          <div className="rounded-full bg-amber-100 p-2">
+            <AlertCircle className="h-5 w-5 text-amber-700" />
+          </div>
+          <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+            <span>⚠️</span>
+            <span>이 약국이 문 닫았나요?</span>
+          </h2>
         </div>
-        <p className="text-base text-gray-600 leading-relaxed">
-          반경 2km 내 영업 중인 약국을 바로 확인하세요. 혼잡 시 빠른 대안 방문을 돕습니다.
-        </p>
+        <div className="bg-white/80 rounded-xl p-4 border border-amber-200">
+          <p className="text-base text-gray-800 leading-relaxed font-semibold flex items-center gap-2">
+            <span>💡</span>
+            <span>반경 2km 내 영업 중인 약국을 바로 확인하세요. 혼잡 시 빠른 대안 방문을 돕습니다.</span>
+          </p>
+        </div>
         {nearby.length ? (
           <div className="space-y-3">
             {(() => {
@@ -458,29 +605,43 @@ async function Content({
                   </p>
                 );
               }
-              return nearbyOpen.slice(0, 3).map((p) => (
-                <Link
-                  key={p.hpid}
-                  href={`/pharmacy/${p.hpid}`}
-                  className="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:border-brand-300 hover:shadow-md transition-all"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-base font-bold text-gray-900">{p.name}</p>
-                      <p className="text-sm text-gray-600 mt-1">{p.address}</p>
+              return nearbyOpen.slice(0, 3).map((p) => {
+                const dist = distanceKm(
+                  pharmacy.latitude,
+                  pharmacy.longitude,
+                  p.latitude,
+                  p.longitude,
+                ).toFixed(1);
+                return (
+                  <Link
+                    key={p.hpid}
+                    href={`/pharmacy/${p.hpid}`}
+                    className="block rounded-xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-5 shadow-md hover:border-emerald-400 hover:shadow-xl transition-all transform hover:scale-[1.02]"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+                          <p className="text-lg font-black text-gray-900">{p.name}</p>
+                          <span className="text-xs font-black text-emerald-700 bg-emerald-200 px-2 py-0.5 rounded-full">
+                            영업 중
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-700 font-medium flex items-center gap-1">
+                          <MapPin className="h-3.5 w-3.5 text-gray-500" />
+                          <span>{p.address}</span>
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <span className="text-lg font-black text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-full border-2 border-emerald-300">
+                          {dist} km
+                        </span>
+                        <span className="text-xs text-gray-500 mt-1">📍 거리</span>
+                      </div>
                     </div>
-                    <span className="text-sm font-semibold text-brand-600 ml-4">
-                      {distanceKm(
-                        pharmacy.latitude,
-                        pharmacy.longitude,
-                        p.latitude,
-                        p.longitude,
-                      ).toFixed(1)}{" "}
-                      km
-                    </span>
-                  </div>
-                </Link>
-              ));
+                  </Link>
+                );
+              });
             })()}
           </div>
         ) : (
@@ -490,53 +651,108 @@ async function Content({
         )}
       </section>
 
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-brand-600" />
-          <h2 className="text-xl font-bold text-gray-900">자주 묻는 질문</h2>
+      <section className="space-y-4 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
+        <div className="flex items-center gap-3 pb-3 border-b-2 border-gray-200">
+          <div className="rounded-full bg-blue-100 p-2">
+            <HelpCircle className="h-5 w-5 text-blue-700" />
+          </div>
+          <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+            <span>❓</span>
+            <span>자주 묻는 질문</span>
+          </h2>
         </div>
-        <div className="space-y-3">
-          {faqList.map((faq) => (
-            <details
-              key={faq.question}
-              className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <summary className="font-bold text-gray-900 cursor-pointer list-none">
-                {faq.question}
-              </summary>
-              <div className="mt-3 text-base text-gray-700 leading-relaxed">
-                {faq.answer}
-              </div>
-            </details>
-          ))}
+        <div className="space-y-3 mt-4">
+          {faqList.map((faq, idx) => {
+            // 답변에서 중요 정보 강조
+            const highlightedAnswer = faq.answer
+              .replace(/(\d{2,3}-\d{3,4}-\d{4})/g, '<strong class="text-brand-700 font-black">$1</strong>')
+              .replace(/(\d{2}:\d{2})/g, '<strong class="text-emerald-700 font-bold">$1</strong>')
+              .replace(/(영업 중|영업 종료|곧 종료)/g, '<strong class="text-emerald-700 font-bold">$1</strong>')
+              .replace(/(서울특별시|강남구|세곡동)/g, '<strong class="text-gray-900 font-bold">$1</strong>');
+            return (
+              <details
+                key={faq.question}
+                className="group rounded-xl border-2 border-gray-200 bg-gradient-to-r from-white to-gray-50 p-5 shadow-sm hover:shadow-lg hover:border-brand-300 transition-all"
+              >
+                <summary className="font-black text-gray-900 cursor-pointer list-none flex items-center gap-3 text-lg">
+                  <span className="text-brand-600 font-black">Q{idx + 1}.</span>
+                  <span className="flex-1">{faq.question}</span>
+                  <span className="text-gray-400 group-open:text-brand-600 transition-transform group-open:rotate-180">
+                    ▼
+                  </span>
+                </summary>
+                <div className="mt-4 pt-4 border-t-2 border-gray-200 text-base text-gray-800 leading-relaxed">
+                  <div className="flex items-start gap-3">
+                    <span className="text-emerald-600 font-black mt-1">A.</span>
+                    <div
+                      className="flex-1"
+                      dangerouslySetInnerHTML={{ __html: highlightedAnswer }}
+                    />
+                  </div>
+                </div>
+              </details>
+            );
+          })}
         </div>
       </section>
 
       {geminiContent?.cta && (
-        <section className="rounded-2xl border border-brand-200 bg-brand-50 p-5 shadow-sm">
-          <div className="flex items-start gap-3">
-            <Sparkles className="h-5 w-5 text-brand-700 flex-shrink-0 mt-0.5" />
-            <div>
-              <h2 className="text-lg font-semibold text-brand-800 mb-2">이 약국을 추천합니다</h2>
-              <p className="text-base text-brand-900 leading-relaxed">{geminiContent.cta}</p>
+        <section className="rounded-2xl border-2 border-brand-300 bg-gradient-to-br from-brand-50 via-emerald-50 to-brand-100 p-6 shadow-lg">
+          <div className="flex items-start gap-4">
+            <div className="rounded-full bg-brand-200 p-3">
+              <Star className="h-6 w-6 text-brand-800 fill-brand-800" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-2xl font-black text-brand-900 mb-3 flex items-center gap-2">
+                <span>⭐</span>
+                <span>이 약국을 추천합니다</span>
+              </h2>
+              <div className="bg-white/90 rounded-xl p-4 border border-brand-200">
+                <p className="text-base text-brand-900 leading-relaxed font-semibold">
+                  {geminiContent.cta}
+                </p>
+              </div>
             </div>
           </div>
         </section>
       )}
 
       {extraSections.length > 0 && (
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold">추가 안내</h2>
-          <div className="space-y-3">
-            {extraSections.map((section, idx) => (
-              <div
-                key={`${section.title}-${idx}`}
-                className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-2"
-              >
-                <h3 className="text-lg font-semibold">{section.title}</h3>
-                <p className="text-base text-[var(--muted)] leading-relaxed">{section.body}</p>
-              </div>
-            ))}
+        <section className="space-y-5 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
+          <div className="flex items-center gap-3 pb-3 border-b-2 border-gray-200">
+            <div className="rounded-full bg-indigo-100 p-2">
+              <Info className="h-5 w-5 text-indigo-700" />
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+              <span>ℹ️</span>
+              <span>추가 안내</span>
+            </h2>
+          </div>
+          <div className="space-y-4 mt-4">
+            {extraSections.map((section, idx) => {
+              // 중요 정보 강조
+              const highlighted = section.body
+                .replace(/(\d{2,3}-\d{3,4}-\d{4})/g, '<strong class="text-brand-700 font-black">$1</strong>')
+                .replace(/(\d{2}:\d{2})/g, '<strong class="text-emerald-700 font-bold">$1</strong>')
+                .replace(/(서울특별시|강남구|세곡동)/g, '<strong class="text-gray-900 font-bold">$1</strong>');
+              return (
+                <div
+                  key={`${section.title}-${idx}`}
+                  className="rounded-xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-white p-5 shadow-sm hover:shadow-md transition-all"
+                >
+                  <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center gap-2">
+                    <span className="text-indigo-600">📌</span>
+                    <span>{section.title}</span>
+                  </h3>
+                  <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <p
+                      className="text-base text-gray-800 leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: highlighted }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

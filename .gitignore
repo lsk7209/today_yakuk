@@ -38,3 +38,6 @@ next-env.d.ts
 # next-sitemap output (generated during build/postbuild)
 /public/sitemap*.xml
 /public/robots.txt
+
+# local generated content (from scripts)
+/generated-content/
