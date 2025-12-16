@@ -2,10 +2,9 @@ import { MetadataRoute } from "next";
 import { getPharmacyCount, getPharmacySitemapChunk } from "@/lib/data/pharmacies";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { isIndexablePharmacy } from "@/lib/pharmacy-indexability";
+import { getSiteUrl } from "@/lib/site-url";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://todaypharm.kr";
+const siteUrl = getSiteUrl();
 
 const CHUNK_SIZE = 10000;
 
