@@ -8,6 +8,7 @@ dotenv.config(); // .env도 로드
 // tsconfig-paths를 등록하여 @ 경로 별칭 해석
 import "tsconfig-paths/register";
 import { createClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseServerClient } from "../src/lib/supabase-server";
 import { generatePharmacyContent } from "../src/lib/gemini";
 import type { Pharmacy } from "../src/types/pharmacy";
@@ -168,7 +169,7 @@ function jaccardSimilarity(a: string, b: string): number {
   return union === 0 ? 0 : inter / union;
 }
 
-async function getRecentSummariesForDedupe(supabase: ReturnType<typeof createClient>, limit = 200) {
+async function getRecentSummariesForDedupe(supabase: SupabaseClient, limit = 200) {
   try {
     const { data, error } = await supabase
       .from("content_queue")
