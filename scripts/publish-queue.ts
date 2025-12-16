@@ -25,6 +25,20 @@ const geminiApiKey = process.env.GEMINI_API_KEY;
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://todaypharm.kr").replace(/\/$/, "");
 const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
 
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  const parts = token.split(".");
+  if (parts.length < 2) return null;
+  const payload = parts[1] ?? "";
+  try {
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
+    const json = Buffer.from(padded, "base64").toString("utf8");
+    return JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
 const GeminiResponse = z.object({
   summary: z.string().optional(),
   bullets: z.array(z.string()).optional(),
@@ -51,6 +65,15 @@ function ensureEnv() {
   if (!supabaseUrl) throw new Error("SUPABASE_URL 또는 NEXT_PUBLIC_SUPABASE_URL이 필요합니다.");
   if (!supabaseServiceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY가 필요합니다.");
   if (!geminiApiKey) throw new Error("GEMINI_API_KEY가 필요합니다. (Gemini 생성)");
+
+  // Supabase 키가 JWT인 경우 payload.role로 anon/service_role 오설정을 빠르게 감지
+  const payload = decodeJwtPayload(supabaseServiceKey);
+  const role = typeof payload?.role === "string" ? (payload.role as string) : null;
+  if (role && role !== "service_role") {
+    throw new Error(
+      `SUPABASE_SERVICE_ROLE_KEY가 service_role 키가 아닙니다 (현재 role='${role}'). GitHub Secrets에 anon 키가 들어가 있지 않은지 확인하세요.`,
+    );
+  }
 }
 
 async function publishPending(limit = 2) {
