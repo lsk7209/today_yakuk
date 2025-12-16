@@ -133,7 +133,7 @@ export function PharmacyListInfinite({
     } finally {
       setLoading(false);
     }
-  }, [city, hasMore, items.length, loading, pageSize, province]);
+  }, [city, hasMore, initialOffset, items.length, loading, pageSize, province]);
 
   return (
     <div className="space-y-4">

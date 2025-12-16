@@ -1,5 +1,14 @@
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 
+function isMissingTableError(err: unknown): boolean {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "code" in err &&
+    (err as { code?: unknown }).code === "PGRST205"
+  );
+}
+
 export type ContentItem = {
   id: string;
   hpid: string | null;
@@ -29,6 +38,8 @@ export async function getPublishedContentBySlug(slug: string): Promise<ContentIt
       .eq("status", "published")
       .maybeSingle();
     if (error) {
+      // content_queue 테이블이 아직 없을 수 있음 (초기 배포/마이그레이션 전)
+      if (isMissingTableError(error)) return null;
       console.error("content fetch error", error);
       return null;
     }
@@ -49,6 +60,7 @@ export async function getPublishedContentByHpid(hpid: string): Promise<ContentIt
       .eq("status", "published")
       .maybeSingle();
     if (error) {
+      if (isMissingTableError(error)) return null;
       console.error("content hpid fetch error", error);
       return null;
     }
@@ -69,6 +81,7 @@ export async function listPublishedContent(limit = 20): Promise<ContentItem[]> {
       .order("published_at", { ascending: false })
       .limit(limit);
     if (error) {
+      if (isMissingTableError(error)) return [];
       console.error("content list error", error);
       return [];
     }

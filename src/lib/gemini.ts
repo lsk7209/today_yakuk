@@ -2,8 +2,6 @@ import { Pharmacy } from "@/types/pharmacy";
 import { formatHHMM, getOperatingStatus, DAY_KEYS, getSeoulNow } from "@/lib/hours";
 
 const geminiApiKey = process.env.GEMINI_API_KEY;
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://todaypharm.kr";
 
 export type GeminiContentResponse = {
   summary?: string;
@@ -67,7 +65,12 @@ export async function generatePharmacyContent(
       return null;
     }
 
-    const data = (await response.json()) as any;
+    const data = (await response.json()) as {
+      candidates?: Array<{
+        finishReason?: string;
+        content?: { parts?: Array<{ text?: string }> };
+      }>;
+    };
     
     // finishReason 확인 (응답이 완전한지 확인)
     const finishReason = data?.candidates?.[0]?.finishReason;
@@ -78,7 +81,7 @@ export async function generatePharmacyContent(
       }
     }
     
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text as string | undefined;
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!text) {
       console.error("Gemini response empty");

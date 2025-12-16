@@ -9,7 +9,7 @@ import {
 import { Pharmacy } from "@/types/pharmacy";
 import { AdsPlaceholder } from "@/components/ads-placeholder";
 import { StickyFab } from "@/components/sticky-fab";
-import { getPublishedContentByHpid, getPublishedContentBySlug } from "@/lib/data/content";
+import { getPublishedContentByHpid } from "@/lib/data/content";
 import {
   buildPharmacyJsonLd,
   dynamicDescription,
