@@ -257,43 +257,47 @@ async function Content({
   };
 
   return (
-    <article className="container py-10 sm:py-14 space-y-8">
-      <header className="space-y-2">
-        <span className={getBadgeClass(status)}>
-          {status.emoji && <span aria-hidden>{status.emoji}</span>}
-          {status.label}
-        </span>
-        <h1 className="text-3xl font-bold">{pharmacy.name}</h1>
-        <p className="text-base text-[var(--muted)] flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-brand-600" />
-          {pharmacy.address}
-        </p>
+    <article className="container py-10 sm:py-14 space-y-8 bg-white min-h-screen">
+      <header className="space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex-1 min-w-0">
+            <span className={getBadgeClass(status)}>
+              {status.emoji && <span aria-hidden>{status.emoji}</span>}
+              {status.label}
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 leading-tight mt-2">{pharmacy.name}</h1>
+            <p className="text-base text-gray-600 flex items-center gap-2 mt-2">
+              <MapPin className="h-4 w-4 text-brand-600 flex-shrink-0" />
+              <span>{pharmacy.address}</span>
+            </p>
+          </div>
+        </div>
       </header>
 
       <AdsPlaceholder label="광고 표시 영역 (ATF)" height={160} />
 
       {/* 요약 (gemini_summary 또는 content_queue) */}
       {(pharmacy.gemini_summary || finalSummary) && (
-        <section className="rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-5 shadow-sm">
-          <div className="flex items-start gap-2 mb-2">
+        <section className="rounded-2xl border border-gray-200 bg-gradient-to-br from-emerald-50 to-white p-6 shadow-sm">
+          <div className="flex items-start gap-3 mb-3">
             <Sparkles className="h-5 w-5 text-brand-600 flex-shrink-0 mt-0.5" />
-            <h2 className="text-lg font-semibold text-brand-800">약국 소개</h2>
+            <h2 className="text-lg font-bold text-gray-900">약국 소개</h2>
           </div>
-          <p className="text-base text-[var(--foreground)] leading-relaxed whitespace-pre-line">
+          <p className="text-base text-gray-700 leading-relaxed whitespace-pre-line">
             {pharmacy.gemini_summary || finalSummary}
           </p>
         </section>
       )}
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-3">
-        <div className="flex flex-wrap gap-2 text-sm text-[var(--muted)]">
-          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1">
+      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
+        <div className="flex flex-wrap gap-2 text-sm">
+          <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5 text-gray-700 font-semibold">
             <Clock className="h-4 w-4" />
             영업 상태: {status.label}
           </span>
           {pharmacy.tel ? (
             <a
-              className="inline-flex items-center gap-1 rounded-full bg-brand-600 text-white px-3 py-1 font-semibold"
+              className="inline-flex items-center gap-1 rounded-full bg-brand-600 text-white px-4 py-1.5 font-bold hover:bg-brand-700 transition-colors shadow-sm"
               href={`tel:${pharmacy.tel}`}
             >
               <Phone className="h-4 w-4" />
@@ -301,7 +305,7 @@ async function Content({
             </a>
           ) : null}
           <Link
-            className="inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-white px-3 py-1 font-semibold hover:border-brand-200"
+            className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-white px-4 py-1.5 font-semibold text-gray-700 hover:border-brand-300 hover:bg-gray-50 transition-colors"
             href={mapUrl}
             target="_blank"
           >
@@ -310,43 +314,43 @@ async function Content({
           </Link>
         </div>
         <AdsPlaceholder label="광고 표시 영역 (CTA 하단)" height={160} />
-        <div className="space-y-2 text-base text-[var(--muted)] leading-relaxed">
+        <div className="space-y-3 text-base text-gray-700 leading-relaxed">
           {descriptions.map((line) => (
             <p key={line}>{line}</p>
           ))}
         </div>
       </section>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5 shadow-sm space-y-3">
+      <section className="rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm space-y-4">
         <div className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-brand-700" />
-          <h2 className="text-xl font-semibold text-brand-800">{pharmacy.name} 요약 설명</h2>
+          <AlertCircle className="h-5 w-5 text-brand-600" />
+          <h2 className="text-xl font-bold text-gray-900">{pharmacy.name} 상세 정보</h2>
           {geminiContent ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-200 px-2 py-1 text-sm font-semibold text-emerald-800">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700">
               <Sparkles className="h-3 w-3" />
-              요약
+              AI 요약
             </span>
           ) : null}
         </div>
-        <p className="text-base text-emerald-900 leading-relaxed">
+        <p className="text-base text-gray-700 leading-relaxed">
           {finalSummary}
         </p>
         {finalDetailedDescription && (
-          <p className="text-base text-emerald-900 leading-relaxed mt-2">
+          <p className="text-base text-gray-700 leading-relaxed mt-3">
             {finalDetailedDescription}
           </p>
         )}
         {aiBullets.length > 0 && (
-          <ul className="text-base text-emerald-900 list-disc list-inside space-y-1 mt-2">
+          <ul className="text-base text-gray-700 list-disc list-inside space-y-2 mt-3">
             {aiBullets.map((bullet, idx) => (
               <li key={idx}>{bullet}</li>
             ))}
           </ul>
         )}
         {localTips.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-emerald-200">
-            <p className="text-sm font-semibold text-emerald-800 mb-2">💡 지역 이용 팁</p>
-            <ul className="text-base text-emerald-900 list-disc list-inside space-y-1">
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <p className="text-sm font-bold text-gray-900 mb-2">💡 지역 이용 팁</p>
+            <ul className="text-base text-gray-700 list-disc list-inside space-y-2">
               {localTips.map((tip, idx) => (
                 <li key={idx}>{tip}</li>
               ))}
@@ -354,9 +358,9 @@ async function Content({
           </div>
         )}
         {nearbyLandmarks.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-emerald-200">
-            <p className="text-sm font-semibold text-emerald-800 mb-2">📍 주변 주요 시설</p>
-            <ul className="text-base text-emerald-900 list-disc list-inside space-y-1">
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <p className="text-sm font-bold text-gray-900 mb-2">📍 주변 주요 시설</p>
+            <ul className="text-base text-gray-700 list-disc list-inside space-y-2">
               {nearbyLandmarks.map((landmark, idx) => (
                 <li key={idx}>{landmark}</li>
               ))}
@@ -365,32 +369,42 @@ async function Content({
         )}
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-4">
+      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">요일별 영업시간</h2>
-          <span className="text-sm text-[var(--muted)]">KST 기준</span>
+          <h2 className="text-xl font-bold text-gray-900">요일별 영업시간</h2>
+          <span className="text-sm text-gray-500">KST 기준</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-base">
-          {DAY_LABELS.map(([key, label]) => (
-            <div
-              key={key}
-              className="rounded-xl border border-[var(--border)] bg-slate-50 px-3 py-2"
-            >
-              <p className="text-sm font-semibold text-brand-700 mb-1">{label}</p>
-              <p className="text-[var(--muted)]">
-                {formatHourRange(pharmacy.operating_hours?.[key])}
-              </p>
-            </div>
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {DAY_LABELS.map(([key, label]) => {
+            const todayKey = DAY_KEYS[getSeoulNow().getDay()];
+            const isToday = key === todayKey;
+            return (
+              <div
+                key={key}
+                className={`rounded-xl border px-4 py-3 ${
+                  isToday
+                    ? "border-brand-500 bg-emerald-50"
+                    : "border-gray-200 bg-gray-50"
+                }`}
+              >
+                <p className={`text-sm font-bold mb-1 ${isToday ? "text-brand-700" : "text-gray-700"}`}>
+                  {label}
+                </p>
+                <p className={`text-sm ${isToday ? "text-brand-900 font-semibold" : "text-gray-600"}`}>
+                  {formatHourRange(pharmacy.operating_hours?.[key])}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
       <AdsPlaceholder label="중간 광고 영역" height={160} />
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">반경 2km 내 다른 약국</h2>
-          <span className="text-sm text-[var(--muted)]">추천 리스트</span>
+          <h2 className="text-xl font-bold text-gray-900">반경 2km 내 다른 약국</h2>
+          <span className="text-sm text-gray-500">추천 리스트</span>
         </div>
         {nearby.length ? (
           <div className="space-y-3">
@@ -398,14 +412,14 @@ async function Content({
               <Link
                 key={p.hpid}
                 href={`/pharmacy/${p.hpid}`}
-                className="block rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm hover:border-brand-200"
+                className="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:border-brand-300 hover:shadow-md transition-all"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-base font-semibold">{p.name}</p>
-                    <p className="text-sm text-[var(--muted)]">{p.address}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-base font-bold text-gray-900">{p.name}</p>
+                    <p className="text-sm text-gray-600 mt-1">{p.address}</p>
                   </div>
-                  <span className="text-sm text-brand-700">
+                  <span className="text-sm font-semibold text-brand-600 ml-4">
                     {distanceKm(
                       pharmacy.latitude,
                       pharmacy.longitude,
@@ -419,16 +433,16 @@ async function Content({
             ))}
           </div>
         ) : (
-          <p className="text-base text-[var(--muted)]">주변 추천 약국 정보가 없습니다.</p>
+          <p className="text-base text-gray-600">주변 추천 약국 정보가 없습니다.</p>
         )}
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <div className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-amber-600" />
-          <h2 className="text-xl font-semibold">이 약국이 문 닫았나요?</h2>
+          <h2 className="text-xl font-bold text-gray-900">이 약국이 문 닫았나요?</h2>
         </div>
-        <p className="text-base text-[var(--muted)] leading-relaxed">
+        <p className="text-base text-gray-600 leading-relaxed">
           반경 2km 내 영업 중인 약국을 바로 확인하세요. 혼잡 시 빠른 대안 방문을 돕습니다.
         </p>
         {nearby.length ? (
@@ -439,7 +453,7 @@ async function Content({
               );
               if (!nearbyOpen.length) {
                 return (
-                  <p className="text-base text-[var(--muted)]">
+                  <p className="text-base text-gray-600">
                     현재 영업 중인 대체 약국 정보를 찾지 못했습니다.
                   </p>
                 );
@@ -448,14 +462,14 @@ async function Content({
                 <Link
                   key={p.hpid}
                   href={`/pharmacy/${p.hpid}`}
-                  className="block rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm hover:border-brand-200"
+                  className="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:border-brand-300 hover:shadow-md transition-all"
                 >
                   <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-base font-semibold">{p.name}</p>
-                      <p className="text-sm text-[var(--muted)]">{p.address}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base font-bold text-gray-900">{p.name}</p>
+                      <p className="text-sm text-gray-600 mt-1">{p.address}</p>
                     </div>
-                    <span className="text-sm text-brand-700">
+                    <span className="text-sm font-semibold text-brand-600 ml-4">
                       {distanceKm(
                         pharmacy.latitude,
                         pharmacy.longitude,
@@ -470,27 +484,27 @@ async function Content({
             })()}
           </div>
         ) : (
-          <p className="text-base text-[var(--muted)]">
+          <p className="text-base text-gray-600">
             현재 영업 중인 대체 약국 정보를 찾지 못했습니다.
           </p>
         )}
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <div className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-brand-700" />
-          <h2 className="text-xl font-semibold">자주 묻는 질문</h2>
+          <AlertCircle className="h-5 w-5 text-brand-600" />
+          <h2 className="text-xl font-bold text-gray-900">자주 묻는 질문</h2>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {faqList.map((faq) => (
             <details
               key={faq.question}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
             >
-              <summary className="font-semibold text-[var(--foreground)] cursor-pointer list-none">
+              <summary className="font-bold text-gray-900 cursor-pointer list-none">
                 {faq.question}
               </summary>
-              <div className="mt-2 text-base text-[var(--muted)] leading-relaxed">
+              <div className="mt-3 text-base text-gray-700 leading-relaxed">
                 {faq.answer}
               </div>
             </details>
