@@ -3,8 +3,11 @@ import Link from "next/link";
 import { Phone, MapPin, Navigation, Clock, AlertCircle, Sparkles } from "lucide-react";
 import {
   formatHourRange,
+  formatHHMM,
+  DAY_KEYS,
   getBadgeClass,
   getOperatingStatus,
+  getSeoulNow,
 } from "@/lib/hours";
 import { Pharmacy } from "@/types/pharmacy";
 import { AdsPlaceholder } from "@/components/ads-placeholder";
@@ -14,7 +17,6 @@ import { getPublishedContentByHpid } from "@/lib/data/content";
 import {
   buildPharmacyJsonLd,
   dynamicDescription,
-  dynamicTitle,
   generateDescription,
 } from "@/lib/seo";
 import {
@@ -26,12 +28,57 @@ import { generatePharmacyContent } from "@/lib/gemini";
 
 type Params = { id: string };
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://todaypharm.kr";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://www.todaypharm.kr";
 
 function naverDescription(input: string): string {
   const s = input.replace(/\s+/g, " ").trim();
-  if (s.length <= 80) return s;
-  return `${s.slice(0, 77)}...`;
+  // Naver는 길면 잘리므로 "앞 80자"에 핵심을 넣되,
+  // Google/AI 클릭률을 위해 전체는 140~160자 범위로 유지
+  if (s.length <= 155) return s;
+  return `${s.slice(0, 152)}...`;
+}
+
+function extractDong(address?: string | null): string | null {
+  if (!address) return null;
+  const parts = address.split(" ");
+  const found = parts.find((p) => p.endsWith("동") || p.endsWith("가"));
+  return found ?? null;
+}
+
+function trimTitle(title: string): string {
+  const t = title.replace(/\s+/g, " ").trim();
+  // AITDK 권장(40~60자). 너무 길면 잘라서 의미 유지.
+  if (t.length <= 58) return t;
+  return `${t.slice(0, 57)}…`;
+}
+
+function buildPharmacyMetaTitle(pharmacy: Pharmacy): string {
+  const city = pharmacy.city ?? "";
+  const dong = extractDong(pharmacy.address) ?? "";
+  const region = [city, dong].filter(Boolean).join(" ");
+  // template("%s | 오늘약국")에 의해 뒤에 서비스명이 붙으므로 여기서는 본문만 구성
+  const base = `${pharmacy.name} | ${region || city || "지역"} 영업시간·전화·길찾기`;
+  return trimTitle(base);
+}
+
+function buildPharmacyMetaDescription(pharmacy: Pharmacy, fallback: string): string {
+  const now = getSeoulNow();
+  const todayKey = DAY_KEYS[now.getDay()];
+  const open = formatHHMM(pharmacy.operating_hours?.[todayKey]?.open ?? "");
+  const close = formatHHMM(pharmacy.operating_hours?.[todayKey]?.close ?? "");
+  const city = pharmacy.city ?? "";
+  const dong = extractDong(pharmacy.address) ?? "";
+  const region = [city, dong].filter(Boolean).join(" ");
+
+  // 첫 문장은 80자 이내로 핵심만(네이버 노출 대응)
+  const first = `${pharmacy.name}${region ? `(${region})` : ""} 오늘 영업시간 ${open || "미등록"}~${close || "미등록"}.`;
+  const second =
+    ` 주소·전화·길찾기·주말/공휴일 운영·FAQ·근처 대체 약국 정보를 한 번에 확인하세요.`;
+  const composed = `${first}${second}`.trim();
+
+  // fallback(기존 dynamicDescription)이 더 유용하면 섞되, 길이/초문장 규칙을 지킴
+  const merged = composed.length >= 120 ? composed : `${composed} ${fallback}`.trim();
+  return naverDescription(merged);
 }
 
 const DAY_LABELS: [keyof NonNullable<Pharmacy["operating_hours"]>, string][] = [
@@ -51,14 +98,18 @@ export async function generateMetadata({ params }: { params: Params }) {
   const aiContent = await getPublishedContentByHpid(params.id);
   
   // Gemini 생성 컨텐츠가 있으면 우선 사용 (메타데이터 생성 시에는 API 호출하지 않음 - 성능 고려)
-  const title = aiContent?.title ?? dynamicTitle(pharmacy);
+  const title = aiContent?.title ?? buildPharmacyMetaTitle(pharmacy);
   const rawDescription = aiContent?.ai_summary ?? dynamicDescription(pharmacy);
-  const description = naverDescription(rawDescription);
+  const description = buildPharmacyMetaDescription(pharmacy, rawDescription);
   return {
     title,
     description,
     alternates: {
       canonical: `/pharmacy/${pharmacy.hpid}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
     openGraph: {
       title,
@@ -67,6 +118,15 @@ export async function generateMetadata({ params }: { params: Params }) {
       siteName: "오늘약국",
       locale: "ko_KR",
       type: "website",
+      images: [
+        {
+          url: `/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(
+            `${pharmacy.city ?? pharmacy.province ?? ""} 약국`,
+          )}`,
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
   };
 }

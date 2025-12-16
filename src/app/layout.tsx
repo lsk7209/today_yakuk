@@ -6,7 +6,7 @@ import "./globals.css";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "http://localhost:3000";
+  "https://www.todaypharm.kr";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

@@ -8,7 +8,7 @@ import {
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "http://localhost:3000";
+  "https://www.todaypharm.kr";
 
 const DAY_TO_SCHEMA: Record<string, string> = {
   mon: "https://schema.org/Monday",
