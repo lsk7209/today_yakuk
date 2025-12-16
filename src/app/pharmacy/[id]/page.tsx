@@ -457,11 +457,7 @@ async function Content({
             </span>
           ) : null}
         </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <p className="text-base text-gray-800 leading-relaxed font-medium">
-            {finalSummary}
-          </p>
-        </div>
+        {/* 중복 제거: 상단 '약국 소개'에 요약이 이미 있으므로 상세 정보에서는 повтор 노출하지 않음 */}
         {/* 중복 방지: 요약+주요특징 2개 블록만 유지 */}
         {aiBullets.length > 0 && (
           <div className="bg-white rounded-xl p-5 border-2 border-emerald-100 space-y-3">
