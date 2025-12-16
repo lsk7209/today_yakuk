@@ -9,6 +9,7 @@ import {
 import { Pharmacy } from "@/types/pharmacy";
 import { AdsPlaceholder } from "@/components/ads-placeholder";
 import { StickyFab } from "@/components/sticky-fab";
+import { JsonLd } from "@/components/seo/json-ld";
 import { getPublishedContentByHpid } from "@/lib/data/content";
 import {
   buildPharmacyJsonLd,
@@ -24,6 +25,14 @@ import {
 import { generatePharmacyContent } from "@/lib/gemini";
 
 type Params = { id: string };
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://todaypharm.kr";
+
+function naverDescription(input: string): string {
+  const s = input.replace(/\s+/g, " ").trim();
+  if (s.length <= 80) return s;
+  return `${s.slice(0, 77)}...`;
+}
 
 const DAY_LABELS: [keyof NonNullable<Pharmacy["operating_hours"]>, string][] = [
   ["mon", "월"],
@@ -42,11 +51,22 @@ export async function generateMetadata({ params }: { params: Params }) {
   const aiContent = await getPublishedContentByHpid(params.id);
   
   // Gemini 생성 컨텐츠가 있으면 우선 사용 (메타데이터 생성 시에는 API 호출하지 않음 - 성능 고려)
+  const title = aiContent?.title ?? dynamicTitle(pharmacy);
+  const rawDescription = aiContent?.ai_summary ?? dynamicDescription(pharmacy);
+  const description = naverDescription(rawDescription);
   return {
-    title: aiContent?.title ?? dynamicTitle(pharmacy),
-    description: aiContent?.ai_summary ?? dynamicDescription(pharmacy),
+    title,
+    description,
     alternates: {
       canonical: `/pharmacy/${pharmacy.hpid}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}/pharmacy/${pharmacy.hpid}`,
+      siteName: "오늘약국",
+      locale: "ko_KR",
+      type: "website",
     },
   };
 }
@@ -166,9 +186,18 @@ async function Content({
       },
     })),
   };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: `${siteUrl}/` },
+      { "@type": "ListItem", position: 2, name: "약국", item: `${siteUrl}/nearby` },
+      { "@type": "ListItem", position: 3, name: pharmacy.name, item: `${siteUrl}/pharmacy/${pharmacy.hpid}` },
+    ],
+  };
 
   return (
-    <div className="container py-10 sm:py-14 space-y-8">
+    <article className="container py-10 sm:py-14 space-y-8">
       <header className="space-y-2">
         <span className={getBadgeClass(status)}>
           {status.emoji && <span aria-hidden>{status.emoji}</span>}
@@ -394,17 +423,17 @@ async function Content({
         </div>
         <div className="space-y-2">
           {faqList.map((faq) => (
-            <div
+            <details
               key={faq.question}
               className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
             >
-              <h3 className="font-semibold text-[var(--foreground)] mb-1">
+              <summary className="font-semibold text-[var(--foreground)] cursor-pointer list-none">
                 {faq.question}
-              </h3>
-              <p className="text-sm text-[var(--muted)] leading-relaxed">
+              </summary>
+              <div className="mt-2 text-sm text-[var(--muted)] leading-relaxed">
                 {faq.answer}
-              </p>
-            </div>
+              </div>
+            </details>
           ))}
         </div>
       </section>
@@ -466,22 +495,13 @@ async function Content({
         </div>
       </div>
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(buildPharmacyJsonLd(pharmacy)),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqJsonLd),
-        }}
-      />
+      <JsonLd id="jsonld-pharmacy" data={buildPharmacyJsonLd(pharmacy)} />
+      <JsonLd id="jsonld-breadcrumbs" data={breadcrumbJsonLd} />
+      <JsonLd id="jsonld-faq" data={faqJsonLd} />
       
       {/* Sticky FAB (모바일 전용) */}
       <StickyFab tel={pharmacy.tel} mapUrl={mapUrl} />
-    </div>
+    </article>
   );
 }
 

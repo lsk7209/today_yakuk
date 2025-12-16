@@ -31,12 +31,12 @@ export function dynamicTitle(pharmacy: Pharmacy) {
     (pharmacy.address ? pharmacy.address.split(" ")[0] : "추천");
 
   if (hour >= 20) {
-    return `${pharmacy.name} | ${region} 심야 야간 약국`;
+    return `${pharmacy.name} - ${region} 심야·야간 약국`;
   }
   if (day === 0 || day === 6) {
-    return `${pharmacy.name} | ${region} 휴일지킴이 문 여는 약국`;
+    return `${pharmacy.name} - ${region} 휴일지킴이 문 여는 약국`;
   }
-  return `${pharmacy.name} | ${region} 추천 약국`;
+  return `${pharmacy.name} - ${region} 약국`;
 }
 
 export function dynamicDescription(pharmacy: Pharmacy) {
