@@ -1,10 +1,7 @@
 name: Generate Pharmacy Content
 
 on:
-  schedule:
-    # 하루 2회: 02:00, 14:00 UTC (KST 11:00, 23:00)
-    # 하루 12건 생성 (2회 × 6건) — 과도한 대량 생성 신호를 피하면서도 충분히 공격적인 속도
-    - cron: "0 2,14 * * *"
+  # Gemini 기반 대량 생성은 중단합니다. 필요 시에만 수동 실행하세요.
   workflow_dispatch:
     inputs:
       limit:

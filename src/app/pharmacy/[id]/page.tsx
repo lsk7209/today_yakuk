@@ -42,7 +42,7 @@ import {
   getPharmacyByHpid,
   getPharmaciesByRegion,
 } from "@/lib/data/pharmacies";
-import { generatePharmacyContent } from "@/lib/gemini";
+import { buildAiLessDetailTemplate } from "@/lib/pharmacy-detail-template";
 import { getMapSearchAddress } from "@/lib/map";
 
 type Params = { id: string };
@@ -170,13 +170,8 @@ async function Content({
   const nearby = findNearbyWithinKm(pharmacy, regionList);
 
   // 기존 content_queue에서 컨텐츠 가져오기
+  // (AI 생성 중단) 상세 페이지는 알고리즘 기반 템플릿으로 고유 콘텐츠를 구성합니다.
   const aiContent = await getPublishedContentByHpid(pharmacy.hpid);
-
-  // 기존 컨텐츠가 없거나 불완전한 경우, Gemini API로 실시간 생성
-  const needsGeneration = !aiContent || !aiContent.ai_summary || !aiContent.ai_faq || aiContent.ai_faq.length === 0;
-  const geminiContent = needsGeneration
-    ? await generatePharmacyContent(pharmacy, nearby)
-    : null;
 
   const status = getOperatingStatus(pharmacy.operating_hours);
   const now = getSeoulNow();
@@ -192,71 +187,12 @@ async function Content({
   // 주소가 없을 때만 약국명으로 폴백합니다.
   const mapQuery = encodeURIComponent((mapAddress || pharmacy.name).trim());
   const mapUrl = `https://map.naver.com/p/search/${mapQuery}`;
-  type FAQItem = { question: string; answer: string };
-  type BulletItem = { text: string };
 
-  // 컨텐츠 병합: Gemini 생성 컨텐츠 우선, 없으면 기존 컨텐츠 사용
-  const finalSummary = geminiContent?.summary ?? aiContent?.ai_summary ?? dynamicDescription(pharmacy);
-
-  const aiBullets: string[] =
-    geminiContent?.bullets ??
-    aiContent?.ai_bullets?.map((b) => {
-      if (typeof b === "string") return b;
-      if (typeof b === "object" && b !== null && "text" in b) {
-        return (b as BulletItem).text;
-      }
-      return String(b);
-    }) ?? [];
-
-  const localTips = geminiContent?.local_tips ?? [];
-  const nearbyLandmarks = geminiContent?.nearby_landmarks ?? [];
-
-  const aiFaq: FAQItem[] =
-    geminiContent?.faq?.map((f) => ({ question: f.question, answer: f.answer })) ??
-    aiContent?.ai_faq?.map((f) => {
-      if (typeof f === "object" && f !== null) {
-        if ("question" in f && "answer" in f) {
-          return { question: f.question, answer: f.answer };
-        }
-        if ("q" in f && "a" in f) {
-          return { question: (f as { q: string; a: string }).q, answer: (f as { q: string; a: string }).a };
-        }
-      }
-      return { question: "", answer: "" };
-    }).filter((f) => f.question && f.answer) ?? [];
-
-  // FAQ가 없으면 기본 FAQ 생성
-  const faqList =
-    aiFaq.length > 0
-      ? aiFaq
-      : [
-          {
-            question: "지금 영업 중인가요?",
-            answer: `현재 상태는 '${status.label}'입니다. 상세 영업시간은 요일별 표와 종료 예정 시간에서 확인하세요.`,
-          },
-          {
-            question: "전화 연결이 가능한가요?",
-            answer: pharmacy.tel
-              ? `전화 버튼으로 바로 연결할 수 있습니다. 번호: ${pharmacy.tel}`
-              : "전화번호가 등록되어 있지 않습니다. 방문 전 지도 검색을 활용해 주세요.",
-          },
-          {
-            question: "근처 대체 약국도 있나요?",
-            answer: nearby.length
-              ? "아래 '반경 2km 내 다른 약국'과 '이 약국이 문 닫았나요?' 섹션에서 대체 약국을 확인하세요."
-              : "현재 반경 2km 내 약국 정보가 없습니다.",
-          },
-          {
-            question: "반경/거리 정보는 어떻게 계산되나요?",
-            answer: "브라우저 위치 기준 직선거리를 표시합니다. 실제 이동 시간은 지도 길찾기로 확인하세요.",
-          },
-        ];
-
-  // 추가 섹션 병합
-  const extraSections = [
-    ...(geminiContent?.extra_sections ?? []),
-    ...(aiContent?.extra_sections ?? []),
-  ];
+  const tmpl = buildAiLessDetailTemplate(pharmacy);
+  const finalSummary = tmpl.summary;
+  const aiBullets = tmpl.bullets;
+  const faqList = tmpl.faq;
+  const extraSections = tmpl.extraSections;
 
   const descriptions = aiContent
     ? [finalSummary, ...aiBullets]
@@ -450,12 +386,7 @@ async function Content({
             <Info className="h-5 w-5 text-brand-700" />
           </div>
           <h2 className="text-2xl font-black text-gray-900">{pharmacy.name} 상세 정보</h2>
-          {geminiContent ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-800 border border-emerald-200 shadow-sm">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>요약</span>
-            </span>
-          ) : null}
+          {/* (AI 생성 중단) AI 요약 라벨은 표시하지 않습니다. */}
         </div>
         {/* 중복 제거: 상단 '약국 소개'에 요약이 이미 있으므로 상세 정보에서는 повтор 노출하지 않음 */}
         {/* 중복 방지: 요약+주요특징 2개 블록만 유지 */}
@@ -484,42 +415,7 @@ async function Content({
             </ul>
           </div>
         )}
-        {localTips.length > 0 && (
-          <div className="mt-5 pt-5 border-t-2 border-gray-200 bg-amber-50 rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Star className="h-5 w-5 text-amber-600 fill-amber-600" />
-              <h3 className="text-lg font-black text-gray-900">지역 이용 팁</h3>
-            </div>
-            <ul className="space-y-3">
-              {localTips.map((tip, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-base text-gray-800 leading-relaxed">
-                  <div className="rounded-full bg-amber-100 p-1 mt-0.5 flex-shrink-0">
-                    <CheckCircle2 className="h-4 w-4 text-amber-700" />
-                  </div>
-                  <span>{tip}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {nearbyLandmarks.length > 0 && (
-          <div className="mt-5 pt-5 border-t-2 border-gray-200 bg-blue-50 rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Building2 className="h-5 w-5 text-blue-700" />
-              <h3 className="text-lg font-black text-gray-900">주변 주요 시설</h3>
-            </div>
-            <ul className="space-y-3">
-              {nearbyLandmarks.map((landmark, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-base text-gray-800 leading-relaxed">
-                  <div className="rounded-full bg-blue-100 p-1 mt-0.5 flex-shrink-0">
-                    <MapPin className="h-4 w-4 text-blue-700" />
-                  </div>
-                  <span>{landmark}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {/* (AI 생성 중단) 지역 이용 팁/주변 주요 시설 섹션은 제거하고, 대신 FAQ/체크리스트로 안내합니다. */}
       </section>
 
       <section className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md space-y-5">
@@ -699,7 +595,7 @@ async function Content({
         </div>
       </section>
 
-      {geminiContent?.cta && (
+      {tmpl.usageGuide && (
         <section className="rounded-2xl border-2 border-gray-200 bg-gray-50 p-6 shadow-md">
           <div className="flex items-start gap-4">
             <div className="rounded-full bg-gray-200 p-3">
@@ -711,7 +607,7 @@ async function Content({
               </h2>
               <div className="bg-white rounded-xl p-4 border border-gray-200">
                 <p className="text-base text-gray-800 leading-relaxed">
-                  {geminiContent.cta}
+                  {tmpl.usageGuide}
                 </p>
               </div>
             </div>
