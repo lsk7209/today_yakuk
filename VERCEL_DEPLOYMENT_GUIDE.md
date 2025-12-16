@@ -9,8 +9,10 @@ GitHub 저장소의 Settings → Secrets and variables → Actions에서 다음 
 - `SUPABASE_URL`: Supabase 프로젝트 URL
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase 프로젝트 URL (공개)
 - `SUPABASE_SERVICE_ROLE_KEY`: Supabase Service Role Key
-- `GEMINI_API_KEY`: Google Gemini API Key
 - `NEXT_PUBLIC_SITE_URL`: 사이트 URL (예: https://todaypharm.kr)
+
+🟡 선택(필요할 때만):
+- `GEMINI_API_KEY`: Google Gemini API Key (수동 생성 워크플로우용)
 
 ### 2. 워크플로우 실행
 
@@ -59,6 +61,8 @@ vercel env pull .env.local
 npm run generate:single C1109587
 npm run generate:summary C1109587
 ```
+
+※ 참고: 현재 서비스의 약국 상세 페이지는 **AI 없이도** 영업시간/지역/전화/근처 비교/FAQ 기반 템플릿으로 구성되며, 대량 생성(크론)은 중단되어 있습니다.
 
 ## 방법 3: Vercel Serverless Function로 API 엔드포인트 생성
 

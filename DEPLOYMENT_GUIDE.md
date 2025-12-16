@@ -17,9 +17,6 @@ Vercel 대시보드에서 다음 환경 변수를 설정하세요:
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-# Gemini API
-GEMINI_API_KEY=your_gemini_api_key
-
 # 사이트 URL
 NEXT_PUBLIC_SITE_URL=https://today-yakuk.vercel.app
 
@@ -32,6 +29,16 @@ NEXT_PUBLIC_NAVER_VERIFICATION=your_verification_code
 
 # 공공데이터 API (약국 동기화용)
 PUBLIC_DATA_API_KEY=your_public_data_api_key
+```
+
+### 선택(고급) 환경 변수
+
+```env
+# Gemini API (선택)
+# - 현재 상세 페이지는 AI 없이도 고유 템플릿으로 구성됩니다.
+# - 대량 생성(크론)은 중단되어 있으며, 필요 시 수동 워크플로우에서만 사용합니다.
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-2.5-flash-lite
 ```
 
 ### 설정 방법
@@ -50,9 +57,12 @@ GitHub Actions 크론 작업을 위해 다음 Secrets를 설정하세요:
 1. **SUPABASE_URL**: Supabase 프로젝트 URL
 2. **NEXT_PUBLIC_SUPABASE_URL**: Supabase 공개 URL (위와 동일)
 3. **SUPABASE_SERVICE_ROLE_KEY**: Supabase Service Role Key
-4. **GEMINI_API_KEY**: Gemini API 키
-5. **NEXT_PUBLIC_SITE_URL**: 배포된 사이트 URL
-6. **PUBLIC_DATA_API_KEY**: 공공데이터포털 API 키
+4. **NEXT_PUBLIC_SITE_URL**: 배포된 사이트 URL
+5. **PUBLIC_DATA_API_KEY**: 공공데이터포털 API 키
+
+### 선택 Secrets (필요할 때만)
+
+- **GEMINI_API_KEY**: Gemini API 키 (수동 컨텐츠 생성 워크플로우용)
 
 ### 설정 방법
 
@@ -75,9 +85,9 @@ GitHub Actions 크론 작업을 위해 다음 Secrets를 설정하세요:
 - **제한**: 한 번에 최대 2건
 
 #### 3. 약국 컨텐츠 생성 (`generate-content.yml`)
-- **스케줄**: 하루 2회 (02:00, 14:00 UTC = KST 11:00, 23:00)
-- **작업**: Gemini API로 약국별 고유 컨텐츠 생성
-- **제한**: 한 번에 최대 10건
+- **스케줄**: ❌ 중단(수동 실행만 가능)
+- **작업**: (선택) Gemini API로 컨텐츠를 생성해 `content_queue`에 저장
+- **비고**: 상세 페이지는 기본적으로 AI 없이도 고유 템플릿으로 구성됩니다.
 - **총량**: 하루 최대 20건 생성
 
 ### 스케줄 조정

@@ -28,13 +28,10 @@ import { Pharmacy } from "@/types/pharmacy";
 import { AdsPlaceholder } from "@/components/ads-placeholder";
 import { StickyFab } from "@/components/sticky-fab";
 import { JsonLd } from "@/components/seo/json-ld";
-import { getPublishedContentByHpid } from "@/lib/data/content";
 import { CopyButton } from "@/components/copy-button";
 import { SeoulNowBadge } from "@/components/seoul-now-badge";
 import {
   buildPharmacyJsonLd,
-  dynamicDescription,
-  generateDescription,
 } from "@/lib/seo";
 import { getSiteUrl } from "@/lib/site-url";
 import {
@@ -113,11 +110,9 @@ const DAY_LABELS: [keyof NonNullable<Pharmacy["operating_hours"]>, string][] = [
 export async function generateMetadata({ params }: { params: Params }) {
   const pharmacy = await getPharmacyByHpid(params.id);
   if (!pharmacy) return {};
-  const aiContent = await getPublishedContentByHpid(params.id);
-  
-  // Gemini 생성 컨텐츠가 있으면 우선 사용 (메타데이터 생성 시에는 API 호출하지 않음 - 성능 고려)
-  const title = aiContent?.title ?? buildPharmacyMetaTitle(pharmacy);
-  const rawDescription = aiContent?.ai_summary ?? dynamicDescription(pharmacy);
+  // (AI 생성 중단) 메타데이터는 알고리즘 기반으로 일관되게 생성합니다.
+  const title = buildPharmacyMetaTitle(pharmacy);
+  const rawDescription = buildAiLessDetailTemplate(pharmacy).summary;
   const description = buildPharmacyMetaDescription(pharmacy, rawDescription);
   return {
     title,
@@ -169,10 +164,6 @@ async function Content({
       : [];
   const nearby = findNearbyWithinKm(pharmacy, regionList);
 
-  // 기존 content_queue에서 컨텐츠 가져오기
-  // (AI 생성 중단) 상세 페이지는 알고리즘 기반 템플릿으로 고유 콘텐츠를 구성합니다.
-  const aiContent = await getPublishedContentByHpid(pharmacy.hpid);
-
   const status = getOperatingStatus(pharmacy.operating_hours);
   const now = getSeoulNow();
   const todayKey = DAY_KEYS[now.getDay()];
@@ -194,9 +185,7 @@ async function Content({
   const faqList = tmpl.faq;
   const extraSections = tmpl.extraSections;
 
-  const descriptions = aiContent
-    ? [finalSummary, ...aiBullets]
-    : generateDescription(pharmacy);
+  const descriptions = [finalSummary, ...aiBullets];
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",

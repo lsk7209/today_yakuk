@@ -4,11 +4,14 @@
 
 다음 Secrets가 GitHub에 설정되어 있습니다:
 
-- ✅ `GEMINI_API_KEY`
 - ✅ `NEXT_PUBLIC_SITE_URL`
 - ✅ `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - ✅ `NEXT_PUBLIC_SUPABASE_URL`
 - ✅ `PUBLIC_DATA_API_KEY`
+
+## 🟡 선택 Secrets (필요할 때만)
+
+- `GEMINI_API_KEY` (수동 컨텐츠 생성 워크플로우용)
 
 ## ❌ 추가 필요한 Secret
 
@@ -54,7 +57,6 @@ env:
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}  # ✅ 있음
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}  # ✅ 있음
   SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}  # ❌ 추가 필요!
-  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # ✅ 있음
   NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}  # ✅ 있음
   SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}  # NEXT_PUBLIC_SUPABASE_URL과 동일
 ```
