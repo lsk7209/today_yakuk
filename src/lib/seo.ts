@@ -5,10 +5,9 @@ import {
   getOperatingStatus,
   getSeoulNow,
 } from "./hours";
+import { getSiteUrl } from "./site-url";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://www.todaypharm.kr";
+const siteUrl = getSiteUrl();
 
 const DAY_TO_SCHEMA: Record<string, string> = {
   mon: "https://schema.org/Monday",

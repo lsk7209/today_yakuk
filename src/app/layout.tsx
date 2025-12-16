@@ -3,10 +3,9 @@ import Script from "next/script";
 import localFont from "next/font/local";
 import Link from "next/link";
 import "./globals.css";
+import { getSiteUrl } from "@/lib/site-url";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://www.todaypharm.kr";
+const siteUrl = getSiteUrl();
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

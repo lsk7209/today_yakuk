@@ -19,6 +19,7 @@ import {
   dynamicDescription,
   generateDescription,
 } from "@/lib/seo";
+import { getSiteUrl } from "@/lib/site-url";
 import {
   findNearbyWithinKm,
   getPharmacyByHpid,
@@ -27,8 +28,7 @@ import {
 import { generatePharmacyContent } from "@/lib/gemini";
 
 type Params = { id: string };
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://www.todaypharm.kr";
+const siteUrl = getSiteUrl();
 
 function naverDescription(input: string): string {
   const s = input.replace(/\s+/g, " ").trim();

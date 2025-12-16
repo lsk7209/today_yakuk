@@ -1,10 +1,9 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
   siteUrl:
-    (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(
-      /\/$/,
-      "",
-    ),
+    (process.env.NEXT_PUBLIC_SITE_URL || "https://www.todaypharm.kr")
+      .replace(/\/$/, "")
+      .replace(/^https?:\/\/todaypharm\.kr$/, "https://www.todaypharm.kr"),
   generateRobotsTxt: true,
   sitemapSize: 7000,
   changefreq: "daily",
