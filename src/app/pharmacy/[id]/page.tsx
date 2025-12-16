@@ -1,6 +1,21 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Phone, MapPin, Navigation, Clock, AlertCircle, Sparkles, Info, CheckCircle2, Star, Building2, Calendar, HelpCircle, ExternalLink } from "lucide-react";
+import {
+  Phone,
+  MapPin,
+  Navigation,
+  Clock,
+  AlertCircle,
+  Sparkles,
+  Info,
+  CheckCircle2,
+  Star,
+  Building2,
+  Calendar,
+  HelpCircle,
+  ExternalLink,
+  Timer,
+} from "lucide-react";
 import {
   formatHourRange,
   formatHHMM,
@@ -14,6 +29,7 @@ import { AdsPlaceholder } from "@/components/ads-placeholder";
 import { StickyFab } from "@/components/sticky-fab";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getPublishedContentByHpid } from "@/lib/data/content";
+import { CopyButton } from "@/components/copy-button";
 import {
   buildPharmacyJsonLd,
   dynamicDescription,
@@ -161,6 +177,13 @@ async function Content({
     : null;
 
   const status = getOperatingStatus(pharmacy.operating_hours);
+  const now = getSeoulNow();
+  const todayKey = DAY_KEYS[now.getDay()];
+  const todaySlot = pharmacy.operating_hours?.[todayKey];
+  const todayOpen = formatHHMM(todaySlot?.open ?? "");
+  const todayClose = formatHHMM(todaySlot?.close ?? "");
+  const todayHoursText =
+    todayOpen && todayClose ? `${todayOpen} ~ ${todayClose}` : "정보 없음";
 
   const mapQuery = encodeURIComponent(`${pharmacy.name} ${pharmacy.address}`);
   const mapUrl = `https://map.naver.com/p/search/${mapQuery}`;
@@ -275,6 +298,7 @@ async function Content({
                 <span className="text-gray-500 font-medium">📍 주소:</span>{" "}
                 <span className="text-gray-900 font-bold">{pharmacy.address}</span>
               </span>
+              <CopyButton text={pharmacy.address} label="주소 복사" />
             </p>
             {pharmacy.tel && (
               <p className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-2 bg-brand-50 rounded-lg px-4 py-2 border border-brand-200">
@@ -288,11 +312,63 @@ async function Content({
                     {pharmacy.tel}
                   </a>
                 </span>
+                <CopyButton text={pharmacy.tel} label="전화번호 복사" />
               </p>
             )}
           </div>
         </div>
       </header>
+
+      {/* 핵심 정보 카드 */}
+      <section className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
+        <div className="flex items-center justify-between flex-wrap gap-3 pb-4 border-b-2 border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-emerald-100 p-2">
+              <Timer className="h-5 w-5 text-emerald-700" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-gray-900">오늘 핵심 정보</h2>
+          </div>
+          <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-black text-emerald-800 border border-emerald-200">
+            <Clock className="h-4 w-4" />
+            <span>영업 상태</span>
+            <span className="text-emerald-700">{status.label}</span>
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm font-bold text-gray-600">오늘 영업시간</p>
+            <p className="text-xl font-black text-gray-900 mt-1">{todayHoursText}</p>
+            <p className="text-xs text-gray-500 mt-2">
+              영업시간은 변동될 수 있습니다. 방문 전 전화 확인을 권장합니다.
+            </p>
+          </div>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm font-bold text-gray-600">빠른 행동</p>
+            <div className="flex flex-wrap gap-3 mt-3">
+              {pharmacy.tel ? (
+                <a
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-700 text-white px-5 py-2 font-black hover:bg-brand-800 transition-colors shadow-md"
+                  href={`tel:${pharmacy.tel}`}
+                >
+                  <Phone className="h-4 w-4" />
+                  전화 걸기
+                </a>
+              ) : null}
+              <Link
+                className="inline-flex items-center gap-2 rounded-full border-2 border-gray-300 bg-white px-5 py-2 font-black text-gray-700 hover:border-brand-400 hover:bg-brand-50 transition-colors shadow-sm"
+                href={mapUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Navigation className="h-4 w-4" />
+                길찾기
+                <ExternalLink className="h-3 w-3" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <AdsPlaceholder label="광고 표시 영역 (ATF)" height={160} />
 
@@ -304,10 +380,7 @@ async function Content({
               <Sparkles className="h-5 w-5 text-emerald-700 flex-shrink-0" />
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                <span>✨</span>
-                <span>약국 소개</span>
-              </h2>
+              <h2 className="text-xl font-black text-gray-900">약국 소개</h2>
             </div>
           </div>
           <div className="bg-white/80 rounded-xl p-4 border border-emerald-100">
@@ -380,7 +453,7 @@ async function Content({
           {geminiContent ? (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-800 border border-emerald-200 shadow-sm">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>✨ AI 요약</span>
+              <span>요약</span>
             </span>
           ) : null}
         </div>
@@ -424,13 +497,15 @@ async function Content({
         {localTips.length > 0 && (
           <div className="mt-5 pt-5 border-t-2 border-gray-200 bg-amber-50 rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
-              <div className="text-2xl">💡</div>
+              <Star className="h-5 w-5 text-amber-600 fill-amber-600" />
               <h3 className="text-lg font-black text-gray-900">지역 이용 팁</h3>
             </div>
             <ul className="space-y-3">
               {localTips.map((tip, idx) => (
                 <li key={idx} className="flex items-start gap-3 text-base text-gray-800 leading-relaxed">
-                  <span className="text-amber-600 font-black mt-0.5">•</span>
+                  <div className="rounded-full bg-amber-100 p-1 mt-0.5 flex-shrink-0">
+                    <CheckCircle2 className="h-4 w-4 text-amber-700" />
+                  </div>
                   <span>{tip}</span>
                 </li>
               ))}
@@ -440,13 +515,15 @@ async function Content({
         {nearbyLandmarks.length > 0 && (
           <div className="mt-5 pt-5 border-t-2 border-gray-200 bg-blue-50 rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
-              <div className="text-2xl">📍</div>
+              <Building2 className="h-5 w-5 text-blue-700" />
               <h3 className="text-lg font-black text-gray-900">주변 주요 시설</h3>
             </div>
             <ul className="space-y-3">
               {nearbyLandmarks.map((landmark, idx) => (
                 <li key={idx} className="flex items-start gap-3 text-base text-gray-800 leading-relaxed">
-                  <Building2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div className="rounded-full bg-blue-100 p-1 mt-0.5 flex-shrink-0">
+                    <MapPin className="h-4 w-4 text-blue-700" />
+                  </div>
                   <span>{landmark}</span>
                 </li>
               ))}
