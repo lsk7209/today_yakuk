@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next";
-import { getPharmacyCount, getPharmacyHpidsChunk } from "@/lib/data/pharmacies";
+import { getPharmacyCount, getPharmacySitemapChunk } from "@/lib/data/pharmacies";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { isIndexablePharmacy } from "@/lib/pharmacy-indexability";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
@@ -18,10 +19,11 @@ export default async function sitemap(props: { id: string }): Promise<MetadataRo
   const id = Number(props.id);
   const offset = id * CHUNK_SIZE;
   const items = await safeGetPharmacyChunk(offset, CHUNK_SIZE);
+  const indexableItems = items.filter((item) => isIndexablePharmacy(item));
 
   // content_queue에서 published_at 정보 가져오기 (컨텐츠 업데이트 시간 반영)
   const supabase = getSupabaseServerClient();
-  const hpids = items.map((item) => item.hpid).filter((h): h is string => h !== null);
+  const hpids = indexableItems.map((item) => item.hpid).filter((h): h is string => h !== null);
   type ContentDateRow = { hpid: string | null; published_at: string | null; updated_at: string | null };
   let contentDates: ContentDateRow[] = [];
   if (hpids.length > 0) {
@@ -62,7 +64,7 @@ export default async function sitemap(props: { id: string }): Promise<MetadataRo
         ]
       : [];
 
-  const dynamicEntries: MetadataRoute.Sitemap = items.map((item) => {
+  const dynamicEntries: MetadataRoute.Sitemap = indexableItems.map((item) => {
     // content_queue의 published_at이 있으면 우선 사용 (컨텐츠 업데이트 시간 반영)
     // 없으면 pharmacies의 updated_at 사용
     const contentDate = contentDateMap.get(item.hpid);
@@ -96,10 +98,10 @@ async function safeGetPharmacyCount() {
 
 async function safeGetPharmacyChunk(offset: number, limit: number) {
   try {
-    const items = await getPharmacyHpidsChunk(offset, limit);
+    const items = await getPharmacySitemapChunk(offset, limit);
     return Array.isArray(items) ? items : [];
   } catch (error) {
-    console.error("sitemap: getPharmacyHpidsChunk failed", error);
+    console.error("sitemap: getPharmacySitemapChunk failed", error);
     return [];
   }
 }

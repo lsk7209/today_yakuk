@@ -183,6 +183,30 @@ export async function getPharmacyHpidsChunk(
   }
 }
 
+export async function getPharmacySitemapChunk(
+  offset: number,
+  limit: number,
+): Promise<
+  { hpid: string; updated_at: string | null; address: string | null; tel: string | null; operating_hours: Pharmacy["operating_hours"] }[]
+> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("pharmacies")
+      .select("hpid, updated_at, address, tel, operating_hours")
+      .order("hpid", { ascending: true })
+      .range(offset, offset + limit - 1);
+    if (error) {
+      console.error("pharmacy sitemap chunk fetch error", error);
+      return [];
+    }
+    return (data as { hpid: string; updated_at: string | null; address: string | null; tel: string | null; operating_hours: Pharmacy["operating_hours"] }[]) ?? [];
+  } catch (e) {
+    console.error("pharmacy sitemap chunk fetch exception", e);
+    return [];
+  }
+}
+
 export function findNearbyWithinKm(
   target: Pharmacy,
   list: Pharmacy[],

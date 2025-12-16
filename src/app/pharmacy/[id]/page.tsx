@@ -41,6 +41,7 @@ import {
 } from "@/lib/data/pharmacies";
 import { buildAiLessDetailTemplate } from "@/lib/pharmacy-detail-template";
 import { getMapSearchAddress } from "@/lib/map";
+import { isIndexablePharmacy } from "@/lib/pharmacy-indexability";
 
 type Params = { id: string };
 const siteUrl = getSiteUrl();
@@ -114,6 +115,7 @@ export async function generateMetadata({ params }: { params: Params }) {
   const title = buildPharmacyMetaTitle(pharmacy);
   const rawDescription = buildAiLessDetailTemplate(pharmacy).summary;
   const description = buildPharmacyMetaDescription(pharmacy, rawDescription);
+  const indexable = isIndexablePharmacy(pharmacy);
   return {
     title,
     description,
@@ -121,7 +123,7 @@ export async function generateMetadata({ params }: { params: Params }) {
       canonical: `/pharmacy/${pharmacy.hpid}`,
     },
     robots: {
-      index: true,
+      index: indexable,
       follow: true,
     },
     openGraph: {
@@ -470,6 +472,54 @@ async function Content({
       </section>
 
       <AdsPlaceholder label="중간 광고 영역" height={160} />
+
+      {/* 관련 가이드/지역 허브: 크롤 맥락 + 내부링크 강화 */}
+      <section className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="rounded-full bg-blue-100 p-2">
+            <HelpCircle className="h-5 w-5 text-blue-700" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-gray-900">이용 팁 &amp; 관련 가이드</h2>
+        </div>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          약국 운영시간은 변동될 수 있습니다. 방문 전 확인 방법과 야간·주말 대비 팁을 아래 가이드에서 빠르게 확인하세요.
+        </p>
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link
+            href="/guide/night-weekend"
+            className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-white hover:border-brand-200 transition-colors"
+          >
+            야간·주말 약국 찾기 가이드
+          </Link>
+          <Link
+            href="/guide/holiday-checklist"
+            className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-white hover:border-brand-200 transition-colors"
+          >
+            공휴일 방문 체크리스트
+          </Link>
+          <Link
+            href="/guide/call-scripts"
+            className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-white hover:border-brand-200 transition-colors"
+          >
+            전화 문의 스크립트(확인 질문)
+          </Link>
+          {pharmacy.province && pharmacy.city ? (
+            <Link
+              href={`/${encodeURIComponent(pharmacy.province)}/${encodeURIComponent(pharmacy.city)}`}
+              className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-white hover:border-brand-200 transition-colors"
+            >
+              {pharmacy.city} 약국 목록 더 보기
+            </Link>
+          ) : (
+            <Link
+              href="/nearby"
+              className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-white hover:border-brand-200 transition-colors"
+            >
+              주변 약국 다시 찾기
+            </Link>
+          )}
+        </div>
+      </section>
 
       <section className="space-y-4 rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-md">
         <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
