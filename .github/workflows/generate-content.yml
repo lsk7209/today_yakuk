@@ -41,6 +41,10 @@ jobs:
               missing=1
             fi
           done
+          if ! echo "${NEXT_PUBLIC_SUPABASE_URL}" | grep -qiE '^https?://.+\.supabase\.co/?$'; then
+            echo "::error title=Invalid secret::NEXT_PUBLIC_SUPABASE_URL이 Supabase 프로젝트 URL 형식이 아닙니다. (예: https://<project-ref>.supabase.co)"
+            missing=1
+          fi
           if [ "${missing}" -ne 0 ]; then
             exit 1
           fi

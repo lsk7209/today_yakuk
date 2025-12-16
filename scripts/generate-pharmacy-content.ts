@@ -209,6 +209,23 @@ function ensureEnv() {
   if (!supabaseUrl) throw new Error("SUPABASE_URL 또는 NEXT_PUBLIC_SUPABASE_URL이 필요합니다.");
   if (!supabaseServiceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY가 필요합니다.");
   if (!geminiApiKey) throw new Error("GEMINI_API_KEY가 필요합니다.");
+  // Supabase URL 오설정(우리 사이트 URL 등) 빠른 감지
+  try {
+    const u = new URL(supabaseUrl);
+    const host = u.hostname.toLowerCase();
+    if (host.includes("todaypharm.kr")) {
+      throw new Error(
+        [
+          "SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL이 Supabase 프로젝트 URL이 아닙니다.",
+          `- 현재 값: ${supabaseUrl}`,
+          "- `https://<project-ref>.supabase.co` 형태로 설정해야 합니다.",
+          "- GitHub Secrets의 `NEXT_PUBLIC_SUPABASE_URL` 값을 Supabase 프로젝트 URL로 교체하세요.",
+        ].join("\n"),
+      );
+    }
+  } catch {
+    // URL 파싱 실패는 아래 실제 요청에서 더 구체적으로 실패할 수 있으므로 여기서는 통과
+  }
 }
 
 /**
@@ -371,7 +388,18 @@ async function generateBatchContent(limit: number = 10): Promise<void> {
 
   if (queryError) {
     const msg = queryError.message ?? "";
-    if (msg.toLowerCase().includes("invalid api key")) {
+    const lower = msg.toLowerCase();
+    if (lower.includes("<!doctype html") || lower.includes("<html")) {
+      throw new Error(
+        [
+          "약국 조회 실패: Supabase 응답 대신 HTML(404 페이지)을 받았습니다.",
+          "- `NEXT_PUBLIC_SUPABASE_URL`(또는 `SUPABASE_URL`)이 Supabase 프로젝트 URL이 아니라 사이트 URL로 설정된 상태입니다.",
+          "- GitHub Secrets에서 `NEXT_PUBLIC_SUPABASE_URL`을 `https://<project-ref>.supabase.co`로 교체하세요.",
+          "- 그리고 `SUPABASE_SERVICE_ROLE_KEY`는 같은 프로젝트의 `service_role` 키인지 확인하세요.",
+        ].join("\n"),
+      );
+    }
+    if (lower.includes("invalid api key")) {
       throw new Error(
         [
           "약국 조회 실패: Supabase 인증키가 유효하지 않습니다.",
