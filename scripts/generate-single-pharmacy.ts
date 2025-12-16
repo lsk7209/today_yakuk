@@ -227,6 +227,18 @@ async function generateSinglePharmacyContent(hpid: string): Promise<void> {
 
   console.info(`\n=== 약국 컨텐츠 생성 시작: ${hpid} ===\n`);
 
+  // content_queue 테이블 존재 여부(초기 세팅 누락) 사전 점검
+  const { error: cqCheckError } = await supabase.from("content_queue").select("id").limit(1);
+  if (cqCheckError && (cqCheckError as { code?: string }).code === "PGRST205") {
+    throw new Error(
+      [
+        "content_queue 테이블을 찾을 수 없습니다. (Supabase 스키마 초기화가 필요합니다)",
+        "- Supabase Dashboard → SQL Editor에서 `supabase/content_queue.sql`을 실행하세요.",
+        "- 참고: `DEPLOYMENT_GUIDE.md`의 'Supabase 데이터베이스 설정' 섹션",
+      ].join("\n"),
+    );
+  }
+
   // 약국 정보 가져오기
   const pharmacy = await getPharmacyByHpid(hpid);
   if (!pharmacy) {

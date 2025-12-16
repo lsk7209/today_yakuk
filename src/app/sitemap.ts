@@ -22,16 +22,20 @@ export default async function sitemap(props: { id: string }): Promise<MetadataRo
   // content_queue에서 published_at 정보 가져오기 (컨텐츠 업데이트 시간 반영)
   const supabase = getSupabaseServerClient();
   const hpids = items.map((item) => item.hpid).filter((h): h is string => h !== null);
-  const contentDates =
-    hpids.length > 0
-      ? (
-          await supabase
-            .from("content_queue")
-            .select("hpid, published_at, updated_at")
-            .in("hpid", hpids)
-            .eq("status", "published")
-        ).data
-      : null;
+  let contentDates: Array<{ hpid: string | null; published_at: string | null; updated_at: string | null }> | null =
+    null;
+  if (hpids.length > 0) {
+    const { data, error } = await supabase
+      .from("content_queue")
+      .select("hpid, published_at, updated_at")
+      .in("hpid", hpids)
+      .eq("status", "published");
+
+    // 초기 배포에서 content_queue가 아직 없을 수 있음 → sitemap은 pharmacies 기반으로 계속 생성
+    if (!error || (error as { code?: string }).code !== "PGRST205") {
+      contentDates = (data as typeof contentDates) ?? null;
+    }
+  }
 
   // hpid별 최신 업데이트 시간 매핑
   const contentDateMap = new Map<string, Date>();

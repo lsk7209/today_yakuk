@@ -79,6 +79,18 @@ function ensureEnv() {
 async function publishPending(limit = 2) {
   const supabase = createClient(supabaseUrl as string, supabaseServiceKey as string);
 
+  // content_queue 테이블이 없으면 발행 자체가 불가능하므로 즉시 중단
+  const { error: cqCheckError } = await supabase.from("content_queue").select("id").limit(1);
+  if (cqCheckError && (cqCheckError as { code?: string }).code === "PGRST205") {
+    throw new Error(
+      [
+        "content_queue 테이블을 찾을 수 없습니다. (Supabase 스키마 초기화가 필요합니다)",
+        "- Supabase Dashboard → SQL Editor에서 `supabase/content_queue.sql`을 실행하세요.",
+        "- 참고: `DEPLOYMENT_GUIDE.md`의 'Supabase 데이터베이스 설정' 섹션",
+      ].join("\n"),
+    );
+  }
+
   const now = new Date().toISOString();
   const { data: pending, error } = await supabase
     .from("content_queue")
