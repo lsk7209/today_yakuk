@@ -1,5 +1,10 @@
 import { Pharmacy } from "@/types/pharmacy";
 import { formatHHMM, getOperatingStatus, DAY_KEYS, getSeoulNow } from "@/lib/hours";
+import {
+  searchPharmacyOnGoogleMaps,
+  formatGoogleMapsInfoForPrompt,
+  type GoogleMapsPlaceInfo,
+} from "@/lib/google-maps";
 
 const geminiApiKey = process.env.GEMINI_API_KEY;
 const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
@@ -75,7 +80,21 @@ export async function generatePharmacyContent(
   }
 
   try {
-    const prompt = buildPharmacyPrompt(pharmacy, nearbyPharmacies, options);
+    // Google Maps에서 약국 정보 검색 (선택적)
+    let googleMapsInfo: GoogleMapsPlaceInfo | null = null;
+    if (pharmacy.name && pharmacy.address) {
+      try {
+        console.info("Google Maps에서 약국 정보 검색 중...");
+        googleMapsInfo = await searchPharmacyOnGoogleMaps(pharmacy.name, pharmacy.address);
+        if (googleMapsInfo) {
+          console.info("✅ Google Maps 정보 수집 완료");
+        }
+      } catch (error) {
+        console.warn("⚠️ Google Maps 검색 실패 (무시하고 계속):", error);
+      }
+    }
+
+    const prompt = buildPharmacyPrompt(pharmacy, nearbyPharmacies, options, googleMapsInfo);
 
     // Google AI Studio API 엔드포인트 사용
     // 참고: https://ai.google.dev/gemini-api/docs/api-key
@@ -222,6 +241,7 @@ function buildPharmacyPrompt(
   pharmacy: Pharmacy,
   nearbyPharmacies: Pharmacy[],
   options?: GeneratePharmacyContentOptions,
+  googleMapsInfo?: GoogleMapsPlaceInfo | null,
 ): string {
   const status = getOperatingStatus(pharmacy.operating_hours);
   const now = getSeoulNow();
@@ -288,6 +308,14 @@ ${hoursPattern}
 
 ## 약국 설명
 ${pharmacy.description_raw || "추가 설명 정보 없음"}
+
+${googleMapsInfo
+  ? `## Google Maps에서 수집한 추가 정보
+${formatGoogleMapsInfoForPrompt(googleMapsInfo)}
+
+**중요**: Google Maps 정보는 참고용입니다. 제공된 기본 정보와 충돌하면 기본 정보를 우선하세요.
+Google Maps의 리뷰나 평점은 사용자 경험을 보완하는 용도로만 활용하세요.`
+  : ""}
 
 ## 주변 약국 (참고용 - 중복 방지)
 ${nearbyInfo || "주변 약국 정보 없음"}
