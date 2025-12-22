@@ -38,10 +38,12 @@ import {
   findNearbyWithinKm,
   getPharmacyByHpid,
   getPharmaciesByRegion,
+  distanceKm,
 } from "@/lib/data/pharmacies";
 import { buildAiLessDetailTemplate } from "@/lib/pharmacy-detail-template";
 import { getMapSearchAddress } from "@/lib/map";
 import { isIndexablePharmacy } from "@/lib/pharmacy-indexability";
+import { getPublishedContentByHpid } from "@/lib/data/content";
 
 type Params = { id: string };
 const siteUrl = getSiteUrl();
@@ -148,15 +150,20 @@ export async function generateMetadata({ params }: { params: Params }) {
 
 export default function PharmacyDetailPage({ params }: { params: Params }) {
   const pharmacyPromise = getPharmacyByHpid(params.id);
-  return <Content pharmacyPromise={pharmacyPromise} />;
+  return <Content pharmacyPromise={pharmacyPromise} hpid={params.id} />;
 }
 
 async function Content({
   pharmacyPromise,
+  hpid,
 }: {
   pharmacyPromise: Promise<Pharmacy | null>;
+  hpid: string;
 }) {
-  const [pharmacy] = await Promise.all([pharmacyPromise]);
+  const [pharmacy, contentQueue] = await Promise.all([
+    pharmacyPromise,
+    getPublishedContentByHpid(hpid).catch(() => null),
+  ]);
   if (!pharmacy) return notFound();
 
   // Fetch region mates lazily; if province not present, fallback to empty array.
@@ -302,8 +309,8 @@ async function Content({
 
       <AdsPlaceholder label="광고 표시 영역 (ATF)" height={160} />
 
-      {/* 요약 (gemini_summary 또는 content_queue) */}
-      {(pharmacy.gemini_summary || finalSummary) && (
+      {/* 요약 (content_queue > gemini_summary > 템플릿 순서) */}
+      {(contentQueue?.ai_summary || pharmacy.gemini_summary || finalSummary) && (
         <section className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/30 p-6 shadow-md">
           <div className="flex items-start gap-3 mb-4">
             <div className="rounded-full bg-emerald-100 p-2">
@@ -315,7 +322,7 @@ async function Content({
           </div>
           <div className="bg-white/80 rounded-xl p-4 border border-emerald-100">
             <p className="text-base text-gray-800 leading-relaxed whitespace-pre-line">
-              {pharmacy.gemini_summary || finalSummary}
+              {contentQueue?.ai_summary || pharmacy.gemini_summary || finalSummary}
             </p>
           </div>
         </section>
@@ -776,40 +783,5 @@ async function Content({
       <StickyFab tel={pharmacy.tel} mapUrl={mapUrl} />
     </article>
   );
-}
-
-function toRad(num?: number | null) {
-  if (!num) return 0;
-  return (num * Math.PI) / 180;
-}
-
-function distanceKm(
-  lat1?: number | null,
-  lon1?: number | null,
-  lat2?: number | null,
-  lon2?: number | null,
-) {
-  if (
-    lat1 === undefined ||
-    lon1 === undefined ||
-    lat2 === undefined ||
-    lon2 === undefined ||
-    lat1 === null ||
-    lon1 === null ||
-    lat2 === null ||
-    lon2 === null
-  )
-    return 0;
-  const R = 6371;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
 }
 

@@ -1,0 +1,53 @@
+name: Publish Content Queue
+
+# 하루 최대 10건 자동 발행 (5회 × 2건)
+# 실행 시간: 한국 시간 기준
+# - 02:00, 06:00, 10:00, 14:00, 18:00 (UTC: 17:00, 21:00, 01:00, 05:00, 09:00)
+
+on:
+  schedule:
+    # 한국 시간 02:00 (UTC 17:00 - 전날)
+    - cron: '0 17 * * *'
+    # 한국 시간 06:00 (UTC 21:00 - 전날)
+    - cron: '0 21 * * *'
+    # 한국 시간 10:00 (UTC 01:00)
+    - cron: '0 1 * * *'
+    # 한국 시간 14:00 (UTC 05:00)
+    - cron: '0 5 * * *'
+    # 한국 시간 18:00 (UTC 09:00)
+    - cron: '0 9 * * *'
+  workflow_dispatch: # 수동 실행도 가능
+
+jobs:
+  publish:
+    name: Publish Content Queue
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish content queue
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          PUBLISH_LIMIT: '2' # 한 번에 2건씩 발행
+        run: npm run publish:queue
+
+      - name: Report result
+        if: always()
+        run: |
+          echo "Content publishing job completed at $(date)"
+          echo "Check the logs above for published items."
+

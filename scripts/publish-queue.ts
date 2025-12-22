@@ -2,6 +2,8 @@ import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
+type ContentQueueStatus = "pending" | "review" | "published" | "failed";
+
 type ContentQueue = {
   id: string;
   hpid: string | null;
@@ -15,7 +17,7 @@ type ContentQueue = {
   ai_faq: { question: string; answer: string }[] | null;
   ai_cta: string | null;
   extra_sections: { title: string; body: string }[] | null;
-  status: string;
+  status: ContentQueueStatus;
   publish_at: string;
 };
 

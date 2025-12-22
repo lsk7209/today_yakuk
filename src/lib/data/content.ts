@@ -1,13 +1,5 @@
 import { getSupabaseServerClient } from "@/lib/supabase-server";
-
-function isMissingTableError(err: unknown): boolean {
-  return (
-    typeof err === "object" &&
-    err !== null &&
-    "code" in err &&
-    (err as { code?: unknown }).code === "PGRST205"
-  );
-}
+import { isMissingTableError, logError } from "@/lib/errors";
 
 export type ContentItem = {
   id: string;
@@ -40,12 +32,12 @@ export async function getPublishedContentBySlug(slug: string): Promise<ContentIt
     if (error) {
       // content_queue 테이블이 아직 없을 수 있음 (초기 배포/마이그레이션 전)
       if (isMissingTableError(error)) return null;
-      console.error("content fetch error", error);
+      logError(error, { operation: "getPublishedContentBySlug", details: { slug } });
       return null;
     }
     return data as ContentItem | null;
   } catch (e) {
-    console.error("content fetch exception", e);
+    logError(e, { operation: "getPublishedContentBySlug", details: { slug } });
     return null;
   }
 }
@@ -53,20 +45,23 @@ export async function getPublishedContentBySlug(slug: string): Promise<ContentIt
 export async function getPublishedContentByHpid(hpid: string): Promise<ContentItem | null> {
   try {
     const supabase = getSupabaseServerClient();
+    // published 또는 pending 상태의 콘텐츠를 가져옴 (pending도 표시 가능하도록)
     const { data, error } = await supabase
       .from("content_queue")
       .select("*")
       .eq("hpid", hpid)
-      .eq("status", "published")
+      .in("status", ["published", "pending"])
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("updated_at", { ascending: false })
       .maybeSingle();
     if (error) {
       if (isMissingTableError(error)) return null;
-      console.error("content hpid fetch error", error);
+      logError(error, { operation: "getPublishedContentByHpid", details: { hpid } });
       return null;
     }
     return data as ContentItem | null;
   } catch (e) {
-    console.error("content hpid fetch exception", e);
+    logError(e, { operation: "getPublishedContentByHpid", details: { hpid } });
     return null;
   }
 }
@@ -82,12 +77,12 @@ export async function listPublishedContent(limit = 20): Promise<ContentItem[]> {
       .limit(limit);
     if (error) {
       if (isMissingTableError(error)) return [];
-      console.error("content list error", error);
+      logError(error, { operation: "listPublishedContent", details: { limit } });
       return [];
     }
     return (data as ContentItem[]) ?? [];
   } catch (e) {
-    console.error("content list exception", e);
+    logError(e, { operation: "listPublishedContent", details: { limit } });
     return [];
   }
 }

@@ -124,17 +124,28 @@ export async function getPharmaciesByRegionPaginated(
   }
 }
 
+/**
+ * 모든 약국의 hpid와 updated_at을 조회합니다.
+ * 
+ * ⚠️ 주의: 이 함수는 Supabase의 기본 제한(1000건)에 걸릴 수 있습니다.
+ * 대량 데이터가 필요한 경우 `getPharmacyHpidsChunk`를 사용하여 페이지네이션으로 처리하세요.
+ * 
+ * @deprecated 대량 데이터 조회 시 제한이 있을 수 있으므로 `getPharmacyHpidsChunk` 사용을 권장합니다.
+ * @returns 약국 hpid와 updated_at 배열
+ */
 export async function getAllPharmacyHpids(): Promise<
   { hpid: string; updated_at: string | null }[]
 > {
   try {
     const supabase = getSupabaseServerClient();
-    // Note: This function may return a large dataset.
-    // Consider using getPharmacyHpidsChunk for pagination instead.
+    // Supabase 기본 제한: 1000건
+    // 더 많은 데이터가 필요한 경우 getPharmacyHpidsChunk 사용
     const { data, error } = await supabase
       .from("pharmacies")
       .select("hpid, updated_at")
-      .order("hpid", { ascending: true });
+      .order("hpid", { ascending: true })
+      .limit(1000); // Supabase 기본 제한 명시
+    
     if (error) {
       console.error("pharmacy hpid fetch error", error);
       return [];
@@ -239,7 +250,33 @@ function toRad(num: number) {
   return (num * Math.PI) / 180;
 }
 
-export function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+/**
+ * 두 지점 간의 거리를 킬로미터로 계산합니다 (Haversine formula)
+ * @param lat1 첫 번째 지점의 위도
+ * @param lon1 첫 번째 지점의 경도
+ * @param lat2 두 번째 지점의 위도
+ * @param lon2 두 번째 지점의 경도
+ * @returns 거리 (킬로미터). 좌표가 유효하지 않으면 0 반환
+ */
+export function distanceKm(
+  lat1: number | null | undefined,
+  lon1: number | null | undefined,
+  lat2: number | null | undefined,
+  lon2: number | null | undefined,
+): number {
+  if (
+    lat1 === undefined ||
+    lon1 === undefined ||
+    lat2 === undefined ||
+    lon2 === undefined ||
+    lat1 === null ||
+    lon1 === null ||
+    lat2 === null ||
+    lon2 === null
+  ) {
+    return 0;
+  }
+
   const R = 6371;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
