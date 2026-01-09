@@ -5,8 +5,17 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { password } = body;
 
-        // 하드코딩된 비밀번호 체크 (요청사항: 1234)
-        if (password === "1234") {
+        // 환경변수 비밀번호 체크
+        const adminPassword = process.env.ADMIN_PASSWORD;
+        if (!adminPassword) {
+            console.error("ADMIN_PASSWORD is not set in environment variables");
+            return NextResponse.json(
+                { success: false, message: "Server configuration error" },
+                { status: 500 }
+            );
+        }
+
+        if (password === adminPassword) {
             const response = NextResponse.json({ success: true });
 
             // HttpOnly 쿠키 설정
