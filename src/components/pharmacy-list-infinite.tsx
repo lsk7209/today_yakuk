@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Pharmacy } from "@/types/pharmacy";
 import { getOperatingStatus } from "@/lib/hours";
 import { PharmacyCard } from "./pharmacy-card";
+import { distanceKm } from "@/lib/data/pharmacies";
 
 
 type FilterKey = "all" | "open" | "night" | "holiday";
@@ -48,13 +49,13 @@ export function PharmacyListInfinite({
     if (!userLocation) return items;
     return items.map((item) => {
       if (item.latitude == null || item.longitude == null) return item;
-      const distanceKm = haversine(
+      const dist = distanceKm(
         userLocation.lat,
         userLocation.lon,
         item.latitude,
         item.longitude,
       );
-      return { ...item, distanceKm };
+      return { ...item, distanceKm: dist };
     });
   }, [items, userLocation]);
 
@@ -236,17 +237,5 @@ function isHolidayOpen(pharmacy: Pharmacy) {
   const open = hhmmToMinutes(slot?.open);
   const close = hhmmToMinutes(slot?.close);
   return open !== null && close !== null;
-}
-
-function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const R = 6371; // km
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
 }
 

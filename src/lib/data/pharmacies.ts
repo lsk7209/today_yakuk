@@ -1,7 +1,7 @@
 import { Pharmacy } from "@/types/pharmacy";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 
-const PROVINCE_MAP: Record<string, string> = {
+export const PROVINCE_MAP: Record<string, string> = {
   서울: "서울특별시",
   서울특별시: "서울특별시",
   부산: "부산광역시",
@@ -145,7 +145,7 @@ export async function getAllPharmacyHpids(): Promise<
       .select("hpid, updated_at")
       .order("hpid", { ascending: true })
       .limit(1000); // Supabase 기본 제한 명시
-    
+
     if (error) {
       console.error("pharmacy hpid fetch error", error);
       return [];
@@ -283,9 +283,9 @@ export function distanceKm(
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }

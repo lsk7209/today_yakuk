@@ -31,40 +31,39 @@ export default async function QueueManagementPage() {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {queue?.map((item) => (
-                                <tr key={item.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                    ${item.status === 'published' ? 'bg-green-100 text-green-800' :
-                                                item.status === 'pending' ? 'bg-orange-100 text-orange-800' :
-                                                    'bg-red-100 text-red-800'}`}>
-                                            {item.status.toUpperCase()}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {new Date(item.publish_at).toLocaleString('ko-KR')}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-900">
-                                        <div className="font-medium">{item.title}</div>
-                                        <div className="text-gray-500 text-xs">{item.slug}</div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {item.theme === 'blog' ? '📝 블로그' : '🏥 약국'}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <QueueActions id={item.id} status={item.status} />
-                                    </td>
-                                </tr>
-                            ))}
-                            {!queue?.length && (
-                                <tr>
-                                    <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
-                                        데이터가 없습니다.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
+                        {queue?.map((item) => (
+                            <tr key={item.id}>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                ${item.status === 'published' ? 'bg-green-100 text-green-800' :
+                                            item.status === 'pending' ? 'bg-orange-100 text-orange-800' :
+                                                'bg-red-100 text-red-800'}`}>
+                                        {item.status.toUpperCase()}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {new Date(item.publish_at).toLocaleString('ko-KR')}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-900">
+                                    <div className="font-medium">{item.title}</div>
+                                    <div className="text-gray-500 text-xs">{item.slug}</div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {item.theme === 'blog' ? '📝 블로그' : '🏥 약국'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <QueueActions id={item.id} status={item.status} />
+                                </td>
+                            </tr>
+                        ))}
+                        {!queue?.length && (
+                            <tr>
+                                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                                    데이터가 없습니다.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
                 </table>
             </div>
         </div>
