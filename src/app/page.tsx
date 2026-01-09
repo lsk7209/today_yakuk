@@ -11,7 +11,7 @@ import {
   SlidersHorizontal,
   Map as MapIcon,
 } from "lucide-react";
-import { AdsPlaceholder } from "@/components/ads-placeholder";
+
 import type { PharmacyCardProps } from "@/components/pharmacy-card";
 import { getOperatingStatus } from "@/lib/hours";
 
@@ -150,11 +150,10 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => void fetchNearby()}
-                  className={`rounded-xl px-3 py-2 text-sm font-black transition-colors ${
-                    canGeo
+                  className={`rounded-xl px-3 py-2 text-sm font-black transition-colors ${canGeo
                       ? "bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  }`}
+                    }`}
                   aria-label="위치 설정"
                   disabled={!canGeo}
                 >
@@ -209,11 +208,10 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setSortMode("distance")}
-                className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-bold border ${
-                  sortMode === "distance"
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-bold border ${sortMode === "distance"
                     ? "border-emerald-200 bg-emerald-50 text-emerald-800"
                     : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-                }`}
+                  }`}
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 거리순
@@ -221,11 +219,10 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setSortMode("closing")}
-                className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-bold border ${
-                  sortMode === "closing"
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-bold border ${sortMode === "closing"
                     ? "border-amber-200 bg-amber-50 text-amber-800"
                     : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-                }`}
+                  }`}
               >
                 <Navigation className="h-4 w-4" />
                 종료 임박
@@ -233,7 +230,7 @@ export default function Home() {
             </div>
           </div>
 
-          <AdsPlaceholder label="광고 표시 영역" height={140} />
+
 
           {status === "loading" ? (
             <div className="space-y-3">
@@ -293,13 +290,12 @@ export default function Home() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-black ring-1 ring-inset ${
-                              s.label === "영업 중"
+                            className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-black ring-1 ring-inset ${s.label === "영업 중"
                                 ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
                                 : s.label === "곧 종료"
                                   ? "bg-amber-50 text-amber-800 ring-amber-200"
                                   : "bg-slate-100 text-slate-700 ring-slate-200"
-                            }`}
+                              }`}
                           >
                             {s.label}
                           </span>
@@ -328,7 +324,7 @@ export default function Home() {
                 );
               })}
 
-              <AdsPlaceholder label="AD 배너 (리스트 중간)" height={140} />
+
             </div>
           ) : null}
 

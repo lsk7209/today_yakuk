@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Pharmacy } from "@/types/pharmacy";
 import { getOperatingStatus } from "@/lib/hours";
 import { PharmacyCard } from "./pharmacy-card";
-import { AdsPlaceholder } from "./ads-placeholder";
+
 
 type FilterKey = "all" | "open" | "night" | "holiday";
 
@@ -34,16 +34,7 @@ export function PharmacyListView({ list }: { list: Pharmacy[] }) {
     });
   }, [list, filter]);
 
-  const withAds = useMemo(() => {
-    const blocks: Array<Pharmacy | { ad: true; id: string }> = [];
-    filtered.forEach((item, idx) => {
-      blocks.push(item);
-      if ((idx + 1) % 5 === 0) {
-        blocks.push({ ad: true, id: `ad-${idx}` });
-      }
-    });
-    return blocks;
-  }, [filtered]);
+
 
   return (
     <div className="space-y-4">
@@ -55,11 +46,10 @@ export function PharmacyListView({ list }: { list: Pharmacy[] }) {
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold border transition ${
-                  active
-                    ? "bg-brand-600 text-white border-brand-600 shadow-sm"
-                    : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
-                }`}
+                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold border transition ${active
+                  ? "bg-brand-600 text-white border-brand-600 shadow-sm"
+                  : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
+                  }`}
               >
                 {label}
               </button>
@@ -68,21 +58,17 @@ export function PharmacyListView({ list }: { list: Pharmacy[] }) {
         </div>
       </div>
 
-      {withAds.length === 0 ? (
+      {filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[var(--border)] bg-white p-6 text-center text-sm text-[var(--muted)]">
           선택한 조건에 맞는 약국이 없습니다. 필터를 리셋하거나 다른 지역을 선택하세요.
         </div>
       ) : (
         <div className="space-y-4">
-          {withAds.map((item) =>
-            "ad" in item ? (
-              <AdsPlaceholder key={item.id} />
-            ) : (
-              <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
-                <PharmacyCard pharmacy={item} />
-              </div>
-            ),
-          )}
+          {filtered.map((item) => (
+            <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
+              <PharmacyCard pharmacy={item} />
+            </div>
+          ))}
         </div>
       )}
     </div>

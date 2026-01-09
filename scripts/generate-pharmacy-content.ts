@@ -196,14 +196,7 @@ function hashStringToUint(input: string): number {
   return h >>> 0;
 }
 
-function computePublishAt(hpid: string, now = new Date()): string {
-  // 같은 날/같은 HPID는 같은 분산값(재현 가능). 10분~250분 사이로 분산.
-  const dayKey = now.toISOString().slice(0, 10);
-  const seed = `${dayKey}:${hpid}`;
-  const minutes = 10 + (hashStringToUint(seed) % 241);
-  const d = new Date(now.getTime() + minutes * 60 * 1000);
-  return d.toISOString();
-}
+import { getNextSlot } from "../src/lib/scheduler";
 
 function ensureEnv() {
   if (!supabaseUrl) throw new Error("SUPABASE_URL 또는 NEXT_PUBLIC_SUPABASE_URL이 필요합니다.");
@@ -233,7 +226,7 @@ function ensureEnv() {
  */
 async function generateAndQueueContent(
   pharmacy: Pharmacy,
-  limit: number = 10,
+  publishAt: string,
 ): Promise<void> {
   const supabase = createClient(supabaseUrl as string, supabaseServiceKey as string);
 
@@ -323,8 +316,8 @@ async function generateAndQueueContent(
     // 슬러그 생성
     const slug = `pharmacy-${pharmacy.hpid}`;
 
-    // 발행 시간 설정 (정기 발행을 위해 pending + publish_at 분산)
-    const publishAt = computePublishAt(pharmacy.hpid, new Date());
+    // 발행 시간 설정 (외부에서 주입받음)
+    // const publishAt = computePublishAt(pharmacy.hpid, new Date());
 
     const queueItem: ContentQueueInsert = {
       hpid: pharmacy.hpid,
@@ -469,6 +462,26 @@ async function generateBatchContent(limit: number = 10): Promise<void> {
     `총 ${targetHpids.length}개 약국의 컨텐츠를 생성합니다... (전체 약국: ${allPharmacies.length}개, 이미 생성됨: ${completedHpidSet.size}개)`,
   );
 
+  // 마지막 예약된 시간 확인 (가장 미래의 pending)
+  const { data: lastPending } = await supabase
+    .from("content_queue")
+    .select("publish_at")
+    .eq("status", "pending")
+    .order("publish_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  let lastScheduledTime = lastPending?.publish_at
+    ? new Date(lastPending.publish_at)
+    : new Date();
+
+  // 과거의 시간이라면 현재 시간으로 보정 (이미 지난 시간 뒤에 예약하면 즉시 발행되므로)
+  if (lastScheduledTime.getTime() < Date.now()) {
+    lastScheduledTime = new Date();
+  }
+
+  console.info(`예약 발행 시작 기준 시간: ${lastScheduledTime.toISOString()}`);
+
   // 배치로 처리 (순차 처리로 API Rate Limit 방지)
   for (let i = 0; i < targetHpids.length; i++) {
     const hpid = targetHpids[i];
@@ -479,8 +492,14 @@ async function generateBatchContent(limit: number = 10): Promise<void> {
       continue;
     }
 
-    await generateAndQueueContent(pharmacy);
-    
+    // 다음 슬롯 계산
+    const nextSlot = getNextSlot(lastScheduledTime);
+    lastScheduledTime = nextSlot; // 다음 루프를 위해 업데이트
+
+    console.info(`[SCHEDULE] ${pharmacy.name} -> ${nextSlot.toISOString()}`);
+
+    await generateAndQueueContent(pharmacy, nextSlot.toISOString());
+
     // Rate Limit 방지를 위한 딜레이 (약 1초)
     if (i < targetHpids.length - 1) {
       await new Promise((resolve) => setTimeout(resolve, 1000));

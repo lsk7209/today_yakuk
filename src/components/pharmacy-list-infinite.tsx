@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Pharmacy } from "@/types/pharmacy";
 import { getOperatingStatus } from "@/lib/hours";
 import { PharmacyCard } from "./pharmacy-card";
-import { AdsPlaceholder } from "./ads-placeholder";
+
 
 type FilterKey = "all" | "open" | "night" | "holiday";
 
@@ -74,16 +74,7 @@ export function PharmacyListInfinite({
     return base;
   }, [itemsWithDistance, filter, sortMode, userLocation]);
 
-  const withAds = useMemo(() => {
-    const blocks: Array<RenderPharmacy | { ad: true; id: string }> = [];
-    filtered.forEach((item, idx) => {
-      blocks.push(item);
-      if ((idx + 1) % 5 === 0) {
-        blocks.push({ ad: true, id: `ad-${idx}` });
-      }
-    });
-    return blocks;
-  }, [filtered]);
+
 
   const requestLocation = useCallback(() => {
     if (locationLoading) return;
@@ -145,11 +136,10 @@ export function PharmacyListInfinite({
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold border transition ${
-                  active
-                    ? "bg-brand-600 text-white border-brand-600 shadow-sm"
-                    : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
-                }`}
+                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold border transition ${active
+                  ? "bg-brand-600 text-white border-brand-600 shadow-sm"
+                  : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
+                  }`}
               >
                 {label}
               </button>
@@ -160,22 +150,20 @@ export function PharmacyListInfinite({
           <button
             onClick={requestLocation}
             disabled={locationLoading}
-            className={`rounded-full px-3 py-1 font-semibold border ${
-              userLocation
-                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
-            } ${locationLoading ? "opacity-60" : ""}`}
+            className={`rounded-full px-3 py-1 font-semibold border ${userLocation
+              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+              : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
+              } ${locationLoading ? "opacity-60" : ""}`}
           >
             {userLocation ? "거리 표시 활성" : "거리 표시 (권한 필요)"}
           </button>
           <button
             onClick={() => setSortMode((prev) => (prev === "distance" ? "default" : "distance"))}
             disabled={!userLocation}
-            className={`rounded-full px-3 py-1 font-semibold border ${
-              sortMode === "distance"
-                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
-            } ${!userLocation ? "opacity-60 pointer-events-none" : ""}`}
+            className={`rounded-full px-3 py-1 font-semibold border ${sortMode === "distance"
+              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+              : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
+              } ${!userLocation ? "opacity-60 pointer-events-none" : ""}`}
           >
             거리순 정렬
           </button>
@@ -183,21 +171,17 @@ export function PharmacyListInfinite({
         </div>
       </div>
 
-      {withAds.length === 0 ? (
+      {filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[var(--border)] bg-white p-6 text-center text-sm text-[var(--muted)]">
           선택한 조건에 맞는 약국이 없습니다. 필터를 리셋하거나 다른 지역을 선택하세요.
         </div>
       ) : (
         <div className="space-y-4">
-          {withAds.map((item) =>
-            "ad" in item ? (
-              <AdsPlaceholder key={item.id} />
-            ) : (
-              <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
-                <PharmacyCard pharmacy={item} distanceKm={item.distanceKm} />
-              </div>
-            ),
-          )}
+          {filtered.map((item) => (
+            <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
+              <PharmacyCard pharmacy={item} distanceKm={item.distanceKm} />
+            </div>
+          ))}
         </div>
       )}
 

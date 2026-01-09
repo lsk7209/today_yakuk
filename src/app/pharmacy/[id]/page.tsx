@@ -25,7 +25,7 @@ import {
   getSeoulNow,
 } from "@/lib/hours";
 import { Pharmacy } from "@/types/pharmacy";
-import { AdsPlaceholder } from "@/components/ads-placeholder";
+
 import { StickyFab } from "@/components/sticky-fab";
 import { JsonLd } from "@/components/seo/json-ld";
 import { CopyButton } from "@/components/copy-button";
@@ -307,7 +307,7 @@ async function Content({
         </div>
       </section>
 
-      <AdsPlaceholder label="광고 표시 영역 (ATF)" height={160} />
+
 
       {/* 요약 (content_queue > gemini_summary > 템플릿 순서) */}
       {(contentQueue?.ai_summary || pharmacy.gemini_summary || finalSummary) && (
@@ -354,7 +354,7 @@ async function Content({
             <ExternalLink className="h-3 w-3" />
           </Link>
         </div>
-        <AdsPlaceholder label="광고 표시 영역 (CTA 하단)" height={160} />
+
         <div className="space-y-4 text-base text-gray-800 leading-relaxed">
           {descriptions.map((line, idx) => {
             // 중요 정보(전화번호, 영업시간, 주소) 강조
@@ -449,11 +449,10 @@ async function Content({
             return (
               <div
                 key={key}
-                className={`rounded-xl border-2 px-4 py-4 transition-all ${
-                  isToday
+                className={`rounded-xl border-2 px-4 py-4 transition-all ${isToday
                     ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 shadow-lg scale-105"
                     : "border-gray-200 bg-gray-50 hover:border-gray-300 hover:shadow-md"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <p className={`text-base font-black ${isToday ? "text-emerald-800" : "text-gray-800"}`}>
@@ -478,7 +477,7 @@ async function Content({
         </div>
       </section>
 
-      <AdsPlaceholder label="중간 광고 영역" height={160} />
+
 
       {/* 관련 가이드/지역 허브: 크롤 맥락 + 내부링크 강화 */}
       <section className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
@@ -667,7 +666,7 @@ async function Content({
             <div className="rounded-full bg-indigo-100 p-2">
               <Info className="h-5 w-5 text-indigo-700" />
             </div>
-          <h2 className="text-2xl font-black text-gray-900">추가 안내</h2>
+            <h2 className="text-2xl font-black text-gray-900">추가 안내</h2>
           </div>
           <div className="space-y-4 mt-4">
             {extraSections.map((section, idx) => {
@@ -778,7 +777,7 @@ async function Content({
       <JsonLd id="jsonld-pharmacy" data={buildPharmacyJsonLd(pharmacy)} />
       <JsonLd id="jsonld-breadcrumbs" data={breadcrumbJsonLd} />
       <JsonLd id="jsonld-faq" data={faqJsonLd} />
-      
+
       {/* Sticky FAB (모바일 전용) */}
       <StickyFab tel={pharmacy.tel} mapUrl={mapUrl} />
     </article>

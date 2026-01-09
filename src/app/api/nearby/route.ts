@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { distanceKm } from "@/lib/data/pharmacies";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
@@ -35,7 +36,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "데이터를 불러오지 못했습니다." }, { status: 500 });
   }
 
-  const within = (data ?? [])
+  const within = ((data ?? []) as any[])
     .filter((p) => p.latitude && p.longitude)
     .map((p) => ({
       pharmacy: p,

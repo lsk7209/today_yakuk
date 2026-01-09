@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { LocateFixed, MapPin, ShieldCheck } from "lucide-react";
 import { PharmacyCard } from "@/components/pharmacy-card";
-import { AdsPlaceholder } from "@/components/ads-placeholder";
+
 import { getOperatingStatus } from "@/lib/hours";
+import type { PharmacyCardProps } from "@/components/pharmacy-card";
 
 type NearbyPharmacy = PharmacyCardProps["pharmacy"] & { distanceKm?: number };
 
@@ -14,7 +15,7 @@ type NearbyResponse = {
   total: number;
 };
 
-import type { PharmacyCardProps } from "@/components/pharmacy-card";
+
 
 export default function NearbyPage() {
   const [items, setItems] = useState<NearbyPharmacy[]>([]);
@@ -81,18 +82,7 @@ export default function NearbyPage() {
   const rest = sorted.slice(3);
   const listForAds = topThree.length ? rest : sorted;
 
-  const adsInserted = useMemo(() => {
-    const blocks: Array<
-      { ad: true; id: string } | (PharmacyCardProps["pharmacy"] & { distanceKm?: number })
-    > = [];
-    listForAds.forEach((p, idx) => {
-      blocks.push(p);
-      if ((idx + 1) % 5 === 0) {
-        blocks.push({ ad: true, id: `ad-${idx}` });
-      }
-    });
-    return blocks;
-  }, [listForAds]);
+
 
   return (
     <div className="container py-10 sm:py-14 space-y-6">
@@ -115,11 +105,10 @@ export default function NearbyPage() {
                 setItems([]);
                 setRadiusKm(r);
               }}
-              className={`rounded-full px-3 py-1 font-semibold border ${
-                radiusKm === r
-                  ? "bg-brand-600 text-white border-brand-600"
-                  : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
-              }`}
+              className={`rounded-full px-3 py-1 font-semibold border ${radiusKm === r
+                ? "bg-brand-600 text-white border-brand-600"
+                : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
+                }`}
             >
               반경 {r}km
             </button>
@@ -127,21 +116,19 @@ export default function NearbyPage() {
           <span className="mx-2 h-4 w-px bg-[var(--border)]" />
           <button
             onClick={() => setSortMode("distance")}
-            className={`rounded-full px-3 py-1 font-semibold border ${
-              sortMode === "distance"
-                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
-            }`}
+            className={`rounded-full px-3 py-1 font-semibold border ${sortMode === "distance"
+              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+              : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
+              }`}
           >
             거리순
           </button>
           <button
             onClick={() => setSortMode("closing")}
-            className={`rounded-full px-3 py-1 font-semibold border ${
-              sortMode === "closing"
-                ? "bg-amber-50 text-amber-800 border-amber-200"
-                : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
-            }`}
+            className={`rounded-full px-3 py-1 font-semibold border ${sortMode === "closing"
+              ? "bg-amber-50 text-amber-800 border-amber-200"
+              : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
+              }`}
           >
             종료 임박순
           </button>
@@ -210,17 +197,13 @@ export default function NearbyPage() {
         </section>
       ) : null}
 
-      {adsInserted.length > 0 ? (
-              <div className="space-y-4">
-          {adsInserted.map((item) =>
-            "ad" in item ? (
-                    <AdsPlaceholder key={item.id} height={150} />
-            ) : (
-              <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
-                <PharmacyCard pharmacy={item} distanceKm={item.distanceKm} />
-              </div>
-            ),
-          )}
+      {listForAds.length > 0 ? (
+        <div className="space-y-4">
+          {listForAds.map((item) => (
+            <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
+              <PharmacyCard pharmacy={item} distanceKm={item.distanceKm} />
+            </div>
+          ))}
         </div>
       ) : null}
 

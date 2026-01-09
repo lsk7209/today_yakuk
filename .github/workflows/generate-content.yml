@@ -1,6 +1,13 @@
 name: Generate Pharmacy Content
 
 on:
+  schedule:
+    # 한국 시간 08:00 (UTC 23:00)
+    - cron: "0 23 * * *"
+    # 한국 시간 14:00 (UTC 05:00)
+    - cron: "0 5 * * *"
+    # 한국 시간 20:00 (UTC 11:00)
+    - cron: "0 11 * * *"
   # Gemini 기반 대량 생성은 중단합니다. 필요 시에만 수동 실행하세요.
   workflow_dispatch:
     inputs:

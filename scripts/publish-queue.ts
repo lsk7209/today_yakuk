@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { requestIndexing } from "../src/lib/google-indexing";
 
 type ContentQueueStatus = "pending" | "review" | "published" | "failed";
 
@@ -112,6 +113,25 @@ async function publishPending(limit = 2) {
   if (updateError) throw updateError;
 
   console.info(`Published ${rows.length} items:`, rows.map((r) => r.id));
+
+  // Google Indexing API 호출
+  // 실패해도 전체 프로세스를 중단하지 않음 (로그만 남김)
+  for (const row of rows) {
+    if (!row.id) continue;
+    // content_queue의 hpid를 사용하여 URL 생성
+    // rows에는 hpid가 없으므로 ready 배열에서 참조해야 함
+    const originalItem = ready.find((r) => r.id === row.id);
+    if (originalItem?.hpid) {
+      const url = `${siteUrl}/pharmacy/${originalItem.hpid}`;
+      console.info(`Requesting indexing for: ${url}`);
+      await requestIndexing(url, "URL_UPDATED");
+    } else if (originalItem?.slug) {
+      // HPID가 없으면 블로그 포스트로 간주
+      const url = `${siteUrl}/blog/${originalItem.slug}`;
+      console.info(`Requesting indexing for: ${url}`);
+      await requestIndexing(url, "URL_UPDATED");
+    }
+  }
 }
 
 async function main() {
