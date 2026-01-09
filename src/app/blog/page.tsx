@@ -47,6 +47,43 @@ const posts = [
     slug: "summer-first-aid-kit",
     tags: ["여름", "여행", "상비약"],
   },
+
+  {
+    title: "약국에서 자주 묻는 질문 TOP10과 답변",
+    description: "약 복용 시간, 술 마신 후 약 복용, 유효기간 지난 약 처리 등 약국에서 가장 많이 묻는 질문 10가지를 정리해 드립니다.",
+    slug: "pharmacy-faq-top10",
+    tags: ["약국이용팁", "복약지도", "상식"],
+  },
+  {
+    title: "여행 중 처방전 분실 시 대처법",
+    description: "즐거운 여행 중 복용하던 약을 잃어버렸다면? 처방전 재발급 방법, 약국에서의 대체 조제 가능 여부, 응급실 방문 기준 등 현실적인 대처법을 알려드립니다.",
+    slug: "lost-prescription-action-guide",
+    tags: ["처방전", "분실", "여행"],
+  },
+  {
+    title: "피부 트러블(벌레·햇빛) 응급 처치 키트",
+    description: "여름철 야외활동이나 여행 시 필수! 벌레 물렸을 때, 햇빛 화상 입었을 때, 갑작스러운 알러지에 대비하는 약국 상비약 키트를 소개합니다.",
+    slug: "skin-trouble-first-aid-kit",
+    tags: ["상비약", "벌레물림", "화상"],
+  },
+  {
+    title: "소화불량·과음 후 약국에서 물어볼 것",
+    description: "속이 더부룩하거나 술 마신 다음 날 머리가 깨질 듯 아플 때! 약국에서 증상에 딱 맞는 약을 고르는 꿀팁을 알려드립니다.",
+    slug: "digestion-hangover-pharmacy-guide",
+    tags: ["소화불량", "숙취해소", "약국팁"],
+  },
+  {
+    title: "고혈압·당뇨약 복용자, 명절/연휴 대비 필수 체크리스트",
+    description: "약이 떨어지면 큰일 나는 만성질환자분들을 위해! 연휴 전 약 관리법, 깜빡했을 때 대처법, 그리고 음식 조절 팁까지 정리했습니다.",
+    slug: "hypertension-diabetes-holiday-tips",
+    tags: ["만성질환", "고혈압", "당뇨"],
+  },
+  {
+    title: "임산부가 약국 이용 시 유의사항",
+    description: "임신 중 감기, 변비, 두통이 생겼을 때 참아야만 할까요? 임산부가 안전하게 복용할 수 있는 약과 약국 방문 시 꼭 확인해야 할 체크리스트를 안내합니다.",
+    slug: "pregnancy-pharmacy-guide",
+    tags: ["임산부", "약물복용", "안전"],
+  },
 ];
 
 export default function BlogIndexPage() {
