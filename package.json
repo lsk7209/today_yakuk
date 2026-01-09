@@ -13,6 +13,7 @@
     "generate:content": "ts-node --project tsconfig.sync.json scripts/generate-pharmacy-content.ts",
     "generate:single": "ts-node --project tsconfig.sync.json scripts/generate-single-pharmacy.ts",
     "generate:summary": "ts-node --project tsconfig.sync.json scripts/generate-gemini-summary.ts",
+    "generate:blog": "ts-node --project tsconfig.sync.json scripts/generate-blog-post.ts",
     "sitemap": "next-sitemap"
   },
   "dependencies": {
