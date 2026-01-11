@@ -20,14 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-    const articleJsonLd = buildArticleJsonLd(
-        metaTitle,
-        metaDescription,
-        "/blog/lost-prescription-action-guide",
-        "https://todayyakuk.com/og-image.svg",
-        "2024-05-21T09:00:00+09:00",
-        "2024-05-21T09:00:00+09:00"
-    );
+    const articleJsonLd = buildArticleJsonLd({
+        title: metaTitle,
+        description: metaDescription,
+        slug: "/blog/lost-prescription-action-guide",
+    });
 
     return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
@@ -39,7 +36,7 @@ export default function Page() {
                     여행 중 처방전(약) 분실 시 당황하지 않고 대처하는 법
                 </h1>
                 <p className="text-lg text-gray-600">
-                    "혈압약인데 하루라도 안 먹으면 불안해요", "아이 항생제를 잃어버렸어요" <br className="hidden sm:block" />
+                    &quot;혈압약인데 하루라도 안 먹으면 불안해요&quot;, &quot;아이 항생제를 잃어버렸어요&quot; <br className="hidden sm:block" />
                     낯선 곳에서 약을 잃어버렸을 때 가장 빠르게 해결하는 방법을 단계별로 안내합니다.
                 </p>
             </div>
@@ -53,7 +50,7 @@ export default function Page() {
                     예: 가벼운 진통제, 소화제, 알러지약, 파스 등은 처방전 없이 구매 가능합니다.
                 </p>
 
-                <h3>2. 기존 다니던 병원에 전화하여 '처방전 전송' 요청하기</h3>
+                <h3>2. 기존 다니던 병원에 전화하여 &apos;처방전 전송&apos; 요청하기</h3>
                 <p>
                     가장 확실한 방법은 원래 진료받았던 병원에 연락하는 것입니다.
                     현재 위치 근처의 약국 팩스 번호를 병원에 알려주면, 병원에서 약국으로 처방전을 팩스 전송해 줄 수 있습니다.
@@ -65,9 +62,9 @@ export default function Page() {
 
                 <h3>3. 근처 병원 방문하여 재처방 받기</h3>
                 <p>
-                    팩스 전송이 어렵다면 근처 병원을 방문해야 합니다. 이때 중요한 것은 <strong>'내가 먹던 약의 정보'</strong>입니다.
+                    팩스 전송이 어렵다면 근처 병원을 방문해야 합니다. 이때 중요한 것은 <strong>&apos;내가 먹던 약의 정보&apos;</strong>입니다.
                     <ul>
-                        <li>건강보험심사평가원 '내가 먹는 약! 한눈에' 서비스 조회</li>
+                        <li>건강보험심사평가원 &apos;내가 먹는 약! 한눈에&apos; 서비스 조회</li>
                         <li>처방전 사진 또는 약 봉투 사진 제시</li>
                         <li>복용 중인 약의 정확한 이름이나 모양 설명</li>
                     </ul>

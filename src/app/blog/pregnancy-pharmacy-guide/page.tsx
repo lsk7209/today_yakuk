@@ -20,14 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-    const articleJsonLd = buildArticleJsonLd(
-        metaTitle,
-        metaDescription,
-        "/blog/pregnancy-pharmacy-guide",
-        "https://todayyakuk.com/og-image.svg",
-        "2024-05-25T09:00:00+09:00",
-        "2024-05-25T09:00:00+09:00"
-    );
+    const articleJsonLd = buildArticleJsonLd({
+        title: metaTitle,
+        description: metaDescription,
+        slug: "/blog/pregnancy-pharmacy-guide",
+    });
 
     return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
@@ -45,7 +42,7 @@ export default function Page() {
             </div>
 
             <div className="prose prose-lg prose-brand mx-auto text-gray-700">
-                <h3>1. "무조건 참기"는 위험할 수 있습니다</h3>
+                <h3>1. &quot;무조건 참기&quot;는 위험할 수 있습니다</h3>
                 <p>
                     고열(38도 이상)이 지속되면 태아의 신경계 발달에 영향을 줄 수 있습니다.
                     따라서 열이 나거나 통증이 심할 때는 의사나 약사와 상담하여 안전한 약을 복용하는 것이 오히려 태아를 지키는 방법입니다.
@@ -66,7 +63,7 @@ export default function Page() {
 
                 <h3>3. 임산부 약물 안전 등급 (DUR) 확인하기</h3>
                 <p>
-                    모든 약에는 '임부 금기 등급'이 있습니다. 병원이나 약국 전산 시스템(DUR)에서 처방 조제 시 자동으로 걸러주지만, 일반의약품을 살 때는 약사님께 <strong>"저 임신 O주차예요"</strong>라고 먼저 말씀해 주시는 것이 가장 확실한 안전장치입니다.
+                    모든 약에는 &apos;임부 금기 등급&apos;이 있습니다. 병원이나 약국 전산 시스템(DUR)에서 처방 조제 시 자동으로 걸러주지만, 일반의약품을 살 때는 약사님께 <strong>&quot;저 임신 O주차예요&quot;</strong>라고 먼저 말씀해 주시는 것이 가장 확실한 안전장치입니다.
                 </p>
 
                 <h3>4. 영양제 섭취, 과유불급!</h3>

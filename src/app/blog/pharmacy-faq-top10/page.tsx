@@ -63,14 +63,11 @@ const faqList = [
 ];
 
 export default function Page() {
-    const articleJsonLd = buildArticleJsonLd(
-        metaTitle,
-        metaDescription,
-        "/blog/pharmacy-faq-top10",
-        "https://todayyakuk.com/og-image.svg",
-        "2024-05-20T09:00:00+09:00",
-        "2024-05-20T09:00:00+09:00"
-    );
+    const articleJsonLd = buildArticleJsonLd({
+        title: metaTitle,
+        description: metaDescription,
+        slug: "/blog/pharmacy-faq-top10",
+    });
 
     return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">

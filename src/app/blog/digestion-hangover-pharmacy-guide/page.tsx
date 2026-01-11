@@ -20,14 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-    const articleJsonLd = buildArticleJsonLd(
-        metaTitle,
-        metaDescription,
-        "/blog/digestion-hangover-pharmacy-guide",
-        "https://todayyakuk.com/og-image.svg",
-        "2024-05-23T09:00:00+09:00",
-        "2024-05-23T09:00:00+09:00"
-    );
+    const articleJsonLd = buildArticleJsonLd({
+        title: metaTitle,
+        description: metaDescription,
+        slug: "/blog/digestion-hangover-pharmacy-guide",
+    });
 
     return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
@@ -39,14 +36,14 @@ export default function Page() {
                     체했을 때 vs 숙취가 심할 때, 약국에서 뭐 달라고 하지?
                 </h1>
                 <p className="text-lg text-gray-600">
-                    "그냥 소화제 주세요", "술 깨는 약 주세요"라고만 하시나요? <br className="hidden sm:block" />
+                    &quot;그냥 소화제 주세요&quot;, &quot;술 깨는 약 주세요&quot;라고만 하시나요? <br className="hidden sm:block" />
                     증상을 더 구체적으로 말하면 효과 직빵(?)인 약을 받을 수 있습니다.
                 </p>
             </div>
 
             <div className="prose prose-lg prose-brand mx-auto text-gray-700">
                 <h3>🤢 PART 1: 소화불량, 증상별로 약이 다르다!</h3>
-                <p>단순히 '소화제' 하나가 만능이 아닙니다. 내 증상을 체크해보세요.</p>
+                <p>단순히 &apos;소화제&apos; 하나가 만능이 아닙니다. 내 증상을 체크해보세요.</p>
                 <ul>
                     <li>
                         <strong>과식으로 꽉 막힌 느낌:</strong> 소화효소제(베아제, 훼스탈 등)가 음식물 분해를 돕습니다.
@@ -91,9 +88,9 @@ export default function Page() {
                         약사님께 이렇게 말해보세요
                     </h4>
                     <p className="m-0 text-gray-700">
-                        "어제 회식 때 소주 2병 마셨는데, 아직도 <strong>속이 울렁거리고 토할 것 같아요.</strong>"
+                        &quot;어제 회식 때 소주 2병 마셨는데, 아직도 <strong>속이 울렁거리고 토할 것 같아요.</strong>&quot;
                         <br />
-                        "기름진 걸 많이 먹었더니 <strong>명치가 콕콕 찌르듯이 아파요.</strong>"
+                        &quot;기름진 걸 많이 먹었더니 <strong>명치가 콕콕 찌르듯이 아파요.</strong>&quot;
                     </p>
                 </div>
             </div>

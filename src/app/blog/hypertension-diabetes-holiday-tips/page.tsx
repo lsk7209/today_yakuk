@@ -20,14 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-    const articleJsonLd = buildArticleJsonLd(
-        metaTitle,
-        metaDescription,
-        "/blog/hypertension-diabetes-holiday-tips",
-        "https://todayyakuk.com/og-image.svg",
-        "2024-05-24T09:00:00+09:00",
-        "2024-05-24T09:00:00+09:00"
-    );
+    const articleJsonLd = buildArticleJsonLd({
+        title: metaTitle,
+        description: metaDescription,
+        slug: "/blog/hypertension-diabetes-holiday-tips",
+    });
 
     return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
@@ -45,9 +42,9 @@ export default function Page() {
             </div>
 
             <div className="prose prose-lg prose-brand mx-auto text-gray-700">
-                <h3>1. 약 재고 파악은 '일주일 전'에!</h3>
+                <h3>1. 약 재고 파악은 &apos;일주일 전&apos;에!</h3>
                 <p>
-                    가장 흔한 실수가 "연휴 시작 전날 병원 가야지"라고 미루는 것입니다.
+                    가장 흔한 실수가 &quot;연휴 시작 전날 병원 가야지&quot;라고 미루는 것입니다.
                     연휴 직전에는 대기 환자가 많거나 조기 마감될 수 있습니다.
                     최소 일주일 전에 남은 약 개수를 세어보고, 연휴 기간을 포함해 <strong>3~5일치 여유분</strong>을 미리 처방받으세요.
                 </p>

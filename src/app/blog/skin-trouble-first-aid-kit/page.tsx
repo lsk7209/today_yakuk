@@ -20,14 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-    const articleJsonLd = buildArticleJsonLd(
-        metaTitle,
-        metaDescription,
-        "/blog/skin-trouble-first-aid-kit",
-        "https://todayyakuk.com/og-image.svg",
-        "2024-05-22T09:00:00+09:00",
-        "2024-05-22T09:00:00+09:00"
-    );
+    const articleJsonLd = buildArticleJsonLd({
+        title: metaTitle,
+        description: metaDescription,
+        slug: "/blog/skin-trouble-first-aid-kit",
+    });
 
     return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
@@ -58,7 +55,7 @@ export default function Page() {
                         <span className="text-sm text-gray-500">* 긁어서 상처가 난 곳에는 항생제 연고를 먼저 발라야 합니다.</span>
                     </li>
                     <li>
-                        <strong>모기 기피제:</strong> 예방이 최선! '이카리딘' 성분 함유 제품이 안전하고 효과적입니다.
+                        <strong>모기 기피제:</strong> 예방이 최선! &apos;이카리딘&apos; 성분 함유 제품이 안전하고 효과적입니다.
                     </li>
                 </ul>
 
@@ -91,9 +88,9 @@ export default function Page() {
 
                 <h3>💡 팁: 약국에서 이렇게 말씀하세요</h3>
                 <p className="bg-gray-50 p-4 rounded-lg">
-                    "주말에 캠핑 가는데, 아이랑 같이 쓸 수 있는 순한 벌레약이랑 화상 연고 주세요."
+                    &quot;주말에 캠핑 가는데, 아이랑 같이 쓸 수 있는 순한 벌레약이랑 화상 연고 주세요.&quot;
                     <br />
-                    "제가 모기에 물리면 퉁퉁 붓는 알러지가 있는데, 먹는 약도 같이 챙겨주세요."
+                    &quot;제가 모기에 물리면 퉁퉁 붓는 알러지가 있는데, 먹는 약도 같이 챙겨주세요.&quot;
                 </p>
             </div>
 
