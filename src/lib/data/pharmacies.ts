@@ -124,38 +124,7 @@ export async function getPharmaciesByRegionPaginated(
   }
 }
 
-/**
- * 모든 약국의 hpid와 updated_at을 조회합니다.
- * 
- * ⚠️ 주의: 이 함수는 Supabase의 기본 제한(1000건)에 걸릴 수 있습니다.
- * 대량 데이터가 필요한 경우 `getPharmacyHpidsChunk`를 사용하여 페이지네이션으로 처리하세요.
- * 
- * @deprecated 대량 데이터 조회 시 제한이 있을 수 있으므로 `getPharmacyHpidsChunk` 사용을 권장합니다.
- * @returns 약국 hpid와 updated_at 배열
- */
-export async function getAllPharmacyHpids(): Promise<
-  { hpid: string; updated_at: string | null }[]
-> {
-  try {
-    const supabase = getSupabaseServerClient();
-    // Supabase 기본 제한: 1000건
-    // 더 많은 데이터가 필요한 경우 getPharmacyHpidsChunk 사용
-    const { data, error } = await supabase
-      .from("pharmacies")
-      .select("hpid, updated_at")
-      .order("hpid", { ascending: true })
-      .limit(1000); // Supabase 기본 제한 명시
 
-    if (error) {
-      console.error("pharmacy hpid fetch error", error);
-      return [];
-    }
-    return data ?? [];
-  } catch (e) {
-    console.error("pharmacy hpid fetch exception", e);
-    return [];
-  }
-}
 
 export async function getPharmacyCount(): Promise<number> {
   try {

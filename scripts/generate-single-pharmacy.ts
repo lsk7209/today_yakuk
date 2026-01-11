@@ -12,99 +12,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseServerClient } from "../src/lib/supabase-server";
 import { generatePharmacyContent } from "../src/lib/gemini";
 import type { Pharmacy } from "../src/types/pharmacy";
+import { getPharmacyByHpid, getPharmaciesByRegion } from "@/lib/data/pharmacies";
 
 const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const geminiApiKey = process.env.GEMINI_API_KEY;
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://todaypharm.kr").replace(/\/$/, "");
 
-// 지역 정규화 함수
-const PROVINCE_MAP: Record<string, string> = {
-  서울: "서울특별시",
-  서울특별시: "서울특별시",
-  부산: "부산광역시",
-  부산광역시: "부산광역시",
-  대구: "대구광역시",
-  대구광역시: "대구광역시",
-  인천: "인천광역시",
-  인천광역시: "인천광역시",
-  광주: "광주광역시",
-  광주광역시: "광주광역시",
-  대전: "대전광역시",
-  대전광역시: "대전광역시",
-  울산: "울산광역시",
-  울산광역시: "울산광역시",
-  세종: "세종특별자치시",
-  세종특별자치시: "세종특별자치시",
-  경기: "경기",
-  경기도: "경기",
-  강원: "강원특별자치도",
-  강원특별자치도: "강원특별자치도",
-  충남: "충청남도",
-  충청남도: "충청남도",
-  충북: "충청북도",
-  충청북도: "충청북도",
-  전남: "전라남도",
-  전라남도: "전라남도",
-  전북: "전라북도",
-  전라북도: "전라북도",
-  경남: "경상남도",
-  경상남도: "경상남도",
-  경북: "경상북도",
-  경상북도: "경상북도",
-  제주: "제주특별자치도",
-  제주특별자치도: "제주특별자치도",
-};
 
-function normalizeProvince(input: string): string | null {
-  const trimmed = input.trim();
-  if (!trimmed) return null;
-  return PROVINCE_MAP[trimmed] ?? trimmed;
-}
-
-async function getPharmacyByHpid(hpid: string): Promise<Pharmacy | null> {
-  try {
-    const supabase = getSupabaseServerClient();
-    const { data, error } = await supabase
-      .from("pharmacies")
-      .select("*")
-      .eq("hpid", hpid)
-      .maybeSingle();
-    if (error) {
-      console.error("pharmacy fetch error", error);
-      return null;
-    }
-    return data as Pharmacy | null;
-  } catch (e) {
-    console.error("pharmacy fetch exception", e);
-    return null;
-  }
-}
-
-async function getPharmaciesByRegion(
-  province: string,
-  city?: string,
-): Promise<Pharmacy[]> {
-  try {
-    const supabase = getSupabaseServerClient();
-    const normalizedProvince = normalizeProvince(province);
-    if (!normalizedProvince) return [];
-
-    let query = supabase.from("pharmacies").select("*").eq("province", normalizedProvince);
-    if (city && city !== "전체") {
-      query = query.eq("city", city);
-    }
-    const { data, error } = await query.order("name", { ascending: true }).limit(500);
-    if (error) {
-      console.error("pharmacies region fetch error", error);
-      return [];
-    }
-    return (data as Pharmacy[]) ?? [];
-  } catch (e) {
-    console.error("pharmacies region fetch exception", e);
-    return [];
-  }
-}
 
 type ContentQueueInsert = {
   hpid: string | null;
@@ -263,7 +178,7 @@ async function generateSinglePharmacyContent(hpid: string): Promise<void> {
     console.info(`- 요약: ${existing.ai_summary ? "있음" : "없음"}`);
     console.info(`- FAQ: ${existing.ai_faq ? `${Array.isArray(existing.ai_faq) ? existing.ai_faq.length : 0}개` : "없음"}`);
     console.info(`- 발행일: ${existing.published_at || "없음"}`);
-    
+
     if (existing.status === "published" && existing.ai_summary && existing.ai_faq) {
       console.info(`\n⚠️  이미 발행된 컨텐츠가 있습니다. 업데이트하려면 기존 항목을 덮어씁니다.\n`);
     }
@@ -387,14 +302,14 @@ async function generateSinglePharmacyContent(hpid: string): Promise<void> {
       // content_queue 테이블이 없거나 오류가 발생한 경우
       if (queueError?.code === "PGRST205" || queueError?.message?.includes("content_queue")) {
         console.warn(`⚠️  content_queue 테이블이 없습니다. 생성된 콘텐츠를 JSON 파일로 저장합니다.\n`);
-        
+
         // JSON 파일로 저장
         const fs = require("fs");
         const outputDir = path.join(process.cwd(), "generated-content");
         if (!fs.existsSync(outputDir)) {
           fs.mkdirSync(outputDir, { recursive: true });
         }
-        
+
         const outputFile = path.join(outputDir, `${hpid}.json`);
         const outputData = {
           hpid,
@@ -403,9 +318,9 @@ async function generateSinglePharmacyContent(hpid: string): Promise<void> {
           content: geminiContent,
           queue_item: queueItem,
         };
-        
+
         fs.writeFileSync(outputFile, JSON.stringify(outputData, null, 2));
-        
+
         console.info(`✅ JSON 파일 저장 완료: ${outputFile}\n`);
         console.warn(`⚠️  content_queue 테이블을 생성하려면 다음 SQL을 Supabase에서 실행하세요:\n`);
         console.warn(`   파일: supabase/content_queue.sql\n`);
@@ -421,7 +336,7 @@ async function generateSinglePharmacyContent(hpid: string): Promise<void> {
       .from("pharmacies")
       .update({ updated_at: new Date().toISOString() })
       .eq("hpid", pharmacy.hpid);
-    
+
     console.info(`✅ 약국 정보 업데이트 시간 갱신 완료\n`);
 
     console.info(`🌐 상세 페이지 확인: ${siteUrl}/pharmacy/${pharmacy.hpid}`);
