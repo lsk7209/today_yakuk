@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
-import { Search, Tag, Filter } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import Image from "next/image";
 
 export const metadata: Metadata = {
