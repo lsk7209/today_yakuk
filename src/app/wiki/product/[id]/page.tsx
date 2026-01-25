@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { NutrientChartJS } from "@/components/wiki/NutrientChartJS";
 import { linkIngredients } from "@/utils/text-linker";
@@ -138,10 +139,11 @@ export default async function ProductDetailPage({
                     <div className="w-full md:w-64 h-64 bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden flex items-center justify-center shrink-0 shadow-inner relative">
                         {supplement.image_url ? (
                             <div className="relative w-full h-full p-4 hover:scale-105 transition-transform duration-500">
-                                <img
+                                <Image
                                     src={supplement.image_url}
                                     alt={supplement.name}
-                                    className="w-full h-full object-contain"
+                                    fill
+                                    className="object-contain"
                                 />
                             </div>
                         ) : (

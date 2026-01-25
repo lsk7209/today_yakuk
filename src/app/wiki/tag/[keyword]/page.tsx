@@ -4,7 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSiteUrl } from "@/lib/site-url";
-import { Tag, ChevronLeft } from "lucide-react";
+import { Tag } from "lucide-react";
 import { Breadcrumb } from "@/components/breadcrumb";
 
 // ISR: Revalidate every 24 hours
@@ -98,7 +98,7 @@ export default async function TagPage({
             {!products || products.length === 0 ? (
                 <div className="premium-card bg-white py-24 rounded-3xl border border-dashed border-slate-200 text-center">
                     <div className="text-5xl mb-6">🔍</div>
-                    <p className="text-xl text-slate-400 font-bold italic">"{keyword}" 태그에 해당하는 제품을 준비 중입니다.</p>
+                    <p className="text-xl text-slate-400 font-bold italic">&quot;{keyword}&quot; 태그에 해당하는 제품을 준비 중입니다.</p>
                     <Link href="/wiki" className="mt-8 inline-block text-brand-600 font-black hover:underline">
                         전체 위키 목록 보기 →
                     </Link>
@@ -150,10 +150,11 @@ function ProductCard({ product }: { product: Supplement }) {
             <div className="flex items-start gap-4 mb-5">
                 {product.image_url ? (
                     <div className="relative w-16 h-16 shrink-0 bg-slate-50 rounded-2xl border border-slate-100 overflow-hidden p-2">
-                        <img
+                        <Image
                             src={product.image_url}
                             alt={product.name}
-                            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                            fill
+                            className="object-contain group-hover:scale-110 transition-transform duration-500"
                         />
                     </div>
                 ) : (
