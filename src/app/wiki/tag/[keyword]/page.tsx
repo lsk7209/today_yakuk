@@ -26,10 +26,20 @@ interface TagPageProps {
 
 const ITEMS_PER_PAGE = 12;
 
+const TAG_SLUG_MAP: Record<string, string> = {
+    "probiotics": "유산균",
+    "vitamin-c": "비타민C",
+    "omega3": "오메가3",
+    "eye": "눈건강",
+    "fatigue": "피로회복",
+    "immune": "면역력",
+};
+
 export async function generateMetadata({
     params,
 }: TagPageProps): Promise<Metadata> {
-    const keyword = decodeURIComponent(params.keyword);
+    const rawKeyword = decodeURIComponent(params.keyword);
+    const keyword = TAG_SLUG_MAP[rawKeyword] || rawKeyword;
     const siteUrl = getSiteUrl();
 
     return {
@@ -41,13 +51,17 @@ export async function generateMetadata({
     };
 }
 
-
-
 export default async function TagPage({
     params,
     searchParams,
 }: TagPageProps) {
-    const keyword = decodeURIComponent(params.keyword);
+    const rawKeyword = decodeURIComponent(params.keyword);
+    // 1. 매핑된 태그가 있다면 사용, 없다면 원래 키워드 사용 (한글 유입 고려)
+    const keyword = TAG_SLUG_MAP[rawKeyword] || rawKeyword;
+
+    // 2. UI 표시용 태그 (매핑된 경우 한글, 아니면 그대로)
+    const displayKeyword = keyword;
+
     const page = parseInt(searchParams.page || '1', 10);
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
@@ -69,7 +83,7 @@ export default async function TagPage({
 
     const breadcrumbItems = [
         { label: "영양제 위키", href: "/wiki" },
-        { label: `#${keyword}` },
+        { label: `#${displayKeyword}` },
     ];
 
     return (
@@ -86,7 +100,7 @@ export default async function TagPage({
                         태그 검색 결과
                     </div>
                     <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight">
-                        {keyword}
+                        {displayKeyword}
                     </h1>
                     <p className="text-lg text-slate-600 font-medium">
                         총 <span className="text-brand-700 font-black">{count || 0}</span>개의 선별된 제품이 있습니다.
@@ -98,7 +112,7 @@ export default async function TagPage({
             {!products || products.length === 0 ? (
                 <div className="premium-card bg-white py-24 rounded-3xl border border-dashed border-slate-200 text-center">
                     <div className="text-5xl mb-6">🔍</div>
-                    <p className="text-xl text-slate-400 font-bold italic">&quot;{keyword}&quot; 태그에 해당하는 제품을 준비 중입니다.</p>
+                    <p className="text-xl text-slate-400 font-bold italic">&quot;{displayKeyword}&quot; 태그에 해당하는 제품을 준비 중입니다.</p>
                     <Link href="/wiki" className="mt-8 inline-block text-brand-600 font-black hover:underline">
                         전체 위키 목록 보기 →
                     </Link>
