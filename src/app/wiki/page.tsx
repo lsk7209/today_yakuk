@@ -11,12 +11,14 @@ export const metadata: Metadata = {
     },
 };
 
-{ name: "#유산균", slug: "probiotics", emoji: "🦠" },
-{ name: "#비타민C", slug: "vitamin-c", emoji: "🍊" },
-{ name: "#오메가3", slug: "omega3", emoji: "🐟" },
-{ name: "#눈건강", slug: "eye", emoji: "👁️" },
-{ name: "#피로회복", slug: "fatigue", emoji: "⚡" },
-{ name: "#면역력", slug: "immune", emoji: "🛡️" },
+const POPULAR_TAGS = [
+    { name: "#유산균", slug: "probiotics", emoji: "🦠" },
+    { name: "#비타민C", slug: "vitamin-c", emoji: "🍊" },
+    { name: "#오메가3", slug: "omega3", emoji: "🐟" },
+    { name: "#눈건강", slug: "eye", emoji: "👁️" },
+    { name: "#피로회복", slug: "fatigue", emoji: "⚡" },
+    { name: "#면역력", slug: "immune", emoji: "🛡️" },
+];
 
 export default function WikiHomePage() {
     return (
