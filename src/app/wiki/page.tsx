@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { Search, Tag, Filter } from "lucide-react";
+import Image from "next/image";
 
 export const metadata: Metadata = {
     title: "영양제 정보",
@@ -11,12 +13,17 @@ export const metadata: Metadata = {
     },
 };
 
-import { getSupabaseServerClient } from "@/lib/supabase-server";
-import { Search, Tag, Filter } from "lucide-react";
-import Image from "next/image";
-
 // Revalidate every 24 hours
 export const revalidate = 86400;
+
+interface Supplement {
+    id: string;
+    name: string;
+    manufacturer: string | null;
+    image_url: string | null;
+    ai_summary: string | null;
+    tags: string[] | null;
+}
 
 const CATEGORIES = [
     { name: "전체", slug: "all", emoji: "✨" },
@@ -98,8 +105,8 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                                 key={cat.slug}
                                 href={cat.slug === "all" ? "/wiki" : `/wiki?category=${cat.slug}`}
                                 className={`flex items-center gap-2 px-6 py-3 rounded-2xl whitespace-nowrap font-black text-sm transition-all shadow-sm ring-1 ${isActive
-                                        ? "bg-brand-600 text-white ring-brand-600 scale-105"
-                                        : "bg-white text-slate-500 ring-slate-100 hover:bg-slate-50 hover:text-slate-900"
+                                    ? "bg-brand-600 text-white ring-brand-600 scale-105"
+                                    : "bg-white text-slate-500 ring-slate-100 hover:bg-slate-50 hover:text-slate-900"
                                     }`}
                             >
                                 <span className="text-lg">{cat.emoji}</span>
@@ -198,7 +205,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
     );
 }
 
-function ProductCard({ product }: { product: any }) {
+function ProductCard({ product }: { product: Supplement }) {
     return (
         <Link
             href={`/wiki/product/${product.id}`}
