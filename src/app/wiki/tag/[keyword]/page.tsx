@@ -67,11 +67,11 @@ export default async function TagPage({
 
     const supabase = getSupabaseServerClient();
 
-    // Get products with this tag
+    // Get products with this tag (both with and without '#' prefix)
     const { data: products, error, count } = await supabase
         .from('supplements')
         .select('id, name, manufacturer, image_url, ai_summary, tags', { count: 'exact' })
-        .contains('tags', [keyword])
+        .or(`tags.cs.{${keyword}},tags.cs.{#${keyword}}`)
         .range(offset, offset + ITEMS_PER_PAGE - 1);
 
     if (error) {
