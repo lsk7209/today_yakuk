@@ -174,13 +174,25 @@ async function syncSupplements() {
     const rawData = await fetchSupplementData(1, 10); // Fetch first 10 for testing
     console.log(`📦 Fetched ${rawData.length} supplements from API\n`);
 
-    for (const item of rawData) {
+    if (rawData.length > 0) {
+        console.log("DEBUG: Raw first item keys:", Object.keys(rawData[0]));
+        console.log("DEBUG: Raw first item sample:", JSON.stringify(rawData[0], null, 2));
+    }
+
+    for (const rawItem of rawData) {
         try {
-            const productReportNo = item.PRDLST_REPORT_NO;
-            const name = item.PRDUCT;
-            const manufacturer = item.BSSH_NM;
-            const rawMaterials = item.RAWMTRL_NM || "";
-            const nutritionStr = item.NUT_MTR || "";
+            const item = rawItem as any;
+            // Food Safety API fields can sometimes vary between camelCase and SNAKE_CASE depending on the exact endpoint
+            const productReportNo = item.PRDLST_REPORT_NO || item.LCNS_NO || item.lcns_no;
+            const name = item.PRDUCT || item.PRDLST_NM || item.prdlst_nm;
+            const manufacturer = item.BSSH_NM || item.MAKE_IT_NM || item.make_it_nm;
+            const rawMaterials = item.RAWMTRL_NM || item.RAW_MATERIALS || item.raw_materials || "";
+            const nutritionStr = item.NUT_MTR || item.STDR_STND || item.stnd_stnd || "";
+
+            if (!name) {
+                console.warn("⚠️ Skip: Product name is missing in raw data.");
+                continue;
+            }
 
             console.log(`Processing: ${name}...`);
 
