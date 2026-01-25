@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSiteUrl } from "@/lib/site-url";
 import { Tag, ChevronLeft } from "lucide-react";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
@@ -40,9 +41,7 @@ export async function generateMetadata({
     };
 }
 
-import { Breadcrumb } from "@/components/breadcrumb";
 
-// ... (existing helper function and props defined above)
 
 export default async function TagPage({
     params,
@@ -136,7 +135,7 @@ export default async function TagPage({
                             )}
                         </div>
                     )}
-                </>
+                </div>
             )}
         </div>
     );
