@@ -40,6 +40,10 @@ export async function generateMetadata({
     };
 }
 
+import { Breadcrumb } from "@/components/breadcrumb";
+
+// ... (existing helper function and props defined above)
+
 export default async function TagPage({
     params,
     searchParams,
@@ -64,34 +68,45 @@ export default async function TagPage({
 
     const totalPages = count ? Math.ceil(count / ITEMS_PER_PAGE) : 1;
 
+    const breadcrumbItems = [
+        { label: "영양제 위키", href: "/wiki" },
+        { label: `#${keyword}` },
+    ];
+
     return (
-        <div className="container py-8 max-w-6xl">
-            {/* Breadcrumb */}
-            <Link href="/wiki" className="inline-flex items-center text-sm text-brand-600 hover:text-brand-700 mb-6">
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                영양제 위키로 돌아가기
-            </Link>
+        <div className="container py-8 sm:py-12 max-w-6xl space-y-8">
+            <Breadcrumb items={breadcrumbItems} />
 
             {/* Header */}
-            <div className="mb-10">
-                <div className="inline-flex items-center gap-2 text-brand-600 mb-4">
-                    <Tag className="w-6 h-6" />
-                    <span className="text-sm font-medium uppercase tracking-wide">태그</span>
+            <header className="premium-card bg-gradient-to-br from-white to-brand-50/30 p-8 sm:p-12 rounded-[2.5rem] border border-gray-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-100/20 rounded-full translate-x-1/3 -translate-y-1/3 blur-3xl" />
+
+                <div className="relative z-10 space-y-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-black uppercase tracking-wider ring-1 ring-brand-200">
+                        <Tag className="w-3.5 h-3.5" />
+                        태그 검색 결과
+                    </div>
+                    <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight">
+                        {keyword}
+                    </h1>
+                    <p className="text-lg text-slate-600 font-medium">
+                        총 <span className="text-brand-700 font-black">{count || 0}</span>개의 선별된 제품이 있습니다.
+                    </p>
                 </div>
-                <h1 className="text-4xl font-bold mb-3">{keyword}</h1>
-                <p className="text-lg text-[var(--muted)]">
-                    총 <span className="font-semibold text-brand-600">{count || 0}</span>개의 제품
-                </p>
-            </div>
+            </header>
 
             {/* Product Grid */}
             {!products || products.length === 0 ? (
-                <div className="text-center py-16">
-                    <p className="text-lg text-[var(--muted)]">이 태그에 해당하는 제품이 없습니다.</p>
+                <div className="premium-card bg-white py-24 rounded-3xl border border-dashed border-slate-200 text-center">
+                    <div className="text-5xl mb-6">🔍</div>
+                    <p className="text-xl text-slate-400 font-bold italic">"{keyword}" 태그에 해당하는 제품을 준비 중입니다.</p>
+                    <Link href="/wiki" className="mt-8 inline-block text-brand-600 font-black hover:underline">
+                        전체 위키 목록 보기 →
+                    </Link>
                 </div>
             ) : (
-                <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                <div className="space-y-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {products.map((product: Supplement) => (
                             <ProductCard key={product.id} product={product} />
                         ))}
@@ -131,45 +146,44 @@ function ProductCard({ product }: { product: Supplement }) {
     return (
         <Link
             href={`/wiki/product/${product.id}`}
-            className="group bg-white border border-[var(--border)] rounded-2xl p-5 hover:shadow-lg transition-all hover:-translate-y-1"
+            className="group premium-card bg-white border border-gray-100 rounded-[2rem] p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full"
         >
-            <div className="flex items-start gap-4 mb-4">
+            <div className="flex items-start gap-4 mb-5">
                 {product.image_url ? (
-                    <div className="relative w-16 h-16 flex-shrink-0">
-                        <Image
+                    <div className="relative w-16 h-16 shrink-0 bg-slate-50 rounded-2xl border border-slate-100 overflow-hidden p-2">
+                        <img
                             src={product.image_url}
                             alt={product.name}
-                            fill
-                            className="object-contain rounded-lg border border-gray-200"
+                            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                         />
                     </div>
                 ) : (
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <span className="text-2xl">💊</span>
+                    <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center shrink-0 border border-slate-100">
+                        <span className="text-3xl">💊</span>
                     </div>
                 )}
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 group-hover:text-brand-600 transition-colors line-clamp-2 mb-1">
+                    <h3 className="font-black text-slate-900 group-hover:text-brand-700 transition-colors line-clamp-2 leading-tight mb-1 text-[1.1rem]">
                         {product.name}
                     </h3>
                     {product.manufacturer && (
-                        <p className="text-xs text-[var(--muted)]">{product.manufacturer}</p>
+                        <p className="text-xs text-slate-400 font-bold">{product.manufacturer}</p>
                     )}
                 </div>
             </div>
 
             {product.ai_summary && (
-                <p className="text-sm text-gray-600 line-clamp-2 mb-4">
+                <p className="text-sm text-slate-600 line-clamp-3 mb-6 flex-1 leading-relaxed">
                     {product.ai_summary}
                 </p>
             )}
 
             {product.tags && product.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5 mt-auto border-t border-slate-50 pt-4">
                     {product.tags.slice(0, 3).map((tag) => (
                         <span
                             key={tag}
-                            className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
+                            className="px-2.5 py-1 bg-slate-100 text-slate-500 text-[11px] font-black rounded-full group-hover:bg-brand-50 group-hover:text-brand-600 transition-colors"
                         >
                             #{tag}
                         </span>
