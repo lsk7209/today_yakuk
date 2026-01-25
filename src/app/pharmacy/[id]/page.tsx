@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   Phone,
   MapPin,
-  Navigation,
   Clock,
   AlertCircle,
   Sparkles,
@@ -44,6 +43,7 @@ import { buildAiLessDetailTemplate } from "@/lib/pharmacy-detail-template";
 import { getMapSearchAddress } from "@/lib/map";
 import { isIndexablePharmacy } from "@/lib/pharmacy-indexability";
 import { getPublishedContentByHpid } from "@/lib/data/content";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 type Params = { id: string };
 const siteUrl = getSiteUrl();
@@ -183,10 +183,9 @@ async function Content({
     todayOpen && todayClose ? `${todayOpen} ~ ${todayClose}` : "정보 없음";
 
   const mapAddress = getMapSearchAddress(pharmacy.address);
-  // 네이버 지도 검색은 "약국명 + 주소"보다 주소 단독이 더 안정적으로 매칭되는 경우가 많습니다.
-  // 주소가 없을 때만 약국명으로 폴백합니다.
   const mapQuery = encodeURIComponent((mapAddress || pharmacy.name).trim());
-  const mapUrl = `https://map.naver.com/p/search/${mapQuery}`;
+  const naverMapUrl = `https://map.naver.com/p/search/${mapQuery}`;
+  const kakaoMapUrl = `https://map.kakao.com/link/search/${mapQuery}`;
 
   const tmpl = buildAiLessDetailTemplate(pharmacy);
   const finalSummary = tmpl.summary;
@@ -217,9 +216,17 @@ async function Content({
     ],
   };
 
+  const breadcrumbItems = [
+    { label: "약국 찾기", href: "/nearby" },
+    { label: pharmacy.city || "지역", href: pharmacy.province && pharmacy.city ? `/${encodeURIComponent(pharmacy.province)}/${encodeURIComponent(pharmacy.city)}` : undefined },
+    { label: pharmacy.name },
+  ];
+
   return (
-    <article className="container py-10 sm:py-14 space-y-8 bg-white min-h-screen">
-      <header className="space-y-3">
+    <article className="container py-8 sm:py-12 space-y-8 bg-white min-h-screen max-w-5xl">
+      <Breadcrumb items={breadcrumbItems} />
+
+      <header className="premium-card bg-gradient-to-br from-white to-emerald-50/30 p-6 sm:p-10 rounded-[2rem] border border-gray-100 space-y-3">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex-1 min-w-0">
             <span className={getBadgeClass(status)}>
@@ -293,14 +300,22 @@ async function Content({
                 </a>
               ) : null}
               <Link
-                className="inline-flex items-center gap-2 rounded-full border-2 border-gray-300 bg-white px-5 py-2 font-black text-gray-700 hover:border-brand-400 hover:bg-brand-50 transition-colors shadow-sm"
-                href={mapUrl}
+                className="inline-flex items-center gap-2 rounded-full border-2 border-[#03C75A] bg-white px-5 py-2 font-black text-[#03C75A] hover:bg-[#03C75A]/10 transition-colors shadow-sm"
+                href={naverMapUrl}
                 target="_blank"
                 rel="noreferrer"
               >
-                <Navigation className="h-4 w-4" />
-                길찾기
-                <ExternalLink className="h-3 w-3" />
+                <span className="font-extrabold text-sm">N</span>
+                네이버 지도
+              </Link>
+              <Link
+                className="inline-flex items-center gap-2 rounded-full border-2 border-[#FAE100] bg-white px-5 py-2 font-black text-[#3C1E1E] hover:bg-[#FAE100]/20 transition-colors shadow-sm"
+                href={kakaoMapUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="font-extrabold text-sm">K</span>
+                카카오맵
               </Link>
             </div>
           </div>
@@ -345,12 +360,12 @@ async function Content({
             </a>
           ) : null}
           <Link
-            className="inline-flex items-center gap-2 rounded-full border-2 border-gray-300 bg-white px-5 py-2 font-bold text-gray-700 hover:border-brand-400 hover:bg-brand-50 transition-all shadow-sm hover:shadow-md"
-            href={mapUrl}
+            className="inline-flex items-center gap-2 rounded-full border-2 border-[#03C75A] bg-white px-5 py-2 font-bold text-[#03C75A] hover:border-[#03C75A] hover:bg-[#03C75A]/10 transition-all shadow-sm hover:shadow-md"
+            href={naverMapUrl}
             target="_blank"
           >
-            <Navigation className="h-4 w-4" />
-            <span>지도에서 보기</span>
+            <span className="font-extrabold text-xs">N</span>
+            <span>지도보기</span>
             <ExternalLink className="h-3 w-3" />
           </Link>
         </div>
@@ -384,7 +399,7 @@ async function Content({
             <Info className="h-5 w-5 text-brand-700" />
           </div>
           <h2 className="text-2xl font-black text-gray-900">{pharmacy.name} 상세 정보</h2>
-          {/* (AI 생성 중단) AI 요약 라벨은 표시하지 않습니다. */}
+          {/* 전문가 분석 기반 요약 리포트는 준비 중입니다. */}
         </div>
         {/* 중복 제거: 상단 '약국 소개'에 요약이 이미 있으므로 상세 정보에서는 повтор 노출하지 않음 */}
         {/* 중복 방지: 요약+주요특징 2개 블록만 유지 */}
@@ -450,8 +465,8 @@ async function Content({
               <div
                 key={key}
                 className={`rounded-xl border-2 px-4 py-4 transition-all ${isToday
-                    ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 shadow-lg scale-105"
-                    : "border-gray-200 bg-gray-50 hover:border-gray-300 hover:shadow-md"
+                  ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 shadow-lg scale-105"
+                  : "border-gray-200 bg-gray-50 hover:border-gray-300 hover:shadow-md"
                   }`}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -754,12 +769,12 @@ async function Content({
       <div className="hidden sm:block fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
         <div className="rounded-full border border-gray-200 bg-white shadow-xl px-4 py-3 flex items-center gap-2">
           <Link
-            href={mapUrl}
-            className="inline-flex items-center gap-2 rounded-full border-2 border-brand-600 bg-white px-5 py-2 text-sm font-black text-brand-700 hover:bg-brand-50"
+            href={naverMapUrl}
+            className="inline-flex items-center gap-2 rounded-full border-2 border-[#03C75A] bg-white px-5 py-2 text-sm font-black text-[#03C75A] hover:bg-[#03C75A]/10"
             target="_blank"
             rel="noreferrer"
           >
-            <Navigation className="h-4 w-4" />
+            <span className="font-extrabold">N</span>
             길찾기
           </Link>
           {pharmacy.tel ? (
@@ -779,7 +794,7 @@ async function Content({
       <JsonLd id="jsonld-faq" data={faqJsonLd} />
 
       {/* Sticky FAB (모바일 전용) */}
-      <StickyFab tel={pharmacy.tel} mapUrl={mapUrl} />
+      <StickyFab tel={pharmacy.tel} mapUrl={naverMapUrl} />
     </article>
   );
 }

@@ -16,6 +16,40 @@ export async function GET(request: Request) {
 
   const supabase = getSupabaseServerClient();
 
+  /* Keyword Search Logic */
+  const q = searchParams.get("q");
+
+  // 1. Keyword Search
+  if (q) {
+    const term = q.trim();
+    if (term.length < 2) {
+      return NextResponse.json({ message: "검색어는 2글자 이상 입력해주세요." }, { status: 400 });
+    }
+
+    const { data: searchResults, error: searchError } = await supabase
+      .from("pharmacies")
+      .select("*")
+      .or(`name.ilike.%${term}%,address.ilike.%${term}%`)
+      .limit(limit);
+
+    if (searchError) {
+      return NextResponse.json({ message: "검색 중 오류가 발생했습니다." }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      items: (searchResults ?? []).map((p: any) => ({
+        ...p,
+        distanceKm: undefined, // Keyword search doesn't imply current location
+      })),
+      total: searchResults?.length ?? 0,
+    });
+  }
+
+  // 2. Location Search (Existing)
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    return NextResponse.json({ message: "lat/lon or q is required" }, { status: 400 });
+  }
+
   // Rough bounding box filter to reduce rows, then precise distance calc.
   const delta = Math.max(radiusKm / 111, 0.05); // ~1deg lat ~111km, min bbox
   const minLat = lat - delta;

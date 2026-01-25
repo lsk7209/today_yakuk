@@ -1,107 +1,81 @@
-import { MetadataRoute } from "next";
-import { getPharmacyCount, getPharmacySitemapChunk } from "@/lib/data/pharmacies";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
-import { isIndexablePharmacy } from "@/lib/pharmacy-indexability";
-import { getSiteUrl } from "@/lib/site-url";
+import { MetadataRoute } from 'next';
+import { getSupplementCount, getSupplementSitemapChunk, getMedicineCount, getMedicineSitemapChunk } from '@/lib/data/pharmacies';
+import { getSiteUrl } from '@/lib/site-url';
 
-const siteUrl = getSiteUrl();
-
-const CHUNK_SIZE = 10000;
+const BASE_URL = getSiteUrl();
+const CHUNK_SIZE = 1000; // Google recommends < 50k URLs, 50MB. 1k is safe and fast.
 
 export async function generateSitemaps() {
-  const total = await safeGetPharmacyCount();
-  const chunks = Math.max(1, Math.ceil(total / CHUNK_SIZE));
-  return Array.from({ length: chunks }, (_, i) => ({ id: i }));
-}
+  const supplementCount = await getSupplementCount();
+  const medicineCount = await getMedicineCount();
 
-export default async function sitemap(props: { id: string }): Promise<MetadataRoute.Sitemap> {
-  const id = Number(props.id);
-  const offset = id * CHUNK_SIZE;
-  const items = await safeGetPharmacyChunk(offset, CHUNK_SIZE);
-  const indexableItems = items.filter((item) => isIndexablePharmacy(item));
+  const supplementChunks = Math.ceil(supplementCount / CHUNK_SIZE);
+  const medicineChunks = Math.ceil(medicineCount / CHUNK_SIZE);
 
-  // content_queue에서 published_at 정보 가져오기 (컨텐츠 업데이트 시간 반영)
-  const supabase = getSupabaseServerClient();
-  const hpids = indexableItems.map((item) => item.hpid).filter((h): h is string => h !== null);
-  type ContentDateRow = { hpid: string | null; published_at: string | null; updated_at: string | null };
-  let contentDates: ContentDateRow[] = [];
-  if (hpids.length > 0) {
-    const { data, error } = await supabase
-      .from("content_queue")
-      .select("hpid, published_at, updated_at")
-      .in("hpid", hpids)
-      .eq("status", "published");
+  const sitemaps = [];
 
-    // 초기 배포에서 content_queue가 아직 없을 수 있음 → sitemap은 pharmacies 기반으로 계속 생성
-    if (!error || (error as { code?: string }).code !== "PGRST205") {
-      contentDates = (data as ContentDateRow[]) ?? [];
-    }
+  // Supplements Sitemaps
+  for (let i = 0; i < supplementChunks; i++) {
+    sitemaps.push({ id: `supplements-${i}` });
   }
 
-  // hpid별 최신 업데이트 시간 매핑
-  const contentDateMap = new Map<string, Date>();
-  for (const content of contentDates) {
-    if (content.hpid) {
-      const dateStr = content.published_at || content.updated_at;
-      if (dateStr) {
-        const date = new Date(dateStr);
-        const existing = contentDateMap.get(content.hpid);
-        if (!existing || date > existing) {
-          contentDateMap.set(content.hpid, date);
-        }
-      }
-    }
+  // Medicines Sitemaps
+  for (let i = 0; i < medicineChunks; i++) {
+    sitemaps.push({ id: `medicines-${i}` });
   }
 
-  const staticEntries: MetadataRoute.Sitemap =
-    id === 0
-      ? [
-          { url: `${siteUrl}/`, lastModified: new Date(), priority: 0.8, changeFrequency: "daily" },
-          { url: `${siteUrl}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
-          { url: `${siteUrl}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
-          { url: `${siteUrl}/privacy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
-        ]
-      : [];
+  // Static Sitemap
+  sitemaps.unshift({ id: 'static' });
 
-  const dynamicEntries: MetadataRoute.Sitemap = indexableItems.map((item) => {
-    // content_queue의 published_at이 있으면 우선 사용 (컨텐츠 업데이트 시간 반영)
-    // 없으면 pharmacies의 updated_at 사용
-    const contentDate = contentDateMap.get(item.hpid);
-    const lastModified = contentDate
-      ? contentDate
-      : item.updated_at
-        ? new Date(item.updated_at)
-        : new Date();
-
-    return {
-      url: `${siteUrl}/pharmacy/${item.hpid}`,
-      lastModified,
-      changeFrequency: "weekly" as const,
-      priority: 0.9,
-    };
-  });
-
-  return [...staticEntries, ...dynamicEntries];
+  return sitemaps;
 }
 
-async function safeGetPharmacyCount() {
-  try {
-    const total = await getPharmacyCount();
-    if (Number.isFinite(total) && total >= 0) return total;
-    return 0;
-  } catch (error) {
-    console.error("sitemap: getPharmacyCount failed", error);
-    return 0;
+export default async function sitemap({
+  id,
+}: {
+  id: string;
+}): Promise<MetadataRoute.Sitemap> {
+  // 1. Static Routes (Only for the first sitemap or separate? usually root sitemap.xml handles static if no ID)
+  // But generateSitemaps splits strictly. 
+  // If id is undefined/null? generateSitemaps enforces usage.
+  // We should add a 'static' ID for static pages.
+  // Actually, let's just use `supplements-0` to include static pages? No, separated is better.
+
+  // Handling logic
+  if (id === 'static') {
+    return [
+      { url: `${BASE_URL}/`, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
+      { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+      { url: `${BASE_URL}/wiki`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
+      { url: `${BASE_URL}/guide`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+      { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+    ];
   }
-}
 
-async function safeGetPharmacyChunk(offset: number, limit: number) {
-  try {
-    const items = await getPharmacySitemapChunk(offset, limit);
-    return Array.isArray(items) ? items : [];
-  } catch (error) {
-    console.error("sitemap: getPharmacySitemapChunk failed", error);
-    return [];
+  const [type, indexStr] = id.split('-');
+  const index = parseInt(indexStr, 10);
+  const offset = index * CHUNK_SIZE;
+
+  if (type === 'supplements') {
+    const items = await getSupplementSitemapChunk(offset, CHUNK_SIZE);
+    return items.map((item) => ({
+      url: `${BASE_URL}/wiki/product/${item.id}`,
+      lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    }));
   }
-}
 
+  if (type === 'medicines') {
+    const items = await getMedicineSitemapChunk(offset, CHUNK_SIZE);
+    return items.map((item) => ({
+      // Assuming /wiki/medicine/[id] will be created
+      url: `${BASE_URL}/wiki/medicine/${item.id}`, // item.id is UUID
+      lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    }));
+  }
+
+  return [];
+}

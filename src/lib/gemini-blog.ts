@@ -52,28 +52,34 @@ export async function generateBlogTopic(): Promise<string | null> {
 export async function generateBlogPost(topic: string): Promise<BlogPost | null> {
     try {
         const prompt = `
-      주제: "${topic}"
-      
-      위 주제로 한국 약국 찾기 서비스(TodayYakuk)의 블로그 포스트를 작성해 주세요.
-      독자는 일반 대중이며, 전문적이면서도 이해하기 쉬운 톤으로 작성하세요.
-      
-      출력 형식 (JSON Only):
+      **Role**: You are a professional health columnist and SEO specialist for "TodayYakuk" (Korean Pharmacy Finder Service).
+      **Target Audience**: General public in Korea looking for quick, reliable health info and pharmacy access.
+      **Topic**: "${topic}"
+
+      **Objective**: Write a high-converting, SEO-optimized blog post that encourages users to visit a pharmacy or consult a pharmacist.
+
+      **Output Format**: JSON ONLY (No Markdown, No extra text)
       {
-        "title": "클릭을 유도하는 매력적인 제목",
-        "slug_suggestion": "seo-friendly-english-slug (e.g., spring-allergy-tips)",
-        "summary": "150자 내외의 메타 디스크립션용 요약",
-        "content_html": "<section>...</section> 형태의 HTML 본문. <h2>, <h3>, <p>, <ul>, <li> 태그를 적절히 사용. *Markdown 사용 금지*",
+        "title": "Create a 'Click-Magnet' title using psychological triggers (Urgency, Curiosity, Benefit). EXACTLY 1 line.",
+        "slug_suggestion": "seo-friendly-korean-english-slug (e.g., spring-allergy-emergency-tips)",
+        "summary": "Meta description (max 150 chars). Hook the reader instantly.",
+        "content_html": "Semantic HTML content. Use <h2>, <h3> for hierarchy. Include a dedicated 'Actionable Conclusion' section. NO <html>/<body> tags.",
         "faq": [
-          {"question": "예상 질문 1", "answer": "답변 1"},
-          {"question": "예상 질문 2", "answer": "답변 2"}
+          {"question": "Real user question 1", "answer": "Clear, concise answer"},
+          {"question": "Real user question 2", "answer": "Clear, concise answer"},
+          {"question": "Real user question 3", "answer": "Clear, concise answer"}
         ]
       }
-      
-      작성 가이드:
-      1. 서론: 왜 이 시기에 이 주제가 중요한지 공감 유도
-      2. 본론: 실용적인 관리법, 약국에서 찾을 수 있는 해결책(성분명 위주, 특정 브랜드 홍보 지양)
-      3. 결론: 전문가(약사/의사) 상담의 중요성 강조
-      4. HTML 내에 <html>, <body> 태그는 포함하지 마세요.
+
+      **Content Guidelines**:
+      1.  **Tone**: Empathetic, Authoritative, yet Accessible (Grade 8 reading level).
+      2.  **Structure**:
+          - **Hook**: Start with a relatable problem.
+          - **Body**: Practical advice, over-the-counter (OTC) solutions options (generic names preferred over brands).
+          - **CTA**: Strongly advise checking "TodayYakuk" to find open pharmacies nearby (24/7, weekends).
+      3.  **Formatting**: Use <ul>/<li> for readability. Bold (<strong>) key takeaways.
+      4.  **SEO**: Naturally weave related keywords (e.g., "weekend pharmacy", "night pharmacy", "emergency medicine").
+      5.  **Conclusion**: Must include a "Pharmacist's Note" or "When to visit a doctor" disclaimer.
     `;
 
         const result = await model.generateContent({

@@ -11,8 +11,13 @@
   --card: #ffffff;
   --border: #e2e8f0;
   --brand: #059669; /* emerald-600 */
+  --brand-light: #ecfdf5; /* emerald-50 */
+  --brand-soft: #10b981; /* emerald-500 */
   --brand-strong: #047857; /* emerald-700 */
+  --brand-dark: #064e3b; /* emerald-900 */
   --accent: var(--brand);
+  --shadow-premium: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-premium-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.07), 0 10px 10px -5px rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -66,6 +71,23 @@ a:hover {
 
 .fade-in {
   animation: fade-in-soft 0.35s ease-out both;
+}
+
+.premium-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-premium);
+}
+
+.premium-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-premium-hover);
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 @media (prefers-reduced-motion: reduce) {

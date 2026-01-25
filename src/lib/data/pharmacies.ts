@@ -259,3 +259,160 @@ export function distanceKm(
   return R * c;
 }
 
+// Wiki supplement and ingredient query functions
+export interface Supplement {
+  id: string;
+  product_report_no: string;
+  name: string;
+  manufacturer: string | null;
+  image_url: string | null;
+  nutrition_facts: Array<{
+    name: string;
+    amount: number;
+    unit: string;
+    percent_dv: number;
+  }> | null;
+  additives: {
+    has_preservatives?: boolean;
+    has_coloring?: boolean;
+    has_artificial_sweeteners?: boolean;
+    details?: string[];
+  } | null;
+  ai_summary: string | null;
+  tags: string[] | null;
+  created_at: string;
+}
+
+export interface Ingredient {
+  id: string;
+  name: string;
+  slug: string;
+  summary: string | null;
+  deficiency_symptoms: string[] | null;
+  excess_symptoms: string[] | null;
+  daily_value_guideline: {
+    min?: number;
+    max?: number;
+    unit?: string;
+  } | null;
+  tags: string[] | null;
+  created_at: string;
+}
+
+export async function getSupplementById(id: string): Promise<Supplement | null> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("supplements")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("supplement fetch error", error);
+      return null;
+    }
+    return data as Supplement | null;
+  } catch (e) {
+    console.error("supplement fetch exception", e);
+    return null;
+  }
+}
+
+export async function getIngredientBySlug(slug: string): Promise<Ingredient | null> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("ingredients")
+      .select("*")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (error) {
+      console.error("ingredient fetch error", error);
+      return null;
+    }
+    return data as Ingredient | null;
+  } catch (e) {
+    console.error("ingredient fetch exception", e);
+    return null;
+  }
+}
+
+// Sitemap Helpers for Supplements
+export async function getSupplementCount(): Promise<number> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { count, error } = await supabase.from("supplements").select("id", { count: "exact", head: true });
+    if (error) {
+      console.error("supplement count fetch error", error);
+      return 0;
+    }
+    return count ?? 0;
+  } catch (e) {
+    console.error("supplement count fetch exception", e);
+    return 0;
+  }
+}
+
+export async function getSupplementSitemapChunk(
+  offset: number,
+  limit: number
+): Promise<{ id: string; updated_at: string | null }[]> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("supplements")
+      .select("id, updated_at")
+      .order("created_at", { ascending: false }) // or update_at, but created_at is stable
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      console.error("supplement sitemap chunk fetch error", error);
+      return [];
+    }
+    return data ?? [];
+  } catch (e) {
+    console.error("supplement sitemap chunk fetch exception", e);
+    return [];
+  }
+}
+
+// Sitemap Helpers for Medicines
+export async function getMedicineCount(): Promise<number> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { count, error } = await supabase.from("medicines").select("id", { count: "exact", head: true });
+    if (error) {
+      console.error("medicine count fetch error", error);
+      return 0;
+    }
+    return count ?? 0;
+  } catch (e) {
+    console.error("medicine count fetch exception", e);
+    return 0;
+  }
+}
+
+export async function getMedicineSitemapChunk(
+  offset: number,
+  limit: number
+): Promise<{ id: string; updated_at: string | null }[]> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("medicines")
+      .select("id, updated_at")
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      console.error("medicine sitemap chunk fetch error", error);
+      return [];
+    }
+    return data ?? [];
+  } catch (e) {
+    console.error("medicine sitemap chunk fetch exception", e);
+    return [];
+  }
+}

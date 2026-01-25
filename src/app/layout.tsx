@@ -6,6 +6,7 @@ import "./globals.css";
 import { getSiteUrl } from "@/lib/site-url";
 
 const siteUrl = getSiteUrl();
+const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID;
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,9 +30,10 @@ export const metadata: Metadata = {
     template: "%s | 오늘약국",
   },
   // Naver는 description이 너무 길면 잘릴 수 있어 80자 내로 유지 (상세 맥락은 본문/구조화 데이터로 보완)
-  description: "지금 문 연 약국을 빠르게 찾고 영업시간·위치를 확인하세요.",
+  description: "지금 문 연 근처약국을 빠르게 찾고 영업시간·위치를 확인하세요.",
   keywords: [
     "오늘약국",
+    "근처약국",
     "실시간 약국",
     "영업 약국 찾기",
     "야간 약국",
@@ -99,12 +101,14 @@ export default function RootLayout({
             </Script>
           </>
         ) : null}
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3050601904412736"
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-          async
-        />
+        {adsenseId && (
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        )}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
@@ -127,12 +131,16 @@ export default function RootLayout({
                 <Link href="/about" className="hover:text-brand-700">
                   소개
                 </Link>
-              <Link href="/guide" className="hover:text-brand-700">
-                가이드
-              </Link>
-              <Link href="/blog" className="hover:text-brand-700">
-                블로그
-              </Link>
+                <Link href="/guide" className="hover:text-brand-700">
+                  가이드
+                </Link>
+                <Link href="/blog" className="hover:text-brand-700">
+                  블로그
+                </Link>
+                <Link href="/wiki" className="hover:text-brand-700 font-medium text-brand-600 relative group">
+                  영양제 정보
+                  <span className="absolute -top-1 -right-2 h-1.5 w-1.5 rounded-full bg-red-500" aria-label="New"></span>
+                </Link>
               </nav>
             </div>
           </header>
