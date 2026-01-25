@@ -67,11 +67,15 @@ export default async function TagPage({
 
     const supabase = getSupabaseServerClient();
 
+    // 3. Search for both slug (URL) and mapped keyword (Korean)
+    // This handles both cases: data stored as "fatigue" and "피로회복"
+    const searchTerms = Array.from(new Set([rawKeyword, keyword]));
+
     // Get products with this tag
     const { data: products, error, count } = await supabase
         .from('supplements')
         .select('id, name, manufacturer, image_url, ai_summary, tags', { count: 'exact' })
-        .contains('tags', [keyword])
+        .or(`tags.cs.{${searchTerms.join(',')}}`)
         .range(offset, offset + ITEMS_PER_PAGE - 1);
 
     if (error) {

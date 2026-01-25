@@ -26,13 +26,13 @@ const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 // Tag Mapping Definition (Same as in fix-supplement-tags.ts)
 const TAG_MAP: Record<string, string[]> = {
     "vitamin-c": ["비타민C", "비타민 C", "Vitamin C", "Ascorbic Acid", "아스코르브산"],
-    "fatigue": ["피로", "활력", "에너지", "만성피로", "Fatigue", "Energy"],
-    "immune": ["면역", "아연", "Immune", "Zinc"],
+    "fatigue": ["피로", "활력", "에너지", "만성피로", "Fatigue", "Energy", "인삼", "홍삼"],
+    "immune": ["면역", "아연", "Immune", "Zinc", "인삼", "홍삼"],
     "eye": ["눈", "루테인", "지아잔틴", "시력", "Eye", "Lutein"],
     "liver": ["간", "밀크씨슬", "실리마린", "Liver", "Milk Thistle"],
-    "probiotics": ["유산균", "프로바이오틱스", "장건강", "Probiotics"],
+    "probiotics": ["유산균", "프로바이오틱스", "장건강", "Probiotics", "비피더스"],
     "omega3": ["오메가3", "rTG", "DHA", "EPA", "Omega-3"],
-    "multivitamin": ["멀티비타민", "종합비타민", "Multivitamin"],
+    "multivitamin": ["멀티비타민", "종합비타민", "Multivitamin", "비타민"],
     "skin": ["피부", "콜라겐", "히알루론산", "Skin", "Collagen"],
     "bone": ["뼈", "칼슘", "마그네슘", "비타민D", "Bone", "Calcium", "Magnesium"],
 };
@@ -159,6 +159,10 @@ function generateTags(
     for (const [tagId, keywords] of Object.entries(TAG_MAP)) {
         if (keywords.some(kw => contentToSearch.includes(kw.toLowerCase()))) {
             tags.add(tagId);
+            // Also store Korean keywords as tags for fallback/direct search
+            keywords.forEach(kw => {
+                if (/^[가-힣]+$/.test(kw)) tags.add(kw);
+            });
         }
     }
 
