@@ -196,10 +196,15 @@ export default async function ProductDetailPage({
                             전문가 분석 리포트
                         </h2>
                         <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100">
-                            <div className="text-slate-800 text-lg leading-relaxed whitespace-pre-line">
-                                {supplement.ai_summary
-                                    ? linkIngredients(supplement.ai_summary, ingredients)
-                                    : "해당 제품에 대한 정밀 분석 데이터가 업데이트될 예정입니다."}
+                            <div className="text-slate-800 text-lg leading-relaxed">
+                                {supplement.ai_summary ? (
+                                    <FormattedSummary
+                                        text={supplement.ai_summary}
+                                        ingredients={ingredients}
+                                    />
+                                ) : (
+                                    "해당 제품에 대한 정밀 분석 데이터가 업데이트될 예정입니다."
+                                )}
                             </div>
                         </div>
                     </section>
@@ -253,4 +258,69 @@ export default async function ProductDetailPage({
             </div>
         </div>
     );
+}
+
+/**
+ * 전문가 리포트의 텍스트를 파싱하여 보기 좋게 가독성을 개선하는 컴포넌트
+ */
+function FormattedSummary({ text, ingredients }: { text: string; ingredients: any[] }) {
+    // 1. 줄바꿈 단위로 분리
+    const lines = text.split('\n').filter(line => line.trim() !== "");
+
+    return (
+        <div className="space-y-8">
+            {lines.map((line, index) => {
+                // "성분 : 내용" 패턴 확인
+                const colonIndex = line.indexOf(':');
+
+                if (colonIndex > 0 && colonIndex < 50) { // 제목이 너무 길지 않은 경우(성분명 등)
+                    const title = line.substring(0, colonIndex).trim();
+                    const content = line.substring(colonIndex + 1).trim();
+
+                    return (
+                        <div key={index} className="group space-y-3">
+                            <div className="flex items-center gap-3">
+                                <span className="w-1.5 h-6 bg-brand-500 rounded-full group-hover:h-8 transition-all duration-300"></span>
+                                <h3 className="font-black text-slate-900 text-xl tracking-tight">
+                                    {linkIngredients(title, ingredients)}
+                                </h3>
+                            </div>
+                            <div className="pl-5 border-l-2 border-slate-100 py-1">
+                                <div className="text-slate-700 leading-relaxed text-base font-medium">
+                                    {formatContent(content)}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+
+                return (
+                    <div key={index} className="py-2">
+                        <div className="text-slate-800 leading-relaxed font-semibold text-lg">
+                            {formatContent(line)}
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+/**
+ * 내용 중 (1), (2) 등 숫자를 강조하거나 추가 줄바꿈을 시도하는 헬퍼
+ */
+function formatContent(text: string) {
+    // (1), (2) 등을 찾아서 줄바꿈 느낌을 주거나 볼드로 처리
+    const parts = text.split(/(\(\d+\))/g);
+
+    return parts.map((part, i) => {
+        if (part.match(/\(\d+\)/)) {
+            return (
+                <span key={i} className="inline-flex items-center justify-center min-w-[1.75rem] h-7 mt-2 mb-1 mr-2 px-2 bg-brand-50 text-brand-700 text-[11px] font-black rounded-lg ring-1 ring-brand-100 shadow-sm align-middle">
+                    {part}
+                </span>
+            );
+        }
+        return part;
+    });
 }

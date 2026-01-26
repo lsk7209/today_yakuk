@@ -9,22 +9,28 @@ const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 async function inspectProduct() {
-    // Find the specific product we updated
+    // Find products that HAVE tags
     const { data: products, error } = await supabase
         .from("supplements")
         .select("id, name, tags, ai_summary")
-        .eq("id", "a3551de0-fec5-4bd2-8480-557814872574") // ID from debug output
-        .single();
+        .not("tags", "is", null)
+        .limit(10);
 
     if (error) {
         console.error("Error:", error);
         return;
     }
 
-    const p = products;
-    console.log("Inspecting specific product:");
-    console.log(`- Name: ${p.name}`);
-    console.log(`  Tags: ${JSON.stringify(p.tags)}`);
+    if (!products || products.length === 0) {
+        console.log("No products found with tags.");
+        return;
+    }
+
+    console.log(`Found ${products.length} products with tags:`);
+    products.forEach(p => {
+        console.log(`- ID: ${p.id} | Name: ${p.name}`);
+        console.log(`  Tags: ${JSON.stringify(p.tags)}`);
+    });
 }
 
 inspectProduct();

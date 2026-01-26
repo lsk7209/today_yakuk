@@ -68,13 +68,31 @@ export function AdditiveSignal({ additives }: AdditiveSignalProps) {
 
             {/* Additional Details */}
             {additives.details && additives.details.length > 0 && (
-                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-900">
-                    <p className="font-semibold mb-1">첨가물 상세:</p>
-                    <ul className="list-disc list-inside space-y-1">
-                        {additives.details.map((detail, idx) => (
-                            <li key={idx}>{detail}</li>
-                        ))}
-                    </ul>
+                <div className="mt-6 p-5 bg-slate-50 border border-slate-100 rounded-2xl">
+                    <p className="font-black text-slate-900 mb-3 flex items-center gap-2">
+                        <span className="w-1 h-4 bg-amber-400 rounded-full"></span>
+                        첨가물 상세
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                        {additives.details.map((detail, idx) => {
+                            // If detail contains multiple ingredients separated by commas, split them
+                            const items = detail.includes(',')
+                                ? detail.split(',').map(s => s.trim()).filter(Boolean)
+                                : [detail];
+
+                            return items.map((item, i) => (
+                                <span
+                                    key={`${idx}-${i}`}
+                                    className="px-2.5 py-1 bg-white border border-slate-200 text-slate-500 rounded-lg text-xs font-medium hover:border-brand-300 transition-colors"
+                                >
+                                    {item}
+                                </span>
+                            ));
+                        })}
+                    </div>
+                    <p className="mt-3 text-[10px] text-slate-400 font-medium italic">
+                        ※ 식약처 공시 기준 원재료 및 첨가물 정보입니다.
+                    </p>
                 </div>
             )}
         </div>
