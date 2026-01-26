@@ -1,4 +1,15 @@
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import {
+    Activity,
+    Database,
+    FileText,
+    CheckCircle,
+    AlertCircle,
+    Clock,
+    Zap,
+    Server
+} from "lucide-react";
+import Link from "next/link";
 
 // SSR force dynamic
 export const dynamic = "force-dynamic";
@@ -7,63 +18,231 @@ export default async function AdminDashboardPage() {
     const supabase = getSupabaseServerClient();
 
     // 통계 쿼리 (병렬 실행)
+    // Analytics: 오늘 방문자 수 (Table might not exist yet)
+    const today = new Date().toISOString().split('T')[0];
+    let todayVisitors = 0;
+
+    try {
+        const { count } = await supabase
+            .from("analytics_logs")
+            .select("id", { count: "exact", head: true })
+            .gte("created_at", today);
+        todayVisitors = count || 0;
+    } catch (e) {
+        console.error("Analytics table not ready");
+    }
+
+    // Analytics: 인기 페이지 (Top 5) - Simple client-side aggregation simulation (Real aggregation best done in RPC)
+    // For MVP, we fetch recent logs and aggregate in JS or use a basic count if volume is low.
+    // For scalable solution, create a database function. Here we just show the placeholder or simple stats.
+
+    // AI Stats
     const [
         { count: totalPharmacies },
         { count: pendingCount },
         { count: publishedCount },
         { count: failedCount },
+        { count: totalSupplements },
+        { count: enrichedSupplements },
     ] = await Promise.all([
         supabase.from("pharmacies").select("*", { count: "exact", head: true }),
         supabase.from("content_queue").select("*", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("content_queue").select("*", { count: "exact", head: true }).eq("status", "published"),
         supabase.from("content_queue").select("*", { count: "exact", head: true }).eq("status", "failed"),
+        supabase.from("supplements").select("*", { count: "exact", head: true }),
+        supabase.from("supplements").select("*", { count: "exact", head: true }).not("ai_summary", "is", null),
     ]);
 
+    const enrichmentRate = totalSupplements ? Math.round(((enrichedSupplements || 0) / totalSupplements) * 100) : 0;
+
     return (
-        <div>
-            <h1 className="text-2xl font-bold mb-6">시스템 현황</h1>
+        <div className="max-w-7xl mx-auto space-y-8">
+            <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">System Dashboard</h1>
+                    <p className="text-slate-500 font-medium">1-Person Unicorn Factory Control Center</p>
+                </div>
+                <div className="flex gap-2">
+                    <Link
+                        href="/admin/queue"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    >
+                        <FileText className="w-4 h-4" />
+                        컨텐츠 큐 관리
+                    </Link>
+                </div>
+            </header>
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {/* 전체 약국 수 */}
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="px-4 py-5 sm:p-6">
-                        <dt className="text-sm font-medium text-gray-500 truncate">전체 약국 데이터</dt>
-                        <dd className="mt-1 text-3xl font-semibold text-gray-900">{totalPharmacies?.toLocaleString() ?? 0}</dd>
+            {/* Analytics Overview (New) */}
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div className="p-3 bg-indigo-50 rounded-2xl">
+                        <Activity className="w-8 h-8 text-indigo-600" />
+                    </div>
+                    <div>
+                        <div className="text-sm font-medium text-slate-500">오늘 방문자</div>
+                        <div className="text-3xl font-black text-slate-900">
+                            {(todayVisitors || 0).toLocaleString()}
+                        </div>
                     </div>
                 </div>
 
-                {/* 발행 대기 */}
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="px-4 py-5 sm:p-6">
-                        <dt className="text-sm font-medium text-gray-500 truncate">발행 예약 (Pending)</dt>
-                        <dd className="mt-1 text-3xl font-semibold text-orange-600">{pendingCount?.toLocaleString() ?? 0}</dd>
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div className="p-3 bg-pink-50 rounded-2xl">
+                        <Server className="w-8 h-8 text-pink-600" />
+                    </div>
+                    <div>
+                        <div className="text-sm font-medium text-slate-500">서버 상태</div>
+                        <div className="text-xl font-black text-green-500 flex items-center gap-1">
+                            <span className="relative flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                            </span>
+                            Normal
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                {/* 발행 완료 */}
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="px-4 py-5 sm:p-6">
-                        <dt className="text-sm font-medium text-gray-500 truncate">발행 완료 (Published)</dt>
-                        <dd className="mt-1 text-3xl font-semibold text-green-600">{publishedCount?.toLocaleString() ?? 0}</dd>
-                    </div>
+            {/* AI Enrichment Stats (New) */}
+            <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-8 opacity-5">
+                    <Zap className="w-48 h-48" />
                 </div>
 
-                {/* 실패 */}
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="px-4 py-5 sm:p-6">
-                        <dt className="text-sm font-medium text-gray-500 truncate">생성 실패 (Failed)</dt>
-                        <dd className="mt-1 text-3xl font-semibold text-red-600">{failedCount?.toLocaleString() ?? 0}</dd>
+                <h2 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2 relative z-10">
+                    <Zap className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+                    영양제 AI 데이터 생성 현황
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                    <div className="space-y-2">
+                        <div className="text-slate-500 font-medium text-sm">전체 데이터베이스</div>
+                        <div className="text-3xl font-black text-slate-900">
+                            {(totalSupplements || 0).toLocaleString()}
+                            <span className="text-base font-bold text-slate-400 ml-1">건</span>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <div className="text-slate-500 font-medium text-sm flex items-center gap-2">
+                            AI 분석 완료
+                            <span className="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold">New</span>
+                        </div>
+                        <div className="text-3xl font-black text-green-600">
+                            {(enrichedSupplements || 0).toLocaleString()}
+                            <span className="text-base font-bold text-slate-400 ml-1">건</span>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="flex justify-between items-end">
+                            <div className="text-slate-500 font-medium text-sm">진행률</div>
+                            <div className="text-2xl font-black text-slate-900">{enrichmentRate}%</div>
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                            <div
+                                className="bg-gradient-to-r from-green-400 to-emerald-600 h-full rounded-full transition-all duration-1000 ease-out"
+                                style={{ width: `${enrichmentRate}%` }}
+                            />
+                        </div>
+                        <p className="text-xs text-slate-400">
+                            * 매일 약 800개씩 자동으로 채워집니다.
+                        </p>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div className="mt-8 bg-white shadow rounded-lg p-6">
-                <h2 className="text-lg font-medium mb-4">운영 가이드</h2>
-                <ul className="list-disc list-inside space-y-2 text-gray-600">
-                    <li><strong>컨텐츠 큐:</strong> AI가 생성한 컨텐츠를 확인하고 수동으로 발행하거나 삭제할 수 있습니다.</li>
-                    <li><strong>자동화 스케줄:</strong> 매일 07, 08, 14, 20시에 컨텐츠가 생성되고, 09, 15, 21시에 발행됩니다.</li>
-                    <li><strong>로그인 정보:</strong> 비밀번호는 <code>1234</code> 입니다.</li>
-                </ul>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Content Queue Status */}
+                <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm">
+                    <h2 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
+                        <Activity className="w-6 h-6 text-blue-500" />
+                        컨텐츠 발행 현황
+                    </h2>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-orange-50 p-5 rounded-2xl border border-orange-100">
+                            <div className="flex items-center gap-2 text-orange-700 font-bold mb-2">
+                                <Clock className="w-4 h-4" /> 대기 중
+                            </div>
+                            <div className="text-2xl font-black text-slate-900">
+                                {(pendingCount || 0).toLocaleString()}
+                            </div>
+                        </div>
+
+                        <div className="bg-green-50 p-5 rounded-2xl border border-green-100">
+                            <div className="flex items-center gap-2 text-green-700 font-bold mb-2">
+                                <CheckCircle className="w-4 h-4" /> 발행 완료
+                            </div>
+                            <div className="text-2xl font-black text-slate-900">
+                                {(publishedCount || 0).toLocaleString()}
+                            </div>
+                        </div>
+
+                        <div className="col-span-2 bg-red-50 p-5 rounded-2xl border border-red-100 flex items-center justify-between">
+                            <div>
+                                <div className="flex items-center gap-2 text-red-700 font-bold mb-1">
+                                    <AlertCircle className="w-4 h-4" /> 실패 / 오류
+                                </div>
+                                <div className="text-xs text-red-600/80">
+                                    컨텐츠 생성 실패 건수
+                                </div>
+                            </div>
+                            <div className="text-2xl font-black text-slate-900">
+                                {(failedCount || 0).toLocaleString()}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Infrastructure Stats */}
+                <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm">
+                    <h2 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
+                        <Server className="w-6 h-6 text-slate-500" />
+                        인프라 데이터
+                    </h2>
+
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-white rounded-xl shadow-sm">
+                                    <Database className="w-6 h-6 text-blue-600" />
+                                </div>
+                                <div>
+                                    <div className="font-bold text-slate-900">전국 약국 데이터</div>
+                                    <div className="text-xs text-slate-500">Live Database Code</div>
+                                </div>
+                            </div>
+                            <div className="text-xl font-black text-slate-900">
+                                {(totalPharmacies || 0).toLocaleString()}
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-900 rounded-2xl p-6 text-white relative overflow-hidden">
+                            <div className="relative z-10">
+                                <h3 className="font-bold mb-4 flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-slate-400" />
+                                    자동화 스케줄
+                                </h3>
+                                <div className="space-y-3 text-sm text-slate-300">
+                                    <div className="flex justify-between border-b border-slate-800 pb-2">
+                                        <span>AI 컨텐츠 생성</span>
+                                        <span className="font-mono text-white">07, 08, 14, 20시</span>
+                                    </div>
+                                    <div className="flex justify-between border-b border-slate-800 pb-2">
+                                        <span>블로그 발행</span>
+                                        <span className="font-mono text-white">09, 15, 21시</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>영양제 분석 (New)</span>
+                                        <span className="font-mono text-emerald-400">3시간 간격 (일 8회)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     );

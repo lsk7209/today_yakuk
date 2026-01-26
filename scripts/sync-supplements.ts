@@ -80,7 +80,7 @@ async function generateAISummary(
     productName: string,
     ingredients: string,
     nutritionFacts: string
-): Promise<{ summary: string, nutrition_facts: any[] }> {
+): Promise<{ summary: string, effects: string, cautions: string, nutrition_facts: any[] }> {
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
     const prompt = `당신은 영양학 전문가입니다. 다음 건강기능식품을 객관적으로 분석해주세요.
@@ -91,32 +91,38 @@ async function generateAISummary(
 
 다음 JSON 형식으로만 응답해주세요:
 {
-  "summary": "1. 주요 성분과 함량 설명\\n2. 기대 효과 (과장 없이)\\n3. 섭취 시 주의사항 (있다면)",
+  "summary": "제품의 핵심 특징을 1문장으로 요약",
+  "effects": "주요 효능 및 기대 효과 (2-3문장, 과장 없이)",
+  "cautions": "섭취 시 주의사항 및 부작용 가능성 (2-3문장)",
   "nutrition_facts": [
     { "name": "성분명", "amount": 1000, "unit": "mg", "percent_dv": 100 }
   ]
 }
 
 주의사항:
-- summary는 3-4문장으로 작성하고 상업적 표현을 배제하세요.
+- 상업적 표현을 배제하고 팩트 위주로 작성하세요.
 - nutrition_facts는 영양성분 텍스트에서 가능한 모든 성분을 추출하세요.
+- 성분명은 한글로 작성하세요.
 - 만약 함량 정보를 추출할 수 없다면 nutrition_facts는 빈 배열로 두세요.`;
 
     try {
         const result = await model.generateContent(prompt);
         const responseText = result.response.text();
-        // Remove markdown code blocks if present
         const cleanedJson = responseText.replace(/```json|```/g, "").trim();
         const parsed = JSON.parse(cleanedJson);
 
         return {
-            summary: parsed.summary || "AI 요약을 생성할 수 없습니다.",
+            summary: parsed.summary || "",
+            effects: parsed.effects || "",
+            cautions: parsed.cautions || "",
             nutrition_facts: parsed.nutrition_facts || []
         };
     } catch (error) {
         console.error("Gemini API error:", error);
         return {
             summary: "AI 요약을 생성할 수 없습니다.",
+            effects: "",
+            cautions: "",
             nutrition_facts: []
         };
     }
@@ -238,6 +244,13 @@ async function syncSupplements() {
                 details: [] as string[],
             };
 
+            // Store structured data as JSON string in ai_summary
+            const mixedSummary = JSON.stringify({
+                summary: aiAnalysis.summary,
+                effects: aiAnalysis.effects,
+                cautions: aiAnalysis.cautions
+            });
+
             // Upsert to Supabase
             const { error } = await supabase.from("supplements").upsert(
                 {
@@ -246,7 +259,7 @@ async function syncSupplements() {
                     manufacturer,
                     nutrition_facts: nutritionFacts,
                     additives,
-                    ai_summary: aiAnalysis.summary,
+                    ai_summary: mixedSummary,
                     tags: generateTags(name, aiAnalysis.summary, nutritionFacts),
                 },
                 { onConflict: "product_report_no" }

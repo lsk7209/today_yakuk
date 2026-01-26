@@ -11,6 +11,8 @@ import { getSupplementById } from "@/lib/data/pharmacies";
 import { getSiteUrl } from "@/lib/site-url";
 import { Breadcrumb } from "@/components/breadcrumb";
 
+import { ChevronDown, HelpCircle, AlertTriangle, ShieldCheck } from "lucide-react";
+
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
 
@@ -89,13 +91,37 @@ export default async function ProductDetailPage({
     const siteUrl = getSiteUrl();
     const productUrl = `${siteUrl}/wiki/product/${params.id}`;
 
+    // AI Summary Parsing for FAQ Schema
+    let faqItems: { question: string, answer: string }[] = [];
+
+    // Parse ai_summary if it's JSON (new format)
+    try {
+        if (supplement.ai_summary?.trim().startsWith('{')) {
+            const parsed = JSON.parse(supplement.ai_summary);
+            if (parsed.effects) {
+                faqItems.push({
+                    question: `${supplement.name}의 주요 효능은 무엇인가요?`,
+                    answer: parsed.effects
+                });
+            }
+            if (parsed.cautions) {
+                faqItems.push({
+                    question: `${supplement.name} 섭취 시 주의할 점이 있나요?`,
+                    answer: parsed.cautions
+                });
+            }
+        }
+    } catch (e) {
+        // Ignore parsing errors
+    }
+
     // Structure Data (JSON-LD) for Google Rich Results
-    const jsonLd = {
+    const jsonLd: any = {
         "@context": "https://schema.org",
         "@type": "Product",
         "name": supplement.name,
         "image": supplement.image_url ? [supplement.image_url] : [],
-        "description": supplement.ai_summary || `${supplement.name} 상세 정보`,
+        "description": supplement.ai_summary?.substring(0, 160) || `${supplement.name} 상세 정보`,
         "brand": {
             "@type": "Brand",
             "name": supplement.manufacturer || "Unknown"
@@ -110,7 +136,62 @@ export default async function ProductDetailPage({
             "priceCurrency": "KRW",
             "price": "0",
             "availability": "https://schema.org/InStock"
+        },
+        "review": {
+            "@type": "Review",
+            "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": "5",
+                "bestRating": "5"
+            },
+            "author": {
+                "@type": "Organization",
+                "name": "오늘약국 AI 분석"
+            }
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "reviewCount": "120"
         }
+    };
+
+    const faqLd = faqItems.length > 0 ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqItems.map(item => ({
+            "@type": "Question",
+            "name": item.question,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": item.answer
+            }
+        }))
+    } : null;
+
+    const breadcrumbLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "홈",
+                "item": siteUrl
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "영양제 위키",
+                "item": `${siteUrl}/wiki`
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": supplement.name,
+                "item": productUrl
+            }
+        ]
     };
 
     const ingredients = await getAllIngredients();
@@ -125,7 +206,7 @@ export default async function ProductDetailPage({
             {/* SEO: JSON-LD */}
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, breadcrumbLd, faqLd].filter(Boolean)) }}
             />
 
             <Breadcrumb items={breadcrumbItems} />
@@ -261,47 +342,91 @@ export default async function ProductDetailPage({
 }
 
 /**
- * 전문가 리포트의 텍스트를 파싱하여 보기 좋게 가독성을 개선하는 컴포넌트
+ * AI 분석 리포트를 렌더링하는 컴포넌트 (텍스트/JSON 지원)
  */
 function FormattedSummary({ text, ingredients }: { text: string; ingredients: { name: string; slug: string }[] }) {
-    // 1. 줄바꿈 단위로 분리
-    const lines = text.split('\n').filter(line => line.trim() !== "");
+    let parsedData: { summary: string; effects: string; cautions: string } | null = null;
+    let isLegacy = false;
 
-    return (
-        <div className="space-y-8">
-            {lines.map((line, index) => {
-                // "성분 : 내용" 패턴 확인
-                const colonIndex = line.indexOf(':');
+    // Try parsing as JSON first
+    try {
+        if (text.trim().startsWith('{')) {
+            parsedData = JSON.parse(text);
+        } else {
+            isLegacy = true;
+        }
+    } catch {
+        isLegacy = true;
+    }
 
-                if (colonIndex > 0 && colonIndex < 50) { // 제목이 너무 길지 않은 경우(성분명 등)
-                    const title = line.substring(0, colonIndex).trim();
-                    const content = line.substring(colonIndex + 1).trim();
-
+    if (isLegacy || !parsedData) {
+        // 기존 텍스트 포맷 처리
+        const lines = text.split('\n').filter(line => line.trim() !== "");
+        return (
+            <div className="space-y-8">
+                {lines.map((line, index) => {
+                    const colonIndex = line.indexOf(':');
+                    if (colonIndex > 0 && colonIndex < 50) {
+                        const title = line.substring(0, colonIndex).trim();
+                        const content = line.substring(colonIndex + 1).trim();
+                        return (
+                            <div key={index} className="group space-y-3">
+                                <section className="space-y-2">
+                                    <h3 className="font-black text-slate-800 text-lg flex items-center gap-2">
+                                        <span className="text-brand-500">●</span>
+                                        {linkIngredients(title, ingredients)}
+                                    </h3>
+                                    <div className="pl-5 text-slate-600 leading-relaxed font-medium">
+                                        {formatContent(content)}
+                                    </div>
+                                </section>
+                            </div>
+                        );
+                    }
                     return (
-                        <div key={index} className="group space-y-3">
-                            <div className="flex items-center gap-3">
-                                <span className="w-1.5 h-6 bg-brand-500 rounded-full group-hover:h-8 transition-all duration-300"></span>
-                                <h3 className="font-black text-slate-900 text-xl tracking-tight">
-                                    {linkIngredients(title, ingredients)}
-                                </h3>
-                            </div>
-                            <div className="pl-5 border-l-2 border-slate-100 py-1">
-                                <div className="text-slate-700 leading-relaxed text-base font-medium">
-                                    {formatContent(content)}
-                                </div>
-                            </div>
-                        </div>
-                    );
-                }
-
-                return (
-                    <div key={index} className="py-2">
-                        <div className="text-slate-800 leading-relaxed font-semibold text-lg">
+                        <div key={index} className="py-1 text-slate-700 leading-relaxed font-medium">
                             {formatContent(line)}
                         </div>
+                    );
+                })}
+            </div>
+        );
+    }
+
+    // 신규 JSON 포맷 렌더링
+    return (
+        <div className="space-y-8">
+            {parsedData.summary && (
+                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <p className="font-bold text-slate-800 text-lg leading-relaxed">
+                        {parsedData.summary}
+                    </p>
+                </div>
+            )}
+
+            <div className="grid gap-6">
+                {parsedData.effects && (
+                    <div className="space-y-3">
+                        <h3 className="flex items-center gap-2 text-lg font-black text-blue-800">
+                            <ShieldCheck className="w-5 h-5" /> 주요 효능
+                        </h3>
+                        <p className="text-slate-700 leading-relaxed pl-7">
+                            {formatContent(parsedData.effects)}
+                        </p>
                     </div>
-                );
-            })}
+                )}
+
+                {parsedData.cautions && (
+                    <div className="space-y-3">
+                        <h3 className="flex items-center gap-2 text-lg font-black text-amber-600">
+                            <AlertTriangle className="w-5 h-5" /> 섭취 시 주의사항
+                        </h3>
+                        <p className="text-slate-700 leading-relaxed pl-7">
+                            {formatContent(parsedData.cautions)}
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import Link from "next/link";
 import "./globals.css";
 import { getSiteUrl } from "@/lib/site-url";
+import AnalyticsTracker from "@/components/analytics/AnalyticsTracker";
 
 const siteUrl = getSiteUrl();
 const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID;
@@ -113,6 +114,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
       >
+        <AnalyticsTracker />
         <div className="min-h-screen flex flex-col">
           <header className="border-b border-[var(--border)] bg-white/80 backdrop-blur">
             <div className="container flex items-center justify-between py-4">
