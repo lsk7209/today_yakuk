@@ -88,7 +88,7 @@ async function publishPending(limit = 2) {
     return;
   }
 
-  // 1. 유효하지 않은 아이템(컨텐츠 누락) 처리 -> 'failed'로 변경하여 큐 막힘 방지
+  // 1. 유효하지 않은 아이템(컨텐츠 누락) 처리 -> 'failed'로 변경
   const failedOps = pending
     .filter((item) => !item.content_html && !item.ai_summary)
     .map((item) => ({
@@ -105,7 +105,15 @@ async function publishPending(limit = 2) {
 
   if (failedOps.length > 0) {
     console.warn(`Marking ${failedOps.length} items as 'failed' due to missing content:`, failedOps.map(f => f.id));
-    await supabase.from("content_queue").upsert(failedOps as any);
+
+    // Batch upsert 대신 개별 Update로 변경하여 Not Null 제약 조건 회피
+    const failUpdates = failedOps.map(op =>
+      supabase.from("content_queue").update({
+        status: "failed",
+        updated_at: now
+      }).eq("id", op.id)
+    );
+    await Promise.all(failUpdates);
   }
 
   // 2. 유효한 아이템 발행 처리
@@ -115,36 +123,41 @@ async function publishPending(limit = 2) {
     return;
   }
 
-  const rows = ready.map((item) => ({
+  // Update rows individually
+  const publishUpdates = ready.map(item => ({
     id: item.id,
-    hpid: item.hpid, // Required
-    title: item.title, // Required
-    slug: item.slug, // Required
-    region: item.region,
-    theme: item.theme,
-    status: "published",
-    published_at: now,
-    updated_at: now,
-    content_html: item.content_html,
-    ai_summary: item.ai_summary,
-    ai_bullets: item.ai_bullets,
-    ai_faq: item.ai_faq,
-    ai_cta: item.ai_cta,
-    extra_sections: item.extra_sections,
+    updates: {
+      status: "published",
+      published_at: now,
+      updated_at: now,
+      content_html: item.content_html,
+      ai_summary: item.ai_summary,
+      ai_bullets: item.ai_bullets,
+      ai_faq: item.ai_faq,
+      ai_cta: item.ai_cta,
+      extra_sections: item.extra_sections,
+    }
   }));
 
-  const { error: updateError } = await supabase.from("content_queue").upsert(rows);
+  const results = await Promise.all(
+    publishUpdates.map(op =>
+      supabase.from("content_queue").update(op.updates as any).eq("id", op.id)
+    )
+  );
 
-  if (updateError) throw updateError;
+  // Check for errors
+  const errors = results.filter(r => r.error).map(r => r.error);
+  if (errors.length > 0) {
+    console.error("Some updates failed:", errors);
+    // 일부가 실패해도 진행
+  }
 
-  console.info(`Published ${rows.length} items:`, rows.map((r) => r.id));
+  console.info(`Published ${publishUpdates.length} items.`);
 
   // Google Indexing API 호출
-  // 실패해도 전체 프로세스를 중단하지 않음 (로그만 남김)
-  for (const row of rows) {
+  for (const row of publishUpdates) {
     if (!row.id) continue;
     // content_queue의 hpid를 사용하여 URL 생성
-    // rows에는 hpid가 없으므로 ready 배열에서 참조해야 함
     const originalItem = ready.find((r) => r.id === row.id);
     if (originalItem?.hpid) {
       const url = `${siteUrl}/pharmacy/${originalItem.hpid}`;
