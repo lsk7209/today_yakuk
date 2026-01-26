@@ -61,11 +61,6 @@ export default async function BlogPostPage({ params }: Props) {
                 dangerouslySetInnerHTML={{ __html: post.content_html || "" }}
             />
 
-            <div
-                className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-p:text-gray-600"
-                dangerouslySetInnerHTML={{ __html: post.content_html || "" }}
-            />
-
             <JsonLd
                 data={{
                     "@context": "https://schema.org",

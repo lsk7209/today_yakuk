@@ -1,4 +1,7 @@
 import "dotenv/config";
+import path from "path";
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requestIndexing } from "../src/lib/google-indexing";
