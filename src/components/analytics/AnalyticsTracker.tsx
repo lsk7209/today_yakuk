@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 // Init client-side supabase
@@ -13,7 +13,7 @@ const supabase = createClient(
 export default function AnalyticsTracker() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const isFirstMount = useRef(true);
+    // const isFirstMount = useRef(true);
 
     useEffect(() => {
         // Skip tracking on dev environment to avoid noise, or keep it if testing

@@ -60,7 +60,7 @@ export default async function sitemap({
     const items = await getSupplementSitemapChunk(offset, CHUNK_SIZE);
     return items.map((item) => ({
       url: `${BASE_URL}/wiki/product/${item.id}`,
-      lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
+      lastModified: item.created_at ? new Date(item.created_at) : new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
     }));
@@ -71,7 +71,7 @@ export default async function sitemap({
     return items.map((item) => ({
       // Assuming /wiki/medicine/[id] will be created
       url: `${BASE_URL}/wiki/medicine/${item.id}`, // item.id is UUID
-      lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
+      lastModified: item.created_at ? new Date(item.created_at) : new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
     }));

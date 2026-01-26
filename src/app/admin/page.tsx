@@ -10,6 +10,7 @@ import {
     Server
 } from "lucide-react";
 import Link from "next/link";
+import QuickActions from "@/components/admin/quick-actions";
 
 // SSR force dynamic
 export const dynamic = "force-dynamic";
@@ -28,8 +29,8 @@ export default async function AdminDashboardPage() {
             .select("id", { count: "exact", head: true })
             .gte("created_at", today);
         todayVisitors = count || 0;
-    } catch (e) {
-        console.error("Analytics table not ready");
+    } catch (error) {
+        console.error("Analytics table not ready", error);
     }
 
     // Analytics: 인기 페이지 (Top 5) - Simple client-side aggregation simulation (Real aggregation best done in RPC)
@@ -72,6 +73,9 @@ export default async function AdminDashboardPage() {
                     </Link>
                 </div>
             </header>
+
+            {/* Quick Actions */}
+            <QuickActions />
 
             {/* Analytics Overview (New) */}
             <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

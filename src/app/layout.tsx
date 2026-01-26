@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import localFont from "next/font/local";
 import Link from "next/link";
+import { Suspense } from "react";
 import "./globals.css";
 import { getSiteUrl } from "@/lib/site-url";
 import AnalyticsTracker from "@/components/analytics/AnalyticsTracker";
@@ -114,7 +115,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
       >
-        <AnalyticsTracker />
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
         <div className="min-h-screen flex flex-col">
           <header className="border-b border-[var(--border)] bg-white/80 backdrop-blur">
             <div className="container flex items-center justify-between py-4">

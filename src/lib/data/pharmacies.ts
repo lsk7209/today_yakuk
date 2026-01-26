@@ -358,13 +358,13 @@ export async function getSupplementCount(): Promise<number> {
 export async function getSupplementSitemapChunk(
   offset: number,
   limit: number
-): Promise<{ id: string; updated_at: string | null }[]> {
+): Promise<{ id: string; created_at: string | null }[]> {
   try {
     const supabase = getSupabaseServerClient();
     const { data, error } = await supabase
       .from("supplements")
-      .select("id, updated_at")
-      .order("created_at", { ascending: false }) // or update_at, but created_at is stable
+      .select("id, created_at")
+      .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) {
@@ -397,12 +397,12 @@ export async function getMedicineCount(): Promise<number> {
 export async function getMedicineSitemapChunk(
   offset: number,
   limit: number
-): Promise<{ id: string; updated_at: string | null }[]> {
+): Promise<{ id: string; created_at: string | null }[]> {
   try {
     const supabase = getSupabaseServerClient();
     const { data, error } = await supabase
       .from("medicines")
-      .select("id, updated_at")
+      .select("id, created_at")
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 

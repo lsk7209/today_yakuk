@@ -11,7 +11,7 @@ import { getSupplementById } from "@/lib/data/pharmacies";
 import { getSiteUrl } from "@/lib/site-url";
 import { Breadcrumb } from "@/components/breadcrumb";
 
-import { ChevronDown, HelpCircle, AlertTriangle, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ShieldCheck } from "lucide-react";
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
@@ -92,7 +92,7 @@ export default async function ProductDetailPage({
     const productUrl = `${siteUrl}/wiki/product/${params.id}`;
 
     // AI Summary Parsing for FAQ Schema
-    let faqItems: { question: string, answer: string }[] = [];
+    const faqItems: { question: string, answer: string }[] = [];
 
     // Parse ai_summary if it's JSON (new format)
     try {
@@ -111,11 +111,12 @@ export default async function ProductDetailPage({
                 });
             }
         }
-    } catch (e) {
+    } catch {
         // Ignore parsing errors
     }
 
     // Structure Data (JSON-LD) for Google Rich Results
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const jsonLd: any = {
         "@context": "https://schema.org",
         "@type": "Product",

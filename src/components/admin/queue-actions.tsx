@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Link from "next/link";
 
 type Props = {
     id: string;
@@ -61,6 +62,12 @@ export default function QueueActions({ id, status }: Props) {
                     즉시 발행
                 </button>
             )}
+            <Link
+                href={`/admin/queue/${id}`}
+                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 flex items-center"
+            >
+                수정
+            </Link>
             <button
                 onClick={handleDelete}
                 disabled={loading}
