@@ -88,10 +88,25 @@ async function publishPending(limit = 2) {
     return;
   }
 
-  // AI 재생성 중단: 이미 생성된 콘텐츠만 발행합니다.
+  // 1. 유효하지 않은 아이템(컨텐츠 누락) 처리 -> 'failed'로 변경하여 큐 막힘 방지
+  const failedOps = pending
+    .filter((item) => !item.content_html && !item.ai_summary)
+    .map((item) => ({
+      id: item.id,
+      status: "failed",
+      updated_at: now,
+      // 실패 사유를 어딘가에 적으면 좋겠지만 스키마가 없으므로 일단 상태만 변경
+    }));
+
+  if (failedOps.length > 0) {
+    console.warn(`Marking ${failedOps.length} items as 'failed' due to missing content:`, failedOps.map(f => f.id));
+    await supabase.from("content_queue").upsert(failedOps as any);
+  }
+
+  // 2. 유효한 아이템 발행 처리
   const ready = pending.filter((item) => !!item.content_html || !!item.ai_summary);
   if (!ready.length) {
-    console.info("No publishable items (missing content_html/ai_summary).");
+    console.info("No publishable items ready.");
     return;
   }
 
@@ -136,8 +151,8 @@ async function publishPending(limit = 2) {
 
 async function main() {
   ensureEnv();
-  const limitRaw = process.env.PUBLISH_LIMIT ?? "2";
-  const limit = Number.isFinite(Number(limitRaw)) ? Math.max(1, Math.min(10, Number(limitRaw))) : 2;
+  const limitRaw = process.env.PUBLISH_LIMIT ?? "10";
+  const limit = Number.isFinite(Number(limitRaw)) ? Math.max(1, Math.min(50, Number(limitRaw))) : 10;
   await publishPending(limit);
 }
 
