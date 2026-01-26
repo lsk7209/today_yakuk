@@ -263,7 +263,7 @@ export default async function ProductDetailPage({
 /**
  * 전문가 리포트의 텍스트를 파싱하여 보기 좋게 가독성을 개선하는 컴포넌트
  */
-function FormattedSummary({ text, ingredients }: { text: string; ingredients: any[] }) {
+function FormattedSummary({ text, ingredients }: { text: string; ingredients: { name: string; slug: string }[] }) {
     // 1. 줄바꿈 단위로 분리
     const lines = text.split('\n').filter(line => line.trim() !== "");
 

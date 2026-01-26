@@ -1,0 +1,36 @@
+name: Auto Enrich Supplements
+
+on:
+  schedule:
+    # 매일 3시간 간격으로 실행 (하루 총 8번, 총 800개 처리)
+    - cron: "0 */3 * * *"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "처리할 아이템 개수"
+        required: false
+        default: "100"
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run enrichment
+        run: npx ts-node --project tsconfig.sync.json scripts/auto-enrich-supplements.ts ${{ github.event.inputs.limit || '15' }}
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FOOD_SAFETY_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}
