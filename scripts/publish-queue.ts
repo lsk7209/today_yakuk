@@ -93,6 +93,11 @@ async function publishPending(limit = 2) {
     .filter((item) => !item.content_html && !item.ai_summary)
     .map((item) => ({
       id: item.id,
+      hpid: item.hpid, // Required for upsert
+      title: item.title, // Required for upsert
+      slug: item.slug, // Required for upsert
+      region: item.region,
+      theme: item.theme,
       status: "failed",
       updated_at: now,
       // 실패 사유를 어딘가에 적으면 좋겠지만 스키마가 없으므로 일단 상태만 변경
@@ -112,6 +117,11 @@ async function publishPending(limit = 2) {
 
   const rows = ready.map((item) => ({
     id: item.id,
+    hpid: item.hpid, // Required
+    title: item.title, // Required
+    slug: item.slug, // Required
+    region: item.region,
+    theme: item.theme,
     status: "published",
     published_at: now,
     updated_at: now,
