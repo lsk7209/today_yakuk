@@ -16,17 +16,17 @@ import {
 const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "오늘약국 소개: 서비스 목적·데이터 출처·운영 원칙",
+  title: "약국오늘 소개: 서비스 목적·데이터 출처·운영 원칙",
   description:
-    "오늘약국은 지금 문 연 약국을 빠르게 찾도록 돕는 실시간 약국 검색 서비스입니다. 공공데이터 기반으로 영업시간·전화·위치를 정리하고, 방문 전 확인 팁과 FAQ까지 한 번에 제공합니다.",
+    "약국오늘은 지금 문 연 약국을 빠르게 찾도록 돕는 실시간 약국 검색 서비스입니다. 공공데이터 기반으로 영업시간·전화·위치를 정리하고, 방문 전 확인 팁과 FAQ까지 한 번에 제공합니다.",
   alternates: { canonical: "/about" },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "오늘약국 소개: 서비스 목적·데이터 출처·운영 원칙",
+    title: "약국오늘 소개: 서비스 목적·데이터 출처·운영 원칙",
     description:
-      "지금 문 연 약국을 빠르게 찾도록 돕는 오늘약국의 목적, 데이터 출처, 운영 원칙과 자주 묻는 질문을 정리했습니다.",
+      "지금 문 연 약국을 빠르게 찾도록 돕는 약국오늘의 목적, 데이터 출처, 운영 원칙과 자주 묻는 질문을 정리했습니다.",
     url: `${siteUrl}/about`,
-    siteName: "오늘약국",
+    siteName: "약국오늘",
     locale: "ko_KR",
     type: "article",
   },
@@ -54,10 +54,10 @@ export default function AboutPage() {
                 <h1 className="text-3xl sm:text-5xl font-black leading-[1.1] tracking-tight text-gray-900">
                   가장 빠르고 정확한
                   <br />
-                  <span className="text-brand-700">오늘약국</span>으로 약국을 찾으세요
+                  <span className="text-brand-700">약국오늘</span>으로 약국을 찾으세요
                 </h1>
                 <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
-                  오늘약국은 공공 데이터 기반으로 <strong className="font-black text-gray-900">영업시간·주소·전화</strong>를
+                  약국오늘은 공공 데이터 기반으로 <strong className="font-black text-gray-900">영업시간·주소·전화</strong>를
                   정리하고, “지금 문 연 약국”을 찾기 위한 실전 가이드까지 제공합니다. 모바일에서 큰 글씨·명확한 버튼을
                   우선으로 설계했습니다.
                 </p>
@@ -270,7 +270,7 @@ export default function AboutPage() {
             <div className="space-y-3">
               <p className="text-lg font-black text-gray-900">면책 조항 및 데이터 출처 안내</p>
               <p className="text-sm text-gray-600 leading-relaxed">
-                오늘약국은 정부 공식 사이트가 아니며, 공공데이터포털(data.go.kr)의 API를 활용해 제작되었습니다. 데이터 업데이트
+                약국오늘은 정부 공식 사이트가 아니며, 공공데이터포털(data.go.kr)의 API를 활용해 제작되었습니다. 데이터 업데이트
                 지연 또는 운영시간 변경으로 실제 정보와 차이가 있을 수 있으니{" "}
                 <strong className="font-black text-gray-900">방문 전 반드시 약국에 전화로 확인</strong>하시기 바랍니다.
               </p>
@@ -322,7 +322,7 @@ export default function AboutPage() {
           <h2 className="text-2xl font-black text-gray-900">자주 묻는 질문(FAQ)</h2>
           <div className="mt-4 space-y-3">
             <details className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
-              <summary className="cursor-pointer font-black text-gray-900">오늘약국의 영업 상태는 실시간인가요?</summary>
+              <summary className="cursor-pointer font-black text-gray-900">약국오늘의 영업 상태는 실시간인가요?</summary>
               <p className="mt-2 text-gray-700 leading-relaxed">
                 영업 상태는 등록된 영업시간 정보를 기준으로 계산합니다. 실제 현장 운영은 변동될 수 있으니 방문 전 전화 확인을
                 권장합니다.
@@ -448,7 +448,7 @@ function StepVisual({ type }: { type: "gps" | "badge" | "call" }) {
     <div className="aspect-video rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white overflow-hidden relative flex items-center justify-center">
       <div className="w-4/5 rounded-2xl border border-gray-200 bg-white p-4 shadow-xl flex items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-base font-black text-gray-900 truncate">오늘약국 예시</p>
+          <p className="text-base font-black text-gray-900 truncate">약국오늘 예시</p>
           <p className="text-sm text-gray-600">02-1234-5678</p>
         </div>
         <div className="flex gap-2">

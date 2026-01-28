@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "공휴일 대비 약국 이용 체크리스트 | 오늘약국";
+const metaTitle = "공휴일 대비 약국 이용 체크리스트 | 약국오늘";
 const metaDescription =
   "공휴일 영업 여부 확인, 종료 임박 시간, 전화·길찾기 활용, 대체 약국 찾기까지 한 번에 점검하세요.";
 

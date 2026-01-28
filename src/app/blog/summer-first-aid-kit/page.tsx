@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "여름 휴가철 응급 상비약 리스트 | 오늘약국";
+const metaTitle = "여름 휴가철 응급 상비약 리스트 | 약국오늘";
 const metaDescription =
   "벌레·햇빛·소화불량·멍/찰과상 대비 휴대용 응급 키트 구성과 약국 활용 팁을 정리했습니다.";
 

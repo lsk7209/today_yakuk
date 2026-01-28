@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "여행 중 처방전 분실 시 대처법 | 오늘약국";
+const metaTitle = "여행 중 처방전 분실 시 대처법 | 약국오늘";
 const metaDescription =
     "즐거운 여행 중 복용하던 약을 잃어버렸다면? 처방전 재발급 방법, 약국에서의 대체 조제 가능 여부, 응급실 방문 기준 등 현실적인 대처법을 알려드립니다.";
 

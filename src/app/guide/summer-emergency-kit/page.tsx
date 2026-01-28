@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "여름 휴가철 휴대용 응급 키트 구성법 | 오늘약국";
+const metaTitle = "여름 휴가철 휴대용 응급 키트 구성법 | 약국오늘";
 const metaDescription =
   "벌레·햇빛·소화불량·상처 대비 휴대용 응급 키트 구성과 반경 검색/거리순 활용 팁을 안내합니다.";
 

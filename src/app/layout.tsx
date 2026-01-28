@@ -28,13 +28,13 @@ const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "오늘약국 | 실시간 영업 약국 검색",
-    template: "%s | 오늘약국",
+    default: "약국오늘 | 실시간 영업 약국 검색",
+    template: "%s | 약국오늘",
   },
   // Naver는 description이 너무 길면 잘릴 수 있어 80자 내로 유지 (상세 맥락은 본문/구조화 데이터로 보완)
   description: "지금 문 연 근처약국을 빠르게 찾고 영업시간·위치를 확인하세요.",
   keywords: [
-    "오늘약국",
+    "약국오늘",
     "근처약국",
     "실시간 약국",
     "영업 약국 찾기",
@@ -46,17 +46,17 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "오늘약국 | 실시간 영업 약국 검색",
+    title: "약국오늘 | 실시간 영업 약국 검색",
     description:
       "지금 문 연 약국을 빠르게 찾고, 영업 시간과 위치를 한 번에 확인하세요.",
     url: siteUrl,
-    siteName: "오늘약국",
+    siteName: "약국오늘",
     locale: "ko_KR",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "오늘약국 | 실시간 영업 약국 검색",
+    title: "약국오늘 | 실시간 영업 약국 검색",
     description: "지금 문 연 약국을 빠르게 찾고 영업시간·위치를 확인하세요.",
   },
   robots: {
@@ -126,7 +126,7 @@ export default function RootLayout({
                   약
                 </div>
                 <div>
-                  <p className="text-lg font-semibold">오늘약국</p>
+                  <p className="text-lg font-semibold">약국오늘</p>
                 </div>
               </Link>
               <nav className="flex items-center gap-4 text-sm text-[var(--muted)]">
@@ -152,7 +152,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <footer className="border-t border-[var(--border)] bg-white">
             <div className="container py-6 text-sm text-[var(--muted)] flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p>© {new Date().getFullYear()} 오늘약국 TodayPharmacy</p>
+              <p>© {new Date().getFullYear()} 약국오늘 TodayPharmacy</p>
               <div className="flex gap-4">
                 <a className="hover:text-brand-700" href="/about">
                   소개

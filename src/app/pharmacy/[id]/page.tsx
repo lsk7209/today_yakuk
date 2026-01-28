@@ -74,7 +74,7 @@ function buildPharmacyMetaTitle(pharmacy: Pharmacy): string {
   const city = pharmacy.city ?? "";
   const dong = extractDong(pharmacy.address) ?? "";
   const region = [city, dong].filter(Boolean).join(" ");
-  // template("%s | 오늘약국")에 의해 뒤에 서비스명이 붙으므로 여기서는 본문만 구성
+  // template("%s | 약국오늘")에 의해 뒤에 서비스명이 붙으므로 여기서는 본문만 구성
   const base = `${pharmacy.name} | ${region || city || "지역"} 영업시간·전화·길찾기`;
   return trimTitle(base);
 }
@@ -132,7 +132,7 @@ export async function generateMetadata({ params }: { params: Params }) {
       title,
       description,
       url: `${siteUrl}/pharmacy/${pharmacy.hpid}`,
-      siteName: "오늘약국",
+      siteName: "약국오늘",
       locale: "ko_KR",
       type: "website",
       images: [

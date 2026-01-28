@@ -43,7 +43,7 @@ export async function generateMetadata({
     const siteUrl = getSiteUrl();
 
     return {
-        title: `${keyword} 관련 영양제 - 오늘약국`,
+        title: `${keyword} 관련 영양제 - 약국오늘`,
         description: `${keyword}에 도움이 되는 영양제와 건강기능식품을 찾아보세요.`,
         alternates: {
             canonical: `${siteUrl}/wiki/tag/${params.keyword}`,

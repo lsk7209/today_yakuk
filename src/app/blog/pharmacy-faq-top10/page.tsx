@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "약국에서 자주 묻는 질문 TOP10과 답변 | 오늘약국";
+const metaTitle = "약국에서 자주 묻는 질문 TOP10과 답변 | 약국오늘";
 const metaDescription =
     "약 복용 시간, 술 마신 후 약 복용, 유효기간 지난 약 처리 등 약국에서 가장 많이 묻는 질문 10가지를 정리해 드립니다.";
 

@@ -54,7 +54,7 @@ export async function generateMetadata({
 
     if (!medicine) {
         return {
-            title: "의약품을 찾을 수 없습니다 | 오늘약국",
+            title: "의약품을 찾을 수 없습니다 | 약국오늘",
             description: "요청하신 의약품 정보를 찾을 수 없습니다.",
             robots: { index: false, follow: false },
         };
@@ -64,13 +64,13 @@ export async function generateMetadata({
     const canonicalUrl = `${siteUrl}/wiki/medicine/${params.id}`;
 
     return {
-        title: `${medicine.name} 효능/부작용/복용법 - 오늘약국`,
+        title: `${medicine.name} 효능/부작용/복용법 - 약국오늘`,
         description: `${medicine.name} (${medicine.manufacturer || "제조사"})의 효능, 사용법, 주의사항, 부작용 정보를 확인하세요. 식약처 인증 의약품 정보.`,
         alternates: {
             canonical: canonicalUrl,
         },
         openGraph: {
-            title: `${medicine.name} | 오늘약국 의약품 정보`,
+            title: `${medicine.name} | 약국오늘 의약품 정보`,
             description: medicine.efficacy || `${medicine.name}의 상세 정보를 확인하세요.`,
             url: canonicalUrl,
             images: medicine.image_url ? [{ url: medicine.image_url }] : undefined,

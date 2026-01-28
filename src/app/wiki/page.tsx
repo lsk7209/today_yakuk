@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "영양제 정보",
     description: "식약처 공공데이터 기반 영양제 성분 정보와 객관적 분석을 제공합니다.",
     openGraph: {
-        title: "영양제 정보 | 오늘약국",
+        title: "영양제 정보 | 약국오늘",
         description: "건강기능식품 성분과 제품을 찾고, 객관적인 정보를 확인하세요.",
     },
 };
@@ -190,7 +190,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                     <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl">📊</div>
                     <h3 className="text-xl font-black text-slate-900">식약처 데이터 기반</h3>
                     <p className="text-slate-500 font-medium leading-relaxed">
-                        오늘약국의 모든 정보는 식품의약품안전처 건강기능식품 공공데이터를 바탕으로 가공되었습니다. 주관적인 광고보다는 팩트에 집중합니다.
+                        약국오늘의 모든 정보는 식품의약품안전처 건강기능식품 공공데이터를 바탕으로 가공되었습니다. 주관적인 광고보다는 팩트에 집중합니다.
                     </p>
                 </div>
                 <div className="p-8 bg-white border border-slate-50 rounded-[2.5rem] shadow-sm space-y-4">

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "어린이 해열제 구비 체크포인트 | 오늘약국";
+const metaTitle = "어린이 해열제 구비 체크포인트 | 약국오늘";
 const metaDescription =
   "연령·체중별 용량, 계량 스푼, 보관법, 부작용 주의점까지 어린이 해열제 구비 전 필수 체크사항을 정리했습니다.";
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "반경 2/3/5/10km 선택 기준과 활용법 | 오늘약국";
+const metaTitle = "반경 2/3/5/10km 선택 기준과 활용법 | 약국오늘";
 const metaDescription =
   "심야·공휴일 상황별로 반경을 조정하고 거리순 정렬을 활용해 빠르게 약국을 찾는 기준을 안내합니다.";
 

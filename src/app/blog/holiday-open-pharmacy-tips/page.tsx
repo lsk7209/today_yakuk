@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "공휴일에도 열려 있는 약국을 빨리 찾는 5가지 방법 | 오늘약국";
+const metaTitle = "공휴일에도 열려 있는 약국을 빨리 찾는 5가지 방법 | 약국오늘";
 const metaDescription =
   "위치 권한, 반경 설정, 종료 임박 체크, 전화 확인, 길찾기까지 공휴일 대비 핵심 팁을 정리했습니다.";
 
@@ -168,7 +168,7 @@ export default function BlogHolidayOpenPharmacyTips() {
             </a>
           </li>
           <li>
-            오늘약국 가이드 모음:{' '}
+            약국오늘 가이드 모음:{' '}
             <Link href="/guide" className="text-brand-700 hover:underline">
               /guide
             </Link>

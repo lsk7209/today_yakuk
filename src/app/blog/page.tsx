@@ -3,7 +3,7 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "블로그 | 오늘약국",
+  title: "블로그 | 약국오늘",
   description: "약국 이용 팁, 야간·주말 대비법, 위치 기반 검색 활용 가이드를 제공합니다.",
   alternates: { canonical: "/blog" },
 };

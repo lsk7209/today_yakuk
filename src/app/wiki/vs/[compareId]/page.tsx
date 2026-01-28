@@ -19,7 +19,7 @@ export async function generateMetadata({
     const ids = params.compareId.split('_vs_');
     if (ids.length !== 2) {
         return {
-            title: "비교할 제품을 찾을 수 없습니다 | 오늘약국",
+            title: "비교할 제품을 찾을 수 없습니다 | 약국오늘",
             robots: { index: false, follow: false },
         };
     }
@@ -31,14 +31,14 @@ export async function generateMetadata({
 
     if (!product1 || !product2) {
         return {
-            title: "비교할 제품을 찾을 수 없습니다 | 오늘약국",
+            title: "비교할 제품을 찾을 수 없습니다 | 약국오늘",
             robots: { index: false, follow: false },
         };
     }
 
     const siteUrl = getSiteUrl();
     return {
-        title: `${product1.name} vs ${product2.name} 비교 - 오늘약국`,
+        title: `${product1.name} vs ${product2.name} 비교 - 약국오늘`,
         description: `${product1.name}와 ${product2.name}의 영양 성분, 첨가물, 가격 등을 한눈에 비교하세요.`,
         alternates: {
             canonical: `${siteUrl}/wiki/vs/${params.compareId}`,

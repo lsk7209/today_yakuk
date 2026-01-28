@@ -4,7 +4,7 @@ export const runtime = "edge";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const title = searchParams.get("title") ?? "오늘약국";
+  const title = searchParams.get("title") ?? "약국오늘";
   const subtitle = searchParams.get("subtitle") ?? "실시간 영업 약국 검색";
 
   return new ImageResponse(
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
           >
             약
           </div>
-          <div style={{ fontSize: 24, fontWeight: 800, color: "#0F172A" }}>오늘약국</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: "#0F172A" }}>약국오늘</div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>

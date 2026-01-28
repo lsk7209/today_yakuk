@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { listPublishedContent } from "@/lib/data/content";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://todaypharm.kr";
-const FEED_TITLE = "오늘약국 | TodayPharmacy";
+const FEED_TITLE = "약국오늘 | TodayPharmacy";
 const FEED_DESCRIPTION = "야간·주말·공휴일 문 연 약국 정보를 빠르게 확인하세요.";
 
 function stripHtml(html: string) {
@@ -34,7 +34,7 @@ export async function GET() {
           .join("")
       : `
       <item>
-        <title><![CDATA[오늘약국 안내]]></title>
+        <title><![CDATA[약국오늘 안내]]></title>
         <link>${SITE_URL}</link>
         <guid>${SITE_URL}</guid>
         <pubDate>${fallbackDate}</pubDate>

@@ -10,7 +10,7 @@ export default function Loading() {
                 </div>
             </div>
             <p className="text-slate-600 font-bold animate-pulse text-lg">
-                오늘약국이 데이터를 불러오고 있습니다...
+                약국오늘이 데이터를 불러오고 있습니다...
             </p>
         </div>
     );

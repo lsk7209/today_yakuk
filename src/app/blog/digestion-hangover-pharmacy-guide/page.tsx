@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "소화불량·과음 후 약국에서 물어볼 것 | 오늘약국";
+const metaTitle = "소화불량·과음 후 약국에서 물어볼 것 | 약국오늘";
 const metaDescription =
     "속이 더부룩하거나 술 마신 다음 날 머리가 깨질 듯 아플 때! 약국에서 증상에 딱 맞는 약을 고르는 꿀팁을 알려드립니다.";
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "임산부가 약국 이용 시 유의사항 | 오늘약국";
+const metaTitle = "임산부가 약국 이용 시 유의사항 | 약국오늘";
 const metaDescription =
     "임신 중 감기, 변비, 두통이 생겼을 때 참아야만 할까요? 임산부가 안전하게 복용할 수 있는 약과 약국 방문 시 꼭 확인해야 할 체크리스트를 안내합니다.";
 

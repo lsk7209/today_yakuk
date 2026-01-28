@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "야간·주말 약국 찾기 완전 가이드 | 오늘약국";
+const metaTitle = "야간·주말 약국 찾기 완전 가이드 | 약국오늘";
 const metaDescription =
   "야간·주말·공휴일에 문 연 약국을 빠르게 찾는 방법과 반경 검색, 전화·길찾기 활용 팁을 정리했습니다.";
 

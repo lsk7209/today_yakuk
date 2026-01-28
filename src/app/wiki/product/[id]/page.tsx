@@ -45,7 +45,7 @@ export async function generateMetadata({
 
     if (!supplement) {
         return {
-            title: "제품을 찾을 수 없습니다 | 오늘약국",
+            title: "제품을 찾을 수 없습니다 | 약국오늘",
             description: "요청하신 영양제 정보를 찾을 수 없습니다.",
             robots: { index: false, follow: false },
         };
@@ -55,13 +55,13 @@ export async function generateMetadata({
     const canonicalUrl = `${siteUrl}/wiki/product/${params.id}`;
 
     return {
-        title: `${supplement.name} 효능/부작용 및 성분 분석 - 오늘약국`,
+        title: `${supplement.name} 효능/부작용 및 성분 분석 - 약국오늘`,
         description: `${supplement.name} (${supplement.manufacturer || "제조사"})의 영양 성분, 첨가물 정보, 정밀 분석 리포트를 확인하세요. 약사가 검증한 안전한 영양제 정보.`,
         alternates: {
             canonical: canonicalUrl,
         },
         openGraph: {
-            title: `${supplement.name} | 오늘약국 영양제 위키`,
+            title: `${supplement.name} | 약국오늘 영양제 위키`,
             description: supplement.ai_summary || `${supplement.name}의 상세 영양 정보를 확인하세요.`,
             url: canonicalUrl,
             images: supplement.image_url ? [{ url: supplement.image_url }] : undefined,
@@ -147,7 +147,7 @@ export default async function ProductDetailPage({
             },
             "author": {
                 "@type": "Organization",
-                "name": "오늘약국 AI 분석"
+                "name": "약국오늘 AI 분석"
             }
         },
         "aggregateRating": {
