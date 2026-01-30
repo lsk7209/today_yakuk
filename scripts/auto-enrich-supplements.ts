@@ -112,6 +112,9 @@ async function autoEnrichSupplements() {
                 failCount++;
             } else {
                 console.log(`✅ Enriched: ${item.name} (${aiAnalysis.nutrition_facts.length} nutrients found)`);
+                if (aiAnalysis.nutrition_facts.length > 0) {
+                    console.log(JSON.stringify(aiAnalysis.nutrition_facts, null, 2));
+                }
                 successCount++;
             }
 

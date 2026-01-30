@@ -37,21 +37,29 @@ export async function generateAIAnalysis(
 원재료: ${ingredients}
 영양성분: ${nutritionFacts}
 
+규칙:
+1. 상업적 표현을 배제하고 팩트 위주로 작성하세요.
+2. nutrition_facts 추출 시 엄격한 규칙:
+   - "정제수", "글리세린", "착향료", "캡슐기제" 등 영양소가 아닌 단순 원재료는 절대 포함하지 마세요.
+   - 오직 비타민, 미네랄, 단백질, 지방, 기능성 지표성분(예: 코엔자임Q10, 진세노사이드, 루테인)만 포함하세요.
+   - 성분명은 한글로 표준화하여 작성하세요 (예: "Vitamin C" -> "비타민C").
+   - percent_dv (1일 영양성분 기준치에 대한 비율, 단위: %)
+     - 텍스트에 "%" 정보가 있다면 그 값을 사용하세요.
+     - 정보가 없다면, 함량(amount)을 기반으로 한국인 성인 1일 권장량 대비 비율을 직접 계산해서 정수로 넣으세요.
+     - 기준치 참고: 비타민C 100mg, 비타민D 10ug(400IU), 아연 8.5mg, 마그네슘 315mg, 칼슘 700mg, 철분 12mg, 비타민B1 1.2mg, 비타민B2 1.4mg, 나이아신 16mg, 비타민B6 1.5mg, 엽산 400ug, 비타민B12 2.4ug, 비오틴 30ug.
+     - 기준치가 없는 성분(코엔자임Q10, 프로폴리스, 루테인 등)은 percent_dv를 null로 설정하세요. (0이 아님)
+   - amount(함량)는 숫자만 추출하세요. (없으면 0)
+
 다음 JSON 형식으로만 응답해주세요:
 {
   "summary": "제품의 핵심 특징을 1문장으로 요약",
   "effects": "주요 효능 및 기대 효과 (2-3문장, 과장 없이)",
   "cautions": "섭취 시 주의사항 및 부작용 가능성 (2-3문장)",
   "nutrition_facts": [
-    { "name": "성분명", "amount": 1000, "unit": "mg", "percent_dv": 100 }
+    { "name": "비타민C", "amount": 1000, "unit": "mg", "percent_dv": 1000 },
+    { "name": "코엔자임Q10", "amount": 100, "unit": "mg", "percent_dv": null }
   ]
-}
-
-주의사항:
-- 상업적 표현을 배제하고 팩트 위주로 작성하세요.
-- nutrition_facts는 영양성분 텍스트에서 가능한 모든 성분을 추출하세요.
-- 성분명은 한글로 작성하세요.
-- 만약 함량 정보를 추출할 수 없다면 nutrition_facts는 빈 배열로 두세요.`;
+}`;
 
     try {
         const result = await model.generateContent(prompt);
