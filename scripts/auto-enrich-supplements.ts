@@ -94,13 +94,15 @@ async function autoEnrichSupplements() {
             // Store structured data
             const mixedSummary = createMixedSummary(aiAnalysis);
 
+            const enrichmentStatus = aiAnalysis.status === 'failed' ? 'failed' : 'success';
+
             const { error: updateError } = await supabase
                 .from("supplements")
                 .update({
                     nutrition_facts: aiAnalysis.nutrition_facts || [],
                     ai_summary: mixedSummary,
                     additives: additives,
-                    enrichment_status: "success",
+                    enrichment_status: enrichmentStatus,
                     enrichment_tried_at: new Date().toISOString()
                 })
                 .eq("id", item.id);

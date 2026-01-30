@@ -17,6 +17,7 @@ export interface AIAnalysisResult {
     effects: string;
     cautions: string;
     nutrition_facts: NutritionFact[];
+    status?: 'success' | 'failed';
 }
 
 /**
@@ -28,7 +29,7 @@ export async function generateAIAnalysis(
     ingredients: string,
     nutritionFacts: string
 ): Promise<AIAnalysisResult> {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `당신은 영양학 전문가입니다. 다음 건강기능식품을 객관적으로 분석해주세요.
 
@@ -62,7 +63,8 @@ export async function generateAIAnalysis(
             summary: parsed.summary || "",
             effects: parsed.effects || "",
             cautions: parsed.cautions || "",
-            nutrition_facts: parsed.nutrition_facts || []
+            nutrition_facts: parsed.nutrition_facts || [],
+            status: 'success'
         };
     } catch (error) {
         console.error("Gemini API error:", error);
@@ -70,7 +72,8 @@ export async function generateAIAnalysis(
             summary: "AI 요약을 생성할 수 없습니다.",
             effects: "",
             cautions: "",
-            nutrition_facts: []
+            nutrition_facts: [],
+            status: 'failed'
         };
     }
 }

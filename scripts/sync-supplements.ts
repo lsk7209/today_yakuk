@@ -151,6 +151,8 @@ async function syncSupplements() {
             // Store structured data
             const mixedSummary = createMixedSummary(aiAnalysis);
 
+            const enrichmentStatus = aiAnalysis.status === 'failed' ? 'failed' : 'success';
+
             // Upsert to Supabase
             const { error } = await supabase.from("supplements").upsert(
                 {
@@ -161,7 +163,7 @@ async function syncSupplements() {
                     additives,
                     ai_summary: mixedSummary,
                     tags: generateTags(name, aiAnalysis.summary, nutritionFacts),
-                    enrichment_status: "success",
+                    enrichment_status: enrichmentStatus,
                     enrichment_tried_at: new Date().toISOString()
                 },
                 { onConflict: "product_report_no" }
