@@ -3,7 +3,9 @@ name: Generate Blog Post
 on:
   schedule:
     # 매일 07:00 KST (UTC 22:00) - 아침 발행 슬롯 채우기용
-    - cron: "0 22 * * *"
+    # Morning (KST 07:00) & Evening (KST 19:00)
+    # UTC: 22, 10
+    - cron: "0 22,10 * * *"
   workflow_dispatch:
 
 jobs:
