@@ -1,81 +1,48 @@
+/**
+ * Auto Enrich Supplements Script
+ * 
+ * Fetches supplements with missing nutrition_facts and enriches them using:
+ * 1. Food Safety Korea API for raw data
+ * 2. Gemini AI for structured analysis
+ * 
+ * Improvements:
+ * - Retry logic for failed enrichments
+ * - Centralized AI analysis and additive detection
+ * - Better error tracking
+ */
 
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateAIAnalysis, createMixedSummary } from "./lib/gemini-nutrition-analyzer";
+import { detectAdditives } from "./lib/additive-keywords";
 
 dotenv.config({ path: ".env.local" });
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
+const FOOD_SAFETY_API_KEY = process.env.FOOD_SAFETY_API_KEY!;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-/**
- * Use Gemini to analyze and extract nutrition info
- */
-async function generateAIAnalysis(
-    productName: string,
-    ingredients: string,
-    nutritionFacts: string
-): Promise<{ summary: string, effects: string, cautions: string, nutrition_facts: any[] }> {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
-
-    const prompt = `당신은 영양학 전문가입니다. 다음 건강기능식품을 객관적으로 분석해주세요.
-
-제품명: ${productName}
-원재료: ${ingredients}
-영양성분: ${nutritionFacts}
-
-다음 JSON 형식으로만 응답해주세요:
-{
-  "summary": "제품의 핵심 특징을 1문장으로 요약",
-  "effects": "주요 효능 및 기대 효과 (2-3문장, 과장 없이)",
-  "cautions": "섭취 시 주의사항 및 부작용 가능성 (2-3문장)",
-  "nutrition_facts": [
-    { "name": "성분명", "amount": 1000, "unit": "mg", "percent_dv": 100 }
-  ]
-}
-
-주의사항:
-- 상업적 표현을 배제하고 팩트 위주로 작성하세요.
-- nutrition_facts는 영양성분 텍스트에서 가능한 모든 성분을 추출하세요.
-- 성분명은 한글로 작성하세요.
-- 만약 함량 정보를 추출할 수 없다면 nutrition_facts는 빈 배열로 두세요.`;
-
-    try {
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
-        const cleanedJson = responseText.replace(/```json|```/g, "").trim();
-        const parsed = JSON.parse(cleanedJson);
-
-        return {
-            summary: parsed.summary || "",
-            effects: parsed.effects || "",
-            cautions: parsed.cautions || "",
-            nutrition_facts: parsed.nutrition_facts || []
-        };
-    } catch (error) {
-        console.error("Gemini API error:", error);
-        return {
-            summary: "AI 요약을 생성할 수 없습니다.",
-            effects: "",
-            cautions: "",
-            nutrition_facts: []
-        };
-    }
-}
+// Retry interval: 6 hours in milliseconds
+const RETRY_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 async function autoEnrichSupplements() {
     const limit = parseInt(process.argv[2] || "100", 10);
     console.log(`🚀 Starting automated nutrition info enrichment (Limit: ${limit})...\n`);
 
-    // Fetch supplements where nutrition_facts is null (not yet processed)
+    const retryThreshold = new Date(Date.now() - RETRY_INTERVAL_MS).toISOString();
+
+    // Fetch supplements where:
+    // 1. nutrition_facts is null (not yet processed)
+    // 2. OR enrichment failed but enough time has passed for retry
     const { data: supplements, error } = await supabase
         .from("supplements")
-        .select("id, name, product_report_no")
-        .is("nutrition_facts", null)
+        .select("id, name, product_report_no, enrichment_status, enrichment_tried_at")
+        .or(`nutrition_facts.is.null,and(enrichment_status.eq.failed,enrichment_tried_at.lt.${retryThreshold})`)
         .limit(limit);
 
     if (error) {
@@ -83,18 +50,20 @@ async function autoEnrichSupplements() {
         return;
     }
 
-    if (supplements.length === 0) {
+    if (!supplements || supplements.length === 0) {
         console.log("✅ No pending supplements found for enrichment.");
         return;
     }
 
     console.log(`📦 Found ${supplements.length} supplements to enrich.\n`);
 
+    let successCount = 0;
+    let failCount = 0;
+
     for (const item of supplements) {
         console.log(`Processing: ${item.name} (${item.product_report_no})...`);
 
         const SERVICE_ID = "C003";
-        const FOOD_SAFETY_API_KEY = process.env.FOOD_SAFETY_API_KEY!;
         const url = `http://openapi.foodsafetykorea.go.kr/api/${FOOD_SAFETY_API_KEY}/${SERVICE_ID}/json/1/1/PRDLST_REPORT_NO=${item.product_report_no}`;
 
         try {
@@ -104,47 +73,63 @@ async function autoEnrichSupplements() {
 
             if (!rawItem) {
                 console.warn(`⚠️ Could not find raw data for ${item.name}`);
-                // Mark as processed with empty array to avoid infinite loop if API fails
-                await supabase.from("supplements").update({ nutrition_facts: [] }).eq("id", item.id);
+                // Mark as failed with timestamp for retry later
+                await supabase.from("supplements").update({
+                    enrichment_status: "api_not_found",
+                    enrichment_tried_at: new Date().toISOString()
+                }).eq("id", item.id);
+                failCount++;
                 continue;
             }
 
             const rawMaterials = rawItem.RAWMTRL_NM || "";
             const nutritionStr = rawItem.NUT_MTR || rawItem.STDR_STND || "";
 
-            const aiAnalysis = await generateAIAnalysis(item.name, rawMaterials, nutritionStr);
+            // Use centralized AI analysis
+            const aiAnalysis = await generateAIAnalysis(genAI, item.name, rawMaterials, nutritionStr);
 
-            // Store structured data as JSON string in ai_summary for backward compatibility + new features
-            const mixedSummary = JSON.stringify({
-                summary: aiAnalysis.summary,
-                effects: aiAnalysis.effects,
-                cautions: aiAnalysis.cautions
-            });
+            // Use centralized additive detection
+            const additives = detectAdditives(rawMaterials);
 
-            // Even if empty, we save something to mark it as "tried"
+            // Store structured data
+            const mixedSummary = createMixedSummary(aiAnalysis);
+
             const { error: updateError } = await supabase
                 .from("supplements")
                 .update({
                     nutrition_facts: aiAnalysis.nutrition_facts || [],
-                    ai_summary: mixedSummary // Storing JSON string
+                    ai_summary: mixedSummary,
+                    additives: additives,
+                    enrichment_status: "success",
+                    enrichment_tried_at: new Date().toISOString()
                 })
                 .eq("id", item.id);
 
             if (updateError) {
                 console.error(`❌ Failed to update ${item.name}:`, updateError.message);
+                failCount++;
             } else {
                 console.log(`✅ Enriched: ${item.name} (${aiAnalysis.nutrition_facts.length} nutrients found)`);
+                successCount++;
             }
 
-            // Rate limit for Gemini (Reduced for faster processing, 1s is generally safe for paid or high-tier free)
+            // Rate limit for Gemini API
             await new Promise(resolve => setTimeout(resolve, 1000));
 
         } catch (err) {
             console.error(`Error processing ${item.name}:`, err);
+            // Mark as failed for retry
+            await supabase.from("supplements").update({
+                enrichment_status: "failed",
+                enrichment_tried_at: new Date().toISOString()
+            }).eq("id", item.id);
+            failCount++;
         }
     }
 
-    console.log("\n✨ Enrichment batch completed!");
+    console.log(`\n✨ Enrichment batch completed!`);
+    console.log(`   Success: ${successCount}`);
+    console.log(`   Failed: ${failCount}`);
 }
 
 autoEnrichSupplements().catch(console.error);

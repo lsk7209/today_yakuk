@@ -34,8 +34,8 @@ jobs:
             echo "::error title=Missing secret::SUPABASE_SERVICE_ROLE_KEY 가 비어있습니다."
             missing=1
           fi
-          if [ -z "${PUBLIC_DATA_API_KEY}" ]; then
-            echo "::error title=Missing secret::PUBLIC_DATA_API_KEY 가 비어있습니다."
+          if [ -z "${FOOD_SAFETY_API_KEY}" ]; then
+            echo "::error title=Missing secret::FOOD_SAFETY_API_KEY 가 비어있습니다."
             missing=1
           fi
           if [ "${missing}" -ne 0 ]; then
@@ -45,7 +45,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+          FOOD_SAFETY_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}
 
       - name: Run daily sync
         run: npm run sync
@@ -54,5 +54,5 @@ jobs:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+          FOOD_SAFETY_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}
 

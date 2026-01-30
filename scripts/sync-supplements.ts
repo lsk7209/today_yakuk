@@ -12,6 +12,8 @@
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateAIAnalysis, parseNutritionFacts, createMixedSummary } from "./lib/gemini-nutrition-analyzer";
+import { detectAdditives } from "./lib/additive-keywords";
 
 dotenv.config({ path: ".env.local" });
 
@@ -23,7 +25,7 @@ const FOOD_SAFETY_API_KEY = process.env.FOOD_SAFETY_API_KEY!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Tag Mapping Definition (Same as in fix-supplement-tags.ts)
+// Tag Mapping Definition
 const TAG_MAP: Record<string, string[]> = {
     "vitamin-c": ["비타민C", "비타민 C", "Vitamin C", "Ascorbic Acid", "아스코르브산"],
     "fatigue": ["피로", "활력", "에너지", "만성피로", "Fatigue", "Energy", "인삼", "홍삼"],
@@ -38,13 +40,13 @@ const TAG_MAP: Record<string, string[]> = {
 };
 
 interface RawSupplementData {
-    PRDLST_REPORT_NO: string; // 품목제조번호
-    PRDUCT: string; // 제품명
-    BSSH_NM: string; // 제조사
-    RAWMTRL_NM: string; // 원재료명
-    NUT_MTR: string; // 영양성분
-    STDR_STND: string; // 기능성내용
-    LCNS_NO?: string; // 인허가번호
+    PRDLST_REPORT_NO: string;
+    PRDUCT: string;
+    BSSH_NM: string;
+    RAWMTRL_NM: string;
+    NUT_MTR: string;
+    STDR_STND: string;
+    LCNS_NO?: string;
 }
 
 /**
@@ -54,7 +56,7 @@ async function fetchSupplementData(
     pageNo: number = 1,
     numOfRows: number = 100
 ): Promise<RawSupplementData[]> {
-    const SERVICE_ID = "C003"; // Health Functional Food service
+    const SERVICE_ID = "C003";
     const url = `http://openapi.foodsafetykorea.go.kr/api/${FOOD_SAFETY_API_KEY}/${SERVICE_ID}/json/${pageNo}/${numOfRows}`;
 
     try {
@@ -71,96 +73,6 @@ async function fetchSupplementData(
         console.error("Failed to fetch supplement data:", error);
         return [];
     }
-}
-
-/**
- * Use Gemini to analyze and summarize supplement data
- */
-async function generateAISummary(
-    productName: string,
-    ingredients: string,
-    nutritionFacts: string
-): Promise<{ summary: string, effects: string, cautions: string, nutrition_facts: any[] }> {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
-
-    const prompt = `당신은 영양학 전문가입니다. 다음 건강기능식품을 객관적으로 분석해주세요.
-
-제품명: ${productName}
-원재료: ${ingredients}
-영양성분: ${nutritionFacts}
-
-다음 JSON 형식으로만 응답해주세요:
-{
-  "summary": "제품의 핵심 특징을 1문장으로 요약",
-  "effects": "주요 효능 및 기대 효과 (2-3문장, 과장 없이)",
-  "cautions": "섭취 시 주의사항 및 부작용 가능성 (2-3문장)",
-  "nutrition_facts": [
-    { "name": "성분명", "amount": 1000, "unit": "mg", "percent_dv": 100 }
-  ]
-}
-
-주의사항:
-- 상업적 표현을 배제하고 팩트 위주로 작성하세요.
-- nutrition_facts는 영양성분 텍스트에서 가능한 모든 성분을 추출하세요.
-- 성분명은 한글로 작성하세요.
-- 만약 함량 정보를 추출할 수 없다면 nutrition_facts는 빈 배열로 두세요.`;
-
-    try {
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
-        const cleanedJson = responseText.replace(/```json|```/g, "").trim();
-        const parsed = JSON.parse(cleanedJson);
-
-        return {
-            summary: parsed.summary || "",
-            effects: parsed.effects || "",
-            cautions: parsed.cautions || "",
-            nutrition_facts: parsed.nutrition_facts || []
-        };
-    } catch (error) {
-        console.error("Gemini API error:", error);
-        return {
-            summary: "AI 요약을 생성할 수 없습니다.",
-            effects: "",
-            cautions: "",
-            nutrition_facts: []
-        };
-    }
-}
-
-/**
- * Parse nutrition facts string to structured data (Fallback)
- */
-function parseNutritionFacts(nutStr: string): Array<{
-    name: string;
-    amount: number;
-    unit: string;
-    percent_dv: number;
-}> {
-    // Example parsing logic (adjust based on actual API format)
-    // Format assumption: "비타민C 1000mg (1000%), 비타민D 25μg (250%)"
-    const nutrients: Array<any> = [];
-
-    if (!nutStr) return nutrients;
-
-    const parts = nutStr.split(",");
-    for (const part of parts) {
-        const match = part.match(/([가-힣A-Za-z0-9]+)\s*([\d.]+)\s*([a-zμmg]+)/i);
-        if (match) {
-            const [, name, amount, unit] = match;
-            const percentMatch = part.match(/\((\d+)%\)/);
-            const percent_dv = percentMatch ? parseInt(percentMatch[1], 10) : 0;
-
-            nutrients.push({
-                name: name.trim(),
-                amount: parseFloat(amount),
-                unit: unit.trim(),
-                percent_dv,
-            });
-        }
-    }
-
-    return nutrients;
 }
 
 /**
@@ -182,7 +94,6 @@ function generateTags(
     for (const [tagId, keywords] of Object.entries(TAG_MAP)) {
         if (keywords.some(kw => contentToSearch.includes(kw.toLowerCase()))) {
             tags.add(tagId);
-            // Also store Korean keywords as tags for fallback/direct search
             keywords.forEach(kw => {
                 if (/^[가-힣]+$/.test(kw)) tags.add(kw);
             });
@@ -198,7 +109,7 @@ function generateTags(
 async function syncSupplements() {
     console.log("🚀 Starting supplement data sync...\n");
 
-    const rawData = await fetchSupplementData(1, 10); // Fetch first 10 for testing
+    const rawData = await fetchSupplementData(1, 10);
     console.log(`📦 Fetched ${rawData.length} supplements from API\n`);
 
     if (rawData.length > 0) {
@@ -206,10 +117,12 @@ async function syncSupplements() {
         console.log("DEBUG: Raw first item sample:", JSON.stringify(rawData[0], null, 2));
     }
 
+    let successCount = 0;
+    let failCount = 0;
+
     for (const rawItem of rawData) {
         try {
             const item = rawItem as any;
-            // Food Safety API fields can sometimes vary between camelCase and SNAKE_CASE depending on the exact endpoint
             const productReportNo = item.PRDLST_REPORT_NO || item.LCNS_NO || item.lcns_no;
             const name = item.PRDUCT || item.PRDLST_NM || item.prdlst_nm;
             const manufacturer = item.BSSH_NM || item.MAKE_IT_NM || item.make_it_nm;
@@ -223,12 +136,8 @@ async function syncSupplements() {
 
             console.log(`Processing: ${name}...`);
 
-            // Generate AI analysis
-            const aiAnalysis = await generateAISummary(
-                name,
-                rawMaterials,
-                nutritionStr
-            );
+            // Use centralized AI analysis
+            const aiAnalysis = await generateAIAnalysis(genAI, name, rawMaterials, nutritionStr);
 
             // Parse nutrition facts (AI first, then fallback)
             let nutritionFacts = aiAnalysis.nutrition_facts;
@@ -236,20 +145,11 @@ async function syncSupplements() {
                 nutritionFacts = parseNutritionFacts(nutritionStr);
             }
 
-            // Check for additives (simple keyword check)
-            const additives = {
-                has_preservatives: rawMaterials.includes("보존료") || rawMaterials.includes("안식향산"),
-                has_coloring: rawMaterials.includes("착색료") || rawMaterials.includes("이산화티타늄"),
-                has_artificial_sweeteners: rawMaterials.includes("아스파탐") || rawMaterials.includes("수크랄로스"),
-                details: [] as string[],
-            };
+            // Use centralized additive detection
+            const additives = detectAdditives(rawMaterials);
 
-            // Store structured data as JSON string in ai_summary
-            const mixedSummary = JSON.stringify({
-                summary: aiAnalysis.summary,
-                effects: aiAnalysis.effects,
-                cautions: aiAnalysis.cautions
-            });
+            // Store structured data
+            const mixedSummary = createMixedSummary(aiAnalysis);
 
             // Upsert to Supabase
             const { error } = await supabase.from("supplements").upsert(
@@ -261,24 +161,31 @@ async function syncSupplements() {
                     additives,
                     ai_summary: mixedSummary,
                     tags: generateTags(name, aiAnalysis.summary, nutritionFacts),
+                    enrichment_status: "success",
+                    enrichment_tried_at: new Date().toISOString()
                 },
                 { onConflict: "product_report_no" }
             );
 
             if (error) {
                 console.error(`❌ Failed to insert ${name}:`, error.message);
+                failCount++;
             } else {
                 console.log(`✅ Synced: ${name}`);
+                successCount++;
             }
 
             // Rate limiting for Gemini API
             await new Promise((resolve) => setTimeout(resolve, 1000));
         } catch (error) {
             console.error(`Error processing item:`, error);
+            failCount++;
         }
     }
 
-    console.log("\n✨ Sync completed!");
+    console.log(`\n✨ Sync completed!`);
+    console.log(`   Success: ${successCount}`);
+    console.log(`   Failed: ${failCount}`);
 }
 
 // Run the script
