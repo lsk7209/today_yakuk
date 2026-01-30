@@ -61,7 +61,7 @@ async function autoEnrichSupplements() {
     let failCount = 0;
 
     for (const item of supplements) {
-        console.log(`Processing: ${item.name} (${item.product_report_no})...`);
+        console.log(`Processing: ${item.name} (Rule: ${item.product_report_no}, ID: ${item.id})...`);
 
         const SERVICE_ID = "C003";
         const url = `http://openapi.foodsafetykorea.go.kr/api/${FOOD_SAFETY_API_KEY}/${SERVICE_ID}/json/1/1/PRDLST_REPORT_NO=${item.product_report_no}`;
