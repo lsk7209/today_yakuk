@@ -1,4 +1,6 @@
-import "dotenv/config";
+import path from "path";
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 // tsconfig-paths를 먼저 등록하여 @ 경로 별칭 해석
 import "tsconfig-paths/register";
 import { createClient } from "@supabase/supabase-js";

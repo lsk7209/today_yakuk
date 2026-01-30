@@ -1,4 +1,6 @@
-import "dotenv/config";
+import path from "path";
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 import "tsconfig-paths/register";
 import { createClient } from "@supabase/supabase-js";
 import { generateBlogTopic, generateBlogPost } from "../src/lib/gemini-blog";
