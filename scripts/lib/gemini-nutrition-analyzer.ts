@@ -29,7 +29,7 @@ export async function generateAIAnalysis(
     ingredients: string,
     nutritionFacts: string
 ): Promise<AIAnalysisResult> {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
     const prompt = `당신은 영양학 전문가입니다. 다음 건강기능식품을 객관적으로 분석해주세요.
 
