@@ -77,8 +77,8 @@ export function NutrientDisplay({ nutrients }: NutrientDisplayProps) {
                         <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-bold text-slate-900 truncate group-hover:text-brand-600 transition-colors uppercase tracking-tight">{nutrient.name}</h3>
                             {isActiveComp && (
-                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-black border border-blue-100 uppercase tracking-tighter">
-                                    ESSENTIAL ACTIVE
+                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-black border border-blue-100">
+                                    핵심 활성 성분
                                 </span>
                             )}
                         </div>
@@ -96,7 +96,7 @@ export function NutrientDisplay({ nutrients }: NutrientDisplayProps) {
                                             {percent === 0 ? '극소량' : `${percent.toLocaleString()}% 권장량`}
                                         </span>
                                         {percent > 100 && (
-                                            <span className="text-[10px] text-emerald-500 font-bold animate-pulse">OPTIMIZED</span>
+                                            <span className="text-[10px] text-emerald-500 font-bold animate-pulse">최적 함량</span>
                                         )}
                                     </div>
                                     <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200/50">
@@ -109,8 +109,8 @@ export function NutrientDisplay({ nutrients }: NutrientDisplayProps) {
                             ) : (
                                 <div className="h-10 flex items-center justify-end">
                                     <div className="text-right">
-                                        <span className="block text-[10px] text-slate-400 font-bold tracking-widest leading-none mb-1">RAW POTENCY</span>
-                                        <span className="text-xs text-brand-500 font-black italic">PHARMA GRADE</span>
+                                        <span className="block text-[10px] text-slate-400 font-bold leading-none mb-1">고함량 원료</span>
+                                        <span className="text-xs text-brand-500 font-black italic">전문가 검증 품질</span>
                                     </div>
                                 </div>
                             )}
