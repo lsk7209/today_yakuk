@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { NutrientChartJS } from "@/components/wiki/NutrientChartJS";
+import { NutrientDisplay } from "@/components/wiki/NutrientDisplay";
 import { linkIngredients } from "@/utils/text-linker";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { AdditiveSignal } from "@/components/wiki/AdditiveSignal";
@@ -299,7 +299,7 @@ export default async function ProductDetailPage({
                         </h2>
                         <div className="overflow-hidden">
                             {nutritionFacts.length > 0 ? (
-                                <NutrientChartJS nutrients={nutritionFacts} />
+                                <NutrientDisplay nutrients={nutritionFacts} />
                             ) : (
                                 <div className="text-center py-12 text-slate-400 font-medium">
                                     식약처 데이터베이스에 상세 영양소 함량 정보가 없습니다.
