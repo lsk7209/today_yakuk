@@ -22,10 +22,9 @@ const genAI = new GoogleGenerativeAI(geminiApiKey);
 const modelName = "gemini-2.5-flash-image";
 const model = genAI.getGenerativeModel({ model: modelName });
 
-// 파일명 생성 로직
+// 파일명 생성 로직 (slug 그대로 사용)
 function getFileName(slug: string): string {
-    const shortSlug = slug.length > 50 ? slug.substring(0, 50) : slug;
-    return `${shortSlug}.png`;
+    return `${slug}.png`;
 }
 
 // 딜레이 함수
