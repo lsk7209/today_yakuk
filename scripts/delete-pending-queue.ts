@@ -36,7 +36,8 @@ async function deletePending() {
     const { error: deleteError } = await supabase
         .from("content_queue")
         .delete()
-        .eq("status", "pending");
+        .eq("status", "pending")
+        .lt("publish_at", new Date().toISOString());
 
     if (deleteError) {
         console.error("Error deleting pending items:", deleteError);
