@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import TableOfContents from "@/components/blog/TableOfContents";
 import RelatedPosts from "@/components/blog/RelatedPosts";
 import Image from "next/image";
+import { getBlogFeaturedImage } from "@/lib/blog-image";
 
 // 10분마다 ISR
 export const revalidate = 600;
@@ -38,7 +39,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         };
     }
 
+
     const ogImageUrl = `https://todaypharm.kr/api/og?title=${encodeURIComponent(post.title)}`;
+    // 로컬 featured 이미지 확인 (절대 경로 URL이 필요하므로 도메인 붙임)
+    const featuredImagePath = getBlogFeaturedImage(post.slug, post.title);
+    const absoluteFeaturedImage = featuredImagePath.startsWith("http")
+        ? featuredImagePath
+        : `https://todaypharm.kr${featuredImagePath}`;
+
     const description = post.ai_summary && post.ai_summary.length > 160
         ? post.ai_summary.substring(0, 157) + "..."
         : post.ai_summary || "약국오늘 블로그에서 건강 정보를 확인하세요.";
@@ -56,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             card: "summary_large_image",
             title: post.title,
             description,
-            images: [ogImageUrl],
+            images: [absoluteFeaturedImage, ogImageUrl],
         },
     };
 }
@@ -96,10 +104,9 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
             </header>
 
-            {/* 대표 이미지 */}
             <div className="relative w-full aspect-[1200/630] mb-8 rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-indigo-50 shadow-lg">
                 <Image
-                    src={`/api/og?title=${encodeURIComponent(post.title)}`}
+                    src={getBlogFeaturedImage(post.slug, post.title)}
                     alt={post.title}
                     fill
                     className="object-cover"

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getBlogFeaturedImage } from "@/lib/blog-image";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -42,10 +43,9 @@ export default async function BlogIndexPage() {
               href={`/blog/${post.slug}`}
               className="group rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-xl hover:border-brand-300 transition-all flex flex-col h-full overflow-hidden"
             >
-              {/* 섬네일 이미지 */}
               <div className="relative w-full aspect-[16/9] bg-gradient-to-br from-emerald-50 via-white to-indigo-50">
                 <Image
-                  src={`/api/og?title=${encodeURIComponent(post.title)}`}
+                  src={getBlogFeaturedImage(post.slug, post.title)}
                   alt={post.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
