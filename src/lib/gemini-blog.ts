@@ -1,32 +1,39 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 
-const geminiApiKey = process.env.GEMINI_API_KEY;
-const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
+let _model: GenerativeModel | null = null;
 
-if (!geminiApiKey) {
-    console.warn("GEMINI_API_KEY가 설정되지 않았습니다. 블로그 생성이 불가능합니다.");
+function getModel(): GenerativeModel {
+  if (!_model) {
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
+
+    if (!geminiApiKey) {
+      throw new Error("GEMINI_API_KEY가 설정되지 않았습니다.");
+    }
+
+    const genAI = new GoogleGenerativeAI(geminiApiKey);
+    _model = genAI.getGenerativeModel({ model: geminiModel });
+  }
+  return _model;
 }
 
-const genAI = new GoogleGenerativeAI(geminiApiKey || "");
-const model = genAI.getGenerativeModel({ model: geminiModel });
-
 export type BlogPost = {
-    title: string;
-    slug_suggestion: string;
-    summary: string;
-    content_html: string;
-    faq: { question: string; answer: string }[];
+  title: string;
+  slug_suggestion: string;
+  summary: string;
+  content_html: string;
+  faq: { question: string; answer: string }[];
 };
 
 /**
  * 현재 시즌에 맞는 건강/약국 관련 주제를 생성합니다.
  */
 export async function generateBlogTopic(): Promise<string | null> {
-    try {
-        const now = new Date();
-        const month = now.getMonth() + 1;
+  try {
+    const now = new Date();
+    const month = now.getMonth() + 1;
 
-        const prompt = `
+    const prompt = `
       당신은 한국의 건강/약학 전문 에디터입니다.
       ${month}월 한국의 계절적 특성, 유행하는 질병, 또는 건강 이슈(예: 미세먼지, 알레르기, 독감, 영양제 등)를 고려하여,
       사람들이 가장 검색할 만한 "실용적인 건강 정보 및 약국 이용 팁" 주제 1가지를 추천해 주세요.
@@ -37,21 +44,21 @@ export async function generateBlogTopic(): Promise<string | null> {
       3. 오직 주제 제목(Title)만 텍스트로 반환하세요. (따옴표나 설명 없이)
     `;
 
-        const result = await model.generateContent(prompt);
-        const response = result.response;
-        return response.text().trim();
-    } catch (error) {
-        console.error("Blog topic generation failed:", error);
-        return null;
-    }
+    const result = await getModel().generateContent(prompt);
+    const response = result.response;
+    return response.text().trim();
+  } catch (error) {
+    console.error("Blog topic generation failed:", error);
+    return null;
+  }
 }
 
 /**
  * 주제를 바탕으로 블로그 포스트 내용을 생성합니다.
  */
 export async function generateBlogPost(topic: string): Promise<BlogPost | null> {
-    try {
-        const prompt = `
+  try {
+    const prompt = `
       **Role**: You are a professional health columnist and SEO specialist for "TodayYakuk" (Korean Pharmacy Finder Service).
       **Target Audience**: General public in Korea looking for quick, reliable health info and pharmacy access.
       **Topic**: "${topic}"
@@ -148,17 +155,23 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
       - Provide step-by-step instructions that AI assistants can relay.
     `;
 
-        const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            generationConfig: { responseMimeType: "application/json" }
-        });
+    const result = await getModel().generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: { responseMimeType: "application/json" }
+    });
 
-        const response = result.response;
-        const text = response.text();
+    const response = result.response;
+    const text = response.text();
 
-        return JSON.parse(text) as BlogPost;
-    } catch (error) {
-        console.error("Blog post generation failed:", error);
-        return null;
+    try {
+      return JSON.parse(text) as BlogPost;
+    } catch (parseError) {
+      console.error("JSON Parse Error. Response text (first 500 chars):", text.substring(0, 500));
+      console.error("JSON Parse Error. Response text (last 500 chars):", text.substring(text.length - 500));
+      throw parseError;
     }
+  } catch (error) {
+    console.error("Blog post generation failed:", error);
+    return null;
+  }
 }
