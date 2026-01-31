@@ -199,7 +199,12 @@ export default async function BlogPostPage({ params }: Props) {
             )}
 
             {/* 관련 글 */}
-            <RelatedPosts posts={relatedPosts || []} />
+            <RelatedPosts
+                posts={relatedPosts?.map(p => ({
+                    ...p,
+                    imageUrl: getBlogFeaturedImage(p.slug, p.title)
+                })) || []}
+            />
         </article>
     );
 }
