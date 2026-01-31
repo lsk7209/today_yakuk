@@ -40,12 +40,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
 
-    const ogImageUrl = `https://todaypharm.kr/api/og?title=${encodeURIComponent(post.title)}`;
-    // 로컬 featured 이미지 확인 (절대 경로 URL이 필요하므로 도메인 붙임)
-    const featuredImagePath = getBlogFeaturedImage(post.slug, post.title);
-    const absoluteFeaturedImage = featuredImagePath.startsWith("http")
-        ? featuredImagePath
-        : `https://todaypharm.kr${featuredImagePath}`;
+    const ogImages = [];
+    if (absoluteFeaturedImage) {
+        ogImages.push({ url: absoluteFeaturedImage, width: 1200, height: 630, alt: post.title });
+    }
+    ogImages.push({ url: ogImageUrl, width: 1200, height: 630, alt: "TodayYakuk Blog" });
 
     const description = post.ai_summary && post.ai_summary.length > 160
         ? post.ai_summary.substring(0, 157) + "..."
@@ -58,13 +57,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title: post.title,
             description,
             type: "article",
-            images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+            images: ogImages,
         },
         twitter: {
             card: "summary_large_image",
             title: post.title,
             description,
-            images: [absoluteFeaturedImage, ogImageUrl],
+            images: [absoluteFeaturedImage || ogImageUrl],
         },
     };
 }
@@ -83,7 +82,7 @@ export default async function BlogPostPage({ params }: Props) {
         notFound();
     }
 
-    // 관련 글 가져오기 (최근 발행된 다른 글 4개)
+    // 관련 글 가져오기
     const { data: relatedPosts } = await supabase
         .from("content_queue")
         .select("slug, title, ai_summary, published_at")
@@ -94,6 +93,56 @@ export default async function BlogPostPage({ params }: Props) {
 
     // 헤딩에 ID 추가
     const contentWithIds = addHeadingIds(post.content_html || "");
+
+    // JSON-LD 구조화 데이터 준비
+    const jsonLdData = [
+        {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: post.title,
+            description: post.ai_summary,
+            datePublished: post.publish_at || post.created_at,
+            dateModified: post.updated_at || post.publish_at,
+            author: {
+                "@type": "Person",
+                name: "TodayYakuk Editor",
+            },
+            publisher: {
+                "@type": "Organization",
+                name: "TodayYakuk",
+                logo: {
+                    "@type": "ImageObject",
+                    url: "https://todaypharm.kr/logo.png",
+                },
+            },
+            image: {
+                "@type": "ImageObject",
+                url: getBlogFeaturedImage(post.slug, post.title).startsWith("http")
+                    ? getBlogFeaturedImage(post.slug, post.title)
+                    : `https://todaypharm.kr${getBlogFeaturedImage(post.slug, post.title)}`,
+            },
+            mainEntityOfPage: {
+                "@type": "WebPage",
+                "@id": `https://todaypharm.kr/blog/${params.slug}`,
+            },
+        }
+    ];
+
+    // FAQ 스키마 추가 (GEO/AEO 최적화)
+    if (post.ai_faq && Array.isArray(post.ai_faq) && post.ai_faq.length > 0) {
+        jsonLdData.push({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: post.ai_faq.map((item: any) => ({
+                "@type": "Question",
+                name: item.question,
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: item.answer,
+                },
+            })),
+        });
+    }
 
     return (
         <article className="container max-w-3xl py-12">
@@ -122,32 +171,10 @@ export default async function BlogPostPage({ params }: Props) {
                 dangerouslySetInnerHTML={{ __html: contentWithIds }}
             />
 
-            <JsonLd
-                data={{
-                    "@context": "https://schema.org",
-                    "@type": "Article",
-                    headline: post.title,
-                    description: post.ai_summary,
-                    datePublished: post.publish_at || post.created_at,
-                    dateModified: post.updated_at || post.publish_at,
-                    author: {
-                        "@type": "Person",
-                        name: "TodayYakuk Editor",
-                    },
-                    publisher: {
-                        "@type": "Organization",
-                        name: "TodayYakuk",
-                        logo: {
-                            "@type": "ImageObject",
-                            url: "https://todaypharm.kr/logo.png",
-                        },
-                    },
-                    mainEntityOfPage: {
-                        "@type": "WebPage",
-                        "@id": `https://todaypharm.kr/blog/${params.slug}`,
-                    },
-                }}
-            />
+            {/* JSON-LD 삽입 */}
+            {jsonLdData.map((data, index) => (
+                <JsonLd key={index} data={data} />
+            ))}
 
             {post.ai_faq && Array.isArray(post.ai_faq) && post.ai_faq.length > 0 && (
                 <section className="mt-12 pt-8 border-t">
