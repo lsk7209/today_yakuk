@@ -62,8 +62,8 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
       {
         "title": "Create a 'Click-Magnet' title using psychological triggers (Urgency, Curiosity, Benefit). EXACTLY 1 line.",
         "slug_suggestion": "seo-friendly-korean-english-slug (e.g., spring-allergy-emergency-tips)",
-        "summary": "Meta description (max 150 chars). Hook the reader instantly.",
-        "content_html": "Semantic HTML content. MUST use <h2> for main sections, <h3> for subsections. use <ul><li> for all lists. Split long text into short paragraphs. Use <strong> for emphasis. NO <html>/<body> tags. DO NOT use Markdown symbols (** or ##).",
+        "summary": "Meta description (120-155 chars). Hook the reader instantly. Include primary keyword.",
+        "content_html": "Semantic HTML content. See formatting rules below.",
         "faq": [
           {"question": "Real user question 1", "answer": "Clear, concise answer"},
           {"question": "Real user question 2", "answer": "Clear, concise answer"},
@@ -71,27 +71,81 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
         ]
       }
 
+      **Content Structure (MUST follow this order)**:
+      1. **Key Takeaways Box** (REQUIRED at the very start):
+         <div class="key-takeaways">
+           <h3>📌 핵심 정리</h3>
+           <ul>
+             <li>Key point 1</li>
+             <li>Key point 2</li>
+             <li>Key point 3</li>
+           </ul>
+         </div>
+      
+      2. **Introduction**: Hook with a relatable problem (2-3 short paragraphs).
+      
+      3. **Main Content**: Use <h2> for sections, <h3> for subsections.
+      
+      4. **Expert Quote** (REQUIRED, at least 1):
+         <blockquote class="expert-quote">
+           <p>"약사의 조언이나 권위 있는 정보"</p>
+           <cite>— 약국오늘 전문 약사</cite>
+         </blockquote>
+      
+      5. **CTA**: Recommend checking "TodayYakuk" for nearby pharmacies.
+
+      **Rich Content Elements (MUST use at least 4 of these)**:
+      
+      - **Tables**: <table> for comparisons
+        <table>
+          <thead><tr><th>구분</th><th>특징</th><th>추천</th></tr></thead>
+          <tbody><tr><td>...</td><td>...</td><td>...</td></tr></tbody>
+        </table>
+      
+      - **Info Box**: <div class="info-box"><h3>💡 알아두세요</h3><p>...</p></div>
+      
+      - **Warning Box**: <div class="warning-box"><h3>⚠️ 주의사항</h3><p>...</p></div>
+      
+      - **Tip Box**: <div class="tip-box"><h3>💊 약사 팁</h3><p>...</p></div>
+      
+      - **Step Cards** (for procedures):
+        <div class="step-cards">
+          <div class="step-card"><span class="step-number">1</span><h4>Step Title</h4><p>Description</p></div>
+          <div class="step-card"><span class="step-number">2</span><h4>Step Title</h4><p>Description</p></div>
+        </div>
+      
+      - **Checklist**:
+        <ul class="checklist">
+          <li>✅ Item 1</li>
+          <li>✅ Item 2</li>
+        </ul>
+      
+      - **Stat Highlight** (for important numbers):
+        <div class="stat-highlight">
+          <span class="stat-number">85%</span>
+          <span class="stat-label">of patients see improvement</span>
+        </div>
+      
+      - **Pros/Cons Grid**:
+        <div class="pros-cons-grid">
+          <div class="pros-box"><h3>👍 장점</h3><ul><li>...</li></ul></div>
+          <div class="cons-box"><h3>👎 단점</h3><ul><li>...</li></ul></div>
+        </div>
+
       **Content Guidelines**:
-      1.  **Tone**: Empathetic, Authoritative, yet Accessible (Grade 8 reading level).
-      2.  **Structure**:
-          - **Hook**: Start with a relatable problem.
-          - **Body**: Practical advice, over-the-counter (OTC) solutions options (generic names preferred over brands).
-          - **CTA**: Strongly advise checking "TodayYakuk" to find open pharmacies nearby (24/7, weekends).
-      3.  **Formatting**: 
-          - **Strictly use HTML tags**: <h2>, <h3>, <ul>, <li>, <strong>, <table>.
-          - **Short Paragraphs**: No chunk of text should exceed 3 lines. Break them up.
-      4.  **Rich Content Requirements** (MUST include at least 2 of these):
-          - **Tables**: Use <table> for comparisons (e.g., Supplement vs Drug, Product A vs B).
-          - **Info Box**: Use <div class="info-box"><h3>Title</h3><p>Content</p></div> for key facts.
-          - **Warning Box**: Use <div class="warning-box"><h3>주의사항</h3><p>Content</p></div> for side effects/warnings.
-          - **Tip Box**: Use <div class="tip-box"><h3>약사 팁</h3><p>Content</p></div> for actionable advice.
-          - **Pros/Cons**: Use the following structure:
-            <div class="pros-cons-grid">
-              <div class="pros-box"><h3>장점</h3><ul><li>...</li></ul></div>
-              <div class="cons-box"><h3>단점</h3><ul><li>...</li></ul></div>
-            </div>
-      5.  **SEO**: Naturally weave related keywords (e.g., "weekend pharmacy", "night pharmacy", "emergency medicine").
-      6.  **Conclusion**: Must include a "Pharmacist's Note" or "When to visit a doctor" disclaimer defined in a <div class="tip-box">.
+      1. **Tone**: Empathetic, Authoritative, yet Accessible (Grade 8 reading level).
+      2. **Short Paragraphs**: No chunk of text should exceed 3 lines.
+      3. **SEO Keywords**: Naturally include "주말 약국", "야간 약국", "근처 약국", "영양제 추천" where relevant.
+      4. **E-E-A-T**: Include phrases like "약사 추천", "전문가 조언", "임상 연구에 따르면".
+      5. **Internal Links**: Mention "약국오늘에서 근처 약국 찾기" (will be auto-linked).
+      6. **Conclusion**: End with <div class="tip-box"> containing pharmacist's final note.
+
+      **GEO (Generative Engine Optimization) for AI Search**:
+      - Write clear, factual statements that AI can directly quote.
+      - Structure answers in Q&A format where appropriate.
+      - Include specific numbers, statistics, and measurable claims.
+      - Use authoritative language: "연구에 따르면", "전문가들은 권장합니다".
+      - Provide step-by-step instructions that AI assistants can relay.
     `;
 
         const result = await model.generateContent({

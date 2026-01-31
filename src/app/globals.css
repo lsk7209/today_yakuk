@@ -173,4 +173,92 @@ a:hover {
   .cons-box {
     @apply p-5 bg-red-50 rounded-xl border border-red-100;
   }
+
+  /* Key Takeaways - Summary Box at top of article */
+  .key-takeaways {
+    @apply my-8 p-6 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 shadow-sm;
+  }
+
+  .key-takeaways h3 {
+    @apply text-emerald-800 font-bold text-xl mb-4 mt-0;
+  }
+
+  .key-takeaways ul {
+    @apply space-y-2 mb-0;
+  }
+
+  .key-takeaways li {
+    @apply text-emerald-700 pl-0 flex items-start gap-2;
+  }
+
+  .key-takeaways li::before {
+    content: "✓";
+    @apply text-emerald-500 font-bold;
+  }
+
+  /* Step Cards - Procedural steps */
+  .step-cards {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4 my-8;
+  }
+
+  .step-card {
+    @apply p-5 bg-white rounded-xl border border-gray-200 shadow-sm relative hover:shadow-md transition-shadow;
+  }
+
+  .step-card .step-number {
+    @apply absolute -top-3 -left-3 w-8 h-8 bg-emerald-500 text-white font-bold rounded-full flex items-center justify-center text-sm;
+  }
+
+  .step-card h4 {
+    @apply text-gray-800 font-bold text-lg mb-2 mt-0;
+  }
+
+  .step-card p {
+    @apply text-gray-600 text-sm mb-0;
+  }
+
+  /* Expert Quote */
+  .expert-quote {
+    @apply my-8 p-6 bg-gray-50 border-l-4 border-emerald-500 rounded-r-xl italic relative;
+  }
+
+  .expert-quote::before {
+    content: '"';
+    @apply absolute -top-2 left-4 text-6xl text-emerald-200 font-serif;
+  }
+
+  .expert-quote p {
+    @apply text-gray-700 text-lg mb-3 relative z-10;
+  }
+
+  .expert-quote cite {
+    @apply text-emerald-600 font-semibold text-sm not-italic block text-right;
+  }
+
+  /* Checklist */
+  .checklist {
+    @apply my-6 space-y-3 list-none p-0;
+  }
+
+  .checklist li {
+    @apply flex items-center gap-3 p-3 bg-gray-50 rounded-lg text-gray-700;
+  }
+
+  /* Stat Highlight */
+  .stat-highlight {
+    @apply my-8 p-6 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl text-center text-white shadow-lg;
+  }
+
+  .stat-highlight .stat-number {
+    @apply block text-5xl font-extrabold mb-2;
+  }
+
+  .stat-highlight .stat-label {
+    @apply block text-emerald-100 text-lg;
+  }
+
+  /* E-E-A-T Badge */
+  .eeat-badge {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium border border-emerald-200;
+  }
 }
