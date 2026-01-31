@@ -40,6 +40,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
 
+
+    const ogImageUrl = `https://todaypharm.kr/api/og?title=${encodeURIComponent(post.title)}`;
+    // 로컬 featured 이미지 확인 (절대 경로 URL이 필요하므로 도메인 붙임)
+    const featuredImagePath = getBlogFeaturedImage(post.slug, post.title);
+    const absoluteFeaturedImage = featuredImagePath.startsWith("http")
+        ? featuredImagePath
+        : `https://todaypharm.kr${featuredImagePath}`;
+
     const ogImages = [];
     if (absoluteFeaturedImage) {
         ogImages.push({ url: absoluteFeaturedImage, width: 1200, height: 630, alt: post.title });
