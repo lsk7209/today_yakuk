@@ -103,7 +103,8 @@ export default async function BlogPostPage({ params }: Props) {
     const contentWithIds = addHeadingIds(post.content_html || "");
 
     // JSON-LD 구조화 데이터 준비
-    const jsonLdData = [
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const jsonLdData: any[] = [
         {
             "@context": "https://schema.org",
             "@type": "Article",
@@ -141,7 +142,7 @@ export default async function BlogPostPage({ params }: Props) {
         jsonLdData.push({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            mainEntity: post.ai_faq.map((item: any) => ({
+            mainEntity: post.ai_faq.map((item: { question: string; answer: string }) => ({
                 "@type": "Question",
                 name: item.question,
                 acceptedAnswer: {
@@ -200,7 +201,7 @@ export default async function BlogPostPage({ params }: Props) {
 
             {/* 관련 글 */}
             <RelatedPosts
-                posts={relatedPosts?.map(p => ({
+                posts={relatedPosts?.map((p: { slug: string; title: string; ai_summary: string | null; published_at: string | null }) => ({
                     ...p,
                     imageUrl: getBlogFeaturedImage(p.slug, p.title)
                 })) || []}
@@ -208,4 +209,3 @@ export default async function BlogPostPage({ params }: Props) {
         </article>
     );
 }
-
