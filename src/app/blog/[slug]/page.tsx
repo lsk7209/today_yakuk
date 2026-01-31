@@ -57,7 +57,7 @@ export default async function BlogPostPage({ params }: Props) {
             </header>
 
             <div
-                className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-p:text-gray-600"
+                className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-p:text-gray-600 rich-content"
                 dangerouslySetInnerHTML={{ __html: post.content_html || "" }}
             />
 

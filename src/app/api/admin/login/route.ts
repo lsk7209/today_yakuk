@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { signAdminToken } from "@/lib/jwt";
 
 export async function POST(request: Request) {
     try {
@@ -16,10 +17,13 @@ export async function POST(request: Request) {
         }
 
         if (password === adminPassword) {
+            // JWT 토큰 생성
+            const token = await signAdminToken();
+
             const response = NextResponse.json({ success: true });
 
-            // HttpOnly 쿠키 설정
-            response.cookies.set("admin_auth", "authenticated", {
+            // HttpOnly JWT 쿠키 설정
+            response.cookies.set("admin_token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "strict",
@@ -41,3 +45,4 @@ export async function POST(request: Request) {
         );
     }
 }
+

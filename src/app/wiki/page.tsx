@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
-import { Search, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import Image from "next/image";
+import WikiSearch from "@/components/wiki/WikiSearch";
 
 export const metadata: Metadata = {
     title: "영양제 정보",
@@ -116,18 +117,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                     })}
                 </div>
 
-                <div className="relative max-w-2xl mx-auto">
-                    <input
-                        type="text"
-                        placeholder="찾으시는 제품명이나 성분을 검색하세요 (준비 중)"
-                        className="w-full px-12 py-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-brand-50 shadow-sm text-base font-medium"
-                        disabled
-                    />
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 bg-slate-50 text-slate-400 text-[10px] font-black rounded-md border border-slate-100">
-                        SEARCH
-                    </div>
-                </div>
+                <WikiSearch currentCategory={currentCategory} />
             </div>
 
             {/* Product Grid */}

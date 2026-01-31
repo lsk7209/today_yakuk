@@ -63,7 +63,7 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
         "title": "Create a 'Click-Magnet' title using psychological triggers (Urgency, Curiosity, Benefit). EXACTLY 1 line.",
         "slug_suggestion": "seo-friendly-korean-english-slug (e.g., spring-allergy-emergency-tips)",
         "summary": "Meta description (max 150 chars). Hook the reader instantly.",
-        "content_html": "Semantic HTML content. Use <h2>, <h3> for hierarchy. Include a dedicated 'Actionable Conclusion' section. NO <html>/<body> tags.",
+        "content_html": "Semantic HTML content. MUST use <h2> for main sections, <h3> for subsections. use <ul><li> for all lists. Split long text into short paragraphs. Use <strong> for emphasis. NO <html>/<body> tags. DO NOT use Markdown symbols (** or ##).",
         "faq": [
           {"question": "Real user question 1", "answer": "Clear, concise answer"},
           {"question": "Real user question 2", "answer": "Clear, concise answer"},
@@ -77,9 +77,21 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
           - **Hook**: Start with a relatable problem.
           - **Body**: Practical advice, over-the-counter (OTC) solutions options (generic names preferred over brands).
           - **CTA**: Strongly advise checking "TodayYakuk" to find open pharmacies nearby (24/7, weekends).
-      3.  **Formatting**: Use <ul>/<li> for readability. Bold (<strong>) key takeaways.
-      4.  **SEO**: Naturally weave related keywords (e.g., "weekend pharmacy", "night pharmacy", "emergency medicine").
-      5.  **Conclusion**: Must include a "Pharmacist's Note" or "When to visit a doctor" disclaimer.
+      3.  **Formatting**: 
+          - **Strictly use HTML tags**: <h2>, <h3>, <ul>, <li>, <strong>, <table>.
+          - **Short Paragraphs**: No chunk of text should exceed 3 lines. Break them up.
+      4.  **Rich Content Requirements** (MUST include at least 2 of these):
+          - **Tables**: Use <table> for comparisons (e.g., Supplement vs Drug, Product A vs B).
+          - **Info Box**: Use <div class="info-box"><h3>Title</h3><p>Content</p></div> for key facts.
+          - **Warning Box**: Use <div class="warning-box"><h3>주의사항</h3><p>Content</p></div> for side effects/warnings.
+          - **Tip Box**: Use <div class="tip-box"><h3>약사 팁</h3><p>Content</p></div> for actionable advice.
+          - **Pros/Cons**: Use the following structure:
+            <div class="pros-cons-grid">
+              <div class="pros-box"><h3>장점</h3><ul><li>...</li></ul></div>
+              <div class="cons-box"><h3>단점</h3><ul><li>...</li></ul></div>
+            </div>
+      5.  **SEO**: Naturally weave related keywords (e.g., "weekend pharmacy", "night pharmacy", "emergency medicine").
+      6.  **Conclusion**: Must include a "Pharmacist's Note" or "When to visit a doctor" disclaimer defined in a <div class="tip-box">.
     `;
 
         const result = await model.generateContent({

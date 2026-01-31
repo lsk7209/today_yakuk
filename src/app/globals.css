@@ -6,15 +6,21 @@
 
 :root {
   --background: #f7faf8;
-  --foreground: #1e293b; /* slate-800 */
+  --foreground: #1e293b;
+  /* slate-800 */
   --muted: #475569;
   --card: #ffffff;
   --border: #e2e8f0;
-  --brand: #059669; /* emerald-600 */
-  --brand-light: #ecfdf5; /* emerald-50 */
-  --brand-soft: #10b981; /* emerald-500 */
-  --brand-strong: #047857; /* emerald-700 */
-  --brand-dark: #064e3b; /* emerald-900 */
+  --brand: #059669;
+  /* emerald-600 */
+  --brand-light: #ecfdf5;
+  /* emerald-50 */
+  --brand-soft: #10b981;
+  /* emerald-500 */
+  --brand-strong: #047857;
+  /* emerald-700 */
+  --brand-dark: #064e3b;
+  /* emerald-900 */
   --accent: var(--brand);
   --shadow-premium: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
   --shadow-premium-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.07), 0 10px 10px -5px rgba(0, 0, 0, 0.05);
@@ -29,7 +35,8 @@ body {
   background: var(--background);
   font-family: "Pretendard", var(--font-geist-sans), system-ui, -apple-system,
     sans-serif;
-  line-height: 1.7; /* leading-relaxed */
+  line-height: 1.7;
+  /* leading-relaxed */
   text-rendering: optimizeLegibility;
 }
 
@@ -46,9 +53,11 @@ a:hover {
   0% {
     box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.35);
   }
+
   70% {
     box-shadow: 0 0 0 18px rgba(5, 150, 105, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(5, 150, 105, 0);
   }
@@ -59,6 +68,7 @@ a:hover {
     opacity: 0;
     transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -103,11 +113,64 @@ a:hover {
   .text-balance {
     text-wrap: balance;
   }
+
   .no-scrollbar {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* Rich Content Styles */
+@layer components {
+  .rich-content table {
+    @apply w-full my-6 border-collapse border border-gray-200 rounded-lg overflow-hidden;
+  }
+
+  .rich-content th {
+    @apply bg-gray-50 text-left p-3 font-bold text-gray-700 border-b border-gray-200;
+  }
+
+  .rich-content td {
+    @apply p-3 border-b border-gray-100 text-gray-600;
+  }
+
+  .info-box {
+    @apply my-6 p-5 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg;
+  }
+
+  .info-box h3 {
+    @apply text-blue-800 font-bold text-lg mb-2 mt-0;
+  }
+
+  .warning-box {
+    @apply my-6 p-5 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg;
+  }
+
+  .warning-box h3 {
+    @apply text-amber-800 font-bold text-lg mb-2 mt-0;
+  }
+
+  .tip-box {
+    @apply my-6 p-5 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg;
+  }
+
+  .tip-box h3 {
+    @apply text-emerald-800 font-bold text-lg mb-2 mt-0;
+  }
+
+  .pros-cons-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4 my-6;
+  }
+
+  .pros-box {
+    @apply p-5 bg-green-50 rounded-xl border border-green-100;
+  }
+
+  .cons-box {
+    @apply p-5 bg-red-50 rounded-xl border border-red-100;
   }
 }
