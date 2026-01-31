@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import type { Metadata } from "next";
 
@@ -28,7 +29,7 @@ export default async function BlogIndexPage() {
         </p>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         {(!posts || posts.length === 0) ? (
           <div className="col-span-2 py-10 text-center text-gray-500 bg-gray-50 rounded-2xl">
             아직 등록된 포스트가 없습니다. 조금만 기다려주세요!
@@ -39,22 +40,35 @@ export default async function BlogIndexPage() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg hover:border-brand-300 transition-all flex flex-col h-full"
+              className="group rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-xl hover:border-brand-300 transition-all flex flex-col h-full overflow-hidden"
             >
-              <div className="flex flex-wrap gap-2 mb-4">
-                {/* Tags placeholder - AI could allow categorization later */}
-                <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
-                  건강정보
-                </span>
+              {/* 섬네일 이미지 */}
+              <div className="relative w-full aspect-[16/9] bg-gradient-to-br from-emerald-50 via-white to-indigo-50">
+                <Image
+                  src={`/api/og?title=${encodeURIComponent(post.title)}`}
+                  alt={post.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
               </div>
-              <h2 className="text-xl font-bold text-gray-900 group-hover:text-brand-700 transition-colors line-clamp-2 mb-2">
-                {post.title}
-              </h2>
-              <p className="mt-auto text-sm text-gray-600 leading-relaxed line-clamp-3">
-                {post.ai_summary}
-              </p>
-              <div className="mt-4 pt-4 border-t border-gray-100 text-sm font-bold text-brand-700 flex items-center gap-1">
-                자세히 보기 <span className="group-hover:translate-x-1 transition-transform">→</span>
+
+              <div className="p-5 flex flex-col flex-1">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+                    건강정보
+                  </span>
+                  {post.published_at && (
+                    <span className="text-xs text-gray-400">
+                      {new Date(post.published_at).toLocaleDateString("ko-KR")}
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-lg font-bold text-gray-900 group-hover:text-brand-700 transition-colors line-clamp-2 mb-2">
+                  {post.title}
+                </h2>
+                <p className="mt-auto text-sm text-gray-500 leading-relaxed line-clamp-2">
+                  {post.ai_summary}
+                </p>
               </div>
             </Link>
           ))
@@ -63,4 +77,5 @@ export default async function BlogIndexPage() {
     </div>
   );
 }
+
 
