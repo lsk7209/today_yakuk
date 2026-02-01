@@ -4,6 +4,13 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getBlogFeaturedImage } from "@/lib/blog-image";
 import type { Metadata } from "next";
 
+interface BlogPost {
+  title: string;
+  slug: string;
+  ai_summary: string | null;
+  published_at: string | null;
+}
+
 export const metadata: Metadata = {
   title: "블로그 | 약국오늘",
   description: "약국 이용 팁, 야간·주말 대비법, 위치 기반 검색 활용 가이드를 제공합니다.",
@@ -36,8 +43,7 @@ export default async function BlogIndexPage() {
             아직 등록된 포스트가 없습니다. 조금만 기다려주세요!
           </div>
         ) : (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          posts.map((post: any) => (
+          (posts as BlogPost[]).map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}

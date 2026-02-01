@@ -35,7 +35,7 @@ export default function QueueActions({ id, status }: Props) {
         setLoading(true);
         try {
             const res = await fetch(`/api/admin/queue/${id}`, {
-                method: "POST",
+                method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: "published" }),
             });

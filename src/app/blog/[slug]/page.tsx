@@ -1,11 +1,14 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
-import { JsonLd } from "@/components/seo/json-ld";
+import { JsonLd, buildArticleSchema, buildFAQSchema, FAQItem } from "@/components/seo/json-ld";
 import TableOfContents from "@/components/blog/TableOfContents";
 import RelatedPosts from "@/components/blog/RelatedPosts";
 import Image from "next/image";
 import { getBlogFeaturedImage } from "@/lib/blog-image";
+import { getSiteUrl } from "@/lib/site-url";
+
+const siteUrl = getSiteUrl();
 
 // 10분마다 ISR
 export const revalidate = 600;
@@ -102,56 +105,28 @@ export default async function BlogPostPage({ params }: Props) {
     // 헤딩에 ID 추가
     const contentWithIds = addHeadingIds(post.content_html || "");
 
-    // JSON-LD 구조화 데이터 준비
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const jsonLdData: any[] = [
-        {
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: post.title,
-            description: post.ai_summary,
-            datePublished: post.publish_at || post.created_at,
-            dateModified: post.updated_at || post.publish_at,
-            author: {
-                "@type": "Person",
-                name: "TodayYakuk Editor",
-            },
-            publisher: {
-                "@type": "Organization",
-                name: "TodayYakuk",
-                logo: {
-                    "@type": "ImageObject",
-                    url: "https://todaypharm.kr/logo.png",
-                },
-            },
-            image: {
-                "@type": "ImageObject",
-                url: getBlogFeaturedImage(post.slug, post.title).startsWith("http")
-                    ? getBlogFeaturedImage(post.slug, post.title)
-                    : `https://todaypharm.kr${getBlogFeaturedImage(post.slug, post.title)}`,
-            },
-            mainEntityOfPage: {
-                "@type": "WebPage",
-                "@id": `https://todaypharm.kr/blog/${params.slug}`,
-            },
-        }
-    ];
+    // JSON-LD 구조화 데이터 준비 (리팩토링된 스키마 빌더 사용)
+    const featuredImageUrl = getBlogFeaturedImage(post.slug, post.title);
+    const absoluteImageUrl = featuredImageUrl.startsWith("http")
+        ? featuredImageUrl
+        : `${siteUrl}${featuredImageUrl}`;
 
-    // FAQ 스키마 추가 (GEO/AEO 최적화)
-    if (post.ai_faq && Array.isArray(post.ai_faq) && post.ai_faq.length > 0) {
-        jsonLdData.push({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: post.ai_faq.map((item: { question: string; answer: string }) => ({
-                "@type": "Question",
-                name: item.question,
-                acceptedAnswer: {
-                    "@type": "Answer",
-                    text: item.answer,
-                },
-            })),
-        });
-    }
+    const articleSchema = buildArticleSchema({
+        headline: post.title,
+        description: post.ai_summary || "",
+        url: `${siteUrl}/blog/${params.slug}`,
+        datePublished: post.publish_at || post.created_at,
+        dateModified: post.updated_at || post.publish_at,
+        authorName: "약국오늘",
+        publisherName: "약국오늘",
+        publisherLogo: `${siteUrl}/favicon.ico`,
+        image: absoluteImageUrl,
+    });
+
+    const faqItems: FAQItem[] = post.ai_faq && Array.isArray(post.ai_faq)
+        ? post.ai_faq as FAQItem[]
+        : [];
+    const faqSchema = faqItems.length > 0 ? buildFAQSchema(faqItems) : null;
 
     return (
         <article className="container max-w-3xl py-12">
@@ -189,9 +164,8 @@ export default async function BlogPostPage({ params }: Props) {
             />
 
             {/* JSON-LD 삽입 */}
-            {jsonLdData.map((data, index) => (
-                <JsonLd key={index} data={data} />
-            ))}
+            <JsonLd data={articleSchema} id="article-schema" />
+            {faqSchema && <JsonLd data={faqSchema} id="faq-schema" />}
 
             {post.ai_faq && Array.isArray(post.ai_faq) && post.ai_faq.length > 0 && (
                 <section className="mt-12 pt-8 border-t">
