@@ -2,12 +2,15 @@ import { NextResponse } from "next/server";
 import { listPublishedContent } from "@/lib/data/content";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://todaypharm.kr";
-const FEED_TITLE = "약국오늘 | TodayPharmacy";
-const FEED_DESCRIPTION = "야간·주말·공휴일 문 연 약국 정보를 빠르게 확인하세요.";
+const FEED_TITLE = "약국오늘 블로그 | TodayPharmacy";
+const FEED_DESCRIPTION = "지금 문 연 근처약국을 빠르게 찾고 영업시간·위치를 확인하세요. 약국 이용 팁과 건기식 정보를 제공합니다.";
 
 function stripHtml(html: string) {
   return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 }
+
+// Ensure 1 hour revalidation
+export const revalidate = 3600;
 
 export async function GET() {
   const items = await listPublishedContent(30);
@@ -16,13 +19,13 @@ export async function GET() {
   const feedItems =
     items.length > 0
       ? items
-          .map((item) => {
-            const link = `${SITE_URL}/hub/${item.slug}`;
-            const pubDate = new Date(item.published_at || item.publish_at).toUTCString();
-            const description = item.content_html
-              ? stripHtml(item.content_html).slice(0, 400)
-              : item.title;
-            return `
+        .map((item) => {
+          // Correct URL: /blog/[slug]
+          const link = `${SITE_URL}/blog/${item.slug}`;
+          const pubDate = new Date(item.published_at || item.publish_at).toUTCString();
+          const description = item.ai_summary || (item.content_html ? stripHtml(item.content_html).slice(0, 400) : item.title);
+
+          return `
       <item>
         <title><![CDATA[${item.title}]]></title>
         <link>${link}</link>
@@ -30,8 +33,8 @@ export async function GET() {
         <pubDate>${pubDate}</pubDate>
         <description><![CDATA[${description}]]></description>
       </item>`;
-          })
-          .join("")
+        })
+        .join("")
       : `
       <item>
         <title><![CDATA[약국오늘 안내]]></title>
@@ -57,9 +60,8 @@ export async function GET() {
   return new NextResponse(xml, {
     status: 200,
     headers: {
-      "Content-Type": "application/rss+xml; charset=utf-8",
-      "Cache-Control": "s-maxage=600, stale-while-revalidate=1200",
+      "Content-Type": "application/xml",
+      "Cache-Control": "s-maxage=3600, stale-while-revalidate",
     },
   });
 }
-

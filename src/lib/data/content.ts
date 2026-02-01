@@ -30,7 +30,6 @@ export async function getPublishedContentBySlug(slug: string): Promise<ContentIt
       .eq("status", "published")
       .maybeSingle();
     if (error) {
-      // content_queue 테이블이 아직 없을 수 있음 (초기 배포/마이그레이션 전)
       if (isMissingTableError(error)) return null;
       logError(error, { operation: "getPublishedContentBySlug", details: { slug } });
       return null;
@@ -45,7 +44,6 @@ export async function getPublishedContentBySlug(slug: string): Promise<ContentIt
 export async function getPublishedContentByHpid(hpid: string): Promise<ContentItem | null> {
   try {
     const supabase = getSupabaseServerClient();
-    // published 또는 pending 상태의 콘텐츠를 가져옴 (pending도 표시 가능하도록)
     const { data, error } = await supabase
       .from("content_queue")
       .select("*")
@@ -87,3 +85,44 @@ export async function listPublishedContent(limit = 20): Promise<ContentItem[]> {
   }
 }
 
+export async function getPublishedContentCount(): Promise<number> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { count, error } = await supabase
+      .from("content_queue")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "published");
+
+    if (error) {
+      if (isMissingTableError(error)) return 0;
+      logError(error, { operation: "getPublishedContentCount" });
+      return 0;
+    }
+    return count || 0;
+  } catch (e) {
+    logError(e, { operation: "getPublishedContentCount" });
+    return 0;
+  }
+}
+
+export async function getPublishedContentSitemapChunk(offset: number, limit: number): Promise<{ slug: string; updated_at: string; published_at: string | null }[]> {
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("content_queue")
+      .select("slug, updated_at, published_at")
+      .eq("status", "published")
+      .order("published_at", { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      if (isMissingTableError(error)) return [];
+      logError(error, { operation: "getPublishedContentSitemapChunk", details: { offset, limit } });
+      return [];
+    }
+    return (data as { slug: string; updated_at: string; published_at: string | null }[]) ?? [];
+  } catch (e) {
+    logError(e, { operation: "getPublishedContentSitemapChunk", details: { offset, limit } });
+    return [];
+  }
+}
