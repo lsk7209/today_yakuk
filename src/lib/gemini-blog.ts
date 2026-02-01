@@ -78,7 +78,32 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
       
       2. **Introduction**: Hook with a relatable problem (2-3 short paragraphs).
       
-      3. **Main Content**: Use <h2> for sections, <h3> for subsections.
+      3. **MANDATORY SECTIONS** (You MUST create at least 4-6 H2 sections):
+         The article must follow this structural template. Adapt section titles to fit the topic, but you MUST have at least 4 main H2 sections:
+         
+         Example structure (adapt titles as needed):
+         
+         <h2>1. [Main Topic] 이해하기: 왜 중요한가?</h2>
+           <h3>원인과 메커니즘</h3>
+           <h3>증상 및 신호</h3>
+           <h3>방치할 경우의 위험</h3>
+         
+         <h2>2. 약국에서 구할 수 있는 솔루션</h2>
+           <h3>일반의약품 추천</h3>
+           <h3>건강기능식품 옵션</h3>
+           <h3>복용 시 주의사항</h3>
+         
+         <h2>3. 전문가가 알려주는 실천 가이드</h2>
+           <h3>일상 관리법</h3>
+           <h3>식습관 및 생활습관 팁</h3>
+           <h3>효과적인 타이밍</h3>
+         
+         <h2>4. 약사에게 꼭 물어봐야 할 것들</h2>
+           <h3>상담이 필요한 경우</h3>
+           <h3>병원 방문 vs 약국 이용</h3>
+           <h3>예방 및 사후 관리</h3>
+         
+         **CRITICAL**: Each H2 section must have 2-4 H3 subsections with substantial content (150-250 words per subsection).
       
       4. **Expert Quote** (REQUIRED, at least 1):
          <blockquote class="expert-quote">
@@ -126,13 +151,29 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
           <div class="cons-box"><h3>👎 단점</h3><ul><li>...</li></ul></div>
         </div>
 
+      **Content Length Requirements** (CRITICAL for SEO):
+      1. **Minimum Total Length**: 1,500 words in English (approximately 2,500-3,000 Korean characters including spaces).
+      2. **Main Sections (H2)**: MANDATORY 4-6 major sections (see structure template above).
+      3. **Subsections (H3)**: Each H2 MUST have 2-4 H3 subsections for depth.
+      4. **Paragraph Depth**: While keeping readability, each subsection should be 150-250 words. Provide thorough explanations, not just bullet points.
+
       **Content Guidelines**:
       1. **Tone**: Empathetic, Authoritative, yet Accessible (Grade 8 reading level).
-      2. **Short Paragraphs**: No chunk of text should exceed 3 lines.
+      2. **Short Paragraphs**: No chunk of text should exceed 3 lines, but ensure DEPTH through multiple paragraphs per subsection.
       3. **SEO Keywords**: Naturally include "주말 약국", "야간 약국", "근처 약국", "영양제 추천" where relevant.
       4. **E-E-A-T**: Include phrases like "약사 추천", "전문가 조언", "임상 연구에 따르면".
       5. **Internal Links**: Mention "약국오늘에서 근처 약국 찾기" (will be auto-linked).
       6. **Conclusion**: End with <div class="tip-box"> containing pharmacist's final note.
+
+      **Depth & Authority Guidelines** (REQUIRED for Google Ranking):
+      1. **Answer "Why" and "How"**: For every claim or recommendation, explain WHY it's true and HOW it works.
+      2. **Specific Statistics**: Include at least 3-5 concrete numbers or percentages (e.g., "85%의 환자가 개선", "하루 1,000mg 권장").
+      3. **Authoritative References**: Use phrases like:
+         - "식품의약품안전처에 따르면"
+         - "대한약사회 권장사항"
+         - "2024년 연구에서 밝혀진 바에 따르면"
+      4. **Real-World Examples**: Include 1-2 anonymized case scenarios or use cases (e.g., "30대 직장인 A씨의 경우...").
+      5. **Step-by-Step Details**: When recommending actions, provide specific steps with expected outcomes.
 
       **GEO (Generative Engine Optimization) for AI Search**:
       - Write clear, factual statements that AI can directly quote.
@@ -140,6 +181,7 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
       - Include specific numbers, statistics, and measurable claims.
       - Use authoritative language: "연구에 따르면", "전문가들은 권장합니다".
       - Provide step-by-step instructions that AI assistants can relay.
+      - Target Featured Snippets: Start main sections with clear, quotable answers.
     `;
 
     const schema = {
