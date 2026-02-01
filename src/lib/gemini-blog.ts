@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
+import { GoogleGenerativeAI, GenerativeModel, SchemaType } from "@google/generative-ai";
 
 let _model: GenerativeModel | null = null;
 
@@ -64,19 +64,6 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
       **Topic**: "${topic}"
 
       **Objective**: Write a high-converting, SEO-optimized blog post that encourages users to visit a pharmacy or consult a pharmacist.
-
-      **Output Format**: JSON ONLY (No Markdown, No extra text)
-      {
-        "title": "Create a 'Click-Magnet' title using psychological triggers (Urgency, Curiosity, Benefit). EXACTLY 1 line.",
-        "slug_suggestion": "seo-friendly-korean-english-slug (e.g., spring-allergy-emergency-tips)",
-        "summary": "Meta description (120-155 chars). Hook the reader instantly. Include primary keyword.",
-        "content_html": "Semantic HTML content. See formatting rules below.",
-        "faq": [
-          {"question": "Real user question 1", "answer": "Clear, concise answer"},
-          {"question": "Real user question 2", "answer": "Clear, concise answer"},
-          {"question": "Real user question 3", "answer": "Clear, concise answer"}
-        ]
-      }
 
       **Content Structure (MUST follow this order)**:
       1. **Key Takeaways Box** (REQUIRED at the very start):
@@ -155,9 +142,34 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
       - Provide step-by-step instructions that AI assistants can relay.
     `;
 
+    const schema = {
+      type: SchemaType.OBJECT,
+      properties: {
+        title: { type: SchemaType.STRING, description: "Click-magnet title, exactly 1 line" },
+        slug_suggestion: { type: SchemaType.STRING, description: "SEO friendly slug" },
+        summary: { type: SchemaType.STRING, description: "Meta description 120-155 chars" },
+        content_html: { type: SchemaType.STRING, description: "Semantic HTML content with rich elements" },
+        faq: {
+          type: SchemaType.ARRAY,
+          items: {
+            type: SchemaType.OBJECT,
+            properties: {
+              question: { type: SchemaType.STRING },
+              answer: { type: SchemaType.STRING },
+            },
+            required: ["question", "answer"],
+          },
+        },
+      },
+      required: ["title", "slug_suggestion", "summary", "content_html", "faq"],
+    } as any; // Cast to any to avoid strict typing issues with the SDK version
+
     const result = await getModel().generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { responseMimeType: "application/json" }
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: schema,
+      }
     });
 
     const response = result.response;
