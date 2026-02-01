@@ -7,7 +7,7 @@ export async function DELETE() {
         const supabase = getSupabaseServerClient();
 
         // status가 'failed'인 항목들 삭제
-        const { data, error, count } = await supabase
+        const { error, count } = await supabase
             .from("content_queue")
             .delete({ count: 'exact' })
             .eq("status", "failed");
