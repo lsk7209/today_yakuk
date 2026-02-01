@@ -22,8 +22,9 @@ export async function PUT(
             .from("content_queue")
             .update(body)
             .eq("id", id)
+            .eq("id", id)
             .select()
-            .single();
+            .maybeSingle();
 
         if (error) throw error;
 
@@ -64,7 +65,7 @@ export async function DELETE(
             .delete()
             .eq("id", id)
             .select()
-            .single();
+            .maybeSingle();
 
         if (error) throw error;
 
