@@ -26,6 +26,65 @@ export type BlogPost = {
 };
 
 /**
+ * 콘텐츠 내 문맥을 파악하여 내부 링크를 자동으로 연결합니다.
+ * 주요 키워드에 대해 최초 1회만 링크를 적용하여 SEO를 개선합니다.
+ */
+function applyInternalLinks(html: string): string {
+  // 키워드 매핑 정의
+  const linkMapping: Array<{ keywords: string[]; url: string }> = [
+    { keywords: ["약국오늘", "TodayYakuk"], url: "/" },
+    { keywords: ["근처 약국", "주말 약국", "야간 약국", "휴일지킴이약국", "당번 약국"], url: "/nearby" },
+    { keywords: ["건강 정보", "약국 꿀팁", "약국 이용 팁"], url: "/blog" }
+  ];
+
+  let newHtml = html;
+
+  for (const { keywords, url } of linkMapping) {
+    for (const keyword of keywords) {
+      // 이미 링크가 걸린 텍스트 내부는 건너뛰고, 태그 밖의 텍스트만 매칭
+      // 정규식 설명:
+      // (?<!<[^>]*) : 태그 내부가 아님 (Lookbehind) - 간단한 체크
+      // (<a\s[^>]*>.*?<\/a>) : 이미 링크된 태그 덩어리는 스킵하기 위해 매칭 그룹으로 처리? -> 복잡함.
+      // 대신, 가장 안전하고 단순한 방법: " <키워드> " 처럼 앞뒤 공백이 있거나, 문장의 시작/끝에 있는 경우를 찾음.
+
+      // Node.js 환경에서 Lookbehind 지원되므로 사용.
+      // 단, HTML 태그 속성값 내부(예: alt="약국오늘 로고")를 건드리지 않도록 주의해야 함.
+      // 가장 안전한 전략: > 와 < 사이의 텍스트에서만 치환.
+
+      const regex = new RegExp(`(>)([^<]*?)(${keyword})([^<]*?)(<)`, 'i'); // 태그 사이의 텍스트에서 키워드 찾기
+
+      // 첫 번째 매칭만 치환 (Lazy matching으로 인해 여러번 루프 돌 필요 없음, replace는 문자열일 경우 첫번째만, 정규식에 g 없으면 첫번째만)
+      // 그러나 위 정규식은 구조적 매칭이라 replace로 한 번에 처리하기 어려움.
+
+      // 대안: 단순 치환하되, 이미 링크된 것은 피하는 정교한 regex 사용
+      // 링크 태그 내부가 아님을 보장하기 어려우므로, "생성된 콘텐츠 규칙"에 의존.
+      // Gemini는 보통 텍스트로만 줌.
+
+      // 키워드 앞뒤로 태그가 아닌 문자가 오거나 문장의 끝/시작.
+      // HTML 태그 내부가 아닌 것을 확인하는 Lookbehind/Lookahead 사용
+      // (?![^<]*?>) : 뒤에 닫는 태그 > 가 오기 전에 여는 태그 < 가 오지 않음? -> 태그 내부 아님 판별 난해.
+
+      // 타협안: 단순 replace를 하되, href="..." 속성값 내부가 아님을 확인.
+      // (?!<a.*?>) 와 같은 부정형 lookaround는 가변 길이 지원 안 될 수 있음.
+
+      // 가장 현실적인 방법: 키워드가 "텍스트"로 등장하는 첫 번째 위치만 변경.
+      // "약국오늘" -> "<a href='/' class='text-emerald-600 font-medium hover:underline'>약국오늘</a>"
+
+      // 링크가 이미 걸려있을 수 있으므로 체크
+      if (newHtml.includes(`>${keyword}</a>`)) continue;
+
+      // 태그 닫힘(>) 뒤, 태그 열림(<) 앞의 텍스트 영역에서 매칭
+      newHtml = newHtml.replace(
+        new RegExp(`(>)([^<]*?)(${keyword})([^<]*?)(<)`, 'i'),
+        `$1$2<a href="${url}" class="text-emerald-600 font-medium hover:underline">$3</a>$4$5`
+      );
+    }
+  }
+
+  return newHtml;
+}
+
+/**
  * 현재 시즌에 맞는 건강/약국 관련 주제를 생성합니다.
  */
 export async function generateBlogTopic(): Promise<string | null> {
@@ -219,7 +278,9 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
     const text = response.text();
 
     try {
-      return JSON.parse(text) as BlogPost;
+      const parsed = JSON.parse(text) as BlogPost;
+      parsed.content_html = applyInternalLinks(parsed.content_html);
+      return parsed;
     } catch (parseError) {
       console.error("JSON Parse Error. Response text (first 500 chars):", text.substring(0, 500));
       console.error("JSON Parse Error. Response text (last 500 chars):", text.substring(text.length - 500));
