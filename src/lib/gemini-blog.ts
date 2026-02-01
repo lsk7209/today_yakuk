@@ -75,7 +75,7 @@ function applyInternalLinks(html: string): string {
 
       // 태그 닫힘(>) 뒤, 태그 열림(<) 앞의 텍스트 영역에서 매칭
       newHtml = newHtml.replace(
-        new RegExp(`(>)([^<]*?)(${keyword})([^<]*?)(<)`, 'i'),
+        regex,
         `$1$2<a href="${url}" class="text-emerald-600 font-medium hover:underline">$3</a>$4$5`
       );
     }

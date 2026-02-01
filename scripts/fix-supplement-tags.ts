@@ -6,93 +6,52 @@
  * 2. Scan name, ai_summary, and nutrition_facts for keywords
  * 3. Assign matching tags
  * 4. Update the record
+ * 
+ * NOW USES SHARED LOGIC from src/lib/supplement-utils.ts
  */
 
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
+import { fixSupplementTags } from "../src/lib/supplement-utils";
 
 dotenv.config({ path: ".env.local" });
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// Tag Mapping Definition
-const TAG_MAP: Record<string, string[]> = {
-    "vitamin-c": ["비타민C", "비타민 C", "Vitamin C", "Ascorbic Acid", "아스코르브산"],
-    "fatigue": ["피로", "활력", "에너지", "만성피로", "Fatigue", "Energy"],
-    "immune": ["면역", "아연", "Immune", "Zinc"],
-    "eye": ["눈", "루테인", "지아잔틴", "시력", "Eye", "Lutein"],
-    "liver": ["간", "밀크씨슬", "실리마린", "Liver", "Milk Thistle"],
-    "probiotics": ["유산균", "프로바이오틱스", "장건강", "Probiotics"],
-    "omega3": ["오메가3", "rTG", "DHA", "EPA", "Omega-3"],
-    "multivitamin": ["멀티비타민", "종합비타민", "Multivitamin"],
-    "skin": ["피부", "콜라겐", "히알루론산", "Skin", "Collagen"],
-    "bone": ["뼈", "칼슘", "마그네슘", "비타민D", "Bone", "Calcium", "Magnesium"],
-};
-
-async function fixTags() {
-    console.log("🚀 Starting tag correction for supplements...");
-
-    let processedCount = 0;
-    let updatedCount = 0;
-
-    // Fetch all supplements (chunked if needed, but for now we'll fetch all if count is manageable)
-    const { data: products, error } = await supabase
-        .from("supplements")
-        .select("id, name, ai_summary, nutrition_facts, tags");
-
-    if (error) {
-        console.error("❌ Failed to fetch supplements:", error);
-        return;
-    }
-
-    console.log(`📦 Found ${products.length} products to analyze.`);
-
-    for (const product of products) {
-        processedCount++;
-        const contentToSearch = [
-            product.name,
-            product.ai_summary || "",
-            JSON.stringify(product.nutrition_facts || [])
-        ].join(" ").toLowerCase();
-
-        const newTags: Set<string> = new Set();
-
-        // Match against TAG_MAP
-        for (const [tagId, keywords] of Object.entries(TAG_MAP)) {
-            if (keywords.some(kw => contentToSearch.includes(kw.toLowerCase()))) {
-                newTags.add(tagId);
-            }
-        }
-
-        // If new tags found or if we want to ensure basic tags are present
-        if (newTags.size > 0) {
-            const tagArray = Array.from(newTags);
-
-            // Only update if tags have changed
-            if (JSON.stringify(product.tags) !== JSON.stringify(tagArray)) {
-                const { error: updateError } = await supabase
-                    .from("supplements")
-                    .update({ tags: tagArray })
-                    .eq("id", product.id);
-
-                if (updateError) {
-                    console.error(`❌ Failed to update ${product.name}:`, updateError);
-                } else {
-                    updatedCount++;
-                }
-            }
-        }
-
-        if (processedCount % 50 === 0) {
-            console.log(`⏳ Progress: ${processedCount}/${products.length}...`);
-        }
-    }
-
-    console.log(`\n✨ Finished!`);
-    console.log(`✅ Total Processed: ${processedCount}`);
-    console.log(`✅ Total Updated: ${updatedCount}`);
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+    console.error("❌ Missing Supabase environment variables.");
+    process.exit(1);
 }
 
-fixTags().catch(console.error);
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
+async function main() {
+    console.log("🚀 Starting tag correction for supplements...");
+
+    try {
+        const result = await fixSupplementTags(
+            supabase,
+            50,
+            (processed, total) => {
+                console.log(`⏳ Progress: ${processed}/${total}...`);
+            }
+        );
+
+        console.log(`\n✨ Finished!`);
+        console.log(`✅ Total Processed: ${result.processedCount}`);
+        console.log(`✅ Total Updated: ${result.updatedCount}`);
+
+        if (result.errors.length > 0) {
+            console.warn(`⚠️ Encountered ${result.errors.length} errors during update.`);
+            // Only show first 5 errors to avoid flooding console
+            result.errors.slice(0, 5).forEach(e => console.error(` - Error updating ${e.name} (${e.id}):`, e.error));
+        }
+
+    } catch (error) {
+        console.error("❌ Fatal error:", error);
+        process.exit(1);
+    }
+}
+
+main().catch(console.error);

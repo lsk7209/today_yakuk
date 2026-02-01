@@ -1,15 +1,40 @@
 
 import { NextResponse } from "next/server";
-// In a real scenario, we would import the logic from 'fix-supplement-tags.ts' or similar.
-// For now, we'll implement a placeholder or reuse a library function if available.
-// Since the script logic isn't easily importable as a library function yet, 
-// we'll leave this as a stub that can be expanded later or refactor the script to be importable.
-// Step 1: Just return a success mock to connect the UI.
+import { createClient } from "@supabase/supabase-js";
+import { fixSupplementTags } from "@/lib/supplement-utils";
+
+export const dynamic = 'force-dynamic';
 
 export async function POST() {
-    // TODO: Refactor 'scripts/fix-supplement-tags.ts' to export a function we can call here.
-    return NextResponse.json({
-        success: true,
-        message: "Enrichment started (Mock). migration required for full functionality."
-    });
+    try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+        if (!supabaseUrl || !supabaseServiceKey) {
+            return NextResponse.json(
+                { success: false, error: "Server configuration error" },
+                { status: 500 }
+            );
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+        // Run the enrichment logic
+        // Note: For large datasets, this might timeout on Vercel (10s limit on hobby).
+        // For now we await it, but for production with many items, 
+        // this should be offloaded to a background job or processed in smaller chunks.
+        const result = await fixSupplementTags(supabase);
+
+        return NextResponse.json({
+            success: true,
+            data: result,
+            message: `Enrichment complete. Processed ${result.processedCount}, Updated ${result.updatedCount}`
+        });
+    } catch (error) {
+        console.error("Enrichment API Error:", error);
+        return NextResponse.json(
+            { success: false, error: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
 }
