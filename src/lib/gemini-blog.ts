@@ -162,6 +162,7 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
         },
       },
       required: ["title", "slug_suggestion", "summary", "content_html", "faq"],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any; // Cast to any to avoid strict typing issues with the SDK version
 
     const result = await getModel().generateContent({
