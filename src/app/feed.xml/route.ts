@@ -14,7 +14,15 @@ export async function GET() {
         .order('published_at', { ascending: false })
         .limit(50);
 
-    const itemsXml = (posts || [])
+    interface FeedPost {
+        title: string;
+        slug: string;
+        ai_summary: string | null;
+        published_at: string | null;
+        created_at: string;
+    }
+
+    const itemsXml = ((posts as unknown as FeedPost[]) || [])
         .map((post) => {
             const link = `${siteUrl}/blog/${post.slug}`;
             const pubDate = post.published_at
