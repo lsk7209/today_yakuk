@@ -1,7 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { getPharmaciesByRegionPaginated } from "@/lib/data/pharmacies";
 import { PharmacyListInfinite } from "@/components/pharmacy-list-infinite";
+import { JsonLd, buildBreadcrumbSchema } from "@/components/seo/json-ld";
+import { getSiteUrl } from "@/lib/site-url";
+
+const siteUrl = getSiteUrl();
 
 type Params = {
   province: string;
@@ -13,6 +18,36 @@ type SearchParams = {
 };
 
 const PAGE_SIZE = 50;
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const province = decodeURIComponent(params.province);
+  const city = decodeURIComponent(params.city);
+  const cityDisplay = city === "전체" ? "전체 지역" : city;
+
+  const title = `${province} ${cityDisplay} 약국 | 문 연 약국 실시간 찾기`;
+  const description = `${province} ${cityDisplay}의 현재 영업 중인 약국을 실시간으로 확인하세요. 야간·주말·공휴일 운영 약국 필터와 길찾기를 제공합니다.`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/${encodeURIComponent(province)}/${encodeURIComponent(city)}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}/${encodeURIComponent(province)}/${encodeURIComponent(city)}`,
+      siteName: "약국오늘",
+      locale: "ko_KR",
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+  };
+}
 
 export default async function ProvinceCityPage({
   params,
@@ -34,8 +69,16 @@ export default async function ProvinceCityPage({
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
+  // BreadcrumbList JSON-LD
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "홈", url: siteUrl },
+    { name: province, url: `${siteUrl}/${encodeURIComponent(province)}/전체` },
+    ...(city !== "전체" ? [{ name: city, url: `${siteUrl}/${encodeURIComponent(province)}/${encodeURIComponent(city)}` }] : []),
+  ]);
+
   return (
     <div className="container py-10 sm:py-14 space-y-6">
+      <JsonLd data={breadcrumbSchema} id="breadcrumb-schema" />
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">
           {province} · {city === "전체" ? "모든 지역" : city}
@@ -95,9 +138,8 @@ function Pagination({
         <Link
           key={p}
           href={`${baseHref}${p === 1 ? "" : `?page=${p}`}`}
-          className={`px-3 py-1 rounded-full border ${
-            p === currentPage ? "bg-brand-600 text-white border-brand-600" : "hover:border-brand-200"
-          }`}
+          className={`px-3 py-1 rounded-full border ${p === currentPage ? "bg-brand-600 text-white border-brand-600" : "hover:border-brand-200"
+            }`}
         >
           {p}
         </Link>

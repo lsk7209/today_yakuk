@@ -1,6 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight, LocateFixed, Database, BrainCircuit, Eye, Info } from "lucide-react";
+import { JsonLd, buildItemListSchema } from "@/components/seo/json-ld";
+import { getSiteUrl } from "@/lib/site-url";
+
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   title: "약국 이용 가이드 | 약국오늘",
@@ -50,8 +54,20 @@ const guides = [
 ];
 
 export default function GuideIndexPage() {
+  // ItemList JSON-LD for SEO
+  const itemListSchema = buildItemListSchema({
+    name: "약국 이용 가이드 모음",
+    description: "야간·주말·공휴일에 문 연 약국을 빠르게 찾는 방법과 이용 팁",
+    items: guides.map((guide) => ({
+      name: guide.title,
+      url: `${siteUrl}/guide/${guide.slug}`,
+      description: guide.description,
+    })),
+  });
+
   return (
     <div className="bg-[var(--background)]">
+      <JsonLd data={itemListSchema} id="guide-list-schema" />
       <div className="container py-10 sm:py-14 space-y-10">
         {/* Hero */}
         <header className="rounded-3xl border border-gray-200 bg-white shadow-lg overflow-hidden">

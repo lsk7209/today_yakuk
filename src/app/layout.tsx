@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { getSiteUrl } from "@/lib/site-url";
 import AnalyticsTracker from "@/components/analytics/AnalyticsTracker";
+import { JsonLd, buildWebSiteSchema } from "@/components/seo/json-ld";
 
 const siteUrl = getSiteUrl();
 const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID;
@@ -115,6 +116,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
       >
+        {/* WebSite Schema with SearchAction for sitelinks searchbox */}
+        <JsonLd
+          id="website-schema"
+          data={buildWebSiteSchema({
+            name: "약국오늘",
+            url: siteUrl,
+            description: "실시간 영업 약국 검색 서비스",
+            searchUrl: `${siteUrl}/wiki?q={search_term_string}`,
+          })}
+        />
         <Suspense fallback={null}>
           <AnalyticsTracker />
         </Suspense>

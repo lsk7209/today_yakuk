@@ -151,3 +151,83 @@ export function buildBreadcrumbSchema(items: BreadcrumbItem[]) {
     })),
   };
 }
+
+// ================== HowTo Schema ==================
+
+export interface HowToStep {
+  name: string;
+  text: string;
+  image?: string;
+  url?: string;
+}
+
+export interface HowToSchemaProps {
+  name: string;
+  description: string;
+  totalTime?: string; // ISO 8601 duration, e.g., "PT5M" for 5 minutes
+  steps: HowToStep[];
+  image?: string;
+}
+
+export function buildHowToSchema({
+  name,
+  description,
+  totalTime,
+  steps,
+  image,
+}: HowToSchemaProps) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name,
+    description,
+    ...(totalTime && { totalTime }),
+    ...(image && { image }),
+    step: steps.map((step, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+      ...(step.image && { image: step.image }),
+      ...(step.url && { url: step.url }),
+    })),
+  };
+}
+
+// ================== ItemList Schema ==================
+
+export interface ItemListItem {
+  name: string;
+  url: string;
+  description?: string;
+  image?: string;
+}
+
+export interface ItemListSchemaProps {
+  name: string;
+  description?: string;
+  items: ItemListItem[];
+}
+
+export function buildItemListSchema({
+  name,
+  description,
+  items,
+}: ItemListSchemaProps) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    ...(description && { description }),
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      url: item.url,
+      ...(item.description && { description: item.description }),
+      ...(item.image && { image: item.image }),
+    })),
+  };
+}
+
