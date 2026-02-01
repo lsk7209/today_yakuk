@@ -5,6 +5,7 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requestIndexing } from "../src/lib/google-indexing";
+import { submitToIndexNow } from "../src/lib/naver-indexnow";
 
 type ContentQueueStatus = "pending" | "review" | "published" | "failed";
 
@@ -170,7 +171,11 @@ async function publishPending(limit = 2) {
       // HPID가 없으면 블로그 포스트로 간주
       const url = `${siteUrl}/blog/${originalItem.slug}`;
       console.info(`Requesting indexing for: ${url}`);
-      await requestIndexing(url, "URL_UPDATED");
+      // Run both in parallel and catch errors to prevent stopping the loop
+      await Promise.allSettled([
+        requestIndexing(url, "URL_UPDATED"),
+        submitToIndexNow([url])
+      ]);
     }
   }
 }

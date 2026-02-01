@@ -2,6 +2,8 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 import QueueActions from "@/components/admin/queue-actions";
 import { ContentQueueItem } from "@/types/content";
 
+import CleanupFailedButton from "@/components/admin/cleanup-failed-button";
+
 export const dynamic = "force-dynamic";
 
 export default async function QueueManagementPage() {
@@ -18,7 +20,10 @@ export default async function QueueManagementPage() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-6">컨텐츠 큐 관리</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold">컨텐츠 큐 관리</h1>
+                <CleanupFailedButton />
+            </div>
             <div className="bg-white shadow overflow-hidden sm:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">

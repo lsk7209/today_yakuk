@@ -223,6 +223,24 @@ export default async function AdminDashboardPage() {
                             </div>
                         </div>
 
+                        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                            <div className="flex items-center gap-4">
+                                <Link href="/sitemap.xml" target="_blank" className="p-3 bg-white rounded-xl shadow-sm hover:bg-slate-100 transition-colors">
+                                    <FileText className="w-6 h-6 text-green-600" />
+                                </Link>
+                                <div>
+                                    <div className="font-bold text-slate-900">사이트맵 (SEO)</div>
+                                    <Link href="/sitemap.xml" target="_blank" className="text-xs text-blue-500 hover:underline flex items-center gap-1">
+                                        새창으로 열기
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-xs text-slate-400">제출 주소</div>
+                                <div className="font-mono text-sm font-bold text-slate-700">/sitemap.xml</div>
+                            </div>
+                        </div>
+
                         <div className="bg-slate-900 rounded-2xl p-6 text-white relative overflow-hidden">
                             <div className="relative z-10">
                                 <h3 className="font-bold mb-4 flex items-center gap-2">

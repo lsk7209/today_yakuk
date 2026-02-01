@@ -10,6 +10,10 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
       },
+      {
+        userAgent: "Yeti",
+        allow: "/",
+      },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,
   };
