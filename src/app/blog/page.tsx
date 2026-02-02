@@ -9,6 +9,7 @@ interface BlogPost {
   slug: string;
   ai_summary: string | null;
   published_at: string | null;
+  image_url: string | null;
 }
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export default async function BlogIndexPage() {
   const supabase = getSupabaseServerClient();
   const { data: posts } = await supabase
     .from("content_queue")
-    .select("title, slug, ai_summary, published_at")
+    .select("title, slug, ai_summary, published_at, image_url")
     .eq("status", "published")
     .order("published_at", { ascending: false });
 
@@ -51,7 +52,7 @@ export default async function BlogIndexPage() {
             >
               <div className="relative w-full aspect-[16/9] bg-gradient-to-br from-emerald-50 via-white to-indigo-50">
                 <Image
-                  src={getBlogFeaturedImage(post.slug, post.title)}
+                  src={getBlogFeaturedImage(post.slug, post.title, post.image_url)}
                   alt={post.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"

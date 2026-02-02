@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const supabase = getSupabaseServerClient();
     const { data: post } = await supabase
         .from("content_queue")
-        .select("title, ai_summary")
+        .select("title, ai_summary, slug, image_url")
         .eq("slug", params.slug)
         .single();
 
@@ -44,9 +44,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 
 
-    const ogImageUrl = `https://todaypharm.kr/api/og?title=${encodeURIComponent(post.title)}`;
     // 로컬 featured 이미지 확인 (절대 경로 URL이 필요하므로 도메인 붙임)
-    const featuredImagePath = getBlogFeaturedImage(post.slug, post.title);
+    const featuredImagePath = getBlogFeaturedImage(post.slug, post.title, post.image_url);
     const absoluteFeaturedImage = featuredImagePath.startsWith("http")
         ? featuredImagePath
         : `https://todaypharm.kr${featuredImagePath}`;
@@ -55,7 +54,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (absoluteFeaturedImage) {
         ogImages.push({ url: absoluteFeaturedImage, width: 1200, height: 630, alt: post.title });
     }
-    ogImages.push({ url: ogImageUrl, width: 1200, height: 630, alt: "TodayYakuk Blog" });
 
     const description = post.ai_summary && post.ai_summary.length > 160
         ? post.ai_summary.substring(0, 157) + "..."
@@ -77,7 +75,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             card: "summary_large_image",
             title: post.title,
             description,
-            images: [absoluteFeaturedImage || ogImageUrl],
+            images: [absoluteFeaturedImage],
         },
     };
 }
@@ -99,7 +97,7 @@ export default async function BlogPostPage({ params }: Props) {
     // 관련 글 가져오기
     const { data: relatedPosts } = await supabase
         .from("content_queue")
-        .select("slug, title, ai_summary, published_at")
+        .select("slug, title, ai_summary, published_at, image_url")
         .eq("status", "published")
         .neq("slug", params.slug)
         .order("published_at", { ascending: false })
@@ -109,7 +107,7 @@ export default async function BlogPostPage({ params }: Props) {
     const contentWithIds = addHeadingIds(post.content_html || "");
 
     // JSON-LD 구조화 데이터 준비 (리팩토링된 스키마 빌더 사용)
-    const featuredImageUrl = getBlogFeaturedImage(post.slug, post.title);
+    const featuredImageUrl = getBlogFeaturedImage(post.slug, post.title, post.image_url);
     const absoluteImageUrl = featuredImageUrl.startsWith("http")
         ? featuredImageUrl
         : `${siteUrl}${featuredImageUrl}`;
@@ -150,7 +148,7 @@ export default async function BlogPostPage({ params }: Props) {
 
             <div className="relative w-full aspect-[1200/630] mb-8 rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-indigo-50 shadow-lg">
                 <Image
-                    src={getBlogFeaturedImage(post.slug, post.title)}
+                    src={getBlogFeaturedImage(post.slug, post.title, post.image_url)}
                     alt={post.title}
                     fill
                     className="object-cover"
@@ -186,9 +184,9 @@ export default async function BlogPostPage({ params }: Props) {
 
             {/* 관련 글 */}
             <RelatedPosts
-                posts={relatedPosts?.map((p: { slug: string; title: string; ai_summary: string | null; published_at: string | null }) => ({
+                posts={relatedPosts?.map((p: { slug: string; title: string; ai_summary: string | null; published_at: string | null; image_url: string | null }) => ({
                     ...p,
-                    imageUrl: getBlogFeaturedImage(p.slug, p.title)
+                    imageUrl: getBlogFeaturedImage(p.slug, p.title, p.image_url)
                 })) || []}
             />
         </article>
