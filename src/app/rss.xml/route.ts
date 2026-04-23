@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { listPublishedContent } from "@/lib/data/content";
+import { getSiteUrl } from "@/lib/site-url";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://todaypharm.kr";
+const SITE_URL = getSiteUrl();
 const FEED_TITLE = "약국오늘 블로그 | TodayPharmacy";
 const FEED_DESCRIPTION = "지금 문 연 근처약국을 빠르게 찾고 영업시간·위치를 확인하세요. 약국 이용 팁과 건기식 정보를 제공합니다.";
 
