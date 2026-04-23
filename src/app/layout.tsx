@@ -108,6 +108,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
+        {naverVerification ? (
+          <meta name="naver-site-verification" content={naverVerification} />
+        ) : null}
         {gaId ? (
           <>
             <Script
