@@ -5,6 +5,7 @@ export const DEFAULT_OG_IMAGE_PATH = "/og-image.svg";
 export const DEFAULT_GOOGLE_SITE_VERIFICATION = "_U2SIVpJyJOB7BDkrQSxnHPyPGbLebmxu4bSNzWskmA";
 export const DEFAULT_NAVER_SITE_VERIFICATION = "e66ee5ae04ce96bb4c1b95d6db2d8dd35dcd89e3";
 export const DEFAULT_ADSENSE_CLIENT_ID = "ca-pub-3050601904412736";
+export const DEFAULT_GA_MEASUREMENT_ID = "G-NPMV2G9KPK";
 
 function readTrimmedEnv(value: string | undefined) {
   return value?.trim() || "";
@@ -24,4 +25,8 @@ export function getAdsenseClientId() {
     readTrimmedEnv(process.env.NEXT_PUBLIC_ADSENSE_ID) ||
     DEFAULT_ADSENSE_CLIENT_ID
   );
+}
+
+export function getGoogleAnalyticsMeasurementId() {
+  return readTrimmedEnv(process.env.NEXT_PUBLIC_GA_ID) || DEFAULT_GA_MEASUREMENT_ID;
 }

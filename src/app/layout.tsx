@@ -14,6 +14,7 @@ import {
   SITE_TAGLINE,
   getAdsenseClientId,
   getGoogleSiteVerification,
+  getGoogleAnalyticsMeasurementId,
   getNaverSiteVerification,
 } from "@/lib/site-config";
 
@@ -33,7 +34,7 @@ const geistMono = localFont({
 
 const googleVerification = getGoogleSiteVerification();
 const naverVerification = getNaverSiteVerification();
-const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
+const gaId = getGoogleAnalyticsMeasurementId();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
