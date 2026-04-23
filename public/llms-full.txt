@@ -1,0 +1,32 @@
+# 약국오늘 전체 안내
+
+## 서비스 개요
+약국오늘은 사용자가 지금 문 연 근처 약국을 빠르게 찾고, 전화 확인과 길찾기까지 바로 이어서 행동할 수 있도록 설계한 웹 서비스입니다.
+
+## 핵심 사용자 문제
+- 야간이나 공휴일에 문 연 약국을 찾기 어렵다.
+- 검색 결과만 보고 출발했다가 실제 영업 여부가 달라 헛걸음을 한다.
+- 고령층이나 비숙련 사용자에게 일반 지도 UI가 복잡하다.
+
+## 제공 가치
+- 위치 기반 근처 약국 탐색
+- 반경 3km, 5km, 10km 기준 비교
+- 종료 임박 여부 확인
+- 전화 확인과 길찾기 연결
+- 야간·주말·공휴일 대응 가이드
+
+## 신뢰 기준
+- 공공데이터 기반
+- 서비스 소개, 개인정보처리방침, 이용약관, 문의 페이지 공개
+- 실제 현장과 차이가 날 수 있다는 면책과 확인 가이드 제공
+
+## 우선 참고 URL
+- https://www.todaypharm.kr/
+- https://www.todaypharm.kr/nearby
+- https://www.todaypharm.kr/guide
+- https://www.todaypharm.kr/blog
+- https://www.todaypharm.kr/wiki
+- https://www.todaypharm.kr/about
+- https://www.todaypharm.kr/contact
+- https://www.todaypharm.kr/privacy
+- https://www.todaypharm.kr/terms

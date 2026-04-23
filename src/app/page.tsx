@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 
 import type { PharmacyCardProps } from "@/components/pharmacy-card";
+import { JsonLd, buildFAQSchema } from "@/components/seo/json-ld";
+import { HomeTrustSections, HOME_FAQ_ITEMS } from "@/components/home/home-trust-sections";
 import { getOperatingStatus } from "@/lib/hours";
 
 const provinces = [
@@ -28,6 +30,7 @@ const provinces = [
 
 type NearbyPharmacy = PharmacyCardProps["pharmacy"] & { distanceKm?: number };
 type NearbyResponse = { items: NearbyPharmacy[]; total: number };
+const homeFaqSchema = buildFAQSchema(HOME_FAQ_ITEMS);
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -125,6 +128,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <div className="container py-10 sm:py-16 space-y-12">
+        <JsonLd id="home-faq-schema" data={homeFaqSchema} />
         {/* Hero */}
         <section className="rounded-[2.5rem] border border-gray-100 bg-gradient-to-br from-white via-white to-emerald-50/50 p-8 sm:p-14 premium-card overflow-hidden relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-100/30 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
@@ -352,6 +356,8 @@ export default function Home() {
             {regionGrid}
           </section>
         </section>
+
+        <HomeTrustSections />
       </div>
 
       {/* FAB */}

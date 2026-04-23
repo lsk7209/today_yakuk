@@ -1,3 +1,24 @@
+import type { Metadata } from "next";
+import { getSiteUrl } from "@/lib/site-url";
+
+const siteUrl = getSiteUrl();
+
+export const metadata: Metadata = {
+  title: "개인정보처리방침",
+  description: "약국오늘 서비스 이용 시 적용되는 개인정보 수집, 이용, 보관, 쿠키 정책을 확인하세요.",
+  alternates: {
+    canonical: "/privacy",
+  },
+  openGraph: {
+    title: "개인정보처리방침 | 약국오늘",
+    description: "위치 정보, 쿠키, 문의 정보 처리 기준을 안내하는 공식 정책 페이지입니다.",
+    url: `${siteUrl}/privacy`,
+    siteName: "약국오늘",
+    locale: "ko_KR",
+    type: "article",
+  },
+};
+
 export default function PrivacyPage() {
   return (
     <div className="container py-12">
@@ -7,6 +28,11 @@ export default function PrivacyPage() {
           약국오늘(이하 “서비스”)은 회원가입 없이 공공데이터와 오픈 정보를 제공하며, 이용자의
           개인정보 보호를 최우선으로 합니다. 본 방침은 서비스 이용 시 적용되는 개인정보 처리
           원칙을 안내합니다.
+        </p>
+        <p>
+          본 서비스는 약국 검색과 이용 가이드를 제공하는 과정에서 필요한 최소한의 정보만 다룹니다.
+          사용자의 위치 기반 요청은 검색 결과 제공 목적 범위에서만 활용하며, 광고 및 분석 도구도
+          서비스 운영과 품질 개선 범위 안에서 최소한으로 사용합니다.
         </p>
 
         <h2>1. 수집하는 정보</h2>
@@ -26,6 +52,7 @@ export default function PrivacyPage() {
           <li>현재 위치 또는 선택한 지역 인근의 약국 정보 제공</li>
           <li>서비스 품질 향상 및 오류 분석을 위한 통계적 활용(개인 식별 불가 형태)</li>
           <li>구글 애드센스를 통한 광고 노출 및 운영</li>
+          <li>데이터 정정 요청 및 서비스 문의 응답</li>
         </ul>
 
         <h2>3. 보유 및 파기</h2>
@@ -43,6 +70,10 @@ export default function PrivacyPage() {
           법령에 근거한 경우를 제외하고, 이용자의 개인정보를 제3자에게 판매하거나 임의 제공하지 않습니다.
           광고 노출 과정에서 애드센스 등 파트너가 쿠키를 활용할 수 있으며, 해당 파트너의 개인정보처리방침이
           적용됩니다.
+        </p>
+        <p>
+          분석 및 오류 점검을 위해 서비스 인프라 제공업체가 제한된 범위의 로그를 처리할 수 있습니다.
+          이 경우에도 운영 목적 외 사용은 허용하지 않으며, 가능한 범위에서 비식별화와 접근 통제를 적용합니다.
         </p>
 
         <h2>5. 이용자 권리</h2>

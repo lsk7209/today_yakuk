@@ -1,0 +1,54 @@
+{
+  "site": {
+    "name": "약국오늘",
+    "url": "https://www.todaypharm.kr",
+    "locale": "ko-KR",
+    "description": "실시간 영업 약국 검색 및 이용 가이드 서비스"
+  },
+  "primaryPages": [
+    {
+      "path": "/",
+      "title": "홈",
+      "purpose": "근처 약국 찾기"
+    },
+    {
+      "path": "/nearby",
+      "title": "내 주변 약국",
+      "purpose": "반경별 주변 약국 탐색"
+    },
+    {
+      "path": "/guide",
+      "title": "이용 가이드",
+      "purpose": "야간·주말·공휴일 대응 팁"
+    },
+    {
+      "path": "/blog",
+      "title": "블로그",
+      "purpose": "약국 이용과 건강 정보 콘텐츠"
+    },
+    {
+      "path": "/about",
+      "title": "서비스 소개",
+      "purpose": "데이터 출처와 운영 원칙 안내"
+    },
+    {
+      "path": "/contact",
+      "title": "문의하기",
+      "purpose": "정보 수정 요청 및 제휴 문의"
+    },
+    {
+      "path": "/privacy",
+      "title": "개인정보처리방침",
+      "purpose": "개인정보 처리 기준 안내"
+    },
+    {
+      "path": "/terms",
+      "title": "이용약관",
+      "purpose": "서비스 이용 조건 안내"
+    }
+  ],
+  "dataPolicy": {
+    "source": "공공데이터 및 공개 위치 정보",
+    "note": "실제 영업 여부는 현장 사정으로 달라질 수 있어 방문 전 전화 확인 권장"
+  }
+}

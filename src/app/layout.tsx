@@ -7,9 +7,17 @@ import "./globals.css";
 import { getSiteUrl } from "@/lib/site-url";
 import AnalyticsTracker from "@/components/analytics/AnalyticsTracker";
 import { JsonLd, buildWebSiteSchema } from "@/components/seo/json-ld";
+import {
+  DEFAULT_OG_IMAGE_PATH,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TAGLINE,
+  getAdsenseClientId,
+  getGoogleSiteVerification,
+} from "@/lib/site-config";
 
 const siteUrl = getSiteUrl();
-const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID;
+const adsenseId = getAdsenseClientId();
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -22,20 +30,20 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION;
+const googleVerification = getGoogleSiteVerification();
 const naverVerification = process.env.NEXT_PUBLIC_NAVER_VERIFICATION;
 const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  applicationName: SITE_NAME,
   title: {
-    default: "약국오늘 | 실시간 영업 약국 검색",
-    template: "%s | 약국오늘",
+    default: `${SITE_NAME} | ${SITE_TAGLINE}`,
+    template: `%s | ${SITE_NAME}`,
   },
-  // Naver는 description이 너무 길면 잘릴 수 있어 80자 내로 유지 (상세 맥락은 본문/구조화 데이터로 보완)
-  description: "지금 문 연 근처약국을 빠르게 찾고 영업시간·위치를 확인하세요.",
+  description: SITE_DESCRIPTION,
   keywords: [
-    "약국오늘",
+    SITE_NAME,
     "근처약국",
     "실시간 약국",
     "영업 약국 찾기",
@@ -47,18 +55,26 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "약국오늘 | 실시간 영업 약국 검색",
-    description:
-      "지금 문 연 약국을 빠르게 찾고, 영업 시간과 위치를 한 번에 확인하세요.",
+    title: `${SITE_NAME} | ${SITE_TAGLINE}`,
+    description: "지금 문 연 약국을 빠르게 찾고, 영업 시간과 위치를 한 번에 확인하세요.",
     url: siteUrl,
-    siteName: "약국오늘",
+    siteName: SITE_NAME,
     locale: "ko_KR",
     type: "website",
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE_PATH,
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} 대표 이미지`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "약국오늘 | 실시간 영업 약국 검색",
-    description: "지금 문 연 약국을 빠르게 찾고 영업시간·위치를 확인하세요.",
+    title: `${SITE_NAME} | ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE_PATH],
   },
   robots: {
     index: true,
@@ -74,6 +90,9 @@ export const metadata: Metadata = {
   verification: {
     google: googleVerification,
     other: naverVerification ? { "naver-site-verification": naverVerification } : undefined,
+  },
+  other: {
+    "google-adsense-account": adsenseId,
   },
   icons: {
     icon: "/favicon.ico",
@@ -120,7 +139,7 @@ export default function RootLayout({
         <JsonLd
           id="website-schema"
           data={buildWebSiteSchema({
-            name: "약국오늘",
+            name: SITE_NAME,
             url: siteUrl,
             description: "실시간 영업 약국 검색 서비스",
             searchUrl: `${siteUrl}/wiki?q={search_term_string}`,
@@ -137,7 +156,7 @@ export default function RootLayout({
                   약
                 </div>
                 <div>
-                  <p className="text-lg font-semibold">약국오늘</p>
+                  <p className="text-lg font-semibold">{SITE_NAME}</p>
                 </div>
               </Link>
               <nav className="flex items-center gap-4 text-sm text-[var(--muted)]">
@@ -163,13 +182,16 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <footer className="border-t border-[var(--border)] bg-white">
             <div className="container py-6 text-sm text-[var(--muted)] flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p>© {new Date().getFullYear()} 약국오늘 TodayPharmacy</p>
+              <p>© {new Date().getFullYear()} {SITE_NAME} TodayPharmacy</p>
               <div className="flex gap-4">
                 <a className="hover:text-brand-700" href="/about">
                   소개
                 </a>
                 <a className="hover:text-brand-700" href="/contact">
                   문의
+                </a>
+                <a className="hover:text-brand-700" href="/terms">
+                  이용약관
                 </a>
                 <a className="hover:text-brand-700" href="/privacy">
                   개인정보 처리방침
