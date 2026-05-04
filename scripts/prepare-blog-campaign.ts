@@ -260,6 +260,31 @@ function slugify(value: string) {
     .slice(0, 72);
 }
 
+function hasBatchim(value: string) {
+  const last = [...value].at(-1);
+  if (!last) return false;
+  const code = last.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return false;
+  return (code - 0xac00) % 28 > 0;
+}
+
+function withSubject(value: string) {
+  return `${value}${hasBatchim(value) ? "은" : "는"}`;
+}
+
+function withObject(value: string) {
+  return `${value}${hasBatchim(value) ? "을" : "를"}`;
+}
+
+function withConjunction(value: string) {
+  return `${value}${hasBatchim(value) ? "과" : "와"}`;
+}
+
+function joinWithObject(values: [string, string, string]) {
+  const [first, second, third] = values;
+  return `${first}, ${second}, ${withObject(third)}`;
+}
+
 function getFirstPublishAt() {
   const now = new Date();
   const first = new Date(now.getTime() + HOUR_MS);
@@ -325,7 +350,7 @@ function scoreTopic(topic: Topic, nearestSimilarity: number) {
 
 function makeSummary(topic: Topic) {
   const [first, second, third] = topic.expandedKeywords;
-  return `${topic.mainKeyword}는 ${first}과 ${second}를 먼저 확인해야 헛걸음과 오복용을 줄일 수 있습니다. 이 글은 ${topic.targetReader}가 ${third}까지 점검하며 약국 상담을 준비하는 기준을 정리합니다.`;
+  return `${withObject(topic.mainKeyword)} 확인할 때는 ${joinWithObject(topic.expandedKeywords)} 함께 봐야 헛걸음과 복용 실수를 줄일 수 있습니다. 이 글은 ${topic.targetReader}가 약국 상담 전 정리할 기준을 단계별로 안내합니다.`;
 }
 
 function makeFaq(topic: Topic) {
@@ -333,7 +358,7 @@ function makeFaq(topic: Topic) {
   return [
     {
       question: `${topic.mainKeyword}는 약국 방문 전 무엇을 먼저 확인해야 하나요?`,
-      answer: `${first}을 먼저 확인하고, 상황이 급하면 전화로 ${second}까지 확인하는 것이 좋습니다.`,
+      answer: `${withObject(first)} 먼저 확인하고, 상황이 급하면 전화로 ${withObject(second)} 함께 확인하는 것이 좋습니다.`,
     },
     {
       question: `${topic.mainKeyword} 관련 상담을 받을 때 어떤 정보를 말해야 하나요?`,
@@ -356,9 +381,9 @@ function makeContentHtml(topic: Topic) {
   const summary = makeSummary(topic);
   const checklist = [
     `${topic.mainKeyword} 목적을 한 문장으로 정리합니다.`,
-    `${first}을 확인하고 검색 결과를 다시 좁힙니다.`,
-    `${second}은 전화나 제품 설명으로 재확인합니다.`,
-    `${third}이 애매하면 약사에게 현재 상황을 먼저 설명합니다.`,
+    `${withObject(first)} 확인하고 검색 결과를 다시 좁힙니다.`,
+    `${withSubject(second)} 전화나 제품 설명으로 재확인합니다.`,
+    `${withSubject(third)} 애매하면 약사에게 현재 상황을 먼저 설명합니다.`,
     `증상이 심하거나 오래가면 병원 진료가 필요한지 물어봅니다.`,
   ];
 
@@ -366,22 +391,22 @@ function makeContentHtml(topic: Topic) {
 <div class="key-takeaways">
   <h3>핵심 요약</h3>
   <ul>
-    <li>${topic.mainKeyword}는 ${first} 확인이 출발점입니다.</li>
-    <li>${second}은 검색 결과만 믿지 말고 방문 전 한 번 더 확인해야 합니다.</li>
+    <li>${withSubject(topic.mainKeyword)} ${withObject(first)} 확인하는 것이 출발점입니다.</li>
+    <li>${withSubject(second)} 검색 결과만 믿지 말고 방문 전 한 번 더 확인해야 합니다.</li>
     <li>${third}까지 정리하면 약국 상담 시간이 줄고 선택 실수를 줄일 수 있습니다.</li>
   </ul>
 </div>
 <p>${summary}</p>
-<p>${topic.contentAngle}이 중요한 이유는 약국 정보가 실시간으로 바뀌고, 같은 증상처럼 보여도 나이·복용약·생활 상황에 따라 적절한 선택이 달라지기 때문입니다. 특히 야간이나 주말처럼 선택지가 적은 시간에는 검색, 전화, 이동 판단을 한 번에 정리해야 합니다.</p>
+<p>${withSubject(topic.contentAngle)} 중요한 이유는 약국 정보가 실시간으로 바뀌고, 같은 증상처럼 보여도 나이·복용약·생활 상황에 따라 적절한 선택이 달라지기 때문입니다. 특히 야간이나 주말처럼 선택지가 적은 시간에는 검색, 전화, 이동 판단을 한 번에 정리해야 합니다.</p>
 <h2>1. ${topic.mainKeyword}에서 먼저 봐야 할 기준</h2>
-<h3>${first}을 먼저 확인하는 이유</h3>
-<p>${first}은 ${topic.title}의 첫 번째 판단 기준입니다. 가까운 약국이나 익숙한 제품이 보여도 실제 영업 여부, 보유 재고, 복용 가능 여부가 맞지 않으면 다시 이동해야 합니다. 약국오늘에서 후보를 확인한 뒤 전화로 한 번 더 확인하면 이동 시간을 줄일 수 있습니다.</p>
+<h3>${withObject(first)} 먼저 확인하는 이유</h3>
+<p>${withSubject(first)} ${topic.title}의 첫 번째 판단 기준입니다. 가까운 약국이나 익숙한 제품이 보여도 실제 영업 여부, 보유 재고, 복용 가능 여부가 맞지 않으면 다시 이동해야 합니다. 약국오늘에서 후보를 확인한 뒤 전화로 한 번 더 확인하면 이동 시간을 줄일 수 있습니다.</p>
 <p>공공 정보와 포털 정보는 업데이트 시점이 다를 수 있습니다. ${source.label} 같은 공식 자료도 참고하되, 마지막 판단은 방문 전 전화 확인과 현장 상담으로 보완하는 편이 안전합니다.</p>
-<h3>${second}을 확인해야 하는 상황</h3>
-<p>${second}은 같은 검색어 안에서도 결과가 갈리는 지점입니다. 예를 들어 영업시간이 표시되어도 조제 가능 시간, 재고 보유 여부, 특정 제형 취급 여부는 별도 확인이 필요할 수 있습니다. 전화할 때는 제품명보다 성분, 증상, 복용 대상자를 함께 말하면 대체 선택지를 안내받기 쉽습니다.</p>
+<h3>${withObject(second)} 확인해야 하는 상황</h3>
+<p>${withSubject(second)} 같은 검색어 안에서도 결과가 갈리는 지점입니다. 예를 들어 영업시간이 표시되어도 조제 가능 시간, 재고 보유 여부, 특정 제형 취급 여부는 별도 확인이 필요할 수 있습니다. 전화할 때는 제품명보다 성분, 증상, 복용 대상자를 함께 말하면 대체 선택지를 안내받기 쉽습니다.</p>
 <div class="info-box">
   <h3>방문 전 한 줄 확인</h3>
-  <p>“지금 방문하면 ${topic.mainKeyword} 관련 상담이나 구매가 가능한가요?”라고 묻고, 이어서 ${first}과 ${second}을 확인하세요.</p>
+  <p>“지금 방문하면 ${topic.mainKeyword} 관련 상담이나 구매가 가능한가요?”라고 묻고, 이어서 ${withConjunction(first)} ${withObject(second)} 확인하세요.</p>
 </div>
 <h2>2. 약국 상담 전 준비할 정보</h2>
 <h3>증상과 시간을 짧게 정리하기</h3>
@@ -425,11 +450,11 @@ ${checklist.map((item) => `  <li>${item}</li>`).join("\n")}
 <div class="step-cards">
   <div class="step-card"><span class="step-number">1</span><h4>근처 약국 검색</h4><p>약국오늘에서 현재 위치 또는 지역명으로 후보를 확인합니다.</p></div>
   <div class="step-card"><span class="step-number">2</span><h4>영업시간 확인</h4><p>종료 임박 여부와 이동 시간을 함께 봅니다.</p></div>
-  <div class="step-card"><span class="step-number">3</span><h4>전화 확인</h4><p>${first}, ${second}, ${third}을 짧게 묻습니다.</p></div>
+  <div class="step-card"><span class="step-number">3</span><h4>전화 확인</h4><p>${joinWithObject(topic.expandedKeywords)} 짧게 묻습니다.</p></div>
   <div class="step-card"><span class="step-number">4</span><h4>상담 후 결정</h4><p>복용 가능 여부와 진료 필요 신호를 확인합니다.</p></div>
 </div>
 <h3>마무리 기준</h3>
-<p>${topic.mainKeyword}는 검색 결과를 많이 보는 것보다 현재 상황에 맞는 후보를 빠르게 좁히는 일이 중요합니다. 약국오늘의 근처 약국 찾기와 전화 확인을 함께 쓰고, 증상이 애매하거나 심하면 약사에게 진료 필요성을 먼저 물어보세요.</p>
+<p>${withSubject(topic.mainKeyword)} 검색 결과를 많이 보는 것보다 현재 상황에 맞는 후보를 빠르게 좁히는 일이 중요합니다. 약국오늘의 근처 약국 찾기와 전화 확인을 함께 쓰고, 증상이 애매하거나 심하면 약사에게 진료 필요성을 먼저 물어보세요.</p>
 <div class="tip-box">
   <h3>약국오늘 메모</h3>
   <p>이 글은 일반 정보이며 개인 진단을 대신하지 않습니다. 복용 중인 약, 임신·수유, 만성질환, 어린이·고령자 여부가 있으면 약사나 의료진 상담을 우선하세요.</p>
@@ -461,6 +486,9 @@ function scoreArticle(item: QueueItem) {
   if (item.content_html.includes("rel=\"nofollow noopener noreferrer\"")) score += 2;
   if (/<script|<h1|style="/i.test(item.content_html)) score -= 20;
   if (/(완치|100%|무조건|특효|치료 보장)/.test(plain)) score -= 20;
+  if (/(약국는|위치은|위치을|확인를|순서이|방지이|방지을|코은|코을|피부은|피부을|마스크이|마스크을|직장인가|오복용)/.test(plain)) {
+    score -= 30;
+  }
   return Math.max(0, Math.min(100, score));
 }
 

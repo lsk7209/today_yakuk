@@ -116,12 +116,11 @@ export default function RootLayout({
           <meta name="naver-site-verification" content={naverVerification} />
         ) : null}
         {adsenseId ? (
-          <Script
+          <script
             id="google-adsense"
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
             crossOrigin="anonymous"
-            strategy="afterInteractive"
           />
         ) : null}
       </head>
@@ -168,20 +167,20 @@ export default function RootLayout({
                   <p className="text-lg font-semibold">{SITE_NAME}</p>
                 </div>
               </Link>
-              <nav className="flex items-center gap-4 text-sm text-[var(--muted)]">
-                <Link href="/" className="hover:text-brand-700">
+              <nav className="flex items-center gap-1 text-sm text-[var(--muted)] sm:gap-3">
+                <Link href="/" className="inline-flex min-h-11 items-center px-1 hover:text-brand-700">
                   홈
                 </Link>
-                <Link href="/about" className="hover:text-brand-700">
+                <Link href="/about" className="inline-flex min-h-11 items-center px-1 hover:text-brand-700">
                   소개
                 </Link>
-                <Link href="/guide" className="hover:text-brand-700">
+                <Link href="/guide" className="inline-flex min-h-11 items-center px-1 hover:text-brand-700">
                   가이드
                 </Link>
-                <Link href="/blog" className="hover:text-brand-700">
+                <Link href="/blog" className="inline-flex min-h-11 items-center px-1 hover:text-brand-700">
                   블로그
                 </Link>
-                <Link href="/wiki" className="hover:text-brand-700 font-medium text-brand-600 relative group">
+                <Link href="/wiki" className="relative inline-flex min-h-11 items-center px-1 font-medium text-brand-700 hover:text-brand-800">
                   영양제 정보
                   <span className="absolute -top-1 -right-2 h-1.5 w-1.5 rounded-full bg-red-500" aria-label="New"></span>
                 </Link>

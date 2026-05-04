@@ -509,6 +509,9 @@ function scoreArticle(item: QueueItem) {
   if (item.content_html.includes('rel="nofollow noopener noreferrer"')) score += 2;
   if (/<script|<h1|style="/i.test(item.content_html)) score -= 20;
   if (/(완치|100%|무조건|특효|치료 보장|최고|기적)/.test(plain)) score -= 20;
+  if (/(약국는|위치은|위치을|확인를|순서이|방지이|방지을|코은|코을|피부은|피부을|마스크이|마스크을|직장인가|오복용)/.test(plain)) {
+    score -= 30;
+  }
   return Math.max(0, Math.min(100, score));
 }
 

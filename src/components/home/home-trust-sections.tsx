@@ -162,7 +162,7 @@ export function HomeTrustSections() {
               href="https://www.data.go.kr/"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-black text-white hover:bg-brand-700"
+              className="inline-flex items-center rounded-full bg-brand-700 px-4 py-2 text-sm font-black text-white hover:bg-brand-800"
             >
               공공데이터포털 보기
             </a>

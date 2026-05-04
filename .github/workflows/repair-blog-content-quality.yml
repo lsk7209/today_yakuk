@@ -1,0 +1,40 @@
+name: Repair Blog Content Quality
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/repair-blog-content-quality.yml"
+      - "content/blog-campaign-2026-05-04.json"
+      - "scripts/repair-blog-content-quality.ts"
+      - "scripts/prepare-blog-campaign.ts"
+      - "scripts/prepare-blog-campaign-v3.ts"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+
+jobs:
+  repair:
+    name: Repair queued and published blog content
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Repair content queue rows
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run repair:blog-content -- --update-db

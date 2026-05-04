@@ -1,18 +1,18 @@
 # Status | 마지막: 2026-05-05
 ## 현재 작업
-GPS 위치 권한 UX 개선 및 live 검증 완료
+검색엔진 발행 알림 보강 및 콘텐츠 품질 자동 보정 검증 완료, 배포 확인 대기
 ## 최근 변경 (최근 5개만)
-- 05-05: RSS charset/cache, sitemap/blog 최신 발행 정렬 보강
-- 05-05: v3 제목 CSV 100개와 예약 글 2개 생성, Seed Actions 성공
-- 05-05: GSC sitemap 재제출, 오류/경고 0개와 pending 확인
-- 05-05: 홈/nearby GPS 권한을 버튼 클릭 흐름으로 변경, 키워드 검색 API 보강
-- 05-05: live 홈/nearby GPS 클릭 흐름과 `/api/nearby` 200 응답 확인
+- 05-05: 발행 시 IndexNow/Bing/Naver/Yandex 동시 알림으로 보강
+- 05-05: 05-04 캠페인 글 100개 조사 오류 보정 스크립트와 GitHub Action 추가
+- 05-05: AdSense 스크립트 head 속성 경고 제거 방식으로 수정
+- 05-05: 홈 CTA 대비, 내비게이션 터치 타깃, llms.txt 링크 구조 개선
+- 05-05: GPS 버튼 클릭 기반 위치 권한 UX live 검증 완료
 ## TODO
-- [ ] v3 첫 글 발행 후 `/blog`, RSS, sitemap 반영 확인
+- [ ] 배포 후 GitHub Action repair/publish 로그 확인
+- [ ] live 블로그, RSS, sitemap, llms.txt 반영 확인
 ## 결정사항
-- 댓글: Next.js 사이트라 WordPress 댓글 기능 없음
-- FlowMattic/Rank Math: WordPress 플러그인 대상이 아님, Next 메타/JSON-LD/자동화로 처리
-- GPS: 접속 즉시 권한 요청 대신 사용자가 버튼을 누른 뒤 브라우저 권한 요청
+- Daum: 공개 URL 제출 API가 없어 RSS와 sitemap 기반 발견 경로로 운영
+- Google: Indexing API는 호출하되 일반 블로그 색인은 sitemap/GSC 발견 경로도 병행
 ## 주의
 - 로컬은 Supabase env가 없어 더미 클라이언트로 검증됨
-- AdSense 사이트 상태는 `todaypharm.kr: GETTING_READY`, GSC 최근 90일 검색 데이터는 0건
+- Google Indexing API는 공식적으로 JobPosting/BroadcastEvent 중심이라 일반 글 색인 보장은 아님
