@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const port = process.env.PORT || "3000";
+
 /**
  * Playwright E2E Test Configuration
  * @see https://playwright.dev/docs/test-configuration
@@ -12,7 +14,7 @@ export default defineConfig({
     workers: process.env.CI ? 1 : undefined,
     reporter: "html",
     use: {
-        baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+        baseURL: process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${port}`,
         trace: "on-first-retry",
         screenshot: "only-on-failure",
     },
@@ -30,8 +32,8 @@ export default defineConfig({
 
     /* Run local dev server before tests */
     webServer: {
-        command: "npm run dev",
-        url: "http://localhost:3000",
+        command: `npm run dev -- -p ${port}`,
+        url: `http://localhost:${port}`,
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,
     },

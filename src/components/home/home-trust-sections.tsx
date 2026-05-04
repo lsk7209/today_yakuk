@@ -53,6 +53,30 @@ const visitChecklist = [
   "건물명, 층수, 주차 가능 여부가 헷갈리면 길찾기 전에 주소를 다시 확인합니다.",
 ];
 
+const editorialStandards = [
+  "본문에는 진단·처방을 대신한다는 표현을 쓰지 않고, 약사나 의료진 상담이 필요한 상황을 분리해 안내합니다.",
+  "약국 영업 정보는 공공데이터와 공개 위치 정보를 바탕으로 정리하며, 방문 전 전화 확인을 기본 행동으로 안내합니다.",
+  "광고 영역은 정보 탐색을 방해하지 않는 위치에만 배치하고, 검색·전화·길찾기 같은 핵심 기능보다 앞세우지 않습니다.",
+];
+
+const featuredGuides = [
+  {
+    title: "야간·주말 약국 찾기",
+    description: "늦은 시간 문 연 약국을 찾을 때 영업 확인, 전화 확인, 대체 후보를 함께 보는 기준입니다.",
+    href: "/guide/night-weekend",
+  },
+  {
+    title: "공휴일 약국 체크리스트",
+    description: "공휴일과 대체휴일에 운영 시간이 달라질 때 출발 전 확인할 항목을 정리했습니다.",
+    href: "/guide/holiday-checklist",
+  },
+  {
+    title: "약국 전화 스크립트",
+    description: "재고, 영업 여부, 상담 가능 여부를 짧게 확인할 수 있는 통화 문장을 제공합니다.",
+    href: "/guide/call-scripts",
+  },
+];
+
 export function HomeTrustSections() {
   return (
     <div className="space-y-6">
@@ -73,6 +97,48 @@ export function HomeTrustSections() {
               <h3 className="text-lg font-black text-gray-900">{item.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-700">{item.description}</p>
             </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
+        <div className="max-w-3xl space-y-3">
+          <p className="text-xs font-black tracking-[0.18em] text-brand-700">EDITORIAL POLICY</p>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900">애드센스 검수에 맞춘 정보 운영 기준</h2>
+          <p className="text-gray-600 leading-relaxed">
+            약국오늘의 글과 검색 화면은 사용자가 광고보다 먼저 필요한 정보를 확인할 수 있도록 설계합니다. 의료적
+            판단이 필요한 내용은 일반 정보와 구분하고, 공공데이터 기반 서비스의 한계를 화면 안에서 반복 안내합니다.
+          </p>
+        </div>
+        <ul className="mt-5 grid gap-3 lg:grid-cols-3">
+          {editorialStandards.map((item) => (
+            <li key={item} className="rounded-2xl border border-gray-200 bg-slate-50 px-4 py-4 text-sm leading-relaxed text-gray-700">
+              {item}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-black tracking-[0.18em] text-brand-700">GUIDES</p>
+            <h2 className="text-2xl font-black text-gray-900">자주 쓰는 약국 이용 가이드</h2>
+          </div>
+          <Link href="/blog" className="text-sm font-black text-brand-700 hover:text-brand-800">
+            블로그 전체 보기
+          </Link>
+        </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
+          {featuredGuides.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-2xl border border-gray-200 bg-gray-50 p-5 hover:border-brand-300 hover:bg-white hover:shadow-sm"
+            >
+              <h3 className="text-lg font-black text-gray-900">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-700">{item.description}</p>
+            </Link>
           ))}
         </div>
       </section>

@@ -71,7 +71,8 @@ export async function listPublishedContent(limit = 20): Promise<ContentItem[]> {
       .from("content_queue")
       .select("*")
       .eq("status", "published")
-      .order("published_at", { ascending: false })
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("updated_at", { ascending: false })
       .limit(limit);
     if (error) {
       if (isMissingTableError(error)) return [];
@@ -112,7 +113,8 @@ export async function getPublishedContentSitemapChunk(offset: number, limit: num
       .from("content_queue")
       .select("slug, updated_at, published_at")
       .eq("status", "published")
-      .order("published_at", { ascending: false })
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("updated_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) {

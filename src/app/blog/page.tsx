@@ -15,7 +15,7 @@ interface BlogPost {
 const POSTS_PER_PAGE = 12;
 const BLOG_DESCRIPTION = "약국 이용 팁, 야간·주말 대비법, 위치 기반 검색 활용 가이드를 제공합니다.";
 
-export const revalidate = 3600; // 1 hour
+export const revalidate = 600; // 10 minutes
 
 type BlogIndexPageProps = {
   searchParams?: {
@@ -54,7 +54,8 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexPageProps
     .from("content_queue")
     .select("title, slug, ai_summary, published_at, image_url", { count: "exact" })
     .eq("status", "published")
-    .order("published_at", { ascending: false })
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("updated_at", { ascending: false })
     .range(from, to);
 
   const totalPosts = count ?? 0;

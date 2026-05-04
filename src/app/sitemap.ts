@@ -9,7 +9,7 @@ import { getSitemapIds, SITEMAP_CHUNK_SIZE } from "@/lib/sitemap";
 
 const siteUrl = getSiteUrl();
 
-export const revalidate = 3600;
+export const revalidate = 600;
 
 export async function generateSitemaps() {
   const ids = await getSitemapIds();

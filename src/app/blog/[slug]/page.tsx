@@ -35,9 +35,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         .from("content_queue")
         .select("title, ai_summary, slug, image_url")
         .eq("slug", params.slug)
-        .single();
+        .eq("status", "published")
+        .maybeSingle();
 
-    if (!post) {
+    if (!post || Array.isArray(post)) {
         return {
             title: "페이지를 찾을 수 없습니다",
         };
@@ -89,9 +90,10 @@ export default async function BlogPostPage({ params }: Props) {
         .from("content_queue")
         .select("*")
         .eq("slug", params.slug)
-        .single();
+        .eq("status", "published")
+        .maybeSingle();
 
-    if (!post || post.status !== "published") {
+    if (!post || Array.isArray(post)) {
         notFound();
     }
 
@@ -101,7 +103,8 @@ export default async function BlogPostPage({ params }: Props) {
         .select("slug, title, ai_summary, published_at, image_url")
         .eq("status", "published")
         .neq("slug", params.slug)
-        .order("published_at", { ascending: false })
+        .order("published_at", { ascending: false, nullsFirst: false })
+        .order("updated_at", { ascending: false })
         .limit(4);
 
     // 헤딩에 ID 추가
@@ -117,8 +120,8 @@ export default async function BlogPostPage({ params }: Props) {
         headline: post.title,
         description: post.ai_summary || "",
         url: `${siteUrl}/blog/${params.slug}`,
-        datePublished: post.publish_at || post.created_at,
-        dateModified: post.updated_at || post.publish_at,
+        datePublished: post.published_at || post.publish_at || post.updated_at,
+        dateModified: post.updated_at || post.published_at || post.publish_at,
         authorName: "약국오늘",
         publisherName: "약국오늘",
         publisherLogo: `${siteUrl}/favicon.ico`,
@@ -136,13 +139,13 @@ export default async function BlogPostPage({ params }: Props) {
                 <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                     <time className="text-gray-500">
-                        {new Date(post.published_at).toLocaleDateString("ko-KR")}
+                        {new Date(post.published_at || post.publish_at).toLocaleDateString("ko-KR")}
                     </time>
                     <span className="eeat-badge">
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
-                        약사 감수 콘텐츠
+                        공공데이터 기반 안내
                     </span>
                 </div>
             </header>

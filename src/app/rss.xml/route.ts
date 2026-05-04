@@ -10,8 +10,8 @@ function stripHtml(html: string) {
   return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 }
 
-// Ensure 1 hour revalidation
-export const revalidate = 3600;
+// Ensure recently published posts reach feed readers quickly.
+export const revalidate = 600;
 
 export async function GET() {
   const items = await listPublishedContent(30);
@@ -61,8 +61,8 @@ export async function GET() {
   return new NextResponse(xml, {
     status: 200,
     headers: {
-      "Content-Type": "application/xml",
-      "Cache-Control": "s-maxage=3600, stale-while-revalidate",
+      "Content-Type": "application/xml; charset=utf-8",
+      "Cache-Control": "s-maxage=600, stale-while-revalidate=300",
     },
   });
 }
