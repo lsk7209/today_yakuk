@@ -115,6 +115,15 @@ export default function RootLayout({
         {naverVerification ? (
           <meta name="naver-site-verification" content={naverVerification} />
         ) : null}
+        {adsenseId ? (
+          <Script
+            id="google-adsense"
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        ) : null}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
@@ -134,15 +143,6 @@ export default function RootLayout({
               `}
             </Script>
           </>
-        ) : null}
-        {adsenseId ? (
-          <Script
-            id="google-adsense"
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
-            crossOrigin="anonymous"
-            strategy="lazyOnload"
-          />
         ) : null}
         {/* WebSite Schema with SearchAction for sitelinks searchbox */}
         <JsonLd
