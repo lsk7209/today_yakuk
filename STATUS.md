@@ -5,6 +5,7 @@
 - 05-04: `/nearby` 전용 metadata 추가, `/wiki` canonical 추가, 블로그/허브 HTML sanitizer 적용
 - 05-04: `www.todaypharm.kr` GSC 검증용 Google meta token 추가
 - 05-04: `www.todaypharm.kr` Search Console 소유권 검증 및 sitemap 제출 완료(오류 0/경고 0)
+- 05-04: 보안 헤더(CSP frame-ancestors, XFO, nosniff, Referrer/Permissions/COOP) 추가
 - 05-04: 관리자 로그인 10분 5회 제한 추가, 블로그 OG 이미지 URL www 도메인 통일
 - 05-04: 블로그 목록 페이지네이션 적용으로 `/blog` 응답 크기 대폭 축소
 ## TODO
