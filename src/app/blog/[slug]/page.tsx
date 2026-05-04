@@ -7,6 +7,7 @@ import RelatedPosts from "@/components/blog/RelatedPosts";
 import Image from "next/image";
 import { getBlogFeaturedImage } from "@/lib/blog-image";
 import { getSiteUrl } from "@/lib/site-url";
+import { sanitizeTrustedHtml } from "@/lib/sanitize-html";
 
 const siteUrl = getSiteUrl();
 
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const featuredImagePath = getBlogFeaturedImage(post.slug, post.title, post.image_url);
     const absoluteFeaturedImage = featuredImagePath.startsWith("http")
         ? featuredImagePath
-        : `https://todaypharm.kr${featuredImagePath}`;
+        : `${siteUrl}${featuredImagePath}`;
 
     const ogImages = [];
     if (absoluteFeaturedImage) {
@@ -104,7 +105,7 @@ export default async function BlogPostPage({ params }: Props) {
         .limit(4);
 
     // 헤딩에 ID 추가
-    const contentWithIds = addHeadingIds(post.content_html || "");
+    const contentWithIds = addHeadingIds(sanitizeTrustedHtml(post.content_html));
 
     // JSON-LD 구조화 데이터 준비 (리팩토링된 스키마 빌더 사용)
     const featuredImageUrl = getBlogFeaturedImage(post.slug, post.title, post.image_url);

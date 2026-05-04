@@ -8,9 +8,13 @@ import WikiSearch from "@/components/wiki/WikiSearch";
 export const metadata: Metadata = {
     title: "영양제 정보",
     description: "식약처 공공데이터 기반 영양제 성분 정보와 객관적 분석을 제공합니다.",
+    alternates: {
+        canonical: "/wiki",
+    },
     openGraph: {
         title: "영양제 정보 | 약국오늘",
         description: "건강기능식품 성분과 제품을 찾고, 객관적인 정보를 확인하세요.",
+        type: "website",
     },
 };
 

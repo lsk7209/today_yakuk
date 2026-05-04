@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublishedContentBySlug } from "@/lib/data/content";
+import { sanitizeTrustedHtml } from "@/lib/sanitize-html";
 
 type Props = {
   params: { slug: string };
@@ -26,7 +27,7 @@ export default async function HubPage({ params }: Props) {
       </header>
       <article
         className="prose prose-slate max-w-none bg-white border border-[var(--border)] rounded-2xl p-6 shadow-sm"
-        dangerouslySetInnerHTML={{ __html: content.content_html ?? "" }}
+        dangerouslySetInnerHTML={{ __html: sanitizeTrustedHtml(content.content_html) }}
       />
       <div className="flex gap-2 text-sm">
         <Link

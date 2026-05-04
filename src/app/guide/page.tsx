@@ -7,7 +7,7 @@ import { getSiteUrl } from "@/lib/site-url";
 const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "약국 이용 가이드 | 약국오늘",
+  title: "약국 이용 가이드",
   description: "야간·주말·공휴일에 문 연 약국을 빠르게 찾는 방법과 이용 팁을 모았습니다.",
   alternates: {
     canonical: "/guide",

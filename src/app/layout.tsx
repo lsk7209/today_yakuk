@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Link from "next/link";
+import Script from "next/script";
 import { Suspense } from "react";
 import "./globals.css";
 import { getSiteUrl } from "@/lib/site-url";
@@ -111,36 +112,35 @@ export default function RootLayout({
         {naverVerification ? (
           <meta name="naver-site-verification" content={naverVerification} />
         ) : null}
-        {gaId ? (
-          <>
-            <script
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-              async
-            />
-            <script
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gaId}');
-                `,
-              }}
-            />
-          </>
-        ) : null}
-        {adsenseId && (
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
-            crossOrigin="anonymous"
-          />
-        )}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
       >
+        {gaId ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${gaId}');
+              `}
+            </Script>
+          </>
+        ) : null}
+        {adsenseId ? (
+          <Script
+            id="google-adsense"
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
+            crossOrigin="anonymous"
+            strategy="lazyOnload"
+          />
+        ) : null}
         {/* WebSite Schema with SearchAction for sitelinks searchbox */}
         <JsonLd
           id="website-schema"
