@@ -1,22 +1,18 @@
 # Status | 마지막: 2026-05-04
 ## 현재 작업
-속도·SEO·보안 2차 안정화 및 GSC www 검증/사이트맵 제출 완료
+블로그 제목 100개·본문 100개 생성 및 5시간 예약 발행 파이프라인 구현 완료, DB 적재 워크플로 자동 실행 대기
 ## 최근 변경
-- 05-04: `/nearby` 전용 metadata 추가, `/wiki` canonical 추가, 블로그/허브 HTML sanitizer 적용
-- 05-04: `www.todaypharm.kr` GSC 검증용 Google meta token 추가
-- 05-04: `www.todaypharm.kr` Search Console 소유권 검증 및 sitemap 제출 완료(오류 0/경고 0)
-- 05-04: 보안 헤더(CSP frame-ancestors, XFO, nosniff, Referrer/Permissions/COOP) 추가
-- 05-04: 관리자 로그인 10분 5회 제한 추가, 블로그 OG 이미지 URL www 도메인 통일
-- 05-04: 블로그 목록 페이지네이션 적용으로 `/blog` 응답 크기 대폭 축소
+- 05-04: `prepare-blog-campaign` 스크립트 추가, 제목 CSV와 본문 JSON 100개 생성
+- 05-04: 캠페인 품질 게이트 통과(최저 94점), FAQ 최소 4개, 5시간 간격 검증
+- 05-04: GitHub Actions `seed-blog-campaign` 추가, main push 시 Supabase 적재
+- 05-04: 발행 워크플로 `PUBLISH_LIMIT=1`로 조정해 예약 글 1개씩 발행
+- 05-04: SEO·성능·보안 2차 최적화 및 GSC www 검증 완료
 ## TODO
-- [ ] AdSense 콘솔에서 `todaypharm.kr` 심사 진행 상태와 결제 확인 알림 조치
+- [ ] push 후 `Seed Blog Campaign` Actions 실행 결과 확인
+- [ ] 첫 예약 글 발행 후 `/blog`, RSS, sitemap, GSC 색인 요청 확인
 ## 결정사항
-- 애드센스 퍼블리셔 ID는 공통 레이아웃에서 기본값으로도 주입
-- 루트 sitemap.xml은 rewrite로 sitemap-index.xml에 연결하고, 하위 sitemap은 Next metadata 경로를 유지
-- GA 측정 ID는 환경변수가 없어도 `G-NPMV2G9KPK` 기본값으로 주입
-- 운영 도메인은 `https://www.todaypharm.kr`로 통일
+- 100개 글: 외부 AI API 없이 직접 생성 템플릿과 품질 게이트로 작성
+- 발행 간격: 첫 글부터 5시간마다 예약, 발행기는 한 번에 1개만 처리
 ## 주의
-- `.omx/`는 작업 산출물이며 커밋 대상 아님
-- 로컬에는 Supabase env가 없어 빌드 시 더미 클라이언트 경고가 출력됨
-- AdSense OAuth 파일/토큰은 `D:\env\adsense_oauth_client.json`, `D:\env\adsense_token.json`
-- GSC `www.todaypharm.kr` URL Inspection 결과: Submitted and indexed
+- 로컬에는 Supabase env가 없어 DB 적재는 GitHub Secrets 기반 Actions로 수행
+- `.omx/`는 로컬 작업 산출물이며 커밋 대상 아님
