@@ -12,6 +12,7 @@
     "sync:supplements": "ts-node --project tsconfig.sync.json scripts/sync-supplements.ts",
     "publish:queue": "ts-node --project tsconfig.sync.json scripts/publish-queue.ts",
     "prepare:blog-campaign": "ts-node --project tsconfig.sync.json scripts/prepare-blog-campaign.ts",
+    "prepare:blog-campaign:v2": "ts-node --project tsconfig.sync.json scripts/prepare-blog-campaign-v2.ts",
     "generate:content": "ts-node --project tsconfig.sync.json scripts/generate-pharmacy-content.ts",
     "generate:single": "ts-node --project tsconfig.sync.json scripts/generate-single-pharmacy.ts",
     "generate:summary": "ts-node --project tsconfig.sync.json scripts/generate-gemini-summary.ts",

@@ -1,18 +1,18 @@
 # Status | 마지막: 2026-05-04
 ## 현재 작업
-블로그 제목 100개·본문 100개 생성 및 5시간 예약 발행 파이프라인 구현 완료, DB 적재 완료
+v2 제목 100개·본문 2개 생성 완료, 기존 100개 유지 후 추가 예약 적재 준비
 ## 최근 변경
-- 05-04: `prepare-blog-campaign` 스크립트 추가, 제목 CSV와 본문 JSON 100개 생성
-- 05-04: 캠페인 품질 게이트 통과(최저 94점), FAQ 최소 4개, 5시간 간격 검증
-- 05-04: GitHub Actions `seed-blog-campaign` 추가, main push 시 Supabase 적재
-- 05-04: 발행 워크플로 매시간 체크 + `PUBLISH_LIMIT=1`로 조정해 예약 글 1개씩 발행
-- 05-04: 발행 전 Gemini 이미지 생성 스텝 제거, OG 이미지 fallback 사용
+- 05-04: 기존 100개 캠페인 유지 결정
+- 05-04: v2 제목 CSV 100개 생성, 기존 후보/예약과 중복 검사
+- 05-04: v2 본문 2개 생성, 품질 최저 97점, FAQ 4개, 본문 2,771자 이상
+- 05-04: v2 예약 시간은 2026-05-25 18:30/23:30 KST로 기존 마지막 이후 5시간 간격
+- 05-04: `seed-blog-campaign-v2` Actions 추가 준비
 ## TODO
-- [x] push 후 `Seed Blog Campaign` Actions 실행 결과 확인
-- [ ] 첫 예약 글 발행 후 `/blog`, RSS, sitemap, GSC 색인 요청 확인
+- [ ] v2 push 후 `Seed Blog Campaign v2` Actions 성공 확인
+- [ ] v2 첫 글 발행 후 `/blog`, RSS, sitemap 확인
 ## 결정사항
-- 100개 글: 외부 AI API 없이 직접 생성 템플릿과 품질 게이트로 작성
-- 발행 간격: 첫 글부터 5시간마다 예약, 발행기는 한 번에 1개만 처리
+- v2: 제목은 100개 만들고 본문/예약은 상위 2개만 추가
+- 기존 100개 예약은 삭제·수정하지 않음
 ## 주의
 - 로컬에는 Supabase env가 없어 DB 적재는 GitHub Secrets 기반 Actions로 수행
-- `.omx/`는 로컬 작업 산출물이며 커밋 대상 아님
+- `tmux`가 없어 OMX tmux team 대신 3개 읽기 전용 검토 에이전트로 대체
