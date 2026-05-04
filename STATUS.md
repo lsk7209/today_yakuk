@@ -1,14 +1,13 @@
 # Status | 마지막: 2026-05-05
 ## 현재 작업
-GPS 위치 권한 UX 개선 완료, 배포 후 live 확인 대기
+GPS 위치 권한 UX 개선 및 live 검증 완료
 ## 최근 변경 (최근 5개만)
-- 05-05: 홈에 신뢰 정보 섹션과 주요 가이드 섹션 추가
 - 05-05: RSS charset/cache, sitemap/blog 최신 발행 정렬 보강
 - 05-05: v3 제목 CSV 100개와 예약 글 2개 생성, Seed Actions 성공
 - 05-05: GSC sitemap 재제출, 오류/경고 0개와 pending 확인
 - 05-05: 홈/nearby GPS 권한을 버튼 클릭 흐름으로 변경, 키워드 검색 API 보강
+- 05-05: live 홈/nearby GPS 클릭 흐름과 `/api/nearby` 200 응답 확인
 ## TODO
-- [ ] 배포 완료 후 live 홈/nearby GPS 버튼과 `/api/nearby` 응답 확인
 - [ ] v3 첫 글 발행 후 `/blog`, RSS, sitemap 반영 확인
 ## 결정사항
 - 댓글: Next.js 사이트라 WordPress 댓글 기능 없음
