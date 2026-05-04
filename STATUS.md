@@ -6,7 +6,7 @@
 - 05-04: 캠페인 품질 게이트 통과(최저 94점), FAQ 최소 4개, 5시간 간격 검증
 - 05-04: GitHub Actions `seed-blog-campaign` 추가, main push 시 Supabase 적재
 - 05-04: 발행 워크플로 매시간 체크 + `PUBLISH_LIMIT=1`로 조정해 예약 글 1개씩 발행
-- 05-04: SEO·성능·보안 2차 최적화 및 GSC www 검증 완료
+- 05-04: 발행 전 Gemini 이미지 생성 스텝 제거, OG 이미지 fallback 사용
 ## TODO
 - [x] push 후 `Seed Blog Campaign` Actions 실행 결과 확인
 - [ ] 첫 예약 글 발행 후 `/blog`, RSS, sitemap, GSC 색인 요청 확인
