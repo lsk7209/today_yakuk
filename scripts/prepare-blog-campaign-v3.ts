@@ -380,7 +380,7 @@ function scoreTitle(topic: Topic, nearestSimilarity: number) {
 }
 
 function makeSummary(topic: Topic) {
-  return `${withObject(topic.mainKeyword)} 확인할 때는 ${joinWithObject(topic.expandedKeywords)} 함께 봐야 헛걸음과 복용 실수를 줄일 수 있습니다. 이 글은 ${topic.targetReader}가 약국 상담 전 정리할 기준을 단계별로 안내합니다.`;
+  return `${withObject(topic.mainKeyword)} 확인할 때는 ${joinWithObject(topic.expandedKeywords)} 함께 봐야 헛걸음을 줄이고 복용 실수를 예방할 수 있습니다. 이 글은 ${withNominative(topic.targetReader)} 약국 상담 전 정리할 기준을 단계별로 안내합니다.`;
 }
 
 function makeFaq(topic: Topic): FAQ[] {
@@ -509,7 +509,7 @@ function scoreArticle(item: QueueItem) {
   if (item.content_html.includes('rel="nofollow noopener noreferrer"')) score += 2;
   if (/<script|<h1|style="/i.test(item.content_html)) score -= 20;
   if (/(완치|100%|무조건|특효|치료 보장|최고|기적)/.test(plain)) score -= 20;
-  if (/(약국는|위치은|위치을|확인를|순서이|방지이|방지을|코은|코을|피부은|피부을|마스크이|마스크을|직장인가|오복용)/.test(plain)) {
+  if (/(약국는|위치은|위치을|확인를|순서이|방지이|방지을|코은|코을|피부은|피부을|마스크이|마스크을|직장인가|가정가|복용 실수을|오복용)/.test(plain)) {
     score -= 30;
   }
   return Math.max(0, Math.min(100, score));

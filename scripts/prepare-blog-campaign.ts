@@ -272,6 +272,10 @@ function withSubject(value: string) {
   return `${value}${hasBatchim(value) ? "은" : "는"}`;
 }
 
+function withNominative(value: string) {
+  return `${value}${hasBatchim(value) ? "이" : "가"}`;
+}
+
 function withObject(value: string) {
   return `${value}${hasBatchim(value) ? "을" : "를"}`;
 }
@@ -350,7 +354,7 @@ function scoreTopic(topic: Topic, nearestSimilarity: number) {
 
 function makeSummary(topic: Topic) {
   const [first, second, third] = topic.expandedKeywords;
-  return `${withObject(topic.mainKeyword)} 확인할 때는 ${joinWithObject(topic.expandedKeywords)} 함께 봐야 헛걸음과 복용 실수를 줄일 수 있습니다. 이 글은 ${topic.targetReader}가 약국 상담 전 정리할 기준을 단계별로 안내합니다.`;
+  return `${withObject(topic.mainKeyword)} 확인할 때는 ${joinWithObject(topic.expandedKeywords)} 함께 봐야 헛걸음을 줄이고 복용 실수를 예방할 수 있습니다. 이 글은 ${withNominative(topic.targetReader)} 약국 상담 전 정리할 기준을 단계별로 안내합니다.`;
 }
 
 function makeFaq(topic: Topic) {
@@ -436,7 +440,7 @@ ${checklist.map((item) => `  <li>${item}</li>`).join("\n")}
 <h3>공식 정보와 현장 정보를 함께 쓰기</h3>
 <p>${source.label} 자료는 기본 기준을 확인하는 데 도움이 됩니다. 다만 ${source.note} 약국오늘의 근처 약국 찾기, 지역 목록, 전화 연결 버튼을 함께 쓰면 검색에서 방문까지 이어지는 흐름을 짧게 만들 수 있습니다.</p>
 <p>참고: <a href="${source.url}" rel="nofollow noopener noreferrer" target="_blank">${source.label}</a></p>
-<h2>4. ${topic.targetReader}가 자주 하는 실수</h2>
+<h2>4. ${withNominative(topic.targetReader)} 자주 하는 실수</h2>
 <h3>가까운 곳만 보고 바로 이동하는 실수</h3>
 <p>거리만 보고 이동하면 닫힌 약국, 재고가 없는 약국, 상담이 어려운 시간대에 도착할 수 있습니다. 특히 ${topic.mainKeyword}처럼 상황성이 강한 주제는 가까움보다 실제 이용 가능성이 중요합니다.</p>
 <div class="warning-box">
@@ -486,7 +490,7 @@ function scoreArticle(item: QueueItem) {
   if (item.content_html.includes("rel=\"nofollow noopener noreferrer\"")) score += 2;
   if (/<script|<h1|style="/i.test(item.content_html)) score -= 20;
   if (/(완치|100%|무조건|특효|치료 보장)/.test(plain)) score -= 20;
-  if (/(약국는|위치은|위치을|확인를|순서이|방지이|방지을|코은|코을|피부은|피부을|마스크이|마스크을|직장인가|오복용)/.test(plain)) {
+  if (/(약국는|위치은|위치을|확인를|순서이|방지이|방지을|코은|코을|피부은|피부을|마스크이|마스크을|직장인가|가정가|복용 실수을|오복용)/.test(plain)) {
     score -= 30;
   }
   return Math.max(0, Math.min(100, score));

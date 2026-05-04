@@ -428,17 +428,41 @@ function scoreTitle(topic: Topic, nearestSimilarity: number) {
   return Math.max(0, Math.min(100, score));
 }
 
+function hasBatchim(value: string) {
+  const last = [...value].at(-1);
+  if (!last) return false;
+  const code = last.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return false;
+  return (code - 0xac00) % 28 > 0;
+}
+
+function withNominative(value: string) {
+  return `${value}${hasBatchim(value) ? "이" : "가"}`;
+}
+
+function withSubject(value: string) {
+  return `${value}${hasBatchim(value) ? "은" : "는"}`;
+}
+
+function withObject(value: string) {
+  return `${value}${hasBatchim(value) ? "을" : "를"}`;
+}
+
+function withConjunction(value: string) {
+  return `${value}${hasBatchim(value) ? "과" : "와"}`;
+}
+
 function makeSummary(topic: Topic) {
   const [first, second, third] = topic.expandedKeywords;
-  return `${topic.mainKeyword}은 ${first}, ${second}, ${third}을 함께 확인해야 안전하게 판단할 수 있습니다. 이 글은 ${topic.targetReader}가 약국 상담 전 준비할 기준을 단계별로 정리합니다.`;
+  return `${withSubject(topic.mainKeyword)} ${first}, ${second}, ${withObject(third)} 함께 확인해야 안전하게 판단할 수 있습니다. 이 글은 ${withNominative(topic.targetReader)} 약국 상담 전 준비할 기준을 단계별로 정리합니다.`;
 }
 
 function makeFaq(topic: Topic) {
   const [first, second, third] = topic.expandedKeywords;
   return [
     {
-      question: `${topic.mainKeyword}은 무엇부터 확인해야 하나요?`,
-      answer: `${first}을 먼저 정리하고 ${second}와 ${third}을 함께 확인하면 약국 상담이 더 정확해집니다.`,
+      question: `${withSubject(topic.mainKeyword)} 무엇부터 확인해야 하나요?`,
+      answer: `${withObject(first)} 먼저 정리하고 ${withConjunction(second)} ${withObject(third)} 함께 확인하면 약국 상담이 더 정확해집니다.`,
     },
     {
       question: `약국에 전화할 때 어떤 말을 먼저 해야 하나요?`,
