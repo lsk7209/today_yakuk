@@ -284,7 +284,7 @@ function withConjunction(value: string) {
   return `${value}${hasBatchim(value) ? "과" : "와"}`;
 }
 
-function joinWithObject(values: [string, string, string]) {
+function joinWithObject(values: string[]) {
   const [first, second, third] = values;
   return `${first}, ${second}, ${withObject(third)}`;
 }
@@ -361,7 +361,7 @@ function makeFaq(topic: Topic) {
   const [first, second, third] = topic.expandedKeywords;
   return [
     {
-      question: `${topic.mainKeyword}는 약국 방문 전 무엇을 먼저 확인해야 하나요?`,
+      question: `${withSubject(topic.mainKeyword)} 약국 방문 전 무엇을 먼저 확인해야 하나요?`,
       answer: `${withObject(first)} 먼저 확인하고, 상황이 급하면 전화로 ${withObject(second)} 함께 확인하는 것이 좋습니다.`,
     },
     {
@@ -467,6 +467,7 @@ ${checklist.map((item) => `  <li>${item}</li>`).join("\n")}
 
 function scoreArticle(item: QueueItem) {
   const plain = stripHtml(item.content_html);
+  const searchableText = `${plain} ${item.ai_summary} ${JSON.stringify(item.ai_faq)}`;
   const h2Count = (item.content_html.match(/<h2/gi) ?? []).length;
   const h3Count = (item.content_html.match(/<h3/gi) ?? []).length;
   const richCount = [
@@ -489,8 +490,8 @@ function scoreArticle(item: QueueItem) {
   if (item.ai_faq.length >= 3) score += 3;
   if (item.content_html.includes("rel=\"nofollow noopener noreferrer\"")) score += 2;
   if (/<script|<h1|style="/i.test(item.content_html)) score -= 20;
-  if (/(완치|100%|무조건|특효|치료 보장)/.test(plain)) score -= 20;
-  if (/(약국는|위치은|위치을|확인를|순서이|방지이|방지을|코은|코을|피부은|피부을|마스크이|마스크을|직장인가|가정가|복용 실수을|오복용)/.test(plain)) {
+  if (/(완치|100%|무조건|특효|치료 보장)/.test(searchableText)) score -= 20;
+  if (/(약국는|위치은|위치을|확인를|순서이|방지이|방지을|코은|코을|피부은|피부을|마스크이|마스크을|직장인가|가정가|복용 실수을|오복용)/.test(searchableText)) {
     score -= 30;
   }
   return Math.max(0, Math.min(100, score));
