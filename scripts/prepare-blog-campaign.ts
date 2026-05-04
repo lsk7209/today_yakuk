@@ -562,8 +562,7 @@ async function insertCampaign(items: ScoredQueueItem[]) {
   const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceKey) {
-    console.info("Supabase env not found. Generated files only.");
-    return { inserted: 0, skipped: items.length };
+    throw new Error("Supabase env not found for --insert mode.");
   }
 
   const supabase = createClient(supabaseUrl, serviceKey);
