@@ -37,17 +37,18 @@ export default function Home() {
   const [items, setItems] = useState<NearbyPharmacy[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
   const [message, setMessage] = useState<string | null>(null);
+  const [geoAvailable, setGeoAvailable] = useState(true);
   const [radiusKm] = useState(3);
   const [sortMode, setSortMode] = useState<"distance" | "closing">("distance");
 
-  const canGeo = typeof window !== "undefined" && "geolocation" in navigator;
-
   async function fetchNearby() {
-    if (!("geolocation" in navigator)) {
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
+      setGeoAvailable(false);
       setStatus("error");
       setMessage("GPS를 지원하지 않습니다. 대신 지역별 찾기를 이용해 주세요.");
       return;
     }
+
     setStatus("loading");
     setMessage("현재 위치를 확인하고 있습니다...");
     navigator.geolocation.getCurrentPosition(
@@ -83,9 +84,29 @@ export default function Home() {
     );
   }
 
+  async function searchByKeyword(term: string) {
+    setStatus("loading");
+    setMessage("검색어로 약국을 찾고 있습니다...");
+    try {
+      const qs = new URLSearchParams({
+        q: term,
+        limit: "20",
+      });
+      const res = await fetch(`/api/nearby?${qs.toString()}`);
+      if (!res.ok) throw new Error("keyword fetch failed");
+      const data: NearbyResponse = await res.json();
+      const list = data.items ?? [];
+      setItems(list);
+      setStatus("success");
+      setMessage(list.length ? null : `"${term}" 검색 결과가 없습니다. 현재 위치로 다시 찾아보세요.`);
+    } catch {
+      setStatus("error");
+      setMessage("검색 중 오류가 발생했습니다. 현재 위치로 다시 시도해 주세요.");
+    }
+  }
+
   useEffect(() => {
-    // 메인에서는 자동 호출을 하지 않고, 사용자가 “위치 설정”을 눌렀을 때만 호출합니다.
-    // (권한 팝업 남발 방지)
+    setGeoAvailable(typeof navigator !== "undefined" && "geolocation" in navigator);
   }, []);
 
   const sorted = useMemo(() => {
@@ -102,7 +123,11 @@ export default function Home() {
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    // 현재는 “검색”을 nearby로 유도합니다 (실제 키워드 검색 API는 추후 확장).
+    const term = query.trim();
+    if (term.length >= 2) {
+      void searchByKeyword(term);
+      return;
+    }
     void fetchNearby();
   }
 
@@ -164,14 +189,14 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => void fetchNearby()}
-                    className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-sm font-black transition-all transform active:scale-95 ${canGeo
+                    className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-sm font-black transition-all transform active:scale-95 ${geoAvailable
                       ? "bg-brand-light text-brand-700 hover:bg-brand-100 ring-1 ring-brand-200"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"
                       }`}
-                    disabled={!canGeo}
+                    disabled={!geoAvailable}
                   >
                     <LocateFixed className="h-4 w-4" />
-                    현재 위치로 찾기
+                    GPS 연결
                   </button>
                   <button
                     type="submit"
@@ -184,6 +209,23 @@ export default function Home() {
               </div>
             </div>
           </form>
+
+          {status === "idle" ? (
+            <div className="mt-4 flex flex-col gap-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+              <p>
+                GPS 연결을 누르면 브라우저 위치 권한 창이 열리고, 현재 위치 기준으로 가까운 약국을 찾습니다.
+              </p>
+              <button
+                type="button"
+                onClick={() => void fetchNearby()}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-black text-white transition-colors hover:bg-slate-700"
+                disabled={!geoAvailable}
+              >
+                <LocateFixed className="h-4 w-4" />
+                내 주변 약국 보기
+              </button>
+            </div>
+          ) : null}
 
           {/* Filters */}
           <div className="mt-6 flex flex-wrap gap-2">
@@ -273,7 +315,7 @@ export default function Home() {
                   type="button"
                   onClick={() => void fetchNearby()}
                   className="inline-flex items-center justify-center rounded-full bg-brand-700 text-white px-5 py-2 text-sm font-black hover:bg-brand-800"
-                  disabled={!canGeo}
+                  disabled={!geoAvailable}
                 >
                   <LocateFixed className="h-4 w-4 mr-2" />
                   위치로 찾기

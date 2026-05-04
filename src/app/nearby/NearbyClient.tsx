@@ -21,15 +21,21 @@ export default function NearbyPage() {
   const [items, setItems] = useState<NearbyPharmacy[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
   const [message, setMessage] = useState<string | null>(null);
+  const [geoAvailable, setGeoAvailable] = useState(true);
+  const [hasRequestedLocation, setHasRequestedLocation] = useState(false);
   const [radiusKm, setRadiusKm] = useState(3);
   const [sortMode, setSortMode] = useState<"distance" | "closing">("distance");
 
-  useEffect(() => {
-    if (!("geolocation" in navigator)) {
+  async function fetchNearby(targetRadiusKm = radiusKm) {
+    setHasRequestedLocation(true);
+
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
+      setGeoAvailable(false);
       setStatus("error");
       setMessage("GPS를 지원하지 않습니다. 지역별 찾기를 이용해 주세요.");
       return;
     }
+
     setStatus("loading");
     setMessage("현재 위치를 확인하고 있습니다...");
     navigator.geolocation.getCurrentPosition(
@@ -38,7 +44,7 @@ export default function NearbyPage() {
           const qs = new URLSearchParams({
             lat: String(pos.coords.latitude),
             lon: String(pos.coords.longitude),
-            radiusKm: String(radiusKm),
+            radiusKm: String(targetRadiusKm),
             limit: "40",
           });
           const res = await fetch(`/api/nearby?${qs.toString()}`);
@@ -47,7 +53,7 @@ export default function NearbyPage() {
           setItems(data.items ?? []);
           setStatus("success");
           setMessage(
-            data.items.length ? null : `반경 ${radiusKm}km 내 영업 약국이 없습니다.`,
+            data.items.length ? null : `반경 ${targetRadiusKm}km 내 영업 약국이 없습니다.`,
           );
         } catch {
           setStatus("error");
@@ -64,7 +70,11 @@ export default function NearbyPage() {
       },
       { enableHighAccuracy: true, timeout: 8000 },
     );
-  }, [radiusKm]);
+  }
+
+  useEffect(() => {
+    setGeoAvailable(typeof navigator !== "undefined" && "geolocation" in navigator);
+  }, []);
 
   const sorted = useMemo(() => {
     const base = [...items];
@@ -104,6 +114,9 @@ export default function NearbyPage() {
               onClick={() => {
                 setItems([]);
                 setRadiusKm(r);
+                if (hasRequestedLocation) {
+                  void fetchNearby(r);
+                }
               }}
               className={`rounded-full px-3 py-1 font-semibold border ${radiusKm === r
                 ? "bg-brand-600 text-white border-brand-600"
@@ -142,6 +155,28 @@ export default function NearbyPage() {
           </span>
         </div>
       </header>
+
+      {status === "idle" ? (
+        <section className="rounded-2xl border border-brand-100 bg-emerald-50/70 p-5 shadow-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <h2 className="text-lg font-black text-slate-900">GPS 연결 후 주변 약국을 찾습니다</h2>
+              <p className="text-sm text-slate-600">
+                버튼을 누르면 브라우저 위치 권한 창이 열립니다. 위치는 검색에만 사용하고 저장하지 않습니다.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void fetchNearby()}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-700 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-brand-800 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
+              disabled={!geoAvailable}
+            >
+              <LocateFixed className="h-4 w-4" />
+              GPS 연결하기
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       {status === "loading" ? (
         <div className="space-y-3">

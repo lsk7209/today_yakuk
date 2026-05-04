@@ -5,31 +5,27 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const lat = Number(searchParams.get("lat"));
-  const lon = Number(searchParams.get("lon"));
+  const q = searchParams.get("q")?.trim();
+  const latParam = searchParams.get("lat");
+  const lonParam = searchParams.get("lon");
+  const lat = latParam === null ? Number.NaN : Number(latParam);
+  const lon = lonParam === null ? Number.NaN : Number(lonParam);
   const radiusKm = Number(searchParams.get("radiusKm") ?? 3);
-  const limit = Number(searchParams.get("limit") ?? 40);
-
-  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-    return NextResponse.json({ message: "lat/lon is required" }, { status: 400 });
-  }
-
+  const requestedLimit = Number(searchParams.get("limit") ?? 40);
+  const limit = Number.isFinite(requestedLimit)
+    ? Math.min(Math.max(Math.trunc(requestedLimit), 1), 50)
+    : 40;
   const supabase = getSupabaseServerClient();
 
-  /* Keyword Search Logic */
-  const q = searchParams.get("q");
-
-  // 1. Keyword Search
   if (q) {
-    const term = q.trim();
-    if (term.length < 2) {
+    if (q.length < 2) {
       return NextResponse.json({ message: "검색어는 2글자 이상 입력해주세요." }, { status: 400 });
     }
 
     const { data: searchResults, error: searchError } = await supabase
       .from("pharmacies")
       .select("*")
-      .or(`name.ilike.%${term}%,address.ilike.%${term}%`)
+      .or(`name.ilike.%${q}%,address.ilike.%${q}%`)
       .limit(limit);
 
     if (searchError) {
@@ -39,13 +35,12 @@ export async function GET(request: Request) {
     return NextResponse.json({
       items: (searchResults ?? []).map((p: any) => ({
         ...p,
-        distanceKm: undefined, // Keyword search doesn't imply current location
+        distanceKm: undefined,
       })),
       total: searchResults?.length ?? 0,
     });
   }
 
-  // 2. Location Search (Existing)
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
     return NextResponse.json({ message: "lat/lon or q is required" }, { status: 400 });
   }
