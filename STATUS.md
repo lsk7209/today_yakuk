@@ -3,6 +3,7 @@
 속도·SEO·보안 2차 안정화 완료, GSC www 속성 검증은 콘솔 조치 필요
 ## 최근 변경
 - 05-04: `/nearby` 전용 metadata 추가, `/wiki` canonical 추가, 블로그/허브 HTML sanitizer 적용
+- 05-04: `www.todaypharm.kr` GSC 검증용 Google meta token 추가
 - 05-04: 관리자 로그인 10분 5회 제한 추가, 블로그 OG 이미지 URL www 도메인 통일
 - 05-04: 블로그 목록 페이지네이션 적용으로 `/blog` 응답 크기 대폭 축소
 - 05-04: GA4/AdSense 스크립트 로딩 전략을 Next Script 기반으로 최적화

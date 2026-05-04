@@ -13,7 +13,7 @@ import {
   SITE_NAME,
   SITE_TAGLINE,
   getAdsenseClientId,
-  getGoogleSiteVerification,
+  getGoogleSiteVerifications,
   getGoogleAnalyticsMeasurementId,
   getNaverSiteVerification,
 } from "@/lib/site-config";
@@ -32,7 +32,7 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-const googleVerification = getGoogleSiteVerification();
+const googleVerifications = getGoogleSiteVerifications();
 const naverVerification = getNaverSiteVerification();
 const gaId = getGoogleAnalyticsMeasurementId();
 
@@ -90,7 +90,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: googleVerification,
+    google: googleVerifications,
     other: naverVerification ? { "naver-site-verification": naverVerification } : undefined,
   },
   other: {
@@ -109,6 +109,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
+        {googleVerifications.map((verification) => (
+          <meta key={verification} name="google-site-verification" content={verification} />
+        ))}
         {naverVerification ? (
           <meta name="naver-site-verification" content={naverVerification} />
         ) : null}
