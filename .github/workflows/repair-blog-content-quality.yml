@@ -7,8 +7,11 @@ on:
     paths:
       - ".github/workflows/repair-blog-content-quality.yml"
       - "content/blog-campaign-2026-05-04.json"
+      - "content/blog-campaign-2026-05-04-v2.json"
+      - "content/blog-campaign-2026-05-05-v3.json"
       - "scripts/repair-blog-content-quality.ts"
       - "scripts/prepare-blog-campaign.ts"
+      - "scripts/prepare-blog-campaign-v2.ts"
       - "scripts/prepare-blog-campaign-v3.ts"
       - "package.json"
       - "package-lock.json"
