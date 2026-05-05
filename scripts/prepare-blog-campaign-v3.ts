@@ -45,7 +45,7 @@ const OUTPUT_DIR = path.join(process.cwd(), "content");
 const CSV_PATH = path.join(OUTPUT_DIR, "title-candidates-2026-05-05-v3.csv");
 const JSON_PATH = path.join(OUTPUT_DIR, "blog-campaign-2026-05-05-v3.json");
 const TITLE_COUNT = 100;
-const POST_COUNT = 2;
+const POST_COUNT = 4;
 const HOUR_MS = 60 * 60 * 1000;
 const MIN_QUALITY_SCORE = 85;
 
@@ -387,7 +387,7 @@ function makeFaq(topic: Topic): FAQ[] {
   const [first, second, third] = topic.expandedKeywords;
   return [
     {
-      question: `${topic.mainKeyword}은 무엇부터 확인해야 하나요?`,
+      question: `${withSubject(topic.mainKeyword)} 무엇부터 확인해야 하나요?`,
       answer: `${withObject(first)} 먼저 정리하고 ${withConjunction(second)} ${withObject(third)} 함께 확인하면 약국 상담과 방문 판단이 쉬워집니다.`,
     },
     {
@@ -487,6 +487,7 @@ function makeContentHtml(topic: Topic) {
 
 function scoreArticle(item: QueueItem) {
   const plain = stripHtml(item.content_html);
+  const searchableText = `${plain} ${item.ai_summary} ${JSON.stringify(item.ai_faq)}`;
   const h2Count = (item.content_html.match(/<h2/gi) ?? []).length;
   const h3Count = (item.content_html.match(/<h3/gi) ?? []).length;
   const richCount = [
@@ -508,8 +509,8 @@ function scoreArticle(item: QueueItem) {
   if (item.ai_faq.length >= 4) score += 4;
   if (item.content_html.includes('rel="nofollow noopener noreferrer"')) score += 2;
   if (/<script|<h1|style="/i.test(item.content_html)) score -= 20;
-  if (/(완치|100%|무조건|특효|치료 보장|최고|기적)/.test(plain)) score -= 20;
-  if (/(약국는|위치은|위치을|확인를|순서이|방지이|방지을|코은|코을|피부은|피부을|마스크이|마스크을|직장인가|가정가|복용 실수을|오복용)/.test(plain)) {
+  if (/(완치|100%|무조건|특효|치료 보장|최고|기적)/.test(searchableText)) score -= 20;
+  if (/(약국는|위치은|위치을|확인를|순서이|방지이|방지을|코은|코을|피부은|피부을|마스크이|마스크을|재고은|재고을|기침를|겨울 건조증는|대비이|직장인가|가정가|복용 실수을|오복용)/.test(searchableText)) {
     score -= 30;
   }
   return Math.max(0, Math.min(100, score));
