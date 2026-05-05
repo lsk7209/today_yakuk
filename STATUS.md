@@ -1,6 +1,6 @@
 # Status | 마지막: 2026-05-05
 ## 현재 작업
-v4 신규 글 200개 생성 완료, Action 삽입 검증 중
+v4 신규 글 200개 생성 및 Action 삽입 성공 확인
 ## 최근 변경 (최근 5개만)
 - 05-05: v4 신규 제목·본문 200개 생성 및 5시간 간격 예약 파일 추가
 - 05-05: v1/v2/v3 캠페인 글 106개 조사·문장 품질 보정 및 85점 이상 게이트 확장
@@ -13,7 +13,7 @@ v4 신규 글 200개 생성 완료, Action 삽입 검증 중
 - [x] 캠페인 글 106개 품질 점수 85점 이상 로컬 검증
 - [x] Repair Blog Content Quality Action 성공 확인
 - [x] v4 campaign 200개 생성 및 로컬 검증
-- [ ] Seed Blog Campaign v4 Action 성공 확인
+- [x] Seed Blog Campaign v4 Action 성공 확인
 - [ ] 신규 2개 발행 후 RSS/sitemap 반영 확인
 ## 결정사항
 - Daum: 공개 URL 제출 API가 없어 RSS와 sitemap 기반 발견 경로로 운영
