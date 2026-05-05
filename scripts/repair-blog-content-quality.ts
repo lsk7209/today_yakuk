@@ -18,6 +18,7 @@ const CAMPAIGN_PATHS = [
   path.join(process.cwd(), "content", "blog-campaign-2026-05-04.json"),
   path.join(process.cwd(), "content", "blog-campaign-2026-05-04-v2.json"),
   path.join(process.cwd(), "content", "blog-campaign-2026-05-05-v3.json"),
+  path.join(process.cwd(), "content", "blog-campaign-2026-05-05-v4.json"),
 ];
 const BAD_PATTERNS =
   /(약국는|메모은|약국 방문 전은|방문 전은|복용 전은|운전 전은|보관 전은|상비 전은|취침 전은|식사 전은|상담 전은|전에서|위치은|위치을|확인를|순서이|방지이|방지을|알레르기을|알레르기과|상담을 함께 봐야|전화 확인을 확인|전화 확인을 먼저 확인|복용약와|시간와|코은|코을|피부은|피부을|마스크이|마스크을|재고은|재고을|기침를|겨울 건조증는|대비이|직장인가|가정가|복용 실수을|오복용|콧물약는|운전를|생활 주의이|식후은|식후을|비상약함는|처방전는|상비약는)/;

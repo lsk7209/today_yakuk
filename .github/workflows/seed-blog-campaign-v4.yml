@@ -1,27 +1,19 @@
-name: Repair Blog Content Quality
+name: Seed Blog Campaign v4
 
 on:
   push:
     branches:
       - main
     paths:
-      - ".github/workflows/repair-blog-content-quality.yml"
-      - "content/blog-campaign-2026-05-04.json"
-      - "content/blog-campaign-2026-05-04-v2.json"
-      - "content/blog-campaign-2026-05-05-v3.json"
+      - ".github/workflows/seed-blog-campaign-v4.yml"
       - "content/blog-campaign-2026-05-05-v4.json"
-      - "scripts/repair-blog-content-quality.ts"
-      - "scripts/prepare-blog-campaign.ts"
-      - "scripts/prepare-blog-campaign-v2.ts"
-      - "scripts/prepare-blog-campaign-v3.ts"
+      - "content/title-candidates-2026-05-05-v4.csv"
       - "scripts/prepare-blog-campaign-v4.ts"
-      - "package.json"
-      - "package-lock.json"
   workflow_dispatch:
 
 jobs:
-  repair:
-    name: Repair queued and published blog content
+  seed:
+    name: Seed 200 scheduled v4 blog posts
     runs-on: ubuntu-latest
 
     steps:
@@ -37,9 +29,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Repair content queue rows
+      - name: Generate and insert v4 campaign
         env:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: npm run repair:blog-content -- --update-db
+        run: npm run prepare:blog-campaign:v4 -- --insert

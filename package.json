@@ -14,6 +14,7 @@
     "prepare:blog-campaign": "ts-node --project tsconfig.sync.json scripts/prepare-blog-campaign.ts",
     "prepare:blog-campaign:v2": "ts-node --project tsconfig.sync.json scripts/prepare-blog-campaign-v2.ts",
     "prepare:blog-campaign:v3": "ts-node --project tsconfig.sync.json scripts/prepare-blog-campaign-v3.ts",
+    "prepare:blog-campaign:v4": "ts-node --project tsconfig.sync.json scripts/prepare-blog-campaign-v4.ts",
     "repair:blog-content": "ts-node --project tsconfig.sync.json scripts/repair-blog-content-quality.ts",
     "generate:content": "ts-node --project tsconfig.sync.json scripts/generate-pharmacy-content.ts",
     "generate:single": "ts-node --project tsconfig.sync.json scripts/generate-single-pharmacy.ts",
