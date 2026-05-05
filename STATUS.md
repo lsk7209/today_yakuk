@@ -1,6 +1,6 @@
 # Status | 마지막: 2026-05-05
 ## 현재 작업
-v3 야간·주말 약국 콘텐츠 2개 추가 구현 완료, 원격 seed 확인 중
+v3 야간·주말 약국 콘텐츠 2개 추가 seed 완료, 발행 대기
 ## 최근 변경 (최근 5개만)
 - 05-05: v3 POST_COUNT 4로 확장해 야간·주말 약국 글 2개 추가 생성
 - 05-05: v3 야간·주말 약국 콘텐츠 2개 추가 계획 수립
@@ -9,7 +9,7 @@ v3 야간·주말 약국 콘텐츠 2개 추가 구현 완료, 원격 seed 확인
 - 05-05: 발행 시 IndexNow/Bing/Naver/Yandex 동시 알림으로 보강
 ## TODO
 - [x] v3 campaign 4개 생성 및 로컬 검증
-- [ ] Seed Blog Campaign v3 Action 성공 확인
+- [x] Seed Blog Campaign v3 Action 성공 확인
 - [ ] 신규 2개 발행 후 RSS/sitemap 반영 확인
 ## 결정사항
 - Daum: 공개 URL 제출 API가 없어 RSS와 sitemap 기반 발견 경로로 운영
