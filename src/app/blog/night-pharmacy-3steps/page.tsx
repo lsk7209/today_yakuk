@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd, buildArticleSchema, buildFAQSchema } from "@/components/seo/json-ld";
 import StaticTOC from "@/components/blog/StaticTOC";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const TITLE = "야간 약국 찾는 법: 심야에 문 연 약국 찾기 3단계";
 const DESCRIPTION =
@@ -100,6 +101,8 @@ export default function Page() {
           { id: "h2-future", text: "앞으로의 변화 방향" },
         ]}
       />
+
+      <AdSlotTop />
 
       {/* Hook=H2: 첫 단락 — 출처 있는 수치 */}
       <section className="mb-10 space-y-4">
@@ -523,6 +526,8 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      <AdSlotBottom />
 
       {/* YMYL disclaimer (medical) */}
       <aside

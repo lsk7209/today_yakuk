@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle = "약국에서 자주 묻는 질문 TOP10과 답변 | 약국오늘";
 const metaDescription =
@@ -84,6 +85,8 @@ export default function Page() {
                 </p>
             </div>
 
+            <AdSlotTop />
+
             <div className="prose prose-lg prose-brand mx-auto text-gray-700">
                 <p>
                     약국을 방문하시는 분들이 가장 많이 궁금해하시는 질문들을 모았습니다. 올바른 약 복용은 건강 회복의 첫걸음입니다.
@@ -136,6 +139,8 @@ export default function Page() {
                     </div>
                 </div>
             </section>
+
+            <AdSlotBottom />
 
             <script
                 type="application/ld+json"

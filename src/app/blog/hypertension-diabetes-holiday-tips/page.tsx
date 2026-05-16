@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle = "고혈압·당뇨약 복용자, 명절/연휴 대비 필수 체크리스트 | 약국오늘";
 const metaDescription =
@@ -40,6 +41,8 @@ export default function Page() {
                     건강하게 연휴를 보내기 위한 3가지 핵심 수칙을 확인하세요.
                 </p>
             </div>
+
+            <AdSlotTop />
 
             <div className="prose prose-lg prose-brand mx-auto text-gray-700">
                 <h3>1. 약 재고 파악은 &apos;일주일 전&apos;에!</h3>
@@ -105,6 +108,8 @@ export default function Page() {
                     </div>
                 </div>
             </section>
+
+            <AdSlotBottom />
 
             <script
                 type="application/ld+json"

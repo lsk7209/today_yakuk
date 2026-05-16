@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle = "임산부가 약국 이용 시 유의사항 | 약국오늘";
 const metaDescription =
@@ -40,6 +41,8 @@ export default function Page() {
                     임신 시기별 주의사항과 안전하게 약을 복용하는 기준을 알려드립니다.
                 </p>
             </div>
+
+            <AdSlotTop />
 
             <div className="prose prose-lg prose-brand mx-auto text-gray-700">
                 <h3>1. &quot;무조건 참기&quot;는 위험할 수 있습니다</h3>
@@ -102,6 +105,8 @@ export default function Page() {
                     </div>
                 </div>
             </section>
+
+            <AdSlotBottom />
 
             <script
                 type="application/ld+json"

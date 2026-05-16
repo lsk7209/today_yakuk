@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle = "피부 트러블(벌레·햇빛) 응급 처치 키트 | 약국오늘";
 const metaDescription =
@@ -40,6 +41,8 @@ export default function Page() {
                     약국에서 미리 준비하면 좋은 피부 상비약 리스트를 공개합니다.
                 </p>
             </div>
+
+            <AdSlotTop />
 
             <div className="prose prose-lg prose-brand mx-auto text-gray-700">
                 <h3>🚨 CASE 1: 벌레에 물렸을 때 (모기, 개미 등)</h3>
@@ -112,6 +115,8 @@ export default function Page() {
                     </div>
                 </div>
             </section>
+
+            <AdSlotBottom />
 
             <script
                 type="application/ld+json"

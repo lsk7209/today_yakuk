@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle = "소화불량·과음 후 약국에서 물어볼 것 | 약국오늘";
 const metaDescription =
@@ -40,6 +41,8 @@ export default function Page() {
                     증상을 더 구체적으로 말하면 효과 직빵(?)인 약을 받을 수 있습니다.
                 </p>
             </div>
+
+            <AdSlotTop />
 
             <div className="prose prose-lg prose-brand mx-auto text-gray-700">
                 <h3>🤢 PART 1: 소화불량, 증상별로 약이 다르다!</h3>
@@ -113,6 +116,8 @@ export default function Page() {
                     </div>
                 </div>
             </section>
+
+            <AdSlotBottom />
 
             <script
                 type="application/ld+json"

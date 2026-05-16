@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 import StaticTOC from "@/components/blog/StaticTOC";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 // ─── Meta ────────────────────────────────────────────────────────────────────
 const metaTitle =
@@ -146,6 +147,8 @@ export default function KidsFeverMedicineComparisonPage() {
           { id: "h2-future", text: "앞으로의 변화와 주목할 신호" },
         ]}
       />
+
+      <AdSlotTop />
 
       {/* ── Hook H1 (question) ── */}
       <section
@@ -496,6 +499,8 @@ export default function KidsFeverMedicineComparisonPage() {
           </Link>
         </div>
       </section>
+
+      <AdSlotBottom />
 
       {/* ── YMYL Disclaimer ── */}
       <aside

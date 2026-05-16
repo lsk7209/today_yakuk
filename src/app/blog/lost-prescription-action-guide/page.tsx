@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle = "여행 중 처방전 분실 시 대처법 | 약국오늘";
 const metaDescription =
@@ -40,6 +41,8 @@ export default function Page() {
                     낯선 곳에서 약을 잃어버렸을 때 가장 빠르게 해결하는 방법을 단계별로 안내합니다.
                 </p>
             </div>
+
+            <AdSlotTop />
 
             <div className="prose prose-lg prose-brand mx-auto text-gray-700">
                 <h3>1. 약국에서 바로 살 수 있는 약인지 확인하세요</h3>
@@ -111,6 +114,8 @@ export default function Page() {
                     </div>
                 </div>
             </section>
+
+            <AdSlotBottom />
 
             <script
                 type="application/ld+json"

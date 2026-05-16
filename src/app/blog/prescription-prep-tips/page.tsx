@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle = "처방전 준비와 약국 방문 전 점검 7가지 | 약국오늘";
 const metaDescription =
@@ -72,6 +73,8 @@ export default function BlogPrescriptionPrepTips() {
           </Link>
         </div>
       </header>
+
+      <AdSlotTop />
 
       <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
         <h2 className="text-xl font-semibold text-brand-800">빠른 점검 리스트</h2>
@@ -147,6 +150,8 @@ export default function BlogPrescriptionPrepTips() {
           </div>
         </div>
       </section>
+
+      <AdSlotBottom />
 
       <script
         type="application/ld+json"

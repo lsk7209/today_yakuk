@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle = "공휴일에도 열려 있는 약국을 빨리 찾는 5가지 방법 | 약국오늘";
 const metaDescription =
@@ -91,6 +92,8 @@ export default function BlogHolidayOpenPharmacyTips() {
         </div>
       </header>
 
+      <AdSlotTop />
+
       <section className="space-y-4">
         {tips.map((tip) => (
           <div
@@ -175,6 +178,8 @@ export default function BlogHolidayOpenPharmacyTips() {
           </li>
         </ul>
       </section>
+
+      <AdSlotBottom />
 
       <script
         type="application/ld+json"

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 import { JsonLd } from "@/components/seo/json-ld";
 
 const metaTitle = "심야 약국 찾기 체크리스트: 헛걸음 방지 | 약국오늘";
@@ -109,6 +110,8 @@ export default function BlogNightPharmacyChecklist() {
         </div>
       </header>
 
+      <AdSlotTop />
+
       <section className="rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm space-y-4">
         <h2 className="text-xl font-bold text-gray-900">빠른 체크리스트</h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
@@ -185,6 +188,8 @@ export default function BlogNightPharmacyChecklist() {
           </div>
         </div>
       </section>
+
+      <AdSlotBottom />
 
       <JsonLd id="jsonld-article" data={articleJsonLd as unknown as Record<string, unknown>} />
       <JsonLd id="jsonld-breadcrumb" data={breadcrumbJsonLd} />
