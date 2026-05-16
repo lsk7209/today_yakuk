@@ -5,6 +5,17 @@ import { getBlogFeaturedImage } from "@/lib/blog-image";
 import type { Metadata } from "next";
 import { AdSlotInFeed } from "@/components/ads/AdSlot";
 
+const STATIC_POSTS = [
+  { slug: "holiday-pharmacy-open-check", title: "공휴일에 약국이 열려 있나요? 빠른 확인 방법", summary: "공휴일 약국 영업 여부와 휴일지킴이약국을 30초 안에 확인하는 4가지 방법", tag: "공휴일" },
+  { slug: "pharmacy-visit-checklist-3", title: "약국 방문 전 꼭 확인해야 할 것들: 영업·재고·처방 3가지", summary: "헛걸음을 막는 3가지 필수 확인 사항 — 영업, 재고, 처방전 유효기간", tag: "방문 가이드" },
+  { slug: "prescription-holiday-guide", title: "처방전 약 연휴에 못 받을 때 대처법", summary: "처방전 유효기간 3일 규정·비상약국 조회·응급 대처까지 총정리", tag: "처방전" },
+  { slug: "night-pharmacy-3steps", title: "야간 약국 찾기 3단계", summary: "심야에 약국을 빠르게 찾는 단계별 실전 방법", tag: "야간" },
+  { slug: "kids-fever-medicine-comparison", title: "소아 발열 약 비교 가이드", summary: "아세트아미노펜 vs 이부프로펜, 연령별 용량 기준 정리", tag: "소아·발열" },
+  { slug: "holiday-open-pharmacy-tips", title: "공휴일 문 연 약국 찾는 팁", summary: "공휴일 당번 약국 조회 방법과 사전 준비 체크리스트", tag: "공휴일" },
+  { slug: "night-pharmacy-checklist", title: "야간 약국 방문 체크리스트", summary: "심야 방문 전 확인할 항목 6가지", tag: "야간" },
+  { slug: "pharmacy-faq-top10", title: "약국 자주 묻는 질문 TOP 10", summary: "처방전, 재고, 영업시간 등 자주 묻는 질문 모음", tag: "FAQ" },
+];
+
 interface BlogPost {
   title: string;
   slug: string;
@@ -77,6 +88,39 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexPageProps
         ) : null}
       </header>
 
+      {/* 큐레이션 정적 포스트 */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-black text-brand-700 uppercase tracking-wide">기획 글</p>
+          <span className="h-px flex-1 bg-gray-100" />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {STATIC_POSTS.map((post) => (
+            <Link
+              key={post.slug}
+              href={`/blog/${post.slug}`}
+              className="group rounded-2xl border border-gray-200 bg-white p-5 hover:border-brand-300 hover:shadow-sm transition-all flex flex-col gap-2"
+            >
+              <span className="inline-flex w-fit items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold text-brand-700">
+                {post.tag}
+              </span>
+              <h2 className="text-base font-bold text-gray-900 group-hover:text-brand-700 leading-snug line-clamp-2">
+                {post.title}
+              </h2>
+              <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">{post.summary}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <AdSlotInFeed className="my-2" />
+
+      {/* Supabase 발행 포스트 */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-black text-gray-500 uppercase tracking-wide">최신 글</p>
+          <span className="h-px flex-1 bg-gray-100" />
+        </div>
       <div className="grid gap-6 sm:grid-cols-2">
         {(!posts || posts.length === 0) ? (
           <div className="col-span-2 py-10 text-center text-gray-500 bg-gray-50 rounded-2xl">
@@ -120,6 +164,7 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexPageProps
           ))
         )}
       </div>
+      </section>
 
       {/* 블로그 목록 하단 인피드 광고 */}
       <AdSlotInFeed className="my-4" />

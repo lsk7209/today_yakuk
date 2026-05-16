@@ -45,6 +45,21 @@ const faqs = [
   },
 ];
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+    { "@type": "ListItem", position: 2, name: "블로그", item: "https://todaypharm.kr/blog" },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: "처방전 약 연휴에 못 받을 때 대처법",
+      item: "https://todaypharm.kr/blog/prescription-holiday-guide",
+    },
+  ],
+};
+
 // JSON-LD: Article + FAQPage (macro=C, FAQ H2 있으므로 FAQPage 추가)
 const faqJsonLd = {
   "@context": "https://schema.org",
@@ -499,6 +514,10 @@ export default function Page() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     </div>
   );

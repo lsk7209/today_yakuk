@@ -60,6 +60,21 @@ const articleJsonLd = {
   },
 };
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+    { "@type": "ListItem", position: 2, name: "블로그", item: "https://todaypharm.kr/blog" },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: "공휴일에 약국이 열려 있나요?",
+      item: "https://todaypharm.kr/blog/holiday-pharmacy-open-check",
+    },
+  ],
+};
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -572,6 +587,10 @@ export default function BlogHolidayPharmacyOpenCheck() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     </div>
   );

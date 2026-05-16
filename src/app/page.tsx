@@ -28,6 +28,15 @@ const provinces = [
   "광주",
   "대전",
   "울산",
+  "세종",
+  "강원",
+  "충북",
+  "충남",
+  "전북",
+  "전남",
+  "경북",
+  "경남",
+  "제주",
 ];
 
 type NearbyPharmacy = PharmacyCardProps["pharmacy"] & { distanceKm?: number };

@@ -69,6 +69,15 @@ export default function GuideNightWeekendPage() {
     slug: "/guide/night-weekend",
     type: "Article",
   });
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+      { "@type": "ListItem", position: 2, name: "가이드", item: "https://todaypharm.kr/guide" },
+      { "@type": "ListItem", position: 3, name: "야간·주말 약국 찾기 가이드", item: "https://todaypharm.kr/guide/night-weekend" },
+    ],
+  };
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -179,6 +188,10 @@ export default function GuideNightWeekendPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     </div>
   );

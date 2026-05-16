@@ -23,7 +23,9 @@ export default async function sitemap({
 }): Promise<MetadataRoute.Sitemap> {
   if (id === "static") {
     const now = new Date();
+    const blogDate = new Date("2026-05-16");
     return [
+      // Core pages
       { url: `${siteUrl}/`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
       { url: `${siteUrl}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
       { url: `${siteUrl}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
@@ -31,8 +33,42 @@ export default async function sitemap({
       { url: `${siteUrl}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
       { url: `${siteUrl}/nearby`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
       { url: `${siteUrl}/wiki`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
-      { url: `${siteUrl}/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+      { url: `${siteUrl}/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
       { url: `${siteUrl}/blog`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+      // Guide pages
+      { url: `${siteUrl}/guide/night-weekend`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/guide/holiday-checklist`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/guide/call-scripts`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/guide/call-navigation-tips`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/guide/radius-selection`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/guide/summer-emergency-kit`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      // Static blog posts
+      { url: `${siteUrl}/blog/holiday-pharmacy-open-check`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.9 },
+      { url: `${siteUrl}/blog/pharmacy-visit-checklist-3`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.9 },
+      { url: `${siteUrl}/blog/prescription-holiday-guide`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.9 },
+      { url: `${siteUrl}/blog/night-pharmacy-3steps`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/blog/kids-fever-medicine-comparison`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/blog/holiday-open-pharmacy-tips`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/blog/night-pharmacy-checklist`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/blog/pharmacy-faq-top10`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/blog/kids-fever-meds-check`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/blog/hypertension-diabetes-holiday-tips`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/blog/lost-prescription-action-guide`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/blog/prescription-prep-tips`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/blog/night-radius-tips`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/blog/digestion-hangover-pharmacy-guide`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/blog/pregnancy-pharmacy-guide`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/blog/skin-trouble-first-aid-kit`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/blog/summer-first-aid-kit`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
+      // Major region pages
+      { url: `${siteUrl}/${encodeURIComponent("서울")}/전체`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+      { url: `${siteUrl}/${encodeURIComponent("경기")}/전체`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+      { url: `${siteUrl}/${encodeURIComponent("인천")}/전체`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+      { url: `${siteUrl}/${encodeURIComponent("부산")}/전체`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+      { url: `${siteUrl}/${encodeURIComponent("대구")}/전체`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+      { url: `${siteUrl}/${encodeURIComponent("광주")}/전체`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+      { url: `${siteUrl}/${encodeURIComponent("대전")}/전체`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+      { url: `${siteUrl}/${encodeURIComponent("울산")}/전체`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     ];
   }
 

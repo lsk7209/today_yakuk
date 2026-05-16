@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, MapPin, Moon, CalendarDays, ArrowRight } from "lucide-react";
+import { BookOpen, MapPin, Moon, CalendarDays, ArrowRight, FileText } from "lucide-react";
 
 const guideLinks = [
   {
@@ -25,6 +25,24 @@ const guideLinks = [
     icon: BookOpen,
     title: "건강 정보 블로그",
     desc: "약국 이용 팁·건강 상식",
+  },
+];
+
+const recentPosts = [
+  {
+    href: "/blog/holiday-pharmacy-open-check",
+    title: "공휴일 약국 빠른 확인 방법",
+    tag: "공휴일",
+  },
+  {
+    href: "/blog/pharmacy-visit-checklist-3",
+    title: "방문 전 확인 3가지",
+    tag: "방문 가이드",
+  },
+  {
+    href: "/blog/prescription-holiday-guide",
+    title: "연휴 처방전 대처법",
+    tag: "처방전",
   },
 ];
 
@@ -75,6 +93,33 @@ export default function DesktopSidebar() {
               className="rounded-xl border border-gray-100 bg-gray-50 py-2 text-center text-xs font-bold text-gray-800 hover:border-brand-200 hover:bg-brand-50/40 hover:text-brand-700 transition-all"
             >
               {name}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Posts */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xs font-black tracking-[0.15em] text-brand-700">최신 블로그</h2>
+          <Link href="/blog" className="text-xs font-bold text-gray-400 hover:text-brand-700 flex items-center gap-0.5">
+            전체 <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+        <div className="space-y-2">
+          {recentPosts.map(({ href, title, tag }) => (
+            <Link
+              key={href}
+              href={href}
+              className="group flex items-start gap-2 rounded-xl p-2.5 hover:bg-brand-50/40 transition-colors"
+            >
+              <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500 group-hover:bg-brand-100 group-hover:text-brand-700">
+                <FileText className="h-3.5 w-3.5" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-gray-900 group-hover:text-brand-700 leading-snug line-clamp-2">{title}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">{tag}</p>
+              </div>
             </Link>
           ))}
         </div>

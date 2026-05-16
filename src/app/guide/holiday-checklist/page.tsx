@@ -72,6 +72,15 @@ export default function GuideHolidayChecklistPage() {
     slug: "/guide/holiday-checklist",
     type: "Article",
   });
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+      { "@type": "ListItem", position: 2, name: "가이드", item: "https://todaypharm.kr/guide" },
+      { "@type": "ListItem", position: 3, name: "공휴일 약국 체크리스트", item: "https://todaypharm.kr/guide/holiday-checklist" },
+    ],
+  };
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -177,6 +186,10 @@ export default function GuideHolidayChecklistPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     </div>
   );
