@@ -321,7 +321,7 @@ export default async function ProductDetailPage({
 
                     {/* CTA Section */}
                     <section className="premium-card bg-gradient-to-br from-brand-600 to-brand-800 p-8 rounded-3xl text-center text-white relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-full h-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute top-0 left-0 w-full h-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                         <MapPin className="w-12 h-12 mx-auto mb-4 text-brand-100" />
                         <h3 className="text-xl font-black mb-3">
                             주변 약국에서 <br />바로 구매하세요
