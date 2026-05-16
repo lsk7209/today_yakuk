@@ -194,6 +194,41 @@ export function buildHowToSchema({
   };
 }
 
+// ================== Organization Schema ==================
+
+export interface OrganizationSchemaProps {
+  name: string;
+  url: string;
+  logo?: string;
+  description?: string;
+  contactEmail?: string;
+}
+
+export function buildOrganizationSchema({
+  name,
+  url,
+  logo,
+  description,
+  contactEmail,
+}: OrganizationSchemaProps) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name,
+    url,
+    ...(logo && { logo: { "@type": "ImageObject", url: logo } }),
+    ...(description && { description }),
+    ...(contactEmail && {
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer service",
+        email: contactEmail,
+        availableLanguage: "Korean",
+      },
+    }),
+  };
+}
+
 // ================== ItemList Schema ==================
 
 export interface ItemListItem {

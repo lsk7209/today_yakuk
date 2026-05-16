@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { getSiteUrl } from "@/lib/site-url";
 import AnalyticsTracker from "@/components/analytics/AnalyticsTracker";
-import { JsonLd, buildWebSiteSchema } from "@/components/seo/json-ld";
+import { JsonLd, buildWebSiteSchema, buildOrganizationSchema } from "@/components/seo/json-ld";
 import {
   DEFAULT_OG_IMAGE_PATH,
   SITE_DESCRIPTION,
@@ -161,6 +161,16 @@ export default function RootLayout({
             url: siteUrl,
             description: "실시간 영업 약국 검색 서비스",
             searchUrl: `${siteUrl}/wiki?q={search_term_string}`,
+          })}
+        />
+        {/* Organization Schema — EEAT 신호 */}
+        <JsonLd
+          id="org-schema"
+          data={buildOrganizationSchema({
+            name: SITE_NAME,
+            url: siteUrl,
+            logo: `${siteUrl}/og-image.svg`,
+            description: "공공데이터 기반 실시간 약국 검색 및 이용 가이드 서비스",
           })}
         />
         <Suspense fallback={null}>

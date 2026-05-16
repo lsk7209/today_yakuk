@@ -3,52 +3,42 @@
     "name": "약국오늘",
     "url": "https://www.todaypharm.kr",
     "locale": "ko-KR",
-    "description": "실시간 영업 약국 검색 및 이용 가이드 서비스"
+    "description": "실시간 영업 약국 검색 및 이용 가이드 서비스",
+    "category": "YMYL / Medical / Local Search",
+    "dataSource": "공공데이터포털 · 건강보험심사평가원(HIRA) · 보건복지부",
+    "aiDisclosure": "일부 콘텐츠는 AI 도구로 공공 자료를 정리·요약한 결과입니다."
   },
   "primaryPages": [
-    {
-      "path": "/",
-      "title": "홈",
-      "purpose": "근처 약국 찾기"
-    },
-    {
-      "path": "/nearby",
-      "title": "내 주변 약국",
-      "purpose": "반경별 주변 약국 탐색"
-    },
-    {
-      "path": "/guide",
-      "title": "이용 가이드",
-      "purpose": "야간·주말·공휴일 대응 팁"
-    },
-    {
-      "path": "/blog",
-      "title": "블로그",
-      "purpose": "약국 이용과 건강 정보 콘텐츠"
-    },
-    {
-      "path": "/about",
-      "title": "서비스 소개",
-      "purpose": "데이터 출처와 운영 원칙 안내"
-    },
-    {
-      "path": "/contact",
-      "title": "문의하기",
-      "purpose": "정보 수정 요청 및 제휴 문의"
-    },
-    {
-      "path": "/privacy",
-      "title": "개인정보처리방침",
-      "purpose": "개인정보 처리 기준 안내"
-    },
-    {
-      "path": "/terms",
-      "title": "이용약관",
-      "purpose": "서비스 이용 조건 안내"
-    }
+    { "path": "/", "title": "홈", "purpose": "근처 약국 찾기 — GPS 기반 실시간 검색" },
+    { "path": "/nearby", "title": "내 주변 약국", "purpose": "반경별 주변 약국 탐색" },
+    { "path": "/guide", "title": "이용 가이드", "purpose": "야간·주말·공휴일 대응 팁" },
+    { "path": "/blog", "title": "블로그", "purpose": "약국 이용과 건강 정보 콘텐츠" },
+    { "path": "/wiki", "title": "영양제 정보", "purpose": "건강기능식품 성분·제품 정보" },
+    { "path": "/about", "title": "서비스 소개", "purpose": "데이터 출처와 운영 원칙 안내" },
+    { "path": "/contact", "title": "문의하기", "purpose": "정보 수정 요청 및 제휴 문의" },
+    { "path": "/privacy", "title": "개인정보처리방침", "purpose": "개인정보 처리 기준 안내" },
+    { "path": "/terms", "title": "이용약관", "purpose": "서비스 이용 조건 안내" }
+  ],
+  "guidePages": [
+    { "path": "/guide/night-weekend", "title": "야간·주말 약국 찾기 완전 가이드" },
+    { "path": "/guide/holiday-checklist", "title": "공휴일 대비 약국 이용 체크리스트" },
+    { "path": "/guide/call-scripts", "title": "전화 스크립트: 영업·재고 확인 템플릿" },
+    { "path": "/guide/call-navigation-tips", "title": "전화·길찾기 활용 팁" },
+    { "path": "/guide/radius-selection", "title": "반경 2/3/5/10km 선택 기준" }
+  ],
+  "blogPosts": [
+    { "path": "/blog/holiday-pharmacy-open-check", "title": "공휴일에 약국이 열려 있나요? 빠른 확인 방법" },
+    { "path": "/blog/pharmacy-visit-checklist-3", "title": "약국 방문 전 꼭 확인해야 할 것들: 영업·재고·처방 3가지" },
+    { "path": "/blog/prescription-holiday-guide", "title": "처방전 약 연휴에 못 받을 때 대처법" },
+    { "path": "/blog/night-pharmacy-3steps", "title": "야간 약국 찾기 3단계" },
+    { "path": "/blog/kids-fever-medicine-comparison", "title": "소아 발열 약 비교 가이드" },
+    { "path": "/blog/holiday-open-pharmacy-tips", "title": "공휴일 문 연 약국 찾는 팁" },
+    { "path": "/blog/night-pharmacy-checklist", "title": "야간 약국 방문 체크리스트" },
+    { "path": "/blog/pharmacy-faq-top10", "title": "약국 자주 묻는 질문 TOP 10" }
   ],
   "dataPolicy": {
     "source": "공공데이터 및 공개 위치 정보",
-    "note": "실제 영업 여부는 현장 사정으로 달라질 수 있어 방문 전 전화 확인 권장"
+    "note": "실제 영업 여부는 현장 사정으로 달라질 수 있어 방문 전 전화 확인 권장",
+    "medicalDisclaimer": "본 사이트는 의료인이 운영하지 않으며, 제공 정보는 진단·처방·치료를 대체하지 않습니다."
   }
 }
