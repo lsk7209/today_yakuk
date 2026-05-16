@@ -47,6 +47,15 @@ export default function GuideRadiusSelectionPage() {
     slug: "/guide/radius-selection",
     type: "Article",
   });
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+      { "@type": "ListItem", position: 2, name: "가이드", item: "https://todaypharm.kr/guide" },
+      { "@type": "ListItem", position: 3, name: "반경 설정 가이드", item: "https://todaypharm.kr/guide/radius-selection" },
+    ],
+  };
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -162,7 +171,10 @@ export default function GuideRadiusSelectionPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
     </div>
   );
 }
-
