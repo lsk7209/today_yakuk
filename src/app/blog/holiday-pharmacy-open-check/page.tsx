@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import StaticTOC from "@/components/blog/StaticTOC";
 
 const SLUG = "/blog/holiday-pharmacy-open-check";
 const metaTitle = "공휴일에 약국이 열려 있나요? 빠른 확인 방법 | 약국오늘";
@@ -15,13 +16,19 @@ export const metadata: Metadata = {
     description: metaDescription,
     url: SLUG,
     type: "article",
-    images: ["/og-image.svg"],
+    images: [
+      {
+        url: `/api/og?title=${encodeURIComponent("공휴일에 약국이 열려 있나요? 빠른 확인 방법")}`,
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: metaTitle,
     description: metaDescription,
-    images: ["/og-image.svg"],
+    images: [`/api/og?title=${encodeURIComponent("공휴일에 약국이 열려 있나요? 빠른 확인 방법")}`],
   },
 };
 
@@ -244,8 +251,18 @@ export default function BlogHolidayPharmacyOpenCheck() {
         </ul>
       </aside>
 
+      <StaticTOC
+        items={[
+          { id: "h2-why", text: "공휴일 약국 운영, 왜 들쭉날쭉한가" },
+          { id: "h2-methods", text: "공휴일 약국 빠른 확인 4가지 방법" },
+          { id: "h2-exception", text: "예외와 주의사항 — 명절 연휴는 다르다" },
+          { id: "h2-faq", text: "자주 묻는 질문" },
+        ]}
+      />
+
       {/* ── H2: 배경 ── */}
       <h2
+        id="h2-why"
         style={{
           marginTop: "36px",
           marginBottom: "12px",
@@ -300,6 +317,7 @@ export default function BlogHolidayPharmacyOpenCheck() {
 
       {/* ── H2: 확인 방법 4단계 ── */}
       <h2
+        id="h2-methods"
         style={{
           marginTop: "36px",
           marginBottom: "16px",
@@ -364,6 +382,7 @@ export default function BlogHolidayPharmacyOpenCheck() {
 
       {/* ── H2: 예외·주의사항 (명절 연휴 L5 사례 포함) ── */}
       <h2
+        id="h2-exception"
         style={{
           marginTop: "40px",
           marginBottom: "12px",
@@ -444,6 +463,7 @@ export default function BlogHolidayPharmacyOpenCheck() {
 
       {/* ── H2: FAQ ── */}
       <h2
+        id="h2-faq"
         style={{
           marginTop: "40px",
           marginBottom: "16px",

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { JsonLd, buildArticleSchema, buildFAQSchema } from "@/components/seo/json-ld";
+import StaticTOC from "@/components/blog/StaticTOC";
 
 // ─── 메타데이터 ───────────────────────────────────────────────
 const metaTitle = "약국 방문 전 꼭 확인해야 할 것들: 영업·재고·처방 3가지 | 약국오늘";
@@ -151,12 +152,23 @@ export default function PharmacyVisitChecklist3() {
         </div>
       </header>
 
+      <StaticTOC
+        items={[
+          { id: "h2-contrast", text: "흔한 오해 vs 실제 상황" },
+          { id: "h2-hours", text: "1. 영업시간 확인" },
+          { id: "h2-stock", text: "2. 재고 확인" },
+          { id: "h2-prescription", text: "3. 처방전 준비" },
+          { id: "h2-faq", text: "자주 묻는 질문" },
+          { id: "h2-action", text: "지금 바로 할 수 있는 3단계" },
+        ]}
+      />
+
       {/* ── L6 통념 vs 실제 contrast 박스 ── */}
       <section
         aria-label="흔한 오해와 실제"
         className="rounded-2xl border border-amber-200 bg-amber-50 p-6 space-y-4"
       >
-        <h2 className="text-lg font-bold text-amber-900">
+        <h2 id="h2-contrast" className="text-lg font-bold text-amber-900">
           흔한 오해 vs 실제 상황
         </h2>
         <div className="overflow-x-auto">
@@ -205,7 +217,7 @@ export default function PharmacyVisitChecklist3() {
 
       {/* ── H2 1. 영업시간 확인법 ── */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 id="h2-hours" className="text-xl font-bold text-gray-900">
           1. 영업시간 확인: 지도 앱·공공데이터 활용
         </h2>
         <p className="text-gray-700 leading-relaxed">
@@ -243,7 +255,7 @@ export default function PharmacyVisitChecklist3() {
 
       {/* ── H2 2. 재고 확인법 ── */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 id="h2-stock" className="text-xl font-bold text-gray-900">
           2. 재고 확인: 전화 한 통이 헛걸음을 막는다
         </h2>
 
@@ -300,7 +312,7 @@ export default function PharmacyVisitChecklist3() {
 
       {/* ── H2 3. 처방전 준비 ── */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 id="h2-prescription" className="text-xl font-bold text-gray-900">
           3. 처방전 준비: 유효기간 3일 규정 확인
         </h2>
 
@@ -350,7 +362,7 @@ export default function PharmacyVisitChecklist3() {
 
       {/* ── H2 FAQ ── */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold text-gray-900">자주 묻는 질문</h2>
+        <h2 id="h2-faq" className="text-xl font-bold text-gray-900">자주 묻는 질문</h2>
         <div className="space-y-3" aria-label="FAQ">
           {faqs.map((faq) => (
             <details
@@ -371,7 +383,7 @@ export default function PharmacyVisitChecklist3() {
       {/* ── Outro O1 action ── */}
       <section className="rounded-2xl border border-brand-200 bg-brand-50 p-6 space-y-4">
         <div className="space-y-3">
-          <h2 className="text-xl font-bold text-brand-900">지금 바로 할 수 있는 3단계</h2>
+          <h2 id="h2-action" className="text-xl font-bold text-brand-900">지금 바로 할 수 있는 3단계</h2>
           <ol className="list-decimal list-inside space-y-2 text-brand-800 font-medium">
             <li>처방전 발행일 확인 — 유효기간 3일 이내인지 먼저 점검</li>
             <li>약국오늘에서 내 주변 영업 중인 약국 검색 후 전화로 재고 확인</li>

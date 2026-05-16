@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import StaticTOC from "@/components/blog/StaticTOC";
 
 // ── A2 Writer 슬롯: macro=C / hook=H2(statistic) / lens=L3(cause-effect) / outro=O4(forecast)
 // ── 페르소나: P1(Curator) + P4(AI Disclosed) / YMYL=medical / 타깃=P3(만성질환자·고령자)
@@ -19,7 +20,13 @@ export const metadata: Metadata = {
     description: metaDescription,
     url: "/blog/prescription-holiday-guide",
     type: "article",
-    images: ["/og-image.svg"],
+    images: [
+      {
+        url: `/api/og?title=${encodeURIComponent("처방전 약 연휴에 못 받을 때 대처법")}`,
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 
@@ -98,12 +105,24 @@ export default function Page() {
         </div>
       </header>
 
+      <StaticTOC
+        items={[
+          { id: "h2-stats", text: "핵심 수치 한눈에" },
+          { id: "h2-definition", text: "처방전 유효기간이란?" },
+          { id: "h2-problem", text: "처방전 유효기간과 연휴 — 왜 문제가 생기나" },
+          { id: "h2-steps", text: "연휴에 처방약 받는 법" },
+          { id: "h2-comparison", text: "연휴 전 vs 연휴 중 비교" },
+          { id: "h2-faq", text: "자주 묻는 질문" },
+          { id: "h2-future", text: "앞으로의 변화 전망" },
+        ]}
+      />
+
       {/* ── 핵심 수치 박스 1 (statistic box — macro=C 필수 ≥2) ── */}
       <section
         aria-label="핵심 수치"
         className="rounded-2xl border border-green-100 bg-green-50 p-6 shadow-sm"
       >
-        <h2 className="text-lg font-bold text-green-800 mb-4">
+        <h2 id="h2-stats" className="text-lg font-bold text-green-800 mb-4">
           처방전 연휴 수령 — 핵심 수치 한눈에
         </h2>
         <ul className="space-y-3 text-sm text-green-900">
@@ -132,7 +151,7 @@ export default function Page() {
         aria-label="처방전 유효기간 정의"
         className="rounded-2xl border-l-4 border-blue-400 border border-blue-100 bg-blue-50 p-6 shadow-sm"
       >
-        <h2 className="text-lg font-bold text-blue-800 mb-3">
+        <h2 id="h2-definition" className="text-lg font-bold text-blue-800 mb-3">
           처방전 유효기간이란?
         </h2>
         <p className="text-sm text-blue-900 leading-relaxed">
@@ -150,7 +169,7 @@ export default function Page() {
 
       {/* ── H2: 처방전 유효기간과 연휴의 관계 (lens L3: 원인→결과) ── */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-problem" className="text-2xl font-bold text-gray-900">
           처방전 유효기간과 연휴 — 왜 문제가 생기나
         </h2>
         <p className="text-base leading-relaxed text-gray-700">
@@ -202,7 +221,7 @@ export default function Page() {
 
       {/* ── H2: 연휴 처방약 받는 법 — 단계별 절차 ── */}
       <section className="space-y-5">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-steps" className="text-2xl font-bold text-gray-900">
           연휴에 처방약 받는 법 — 보건복지부 권고 절차
         </h2>
         <p className="text-base leading-relaxed text-gray-700">
@@ -279,7 +298,7 @@ export default function Page() {
 
       {/* ── H2: 비교표 — 연휴 전 vs 연휴 중 약 수령 비교 ── */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-comparison" className="text-2xl font-bold text-gray-900">
           연휴 전 vs 연휴 중 — 약 수령 방법 비교
         </h2>
         <p className="text-base leading-relaxed text-gray-700">
@@ -397,7 +416,7 @@ export default function Page() {
 
       {/* ── H2: 자주 묻는 질문 ── */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">자주 묻는 질문</h2>
+        <h2 id="h2-faq" className="text-2xl font-bold text-gray-900">자주 묻는 질문</h2>
         <div className="space-y-3">
           {faqs.map((faq) => (
             <div
@@ -413,7 +432,7 @@ export default function Page() {
 
       {/* ── Outro O4: forecast — 본문 통계와 연결된 전망 ── */}
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 id="h2-future" className="text-xl font-semibold text-gray-900">
           앞으로의 변화 — 연휴 처방 정책 전망
         </h2>
         <p className="text-base leading-relaxed text-gray-700">

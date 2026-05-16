@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
+import StaticTOC from "@/components/blog/StaticTOC";
 
 // ─── Meta ────────────────────────────────────────────────────────────────────
 const metaTitle =
@@ -18,7 +19,13 @@ export const metadata: Metadata = {
     description: metaDescription,
     url: slug,
     type: "article",
-    images: ["/og-image.svg"],
+    images: [
+      {
+        url: `/api/og?title=${encodeURIComponent("어린이 해열제 올바르게 고르는 법: 아세트아미노펜 vs 이부프로펜")}`,
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 
@@ -128,6 +135,18 @@ export default function KidsFeverMedicineComparisonPage() {
         </div>
       </header>
 
+      <StaticTOC
+        items={[
+          { id: "h2-definition", text: "성분 정의" },
+          { id: "h2-comparison", text: "두 성분 한눈에 — 비교표" },
+          { id: "h2-age", text: "나이별·상황별 선택 기준" },
+          { id: "h2-dosage", text: "올바른 복용법" },
+          { id: "h2-caution", text: "주의사항 및 금기" },
+          { id: "h2-faq", text: "자주 묻는 질문" },
+          { id: "h2-future", text: "앞으로의 변화와 주목할 신호" },
+        ]}
+      />
+
       {/* ── Hook H1 (question) ── */}
       <section
         className="rounded-2xl border border-blue-100 bg-blue-50 p-6 space-y-3"
@@ -149,7 +168,7 @@ export default function KidsFeverMedicineComparisonPage() {
         className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 space-y-5"
         aria-label="성분 정의"
       >
-        <h2 className="text-xl font-bold text-emerald-900">성분 정의</h2>
+        <h2 id="h2-definition" className="text-xl font-bold text-emerald-900">성분 정의</h2>
         <div className="space-y-4">
           <div>
             <p className="font-semibold text-emerald-800">
@@ -189,7 +208,7 @@ export default function KidsFeverMedicineComparisonPage() {
 
       {/* ── H2-1: 두 성분 한눈에 비교표 ── */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-comparison" className="text-2xl font-bold text-gray-900">
           1. 두 성분 한눈에 — 비교표
         </h2>
         <p className="text-base leading-relaxed text-gray-700">
@@ -242,7 +261,7 @@ export default function KidsFeverMedicineComparisonPage() {
 
       {/* ── H2-2: 나이별 선택 기준 (L5 case — 구체 사례) ── */}
       <section className="space-y-5">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-age" className="text-2xl font-bold text-gray-900">
           2. 나이별·상황별 선택 기준
         </h2>
         <p className="text-base leading-relaxed text-gray-700">
@@ -296,7 +315,7 @@ export default function KidsFeverMedicineComparisonPage() {
 
       {/* ── H2-3: 올바른 복용법 ── */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-dosage" className="text-2xl font-bold text-gray-900">
           3. 올바른 복용법 — 식약처 안내 기준
         </h2>
         <p className="text-base leading-relaxed text-gray-700">
@@ -345,7 +364,7 @@ export default function KidsFeverMedicineComparisonPage() {
 
       {/* ── H2-4: 주의사항 및 금기 ── */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-caution" className="text-2xl font-bold text-gray-900">
           4. 주의사항 및 금기 — 이런 경우 사용하지 않아야 합니다
         </h2>
 
@@ -425,7 +444,7 @@ export default function KidsFeverMedicineComparisonPage() {
 
       {/* ── H2-5: 자주 묻는 질문 (FAQ) ── */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-faq" className="text-2xl font-bold text-gray-900">
           5. 자주 묻는 질문
         </h2>
         <div className="space-y-3">
@@ -450,7 +469,7 @@ export default function KidsFeverMedicineComparisonPage() {
 
       {/* ── Outro O4 (forecast) ── */}
       <section className="rounded-2xl border border-brand-100 bg-brand-50 p-6 space-y-3">
-        <h2 className="text-xl font-bold text-brand-900">
+        <h2 id="h2-future" className="text-xl font-bold text-brand-900">
           앞으로의 변화와 주목할 신호
         </h2>
         <p className="text-base leading-relaxed text-brand-800">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd, buildArticleSchema, buildFAQSchema } from "@/components/seo/json-ld";
+import StaticTOC from "@/components/blog/StaticTOC";
 
 const TITLE = "야간 약국 찾는 법: 심야에 문 연 약국 찾기 3단계";
 const DESCRIPTION =
@@ -89,6 +90,17 @@ export default function Page() {
         </div>
       </header>
 
+      <StaticTOC
+        items={[
+          { id: "h2-stats", text: "야간 약국, 핵심 수치 한눈에" },
+          { id: "h2-region", text: "지역별·시간대별 야간 약국 수 비교" },
+          { id: "h2-steps", text: "심야에 문 연 약국 찾기 3단계" },
+          { id: "h2-tips", text: "야간 약국 이용 시 알아두면 좋은 것들" },
+          { id: "h2-faq", text: "자주 묻는 질문" },
+          { id: "h2-future", text: "앞으로의 변화 방향" },
+        ]}
+      />
+
       {/* Hook=H2: 첫 단락 — 출처 있는 수치 */}
       <section className="mb-10 space-y-4">
         <p className="text-gray-700 leading-relaxed">
@@ -103,7 +115,7 @@ export default function Page() {
 
       {/* H2: 핵심 수치 한눈에 */}
       <section className="mb-10 space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-stats" className="text-2xl font-bold text-gray-900">
           야간 약국, 핵심 수치 한눈에
         </h2>
 
@@ -172,7 +184,7 @@ export default function Page() {
 
       {/* H2: 지역별·시간대별 비교 (lens=L2) */}
       <section className="mb-10 space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-region" className="text-2xl font-bold text-gray-900">
           지역별·시간대별 야간 약국 수 비교
         </h2>
 
@@ -266,7 +278,7 @@ export default function Page() {
 
       {/* H2: 야간약국 찾는 3단계 */}
       <section className="mb-10 space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-steps" className="text-2xl font-bold text-gray-900">
           심야에 문 연 약국 찾기 3단계
         </h2>
 
@@ -370,7 +382,7 @@ export default function Page() {
 
       {/* H2: 주의사항 */}
       <section className="mb-10 space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 id="h2-tips" className="text-2xl font-bold text-gray-900">
           야간 약국 이용 시 알아두면 좋은 것들
         </h2>
 
@@ -446,7 +458,7 @@ export default function Page() {
 
       {/* H2: FAQ */}
       <section className="mb-10 space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">자주 묻는 질문</h2>
+        <h2 id="h2-faq" className="text-2xl font-bold text-gray-900">자주 묻는 질문</h2>
         <div className="space-y-3" aria-label="자주 묻는 질문">
           {faqItems.map((faq) => (
             <details
@@ -466,7 +478,7 @@ export default function Page() {
 
       {/* Outro=O4: forecast */}
       <section className="mb-10 space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">앞으로의 변화 방향</h2>
+        <h2 id="h2-future" className="text-2xl font-bold text-gray-900">앞으로의 변화 방향</h2>
         <p className="text-gray-700 leading-relaxed">
           2024~2025년 공공데이터 현황은 야간 운영 약국 수가 전체의 1% 수준에
           머무는 구조적 한계를 보여준다. 향후 변수는 두 가지다. 첫째,
