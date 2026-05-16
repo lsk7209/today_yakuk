@@ -181,6 +181,20 @@ export default function GuideNightWeekendPage() {
         </div>
       </section>
 
+      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+        <h2 className="text-lg font-bold text-gray-900">관련 블로그</h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Link href="/blog/night-pharmacy-3steps" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+            <p className="text-sm font-bold text-gray-900 hover:text-brand-700">야간 약국 찾기 3단계</p>
+            <p className="text-xs text-gray-500 mt-1">심야에도 빠르게 찾는 실전 방법</p>
+          </Link>
+          <Link href="/blog/pharmacy-visit-checklist-3" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+            <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 확인 3가지</p>
+            <p className="text-xs text-gray-500 mt-1">영업·재고·처방전 유효기간 점검</p>
+          </Link>
+        </div>
+      </section>
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
