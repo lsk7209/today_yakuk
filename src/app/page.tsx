@@ -16,6 +16,7 @@ import type { PharmacyCardProps } from "@/components/pharmacy-card";
 import { JsonLd, buildFAQSchema } from "@/components/seo/json-ld";
 import { HomeTrustSections, HOME_FAQ_ITEMS } from "@/components/home/home-trust-sections";
 import RecentBlogPosts from "@/components/home/recent-blog-posts";
+import DesktopSidebar from "@/components/home/desktop-sidebar";
 import { getOperatingStatus } from "@/lib/hours";
 
 const provinces = [
@@ -153,8 +154,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="container py-10 sm:py-16 space-y-12">
+      <div className="container py-10 sm:py-16">
         <JsonLd id="home-faq-schema" data={homeFaqSchema} />
+        <div className="flex gap-8 items-start">
+          {/* Main content */}
+          <div className="min-w-0 flex-1 space-y-12">
         {/* Hero */}
         <section className="rounded-[2.5rem] border border-gray-100 bg-gradient-to-br from-white via-white to-emerald-50/50 p-8 sm:p-14 premium-card overflow-hidden relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-100/30 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
@@ -403,6 +407,10 @@ export default function Home() {
         <RecentBlogPosts />
 
         <HomeTrustSections />
+          </div>{/* end main content */}
+
+          <DesktopSidebar />
+        </div>{/* end flex row */}
       </div>
 
       {/* FAB */}
