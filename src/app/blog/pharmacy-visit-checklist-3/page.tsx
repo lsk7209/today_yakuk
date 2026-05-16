@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { JsonLd, buildArticleSchema, buildFAQSchema } from "@/components/seo/json-ld";
 import StaticTOC from "@/components/blog/StaticTOC";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 // ─── 메타데이터 ───────────────────────────────────────────────
 const metaTitle = "약국 방문 전 꼭 확인해야 할 것들: 영업·재고·처방 3가지 | 약국오늘";
@@ -162,6 +163,8 @@ export default function PharmacyVisitChecklist3() {
           { id: "h2-action", text: "지금 바로 할 수 있는 3단계" },
         ]}
       />
+
+      <AdSlotTop />
 
       {/* ── L6 통념 vs 실제 contrast 박스 ── */}
       <section
@@ -409,6 +412,8 @@ export default function PharmacyVisitChecklist3() {
           </Link>
         </div>
       </section>
+
+      <AdSlotBottom />
 
       {/* ── YMYL disclaimer ── */}
       <aside

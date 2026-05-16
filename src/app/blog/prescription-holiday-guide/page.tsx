@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 import StaticTOC from "@/components/blog/StaticTOC";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 // ── A2 Writer 슬롯: macro=C / hook=H2(statistic) / lens=L3(cause-effect) / outro=O4(forecast)
 // ── 페르소나: P1(Curator) + P4(AI Disclosed) / YMYL=medical / 타깃=P3(만성질환자·고령자)
@@ -131,6 +132,8 @@ export default function Page() {
           { id: "h2-future", text: "앞으로의 변화 전망" },
         ]}
       />
+
+      <AdSlotTop />
 
       {/* ── 핵심 수치 박스 1 (statistic box — macro=C 필수 ≥2) ── */}
       <section
@@ -487,6 +490,8 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      <AdSlotBottom />
 
       {/* ── P4 AI Disclosure footer ── */}
       <footer

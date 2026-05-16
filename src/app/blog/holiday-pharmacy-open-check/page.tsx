@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import StaticTOC from "@/components/blog/StaticTOC";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const SLUG = "/blog/holiday-pharmacy-open-check";
 const metaTitle = "공휴일에 약국이 열려 있나요? 빠른 확인 방법 | 약국오늘";
@@ -274,6 +275,8 @@ export default function BlogHolidayPharmacyOpenCheck() {
           { id: "h2-faq", text: "자주 묻는 질문" },
         ]}
       />
+
+      <AdSlotTop />
 
       {/* ── H2: 배경 ── */}
       <h2
@@ -560,6 +563,8 @@ export default function BlogHolidayPharmacyOpenCheck() {
       >
         이 글은 AI 도구를 활용해 공개된 의료·정책 자료를 정리·요약한 결과입니다. 사실 확인은 출처 링크의 원문을 우선합니다.
       </footer>
+
+      <AdSlotBottom />
 
       {/* ── YMYL Disclaimer ── */}
       <aside
