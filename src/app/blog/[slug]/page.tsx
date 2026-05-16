@@ -134,6 +134,16 @@ export default async function BlogPostPage({ params }: Props) {
         : [];
     const faqSchema = faqItems.length > 0 ? buildFAQSchema(faqItems) : null;
 
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "홈", item: `${siteUrl}/` },
+            { "@type": "ListItem", position: 2, name: "블로그", item: `${siteUrl}/blog` },
+            { "@type": "ListItem", position: 3, name: post.title, item: `${siteUrl}/blog/${params.slug}` },
+        ],
+    };
+
     return (
         <article className="container max-w-3xl py-12">
             <header className="mb-8">
@@ -175,6 +185,7 @@ export default async function BlogPostPage({ params }: Props) {
             {/* JSON-LD 삽입 */}
             <JsonLd data={articleSchema} id="article-schema" />
             {faqSchema && <JsonLd data={faqSchema} id="faq-schema" />}
+            <JsonLd data={breadcrumbSchema} id="breadcrumb-schema" />
 
             {post.ai_faq && Array.isArray(post.ai_faq) && post.ai_faq.length > 0 && (
                 <section className="mt-12 pt-8 border-t">
