@@ -25,11 +25,13 @@ const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
+  display: "swap",
 });
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
+  display: "swap",
 });
 
 const googleVerifications = getGoogleSiteVerifications();
@@ -109,6 +111,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
+        <link
+          rel="preconnect"
+          href="https://cdn.jsdelivr.net"
+          crossOrigin="anonymous"
+        />
         {googleVerifications.map((verification) => (
           <meta key={verification} name="google-site-verification" content={verification} />
         ))}
@@ -156,6 +163,12 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <AnalyticsTracker />
         </Suspense>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-brand-700 focus:px-4 focus:py-2 focus:text-white focus:text-sm focus:font-bold"
+        >
+          본문으로 바로가기
+        </a>
         <div className="min-h-screen flex flex-col">
           <header className="border-b border-[var(--border)] bg-white/80 backdrop-blur">
             <div className="container flex items-center justify-between py-4">
@@ -187,7 +200,7 @@ export default function RootLayout({
               </nav>
             </div>
           </header>
-          <main className="flex-1">{children}</main>
+          <main id="main-content" className="flex-1">{children}</main>
           <footer className="border-t border-[var(--border)] bg-white">
             <div className="container py-6 text-sm text-[var(--muted)] flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <p>© {new Date().getFullYear()} {SITE_NAME} TodayPharmacy</p>

@@ -18,6 +18,24 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: "/(about|contact|terms|privacy|guide|guide/:path*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/(blog|wiki)/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=600, stale-while-revalidate=3600",
+          },
+        ],
+      },
+      {
         source: "/:path*",
         headers: [
           {
@@ -43,6 +61,10 @@ const nextConfig = {
           {
             key: "Cross-Origin-Opener-Policy",
             value: "same-origin",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains; preload",
           },
         ],
       },

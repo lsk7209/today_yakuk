@@ -15,6 +15,7 @@ import {
 import type { PharmacyCardProps } from "@/components/pharmacy-card";
 import { JsonLd, buildFAQSchema } from "@/components/seo/json-ld";
 import { HomeTrustSections, HOME_FAQ_ITEMS } from "@/components/home/home-trust-sections";
+import RecentBlogPosts from "@/components/home/recent-blog-posts";
 import { getOperatingStatus } from "@/lib/hours";
 
 const provinces = [
@@ -398,6 +399,8 @@ export default function Home() {
             {regionGrid}
           </section>
         </section>
+
+        <RecentBlogPosts />
 
         <HomeTrustSections />
       </div>

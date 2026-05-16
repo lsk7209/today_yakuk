@@ -8,6 +8,7 @@ import Image from "next/image";
 import { getBlogFeaturedImage } from "@/lib/blog-image";
 import { getSiteUrl } from "@/lib/site-url";
 import { sanitizeTrustedHtml } from "@/lib/sanitize-html";
+import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const siteUrl = getSiteUrl();
 
@@ -160,6 +161,9 @@ export default async function BlogPostPage({ params }: Props) {
                 />
             </div>
 
+            {/* 본문 상단 광고 */}
+            <AdSlotTop />
+
             {/* 목차 */}
             <TableOfContents contentHtml={contentWithIds} />
 
@@ -185,6 +189,9 @@ export default async function BlogPostPage({ params }: Props) {
                     </div>
                 </section>
             )}
+
+            {/* 본문 하단 광고 */}
+            <AdSlotBottom />
 
             {/* 관련 글 */}
             <RelatedPosts

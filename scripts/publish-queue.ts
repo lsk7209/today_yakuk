@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
-import { requestIndexing } from "../src/lib/google-indexing";
+import { requestIndexing, submitSitemapToGSC } from "../src/lib/google-indexing";
 import { submitToIndexNow } from "../src/lib/naver-indexnow";
 
 type ContentQueueStatus = "pending" | "review" | "published" | "failed";
@@ -158,25 +158,34 @@ async function publishPending(limit = 2) {
 
   console.info(`Published ${publishUpdates.length} items.`);
 
-  // Google Indexing API 호출
+  // Google Indexing API + IndexNow 호출
+  const publishedUrls: string[] = [];
   for (const row of publishUpdates) {
     if (!row.id) continue;
-    // content_queue의 hpid를 사용하여 URL 생성
     const originalItem = ready.find((r) => r.id === row.id);
     if (originalItem?.hpid) {
       const url = `${siteUrl}/pharmacy/${originalItem.hpid}`;
       console.info(`Requesting indexing for: ${url}`);
-      await requestIndexing(url, "URL_UPDATED");
-    } else if (originalItem?.slug) {
-      // HPID가 없으면 블로그 포스트로 간주
-      const url = `${siteUrl}/blog/${originalItem.slug}`;
-      console.info(`Requesting indexing for: ${url}`);
-      // Run both in parallel and catch errors to prevent stopping the loop
       await Promise.allSettled([
         requestIndexing(url, "URL_UPDATED"),
-        submitToIndexNow([url])
+        submitToIndexNow([url]),
       ]);
+      publishedUrls.push(url);
+    } else if (originalItem?.slug) {
+      const url = `${siteUrl}/blog/${originalItem.slug}`;
+      console.info(`Requesting indexing for: ${url}`);
+      await Promise.allSettled([
+        requestIndexing(url, "URL_UPDATED"),
+        submitToIndexNow([url]),
+      ]);
+      publishedUrls.push(url);
     }
+  }
+
+  // 신규 컨텐츠가 발행된 경우 GSC 사이트맵도 제출
+  if (publishedUrls.length > 0) {
+    const sitemapUrl = `${siteUrl}/sitemap-index.xml`;
+    await submitSitemapToGSC(siteUrl, sitemapUrl);
   }
 }
 

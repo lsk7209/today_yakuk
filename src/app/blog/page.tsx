@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getBlogFeaturedImage } from "@/lib/blog-image";
 import type { Metadata } from "next";
+import { AdSlotInFeed } from "@/components/ads/AdSlot";
 
 interface BlogPost {
   title: string;
@@ -119,6 +120,9 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexPageProps
           ))
         )}
       </div>
+
+      {/* 블로그 목록 하단 인피드 광고 */}
+      <AdSlotInFeed className="my-4" />
 
       {totalPages > 1 ? (
         <nav className="flex items-center justify-center gap-3" aria-label="블로그 페이지">
