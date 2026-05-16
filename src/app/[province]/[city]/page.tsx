@@ -6,6 +6,13 @@ import { PharmacyListInfinite } from "@/components/pharmacy-list-infinite";
 import { JsonLd, buildBreadcrumbSchema } from "@/components/seo/json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 
+const GUIDE_LINKS = [
+  { href: "/guide/holiday-checklist", label: "공휴일 체크리스트", desc: "연휴 전 확인할 약국 준비 항목" },
+  { href: "/guide/night-weekend", label: "야간·주말 이용 가이드", desc: "심야에 문 연 약국 찾는 방법" },
+  { href: "/guide/call-scripts", label: "전화 스크립트", desc: "재고·영업 여부 확인 문장 모음" },
+  { href: "/blog/pharmacy-visit-checklist-3", label: "방문 전 확인 3가지", desc: "영업·재고·처방전 유효기간" },
+];
+
 const siteUrl = getSiteUrl();
 
 type Params = {
@@ -84,7 +91,9 @@ export default async function ProvinceCityPage({
           {province} · {city === "전체" ? "모든 지역" : city}
         </p>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <h1 className="text-3xl font-bold">영업 중인 약국 리스트</h1>
+          <h1 className="text-3xl font-bold">
+            {province} {city === "전체" ? "" : `${city} `}영업 중인 약국 찾기
+          </h1>
           <p className="text-xs text-[var(--muted)]">
             현재 시간 기준 상태 및 심야·공휴일 필터 지원
           </p>
@@ -103,6 +112,23 @@ export default async function ProvinceCityPage({
       />
 
       <Pagination currentPage={currentPage} totalPages={totalPages} province={province} city={city} />
+
+      {/* 가이드 링크 — 내부 링크 강화 + 이탈률 감소 */}
+      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-3">
+        <h2 className="text-base font-black text-gray-900">약국 이용 전 확인하세요</h2>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {GUIDE_LINKS.map(({ href, label, desc }) => (
+            <Link
+              key={href}
+              href={href}
+              className="rounded-xl border border-gray-100 bg-gray-50 p-3 hover:border-brand-200 hover:bg-brand-50/30 transition-all"
+            >
+              <p className="text-xs font-bold text-gray-900 leading-snug">{label}</p>
+              <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">{desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
