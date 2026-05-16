@@ -232,7 +232,7 @@ export default function PharmacyVisitChecklist3() {
         <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 space-y-2">
           <p className="text-sm font-semibold text-gray-800">실시간 확인 순서</p>
           <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
-            <li>지도 앱 또는 약국오늘에서 '영업 중' 필터 켜기</li>
+            <li>지도 앱 또는 약국오늘에서 &apos;영업 중&apos; 필터 켜기</li>
             <li>종료 예정 시간이 30분 이상 남은 약국 우선 선택</li>
             <li>길찾기로 도착 시각 검증(이동 시간 ≤ 잔여 영업 시간)</li>
           </ol>
@@ -289,7 +289,7 @@ export default function PharmacyVisitChecklist3() {
         </p>
         <p className="text-gray-700 leading-relaxed">
           전화로 재고를 확인할 때는 처방전에 적힌 약 이름(또는 성분명)을
-          정확히 알려주고 "현재 재고가 있는지, 오늘 조제가 가능한지"를 물어보면
+          정확히 알려주고 &quot;현재 재고가 있는지, 오늘 조제가 가능한지&quot;를 물어보면
           된다. 약국은 이러한 문의를 받는 것이 일반적이다. 전화 문의가
           어렵거나 어떻게 말해야 할지 모를 경우{" "}
           <Link

@@ -246,7 +246,7 @@ export default function Page() {
             </p>
             <p className="text-sm text-gray-600 leading-relaxed">
               건강보험심사평가원{" "}
-              <strong>e-gen.or.kr</strong> 또는 '건강보험 앱'에서
+              <strong>e-gen.or.kr</strong> 또는 &apos;건강보험 앱&apos;에서
               연휴 운영 약국을 사전에 조회한다. 귀향지 또는 여행지 주변 약국을
               미리 파악해 두는 것이 연휴 중 공백을 줄이는 가장 확실한 방법이다.
             </p>
