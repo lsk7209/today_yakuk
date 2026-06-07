@@ -25,7 +25,9 @@
     "fetch:hff:all": "ts-node --project tsconfig.sync.json scripts/fetch-hff-data.ts all",
     "fetch:meds": "ts-node --project tsconfig.sync.json scripts/fetch-medicines.ts",
     "fetch:meds:all": "ts-node --project tsconfig.sync.json scripts/fetch-medicines.ts all",
-    "sitemap": "next-sitemap"
+    "sitemap": "next-sitemap",
+    "gsc:sitemap": "ts-node --project tsconfig.sync.json scripts/submit-gsc-sitemap.ts",
+    "gsc:sitemap:status": "ts-node --project tsconfig.sync.json scripts/submit-gsc-sitemap.ts --status-only"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

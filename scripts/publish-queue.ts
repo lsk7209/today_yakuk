@@ -5,6 +5,7 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requestIndexing, submitSitemapToGSC } from "../src/lib/google-indexing";
+import { getSiteUrl } from "../src/lib/site-url";
 import { submitToIndexNow } from "../src/lib/naver-indexnow";
 
 type ContentQueueStatus = "pending" | "review" | "published" | "failed";
@@ -28,7 +29,7 @@ type ContentQueue = {
 
 const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://todaypharm.kr").replace(/\/$/, "");
+const siteUrl = getSiteUrl();
 
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   const parts = token.split(".");

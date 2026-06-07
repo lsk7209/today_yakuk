@@ -119,12 +119,6 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net"
           crossOrigin="anonymous"
         />
-        {googleVerifications.map((verification) => (
-          <meta key={verification} name="google-site-verification" content={verification} />
-        ))}
-        {naverVerification ? (
-          <meta name="naver-site-verification" content={naverVerification} />
-        ) : null}
         {adsenseId ? (
           <script
             id="google-adsense"
