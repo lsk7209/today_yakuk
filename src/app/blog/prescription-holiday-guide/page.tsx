@@ -504,6 +504,26 @@ export default function Page() {
         </div>
       </section>
 
+      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+        <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {[
+            { href: "/blog/prescription-prep-tips", label: "처방전 방문 전 준비 팁", desc: "처방전·보험카드·복약 이력 준비 체크리스트" },
+            { href: "/blog/lost-prescription-action-guide", label: "처방전 잃어버렸을 때 대처법", desc: "재발급·응급 대처 단계별 안내" },
+            { href: "/nearby", label: "내 주변 약국 바로 찾기 →", desc: "위치 기반 현재 영업 중인 약국 검색" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+            >
+              <p className="font-bold text-gray-900 text-sm">{item.label}</p>
+              <p className="text-xs text-gray-500">{item.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <AdSlotBottom />
 
       {/* ── P4 AI Disclosure footer ── */}

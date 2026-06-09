@@ -576,6 +576,26 @@ export default function BlogHolidayPharmacyOpenCheck() {
         이 글은 AI 도구를 활용해 공개된 의료·정책 자료를 정리·요약한 결과입니다. 사실 확인은 출처 링크의 원문을 우선합니다.
       </footer>
 
+      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+        <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {[
+            { href: "/blog/holiday-open-pharmacy-tips", label: "공휴일 문 연 약국 찾는 5가지 팁", desc: "위치 권한·종료 임박·전화 확인 방법" },
+            { href: "/blog/night-pharmacy-checklist", label: "야간 약국 방문 체크리스트", desc: "심야 방문 전 확인할 항목 6가지" },
+            { href: "/nearby", label: "내 주변 약국 바로 찾기 →", desc: "위치 기반 현재 영업 중인 약국 검색" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+            >
+              <p className="font-bold text-gray-900 text-sm">{item.label}</p>
+              <p className="text-xs text-gray-500">{item.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <AdSlotBottom />
 
       {/* ── YMYL Disclaimer ── */}

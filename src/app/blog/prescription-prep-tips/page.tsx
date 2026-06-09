@@ -289,6 +289,26 @@ export default function BlogPrescriptionPrepTips() {
         </div>
       </section>
 
+      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+        <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {[
+            { href: "/blog/prescription-holiday-guide", label: "처방전 약 연휴에 못 받을 때", desc: "유효기간 규정과 비상 약국 조회법" },
+            { href: "/blog/pharmacy-visit-checklist-3", label: "약국 방문 전 체크리스트", desc: "헛걸음 없는 약국 방문 3가지 확인 사항" },
+            { href: "/nearby", label: "내 주변 약국 바로 찾기 →", desc: "위치 기반 현재 영업 중인 약국 검색" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+            >
+              <p className="font-bold text-gray-900 text-sm">{item.label}</p>
+              <p className="text-xs text-gray-500">{item.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <AdSlotBottom />
 
       <script
