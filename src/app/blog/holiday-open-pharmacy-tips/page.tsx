@@ -88,6 +88,18 @@ export default function BlogHolidayOpenPharmacyTips() {
     ],
   };
 
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "공휴일 열린 약국 빠르게 찾는 5단계",
+    description: metaDescription,
+    step: tips.map((item: string | { title?: string; q?: string; step?: string; text?: string; desc?: string; detail?: string }, i: number) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: typeof item === "string" ? item : (item.title || item.step || item.q || String(i + 1)),
+      text: typeof item === "string" ? item : (item.desc || item.detail || item.text || item.title || String(i + 1)),
+    })),
+  };
   return (
     <div className="container py-10 sm:py-14 space-y-10 bg-white min-h-screen">
       <header className="space-y-3">
@@ -202,6 +214,10 @@ export default function BlogHolidayOpenPharmacyTips() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
       <script
         type="application/ld+json"

@@ -94,6 +94,18 @@ export default function BlogNightPharmacyChecklist() {
     })),
   };
 
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "심야 약국 찾기 체크리스트",
+    description: metaDescription,
+    step: checklist.map((item: string | { title?: string; q?: string; step?: string; text?: string; desc?: string; detail?: string }, i: number) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: typeof item === "string" ? item : (item.title || item.step || item.q || String(i + 1)),
+      text: typeof item === "string" ? item : (item.desc || item.detail || item.text || item.title || String(i + 1)),
+    })),
+  };
   return (
     <article className="container py-10 sm:py-14 space-y-10 bg-white min-h-screen">
       <header className="space-y-4" aria-label="글 머리말">
@@ -270,6 +282,7 @@ export default function BlogNightPharmacyChecklist() {
       <AdSlotBottom />
 
       <JsonLd id="jsonld-article" data={articleJsonLd as unknown as Record<string, unknown>} />
+      <JsonLd id="jsonld-howto" data={howToJsonLd} />
       <JsonLd id="jsonld-faq" data={faqJsonLd} />
       <JsonLd id="jsonld-breadcrumb" data={breadcrumbJsonLd} />
     </article>
