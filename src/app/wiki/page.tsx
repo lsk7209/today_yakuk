@@ -85,10 +85,9 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
         void keyword; // unused for "all"
         const [countResult, dataResult] = await Promise.all([
             getCachedTotalCount(),
-            db.execute({
-                sql: "SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements ORDER BY created_at DESC LIMIT ? OFFSET ?",
-                args: [ITEMS_PER_PAGE, offset],
-            }),
+            db.execute(
+                `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`
+            ),
         ]);
         filteredCount = countResult;
         productsRows = dataResult.rows as Record<string, unknown>[];
@@ -104,8 +103,8 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                 args: filterArgs,
             }),
             db.execute({
-                sql: `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-                args: [...filterArgs, ITEMS_PER_PAGE, offset],
+                sql: `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
+                args: filterArgs,
             }),
         ]);
         filteredCount = Number(countResult.rows[0]?.cnt ?? 0);

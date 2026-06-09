@@ -81,8 +81,8 @@ export default async function TagPage({
                 args: searchTerms,
             }),
             db.execute({
-                sql: `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) LIMIT ? OFFSET ?`,
-                args: [...searchTerms, ITEMS_PER_PAGE, offset],
+                sql: `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
+                args: searchTerms,
             }),
         ]);
         count = Number(countResult.rows[0]?.cnt ?? 0);
