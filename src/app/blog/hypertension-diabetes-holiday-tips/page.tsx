@@ -270,6 +270,26 @@ export default function Page() {
                 </div>
             </section>
 
+            <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+        <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {[
+            { href: "/blog/magnesium-deficiency-guide", label: "마그네슘 부족 신호 6가지", desc: "혈압과 관련 있는 마그네슘 결핍 증상과 보충법" },
+            { href: "/blog/omega3-selection-guide", label: "오메가3 선택 가이드", desc: "혈관 건강을 위한 오메가3 형태별 선택법" },
+            { href: "/wiki?category=immune", label: "면역력 영양제 전체 보기 →", desc: "약국오늘 영양제 위키에서 확인" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+            >
+              <p className="font-bold text-gray-900 text-sm">{item.label}</p>
+              <p className="text-xs text-gray-500">{item.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
             <AdSlotBottom />
 
             <script

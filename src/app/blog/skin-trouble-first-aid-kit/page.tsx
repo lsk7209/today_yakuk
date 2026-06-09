@@ -282,6 +282,26 @@ export default function Page() {
                 </div>
             </section>
 
+            <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+        <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {[
+            { href: "/blog/lutein-astaxanthin-guide", label: "루테인 vs 아스타잔틴", desc: "자외선 노출 후 눈 건강 영양제 선택법" },
+            { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "햇빛 차단 시 부족해지는 비타민D 보충" },
+            { href: "/wiki", label: "영양제 위키 전체 보기 →", desc: "식약처 데이터 기반 영양제·건강기능식품 정보" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+            >
+              <p className="font-bold text-gray-900 text-sm">{item.label}</p>
+              <p className="text-xs text-gray-500">{item.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
             <AdSlotBottom />
 
             <script
