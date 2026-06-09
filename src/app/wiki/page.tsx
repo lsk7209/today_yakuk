@@ -221,12 +221,12 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
 
             {/* Related Blog Posts */}
             <section className="pt-6 border-t border-slate-100">
-                <h2 className="text-xl font-black text-slate-900 mb-6">영양제 관련 건강 정보</h2>
+                <h2 className="text-xl font-black text-slate-900 mb-6">영양제 선택 가이드</h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[
-                        { href: "/blog/pregnancy-pharmacy-guide", label: "임산부 안전한 영양제 섭취 가이드", desc: "엽산·철분·비타민D 필수 영양소와 주의사항" },
-                        { href: "/blog/hypertension-diabetes-holiday-tips", label: "고혈압·당뇨 복용자 연휴 대비", desc: "만성질환 약과 영양제 연휴 준비 체크리스트" },
-                        { href: "/blog/pharmacy-faq-top10", label: "약국 자주 묻는 질문 TOP10", desc: "일반의약품·건강기능식품 함께 복용 시 주의점" },
+                        { href: "/blog/omega3-selection-guide", label: "오메가3 알티지 vs 에틸에스텔 선택 가이드", desc: "흡수율·가격·형태별 차이와 복용법 완전 정리" },
+                        { href: "/blog/probiotics-selection-guide", label: "유산균 균주 선택 가이드", desc: "CFU보다 균주 종류가 중요한 이유와 목적별 선택법" },
+                        { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "국내 성인 75% 부족 상태, 올바른 보충 방법" },
                     ].map((item) => (
                         <Link
                             key={item.href}

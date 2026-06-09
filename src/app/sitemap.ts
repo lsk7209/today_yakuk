@@ -64,6 +64,8 @@ export default async function sitemap({
       { url: `${siteUrl}/blog/omega3-selection-guide`, lastModified: guideDate, changeFrequency: "monthly", priority: 0.8 },
       { url: `${siteUrl}/blog/probiotics-selection-guide`, lastModified: guideDate, changeFrequency: "monthly", priority: 0.8 },
       { url: `${siteUrl}/blog/vitamin-d-deficiency-guide`, lastModified: guideDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/blog/lutein-astaxanthin-guide`, lastModified: guideDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/blog/magnesium-deficiency-guide`, lastModified: guideDate, changeFrequency: "monthly", priority: 0.8 },
       // Major region pages
       { url: `${siteUrl}/${encodeURIComponent("서울")}/전체`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
       { url: `${siteUrl}/${encodeURIComponent("경기")}/전체`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
