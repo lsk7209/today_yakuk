@@ -196,7 +196,6 @@ export default async function BlogIndexPage({
 }: BlogIndexPageProps) {
   const currentPage = getCurrentPage(searchParams?.page);
   const from = (currentPage - 1) * POSTS_PER_PAGE;
-  const to = from + POSTS_PER_PAGE - 1;
   const db = getTursoClient();
   const [countResult, dataResult] = await Promise.all([
     db.execute("SELECT COUNT(*) as cnt FROM content_queue WHERE status = 'published'"),
