@@ -1,31 +1,28 @@
 /**
  * Data Sync Script for Supplements (Wiki)
- * 
+ *
  * This script:
  * 1. Fetches supplement data from Food Safety Korea API
  * 2. Processes with Gemini AI for summaries
- * 3. Upserts to Supabase (supplements & ingredients tables)
- * 
+ * 3. Upserts to Turso (supplements table)
+ *
  * Usage: npm run sync:supplements
  */
 
 import dotenv from "dotenv";
-import { createClient } from "@supabase/supabase-js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { generateAIAnalysis, parseNutritionFacts, createMixedSummary } from "./lib/gemini-nutrition-analyzer";
 import { detectAdditives } from "./lib/additive-keywords";
+import { getTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: ".env.local" });
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
 const FOOD_SAFETY_API_KEY = process.env.FOOD_SAFETY_API_KEY!;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const db = getTursoClient();
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Tag Mapping Definition
 const TAG_MAP: Record<string, string[]> = {
     "vitamin-c": ["비타민C", "비타민 C", "Vitamin C", "Ascorbic Acid", "아스코르브산"],
     "fatigue": ["피로", "활력", "에너지", "만성피로", "Fatigue", "Energy", "인삼", "홍삼"],
@@ -49,24 +46,14 @@ interface RawSupplementData {
     LCNS_NO?: string;
 }
 
-/**
- * Fetch supplement data from Food Safety Korea API
- */
-async function fetchSupplementData(
-    pageNo: number = 1,
-    numOfRows: number = 100
-): Promise<RawSupplementData[]> {
+async function fetchSupplementData(pageNo: number = 1, numOfRows: number = 100): Promise<RawSupplementData[]> {
     const SERVICE_ID = "C003";
     const url = `http://openapi.foodsafetykorea.go.kr/api/${FOOD_SAFETY_API_KEY}/${SERVICE_ID}/json/${pageNo}/${numOfRows}`;
 
     try {
         const response = await fetch(url);
         const data = await response.json();
-
-        if (data[SERVICE_ID]?.row) {
-            return data[SERVICE_ID].row;
-        }
-
+        if (data[SERVICE_ID]?.row) return data[SERVICE_ID].row;
         console.warn("No data found in API response");
         return [];
     } catch (error) {
@@ -75,20 +62,8 @@ async function fetchSupplementData(
     }
 }
 
-/**
- * Generate tags based on keyword matching
- */
-function generateTags(
-    name: string,
-    aiSummary: string,
-    nutritionFacts: any[]
-): string[] {
-    const contentToSearch = [
-        name,
-        aiSummary,
-        JSON.stringify(nutritionFacts)
-    ].join(" ").toLowerCase();
-
+function generateTags(name: string, aiSummary: string, nutritionFacts: unknown[]): string[] {
+    const contentToSearch = [name, aiSummary, JSON.stringify(nutritionFacts)].join(" ").toLowerCase();
     const tags: Set<string> = new Set();
 
     for (const [tagId, keywords] of Object.entries(TAG_MAP)) {
@@ -103,9 +78,6 @@ function generateTags(
     return Array.from(tags);
 }
 
-/**
- * Main sync function
- */
 async function syncSupplements() {
     console.log("🚀 Starting supplement data sync...\n");
 
@@ -122,7 +94,7 @@ async function syncSupplements() {
 
     for (const rawItem of rawData) {
         try {
-            const item = rawItem as any;
+            const item = rawItem as unknown as Record<string, string>;
             const productReportNo = item.PRDLST_REPORT_NO || item.LCNS_NO || item.lcns_no;
             const name = item.PRDUCT || item.PRDLST_NM || item.prdlst_nm;
             const manufacturer = item.BSSH_NM || item.MAKE_IT_NM || item.make_it_nm;
@@ -136,49 +108,34 @@ async function syncSupplements() {
 
             console.log(`Processing: ${name}...`);
 
-            // Use centralized AI analysis
             const aiAnalysis = await generateAIAnalysis(genAI, name, rawMaterials, nutritionStr);
 
-            // Parse nutrition facts (AI first, then fallback)
             let nutritionFacts = aiAnalysis.nutrition_facts;
             if (nutritionFacts.length === 0) {
                 nutritionFacts = parseNutritionFacts(nutritionStr);
             }
 
-            // Use centralized additive detection
             const additives = detectAdditives(rawMaterials);
-
-            // Store structured data
             const mixedSummary = createMixedSummary(aiAnalysis);
-
             const enrichmentStatus = aiAnalysis.status === 'failed' ? 'failed' : 'success';
 
-            // Upsert to Supabase
-            const { error } = await supabase.from("supplements").upsert(
-                {
-                    product_report_no: productReportNo,
-                    name,
-                    manufacturer,
-                    nutrition_facts: nutritionFacts,
-                    additives,
-                    ai_summary: mixedSummary,
-                    tags: generateTags(name, aiAnalysis.summary, nutritionFacts),
-                    enrichment_status: enrichmentStatus,
-                    enrichment_tried_at: new Date().toISOString()
-                },
-                { onConflict: "product_report_no" }
-            );
+            await db.execute({
+                sql: `INSERT OR REPLACE INTO supplements
+                      (product_report_no, name, manufacturer, nutrition_facts, additives, ai_summary, tags)
+                      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                args: [
+                    productReportNo, name, manufacturer,
+                    JSON.stringify(nutritionFacts),
+                    JSON.stringify(additives),
+                    mixedSummary,
+                    JSON.stringify(generateTags(name, aiAnalysis.summary, nutritionFacts)),
+                ],
+            });
 
-            if (error) {
-                console.error(`❌ Failed to insert ${name}:`, error.message);
-                failCount++;
-            } else {
-                console.log(`✅ Synced: ${name}`);
-                successCount++;
-            }
+            console.log(`✅ Synced: ${name}`);
+            successCount++;
 
-            // Rate limiting for Gemini API
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 1000));
         } catch (error) {
             console.error(`Error processing item:`, error);
             failCount++;
@@ -190,5 +147,4 @@ async function syncSupplements() {
     console.log(`   Failed: ${failCount}`);
 }
 
-// Run the script
 syncSupplements().catch(console.error);

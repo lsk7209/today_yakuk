@@ -1,18 +1,14 @@
-
 import fs from "fs";
 import path from "path";
-import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import { getTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: ".env.local" });
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = getTursoClient();
 
 const publicDir = path.join(process.cwd(), "public", "blog-images");
 
-// 1. 타임스탬프 제거 (Rename)
 function renameImages() {
     console.log("📂 이미지 파일명 정리 시작...");
     if (!fs.existsSync(publicDir)) {
@@ -24,16 +20,13 @@ function renameImages() {
     let renameCount = 0;
 
     files.forEach(file => {
-        // 패턴: name_1769... .png
         if (file.match(/_\d{13}\.png$/)) {
             const newName = file.replace(/_\d{13}\.png$/, ".png");
             try {
-                // 이미 대상 파일이 있으면 (중복 생성시) 덮어쓰기 위해 기존 파일 삭제
                 if (fs.existsSync(path.join(publicDir, newName))) {
                     fs.unlinkSync(path.join(publicDir, newName));
                 }
                 fs.renameSync(path.join(publicDir, file), path.join(publicDir, newName));
-                // console.log(`RENAME: ${file} -> ${newName}`);
                 renameCount++;
             } catch (e) {
                 console.error(`Error renaming ${file}:`, e);
@@ -43,45 +36,36 @@ function renameImages() {
     console.log(`✅ ${renameCount}개 파일 이름 변경 완료.`);
 }
 
-// 2. 약국 이미지 일괄 적용
 async function applyPharmacyImages() {
     console.log("🏥 약국 이미지 일괄 적용 시작...");
 
     const sourcePath = path.join(publicDir, "pharmacy_common_default.png");
     if (!fs.existsSync(sourcePath)) {
         console.error("❌ pharmacy_common_default.png 파일을 찾을 수 없습니다.");
-        // 혹시 타임스탬프가 아직 붙어있나 확인 (renameImages가 실패했을 경우)
-        // 하지만 위에서 처리했으므로 여기선 없으면 에러.
         return;
     }
 
-    const { data: posts } = await supabase
-        .from("content_queue")
-        .select("slug")
-        .like("slug", "pharmacy-%")
-        .eq("status", "published");
+    const result = await db.execute({
+        sql: "SELECT slug FROM content_queue WHERE slug LIKE 'pharmacy-%' AND status = 'published'",
+        args: [],
+    });
 
-    if (!posts || posts.length === 0) {
+    if (!result.rows.length) {
         console.log("대상 약국 글이 없습니다.");
         return;
     }
 
     let copyCount = 0;
-    for (const post of posts) {
-        const targetFileName = `${post.slug}.png`;
-        const targetPath = path.join(publicDir, targetFileName);
-
+    for (const row of result.rows) {
+        const targetPath = path.join(publicDir, `${row.slug}.png`);
         if (!fs.existsSync(targetPath)) {
             fs.copyFileSync(sourcePath, targetPath);
             copyCount++;
         }
     }
     console.log(`🎉 총 ${copyCount}개의 약국 이미지 생성 완료.`);
-
-    // 원본 default 이미지는 삭제하지 않고 유지 (나중을 위해)
 }
 
-// 3. 미생성 정보성 글 대체 이미지 적용 (Fallback)
 function applyFallbackImages() {
     console.log("🔄 미생성 글 대체 이미지 적용...");
 

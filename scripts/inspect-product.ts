@@ -1,35 +1,24 @@
-
 import dotenv from "dotenv";
-import { createClient } from "@supabase/supabase-js";
+import { getTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: ".env.local" });
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const db = getTursoClient();
 
 async function inspectProduct() {
-    // Find products that HAVE tags
-    const { data: products, error } = await supabase
-        .from("supplements")
-        .select("id, name, tags, ai_summary")
-        .not("tags", "is", null)
-        .limit(10);
+    const result = await db.execute(
+        "SELECT id, name, tags, ai_summary FROM supplements WHERE tags IS NOT NULL LIMIT 10"
+    );
 
-    if (error) {
-        console.error("Error:", error);
-        return;
-    }
-
-    if (!products || products.length === 0) {
+    if (!result.rows.length) {
         console.log("No products found with tags.");
         return;
     }
 
-    console.log(`Found ${products.length} products with tags:`);
-    products.forEach(p => {
-        console.log(`- ID: ${p.id} | Name: ${p.name}`);
-        console.log(`  Tags: ${JSON.stringify(p.tags)}`);
+    console.log(`Found ${result.rows.length} products with tags:`);
+    result.rows.forEach(r => {
+        console.log(`- ID: ${r.id} | Name: ${r.name}`);
+        console.log(`  Tags: ${r.tags}`);
     });
 }
 

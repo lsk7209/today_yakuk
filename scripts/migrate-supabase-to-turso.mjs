@@ -87,6 +87,14 @@ function toJsonText(val) {
   return JSON.stringify(val);
 }
 
+// Sanitize any value to a Turso-safe primitive (null | string | number | bigint)
+function s(val) {
+  if (val === undefined || val === null) return null;
+  if (typeof val === "number" && !isFinite(val)) return null;
+  if (typeof val === "boolean") return val ? 1 : 0;
+  return val;
+}
+
 // --- Table migrators ---
 
 async function migratePharmacies() {
@@ -105,11 +113,11 @@ async function migratePharmacies() {
             (id, hpid, name, address, tel, latitude, longitude, operating_hours, description_raw, gemini_summary, province, city, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
-        row.id, row.hpid, row.name, row.address, row.tel,
-        row.latitude, row.longitude,
+        s(row.id), s(row.hpid), s(row.name), s(row.address), s(row.tel),
+        s(row.latitude), s(row.longitude),
         toJsonText(row.operating_hours),
-        row.description_raw, row.gemini_summary, row.province, row.city,
-        row.updated_at,
+        s(row.description_raw), s(row.gemini_summary), s(row.province), s(row.city),
+        s(row.updated_at),
       ],
     }));
 
@@ -138,12 +146,12 @@ async function migrateSupplements() {
             (id, product_report_no, name, manufacturer, image_url, nutrition_facts, additives, ai_summary, tags, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
-        row.id, row.product_report_no, row.name, row.manufacturer, row.image_url,
+        s(row.id), s(row.product_report_no), s(row.name), s(row.manufacturer), s(row.image_url),
         toJsonText(row.nutrition_facts),
         toJsonText(row.additives),
-        row.ai_summary,
+        s(row.ai_summary),
         toJsonText(row.tags),
-        row.created_at,
+        s(row.created_at),
       ],
     }));
 
@@ -172,12 +180,12 @@ async function migrateIngredients() {
             (id, name, slug, summary, deficiency_symptoms, excess_symptoms, daily_value_guideline, tags, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
-        row.id, row.name, row.slug, row.summary,
+        s(row.id), s(row.name), s(row.slug), s(row.summary),
         toJsonText(row.deficiency_symptoms),
         toJsonText(row.excess_symptoms),
         toJsonText(row.daily_value_guideline),
         toJsonText(row.tags),
-        row.created_at,
+        s(row.created_at),
       ],
     }));
 
@@ -206,13 +214,13 @@ async function migrateContentQueue() {
             (id, hpid, title, slug, region, theme, content_html, ai_summary, ai_bullets, ai_faq, ai_cta, extra_sections, image_url, status, publish_at, published_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
-        row.id, row.hpid, row.title, row.slug, row.region, row.theme,
-        row.content_html, row.ai_summary,
+        s(row.id), s(row.hpid), s(row.title), s(row.slug), s(row.region), s(row.theme),
+        s(row.content_html), s(row.ai_summary),
         toJsonText(row.ai_bullets),
         toJsonText(row.ai_faq),
-        row.ai_cta,
+        s(row.ai_cta),
         toJsonText(row.extra_sections),
-        row.image_url, row.status, row.publish_at, row.published_at, row.updated_at,
+        s(row.image_url), s(row.status), s(row.publish_at), s(row.published_at), s(row.updated_at),
       ],
     }));
 
@@ -241,9 +249,9 @@ async function migrateMedicines() {
             (id, item_seq, name, manufacturer, efficacy, use_method, warning_general, warning_usage, interactions, side_effects, storage_method, image_url, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
-        row.id, row.item_seq, row.name, row.manufacturer,
-        row.efficacy, row.use_method, row.warning_general, row.warning_usage,
-        row.interactions, row.side_effects, row.storage_method, row.image_url, row.created_at,
+        s(row.id), s(row.item_seq), s(row.name), s(row.manufacturer),
+        s(row.efficacy), s(row.use_method), s(row.warning_general), s(row.warning_usage),
+        s(row.interactions), s(row.side_effects), s(row.storage_method), s(row.image_url), s(row.created_at),
       ],
     }));
 

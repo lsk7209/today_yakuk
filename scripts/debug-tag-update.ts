@@ -1,43 +1,33 @@
-
 import dotenv from "dotenv";
-import { createClient } from "@supabase/supabase-js";
+import { getTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: ".env.local" });
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!SUPABASE_SERVICE_KEY) {
-    console.error("❌ SUPABASE_SERVICE_ROLE_KEY is missing from environment variables!");
-    process.exit(1);
-}
-
-console.log(`🔑 Service Role Key loaded (length: ${SUPABASE_SERVICE_KEY.length})`);
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const db = getTursoClient();
 
 const TAG_MAP: Record<string, string[]> = {
     "vitamin-c": ["비타민C", "비타민 C", "Vitamin C"],
 };
 
 async function debugUpdate() {
-    // Fetch one specific vitamin C product
-    const { data: products, error } = await supabase
-        .from("supplements")
-        .select("id, name, tags")
-        .ilike("name", "%비타민C%")
-        .limit(1);
+    const result = await db.execute({
+        sql: "SELECT id, name, tags FROM supplements WHERE name LIKE ? LIMIT 1",
+        args: ["%비타민C%"],
+    });
 
-    if (error || !products || products.length === 0) {
-        console.error("Failed to fetch product", error);
+    if (!result.rows.length) {
+        console.error("Failed to fetch product");
         return;
     }
 
-    const product = products[0];
-    console.log(`\n🎯 Testing product: ${product.name} (ID: ${product.id})`);
-    console.log(`   Current tags: ${JSON.stringify(product.tags)}`);
+    const product = result.rows[0];
+    let currentTags: string[] = [];
+    try { currentTags = product.tags ? JSON.parse(product.tags as string) : []; } catch { /* skip */ }
 
-    const contentToSearch = product.name.toLowerCase();
+    console.log(`\n🎯 Testing product: ${product.name} (ID: ${product.id})`);
+    console.log(`   Current tags: ${JSON.stringify(currentTags)}`);
+
+    const contentToSearch = (product.name as string).toLowerCase();
     const newTags: Set<string> = new Set();
 
     for (const [tagId, keywords] of Object.entries(TAG_MAP)) {
@@ -52,17 +42,11 @@ async function debugUpdate() {
 
     if (tagArray.length > 0) {
         console.log("   Attempting update...");
-        const { data, error: updateError } = await supabase
-            .from("supplements")
-            .update({ tags: tagArray })
-            .eq("id", product.id)
-            .select();
-
-        if (updateError) {
-            console.error("   ❌ Update failed:", updateError);
-        } else {
-            console.log("   ✅ Update successful. Returned data:", JSON.stringify(data));
-        }
+        await db.execute({
+            sql: "UPDATE supplements SET tags = ? WHERE id = ?",
+            args: [JSON.stringify(tagArray), product.id as string],
+        });
+        console.log("   ✅ Update successful.");
     } else {
         console.log("   ⚠️ No tags to update.");
     }

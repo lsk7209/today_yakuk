@@ -1,25 +1,16 @@
 /**
- * 블로그 이미지 생성 및 Supabase Storage 업로드
- * GitHub Actions에서 실행되어 발행 대기 중인 컨텐츠의 이미지를 자동 생성
+ * 블로그 이미지 생성 — 로컬 public/blog-images/ 에 저장
  */
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import path from "path";
+import fs from "fs";
+import { getTursoClient } from "../src/lib/turso";
 
-// 환경 변수 로드
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-    console.error("❌ Supabase 환경 변수가 없습니다.");
-    process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = getTursoClient();
 
 const geminiApiKey = process.env.GEMINI_API_KEY;
 if (!geminiApiKey) {
@@ -28,10 +19,10 @@ if (!geminiApiKey) {
 }
 
 const genAI = new GoogleGenerativeAI(geminiApiKey);
-const modelName = "gemini-2.0-flash-exp"; // 이미지 생성 지원 모델
+const modelName = "gemini-2.0-flash-exp";
 const model = genAI.getGenerativeModel({ model: modelName });
 
-const BUCKET_NAME = "blog-images";
+const PUBLIC_DIR = path.join(process.cwd(), "public", "blog-images");
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 interface ContentItem {
@@ -41,45 +32,18 @@ interface ContentItem {
     image_url: string | null;
 }
 
-async function ensureBucketExists() {
-    const { data: buckets } = await supabase.storage.listBuckets();
-    const exists = buckets?.some(b => b.name === BUCKET_NAME);
-
-    if (!exists) {
-        const { error } = await supabase.storage.createBucket(BUCKET_NAME, {
-            public: true,
-            fileSizeLimit: 5242880, // 5MB
-        });
-        if (error) {
-            console.error("❌ 버킷 생성 실패:", error.message);
-            return false;
-        }
-        console.log(`✅ '${BUCKET_NAME}' 버킷 생성 완료`);
-    }
-    return true;
-}
-
-async function generateAndUploadImage(item: ContentItem): Promise<string | null> {
+async function generateAndSaveImage(item: ContentItem): Promise<string | null> {
     const fileName = `${item.slug}.png`;
+    const filePath = path.join(PUBLIC_DIR, fileName);
 
-    // 이미 Storage에 있는지 확인
-    const { data: existing } = await supabase.storage
-        .from(BUCKET_NAME)
-        .list("", { search: fileName });
-
-    if (existing && existing.length > 0) {
-        const existingFile = existing.find(f => f.name === fileName);
-        if (existingFile) {
-            console.log(`   ⏭️ 이미 존재: ${fileName}`);
-            const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(fileName);
-            return urlData.publicUrl;
-        }
+    if (fs.existsSync(filePath)) {
+        console.log(`   ⏭️ 이미 존재: ${fileName}`);
+        return `/blog-images/${fileName}`;
     }
 
     try {
-        // 이미지 생성 프롬프트
-        const prompt = `Create a warm, professional illustration for a Korean pharmacy/health blog post titled: "${item.title}". 
-Style: Modern, clean, friendly, suitable for healthcare content. 
+        const prompt = `Create a warm, professional illustration for a Korean pharmacy/health blog post titled: "${item.title}".
+Style: Modern, clean, friendly, suitable for healthcare content.
 Include: Pharmacy-related imagery like medicine bottles, healthy lifestyle elements, or Korean traditional wellness motifs.
 Colors: Soft, welcoming palette with greens, blues, or warm tones.
 NO TEXT in the image.`;
@@ -87,7 +51,6 @@ NO TEXT in the image.`;
         const result = await model.generateContent(prompt);
         const response = result.response;
 
-        // 이미지 데이터 추출
         const candidates = response.candidates || [];
         let imagePart: { data: string; mimeType: string } | null = null;
 
@@ -108,23 +71,12 @@ NO TEXT in the image.`;
             return null;
         }
 
-        // Base64 디코딩 및 업로드
+        if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR, { recursive: true });
+
         const buffer = Buffer.from(imagePart.data, "base64");
-        const { error: uploadError } = await supabase.storage
-            .from(BUCKET_NAME)
-            .upload(fileName, buffer, {
-                contentType: "image/png",
-                upsert: true,
-            });
-
-        if (uploadError) {
-            console.error(`   ❌ 업로드 실패:`, uploadError.message);
-            return null;
-        }
-
-        const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(fileName);
-        console.log(`   ✅ 생성 및 업로드 완료`);
-        return urlData.publicUrl;
+        fs.writeFileSync(filePath, buffer);
+        console.log(`   ✅ 저장 완료: ${fileName}`);
+        return `/blog-images/${fileName}`;
 
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err);
@@ -136,32 +88,17 @@ NO TEXT in the image.`;
 async function main() {
     console.log("🖼️ 블로그 이미지 자동 생성 시작...\n");
 
-    // 버킷 확인/생성
-    const bucketReady = await ensureBucketExists();
-    if (!bucketReady) {
-        console.error("버킷 준비 실패. 종료합니다.");
-        return;
-    }
+    const result = await db.execute({
+        sql: "SELECT id, slug, title, image_url FROM content_queue WHERE status IN ('pending', 'published') AND image_url IS NULL ORDER BY created_at DESC LIMIT 10",
+        args: [],
+    });
 
-    // 발행 대기 중이거나 발행된 컨텐츠 중 이미지가 없는 것 조회
-    const { data: items, error } = await supabase
-        .from("content_queue")
-        .select("id, slug, title, image_url")
-        .in("status", ["pending", "published"])
-        .is("image_url", null)
-        .order("created_at", { ascending: false })
-        .limit(10); // Rate limit 고려
-
-    if (error) {
-        console.error("❌ DB 조회 실패:", error.message);
-        return;
-    }
-
-    if (!items || items.length === 0) {
+    if (!result.rows.length) {
         console.log("✅ 이미지 생성이 필요한 컨텐츠가 없습니다.");
         return;
     }
 
+    const items = result.rows as unknown as ContentItem[];
     console.log(`📝 이미지 생성 대상: ${items.length}개\n`);
 
     let successCount = 0;
@@ -170,23 +107,16 @@ async function main() {
         const item = items[i];
         console.log(`[${i + 1}/${items.length}] "${item.title}"`);
 
-        const imageUrl = await generateAndUploadImage(item);
+        const imageUrl = await generateAndSaveImage(item);
 
         if (imageUrl) {
-            // DB에 이미지 URL 업데이트
-            const { error: updateError } = await supabase
-                .from("content_queue")
-                .update({ image_url: imageUrl })
-                .eq("id", item.id);
-
-            if (updateError) {
-                console.error(`   ⚠️ DB 업데이트 실패:`, updateError.message);
-            } else {
-                successCount++;
-            }
+            await db.execute({
+                sql: "UPDATE content_queue SET image_url = ? WHERE id = ?",
+                args: [imageUrl, item.id],
+            });
+            successCount++;
         }
 
-        // Rate limit 대기 (마지막 아이템 제외)
         if (i < items.length - 1) {
             console.log("   ⏳ 대기 (5초)...\n");
             await delay(5000);

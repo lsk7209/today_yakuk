@@ -2,27 +2,17 @@ import "dotenv/config";
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
-import { createClient } from "@supabase/supabase-js";
+import { getTursoClient } from "../src/lib/turso";
 
-const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseServiceKey) {
-    process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const db = getTursoClient();
 
 async function checkAll() {
-    const { data, error } = await supabase.from("content_queue").select("status");
-    if (error) {
-        console.error(error);
-        return;
+    const result = await db.execute("SELECT status FROM content_queue");
+    const counts: Record<string, number> = {};
+    for (const row of result.rows) {
+        const s = row.status as string;
+        counts[s] = (counts[s] || 0) + 1;
     }
-    const counts = data.reduce((acc: any, item: any) => {
-        acc[item.status] = (acc[item.status] || 0) + 1;
-        return acc;
-    }, {});
     console.log(JSON.stringify(counts));
 }
 
