@@ -27,7 +27,16 @@ export default function Page() {
         slug: "/blog/skin-trouble-first-aid-kit",
     });
 
-    return (
+    const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+      { "@type": "ListItem", position: 2, name: "블로그", item: "https://todaypharm.kr/blog" },
+      { "@type": "ListItem", position: 3, name: "피부 트러블 응급 키트", item: "https://todaypharm.kr/blog/skin-trouble-first-aid-kit" },
+    ],
+  };
+  return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
             <div className="space-y-4 text-center">
                 <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-600">
@@ -258,6 +267,11 @@ export default function Page() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+            />
+
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
             />
         </div>
     );

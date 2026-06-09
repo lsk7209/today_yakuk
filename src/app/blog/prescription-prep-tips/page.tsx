@@ -64,6 +64,24 @@ export default function BlogPrescriptionPrepTips() {
     slug: "/blog/prescription-prep-tips",
   });
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: { "@type": "Answer", text: faq.a },
+    })),
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+      { "@type": "ListItem", position: 2, name: "블로그", item: "https://todaypharm.kr/blog" },
+      { "@type": "ListItem", position: 3, name: "처방전 준비와 약국 방문 전 점검 7가지", item: "https://todaypharm.kr/blog/prescription-prep-tips" },
+    ],
+  };
   return (
     <div className="container py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
@@ -264,6 +282,14 @@ export default function BlogPrescriptionPrepTips() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     </div>
   );

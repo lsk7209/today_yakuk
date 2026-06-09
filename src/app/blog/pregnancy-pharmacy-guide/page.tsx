@@ -42,7 +42,25 @@ export default function Page() {
         slug: "/blog/pregnancy-pharmacy-guide",
     });
 
-    return (
+    const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: { "@type": "Answer", text: faq.a },
+    })),
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+      { "@type": "ListItem", position: 2, name: "블로그", item: "https://todaypharm.kr/blog" },
+      { "@type": "ListItem", position: 3, name: "임신 중 약국 이용 가이드", item: "https://todaypharm.kr/blog/pregnancy-pharmacy-guide" },
+    ],
+  };
+  return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
             <div className="space-y-4 text-center">
                 <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-600">
@@ -222,6 +240,15 @@ export default function Page() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+            />
+
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
             />
         </div>
     );
