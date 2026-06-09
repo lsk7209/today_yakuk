@@ -79,25 +79,19 @@ export default function BlogNightPharmacyChecklist() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "홈",
-        item: "/",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "블로그",
-        item: "/blog",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: "심야 약국 찾기 체크리스트",
-        item: "/blog/night-pharmacy-checklist",
-      },
+      { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+      { "@type": "ListItem", position: 2, name: "블로그", item: "https://todaypharm.kr/blog" },
+      { "@type": "ListItem", position: 3, name: "심야 약국 찾기 체크리스트", item: "https://todaypharm.kr/blog/night-pharmacy-checklist" },
     ],
+  };
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: { "@type": "Answer", text: faq.a },
+    })),
   };
 
   return (
@@ -276,6 +270,7 @@ export default function BlogNightPharmacyChecklist() {
       <AdSlotBottom />
 
       <JsonLd id="jsonld-article" data={articleJsonLd as unknown as Record<string, unknown>} />
+      <JsonLd id="jsonld-faq" data={faqJsonLd} />
       <JsonLd id="jsonld-breadcrumb" data={breadcrumbJsonLd} />
     </article>
   );
