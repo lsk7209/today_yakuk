@@ -36,6 +36,26 @@ export default function Page() {
       { "@type": "ListItem", position: 3, name: "피부 트러블 응급 키트", item: "https://todaypharm.kr/blog/skin-trouble-first-aid-kit" },
     ],
   };
+    const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      { "@type": "Question", name: "아이에게 사용할 수 있는 피부 트러블 약은?", acceptedAnswer: { "@type": "Answer", text: "키즈 전용 항히스타민 연고와 소아용 저농도 모기 기피제(이카리딘 성분)를 사용하세요. 스테로이드 연고는 소아과 상담 후 사용하는 것이 안전합니다." } },
+      { "@type": "Question", name: "일광화상 시 물집을 터트려도 되나요?", acceptedAnswer: { "@type": "Answer", text: "물집은 터트리지 마세요. 터트리면 2차 세균 감염 위험이 높아집니다. 화상 연고(덱스판테놀)를 부드럽게 도포하고 느슨한 면 소재 옷을 입어 자극을 줄이세요." } },
+      { "@type": "Question", name: "먹는 항히스타민제는 운전 중 복용해도 되나요?", acceptedAnswer: { "@type": "Answer", text: "졸음이 올 수 있으므로 운전 전에는 주의하세요. 로라타딘(클라리틴) 계열은 상대적으로 졸음이 덜해 낮 활동 중 복용에 유리합니다." } },
+    ],
+  };
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "피부 트러블 증상별 응급 처치 3단계",
+    description: metaDescription,
+    step: [
+      { "@type": "HowToStep", position: 1, name: "벌레 물림 대처", text: "물린 직후 5~10분 이내 항히스타민 연고를 도포하고 냉찜질을 병행하세요. 긁어 상처가 생기면 항생제 연고를 덧바르고 밴드로 덮으세요." },
+      { "@type": "HowToStep", position: 2, name: "일광화상 대처", text: "시원한 물로 15~20분간 피부를 식힌 뒤 냉장 보관한 알로에 베라 겔을 도포하세요. 통증이 심하면 이부프로펜 소염진통제를 복용하세요." },
+      { "@type": "HowToStep", position: 3, name: "두드러기·알러지 대처", text: "전신에 두드러기가 생기면 먹는 항히스타민제를 복용하고, 진물이 나는 부위에는 칼라민 로션을 도포하세요. 증상이 심하면 즉시 의원을 방문하세요." },
+    ],
+  };
   return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
             <div className="space-y-4 text-center">
@@ -269,6 +289,14 @@ export default function Page() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
             />
 
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+            />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

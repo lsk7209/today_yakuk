@@ -65,11 +65,23 @@ export default function Page() {
     { name: TITLE, url: `https://todaypharm.kr${CANONICAL}` },
   ]);
 
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "심야에 문 연 약국 찾기 3단계",
+    description: DESCRIPTION,
+    step: [
+      { "@type": "HowToStep", position: 1, name: "위치 기반 약국 검색", text: "건강보험심사평가원 약국찾기(hira.or.kr) 또는 약국오늘에서 현재 위치 기준으로 야간 운영 약국을 검색하세요." },
+      { "@type": "HowToStep", position: 2, name: "야간·24시간 필터 적용", text: "검색 결과에서 야간 운영 또는 24시간 필터를 선택해 운영 중인 약국만 확인하세요." },
+      { "@type": "HowToStep", position: 3, name: "전화 확인 후 방문", text: "방문 전 전화로 현재 운영 여부와 필요한 약의 재고를 확인하면 헛걸음을 방지할 수 있습니다." },
+    ],
+  };
   return (
     <article className="container max-w-3xl py-12">
       {/* JSON-LD */}
       <JsonLd id="article-schema" data={articleSchema} />
       <JsonLd id="faq-schema" data={faqSchema} />
+      <JsonLd id="howto-schema" data={howToSchema} />
       <JsonLd id="breadcrumb-schema" data={breadcrumbSchema} />
 
       {/* 헤더 */}

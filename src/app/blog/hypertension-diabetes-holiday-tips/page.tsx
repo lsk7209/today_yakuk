@@ -72,6 +72,18 @@ export default function Page() {
       { "@type": "ListItem", position: 3, name: "고혈압·당뇨 연휴 약 관리 팁", item: "https://todaypharm.kr/blog/hypertension-diabetes-holiday-tips" },
     ],
   };
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "고혈압·당뇨약 복용자 연휴 대비 4단계",
+    description: metaDescription,
+    step: [
+      { "@type": "HowToStep", position: 1, name: "약 재고 사전 확인", text: "연휴 시작 최소 1주일 전에 복용 중인 약 수량을 확인하고, 부족하면 담당 의사에게 연장 처방을 요청하세요." },
+      { "@type": "HowToStep", position: 2, name: "복약 시간 준수", text: "식사 시간이 바뀌더라도 당뇨약은 정해진 복약 일정을 지키고, 복약 시간을 놓쳤을 때의 대처법을 미리 숙지하세요." },
+      { "@type": "HowToStep", position: 3, name: "명절 음식 혈당 관리", text: "채소를 먼저 먹은 뒤 단백질, 밥 순서로 식사하면 혈당 스파이크를 예방할 수 있습니다." },
+      { "@type": "HowToStep", position: 4, name: "연휴 중 응급 상황 대처", text: "증상이 악화되면 당번약국 또는 응급실을 이용하고, E-gen 앱으로 가까운 기관을 확인하세요." },
+    ],
+  };
   return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
             <div className="space-y-4 text-center">
@@ -268,6 +280,10 @@ export default function Page() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
             />
             <script
                 type="application/ld+json"

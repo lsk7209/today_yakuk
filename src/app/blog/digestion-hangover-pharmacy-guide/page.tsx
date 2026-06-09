@@ -60,6 +60,16 @@ export default function Page() {
       { "@type": "ListItem", position: 3, name: "소화불량·숙취 약국 이용 가이드", item: "https://todaypharm.kr/blog/digestion-hangover-pharmacy-guide" },
     ],
   };
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "소화불량·숙취 증상별 약국 대처 2단계",
+    description: metaDescription,
+    step: [
+      { "@type": "HowToStep", position: 1, name: "소화불량 증상에 맞는 약 선택", text: "더부룩함에는 소화효소제, 속 쓰림에는 제산제·위산분비억제제, 가스에는 가스제거제를 선택하세요. 복합 증상이라면 약사에게 정확히 설명하고 추천을 받으세요." },
+      { "@type": "HowToStep", position: 2, name: "숙취 타이밍별 대처", text: "음주 전에는 간 보호제, 음주 중에는 수분 섭취, 음주 후에는 전해질 보충·아세트아미노펜(두통)·소화제를 활용하세요." },
+    ],
+  };
   return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
             <div className="space-y-4 text-center">
@@ -284,6 +294,10 @@ export default function Page() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
             />
             <script
                 type="application/ld+json"

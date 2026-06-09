@@ -72,6 +72,19 @@ export default function Page() {
       { "@type": "ListItem", position: 3, name: "처방전 분실 대처 가이드", item: "https://todaypharm.kr/blog/lost-prescription-action-guide" },
     ],
   };
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "여행 중 처방전·약 분실 시 5단계 대처법",
+    description: metaDescription,
+    step: [
+      { "@type": "HowToStep", position: 1, name: "일반의약품 여부 확인", text: "분실한 약이 처방전 없이 살 수 있는 일반의약품인지 먼저 확인하세요. OTC라면 가까운 약국에서 바로 구입할 수 있습니다." },
+      { "@type": "HowToStep", position: 2, name: "기존 병원에 처방전 전송 요청", text: "기존 담당 병원에 전화해 팩스 또는 모바일 처방전 전송을 요청하세요. 현지 약국 팩스 번호를 미리 확인해 두면 빠르게 처리할 수 있습니다." },
+      { "@type": "HowToStep", position: 3, name: "근처 병원 방문해 재처방", text: "병원 전송이 어렵다면 여행지 인근 병원을 방문해 동일 성분으로 재처방을 받으세요." },
+      { "@type": "HowToStep", position: 4, name: "응급실 방문 여부 판단", text: "인슐린, 항전간제 등 24시간 내 복용이 필수인 약이라면 응급실을 방문해 즉시 처방을 받으세요." },
+      { "@type": "HowToStep", position: 5, name: "대체 조제 활용", text: "동일 성분의 다른 제품으로 대체 조제가 가능한지 약사에게 문의하세요. 대체 조제 시 환자 동의가 필요합니다." },
+    ],
+  };
   return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
             <div className="space-y-4 text-center">
@@ -262,6 +275,10 @@ export default function Page() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
             />
             <script
                 type="application/ld+json"

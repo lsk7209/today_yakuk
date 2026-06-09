@@ -116,6 +116,19 @@ export default function KidsFeverMedicineComparisonPage() {
     ],
   };
 
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "소아 해열제 올바른 복용 5단계",
+    description: metaDescription,
+    step: [
+      { "@type": "HowToStep", position: 1, name: "체온 측정", text: "38도 이상이면 해열제 투여를 고려하고, 38.5도 이상이면 적극적으로 해열제를 사용하세요." },
+      { "@type": "HowToStep", position: 2, name: "해열제 성분 선택", text: "아세트아미노펜(타이레놀)과 이부프로펜(부루펜) 중 아이의 나이·체중·알러지를 고려해 선택하세요." },
+      { "@type": "HowToStep", position: 3, name: "적정 용량 확인", text: "해열제 용량은 체중 기준으로 계산합니다. 아세트아미노펜은 체중 kg당 10~15mg, 이부프로펜은 5~10mg이 기준입니다." },
+      { "@type": "HowToStep", position: 4, name: "교차복용 여부 판단", text: "38.5도 이상 고열이 지속되면 4~6시간 간격으로 두 성분을 교차 투여할 수 있습니다. 반드시 성분을 구분하여 복용하세요." },
+      { "@type": "HowToStep", position: 5, name: "48시간 모니터링", text: "48시간 이상 열이 지속되거나 증상이 악화되면 소아과를 방문하세요." },
+    ],
+  };
   return (
     <div className="mx-auto max-w-3xl space-y-12 px-4 py-10 sm:py-14">
       {/* ── 헤더 ── */}
@@ -548,6 +561,10 @@ export default function KidsFeverMedicineComparisonPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
       <script
         type="application/ld+json"

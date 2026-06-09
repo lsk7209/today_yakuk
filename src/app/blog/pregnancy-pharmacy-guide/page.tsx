@@ -60,6 +60,18 @@ export default function Page() {
       { "@type": "ListItem", position: 3, name: "임신 중 약국 이용 가이드", item: "https://todaypharm.kr/blog/pregnancy-pharmacy-guide" },
     ],
   };
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "임산부 안전한 약국 이용 4단계",
+    description: metaDescription,
+    step: [
+      { "@type": "HowToStep", position: 1, name: "증상 방치 금지", text: "고열·심한 통증은 무조건 참지 마세요. 적절한 대처가 오히려 태아를 보호합니다." },
+      { "@type": "HowToStep", position: 2, name: "증상별 안전한 약 확인", text: "두통·발열에는 아세트아미노펜이 상대적으로 안전합니다. 이부프로펜·아스피린은 임신 중 금기이므로 반드시 약사에게 임신 사실을 알리세요." },
+      { "@type": "HowToStep", position: 3, name: "임산부 약물 안전 등급(DUR) 확인", text: "식약처 의약품 안전나라(nedrug.mfds.go.kr)에서 복용하려는 약의 임산부 안전 등급을 확인하세요." },
+      { "@type": "HowToStep", position: 4, name: "영양제 과잉 섭취 주의", text: "비타민 A는 과잉 섭취 시 기형 위험이 있으므로 엽산·철분·비타민 D 외 추가 영양제는 의사와 상담 후 복용하세요." },
+    ],
+  };
   return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
             <div className="space-y-4 text-center">
@@ -245,6 +257,10 @@ export default function Page() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
             />
             <script
                 type="application/ld+json"

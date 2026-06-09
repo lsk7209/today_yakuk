@@ -106,6 +106,17 @@ export default function PharmacyVisitChecklist3() {
     ],
   };
 
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "약국 방문 전 헛걸음 방지 3단계 확인",
+    description: metaDescription,
+    step: [
+      { "@type": "HowToStep", position: 1, name: "영업시간 확인", text: "약국오늘에서 현재 시간 기준 실시간 영업 여부를 확인하세요. 건강보험심사평가원 공공데이터 기반으로 제공됩니다." },
+      { "@type": "HowToStep", position: 2, name: "재고 확인", text: "방문 전 전화로 필요한 약 재고가 있는지 확인하세요. 처방전에 적힌 약 이름을 말하고 조제 가능 여부를 물어보면 됩니다." },
+      { "@type": "HowToStep", position: 3, name: "처방전 유효기간 확인", text: "처방전은 발행일 포함 3일(당일+2일) 이내에만 유효합니다. 기간이 지났다면 발급 병원에서 재발급을 받아야 합니다." },
+    ],
+  };
   return (
     <article className="container py-10 sm:py-14 space-y-10 bg-white min-h-screen">
 
@@ -439,6 +450,7 @@ export default function PharmacyVisitChecklist3() {
       {/* ── JSON-LD ── */}
       <JsonLd id="jsonld-article" data={articleSchema} />
       <JsonLd id="jsonld-faq" data={faqSchema} />
+      <JsonLd id="jsonld-howto" data={howToSchema} />
       <JsonLd id="jsonld-breadcrumb" data={breadcrumbSchema} />
     </article>
   );
