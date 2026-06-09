@@ -91,6 +91,18 @@ export default function GuideCallScriptsPage() {
       { "@type": "ListItem", position: 3, name: "전화 스크립트 가이드", item: "https://todaypharm.kr/guide/call-scripts" },
     ],
   };
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "약국 전화 확인: 영업·재고 스크립트 3단계",
+    description: metaDescription,
+    step: scripts.map((s, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: s.title,
+      text: s.desc,
+    })),
+  };
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -274,6 +286,10 @@ export default function GuideCallScriptsPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
       <script
         type="application/ld+json"

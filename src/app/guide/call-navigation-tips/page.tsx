@@ -84,6 +84,18 @@ export default function GuideCallNavigationTipsPage() {
       { "@type": "ListItem", position: 3, name: "전화·길찾기 활용 팁", item: "https://todaypharm.kr/guide/call-navigation-tips" },
     ],
   };
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "전화·길찾기로 헛걸음 줄이는 4단계",
+    description: metaDescription,
+    step: tips.map((t, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: t.title,
+      text: t.detail,
+    })),
+  };
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -259,6 +271,10 @@ export default function GuideCallNavigationTipsPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
       <script
         type="application/ld+json"

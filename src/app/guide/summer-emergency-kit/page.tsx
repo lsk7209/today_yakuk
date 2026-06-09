@@ -69,6 +69,18 @@ export default function GuideSummerEmergencyKitPage() {
       { "@type": "ListItem", position: 3, name: "여름 응급 키트 구성법", item: "https://todaypharm.kr/guide/summer-emergency-kit" },
     ],
   };
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "여름 휴가철 응급 키트 구성 5단계",
+    description: metaDescription,
+    step: checklist.map((item, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: item,
+      text: item,
+    })),
+  };
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -278,6 +290,10 @@ export default function GuideSummerEmergencyKitPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
       <script
         type="application/ld+json"
