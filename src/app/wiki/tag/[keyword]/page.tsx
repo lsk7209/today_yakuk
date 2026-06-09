@@ -157,6 +157,63 @@ export default async function TagPage({
                     )}
                 </div>
             )}
+
+            {/* Related Blog Posts by category */}
+            {(() => {
+                const CATEGORY_BLOGS: Record<string, { href: string; label: string; desc: string }[]> = {
+                    "오메가3": [
+                        { href: "/blog/omega3-selection-guide", label: "오메가3 알티지 vs 에틸에스텔 선택 가이드", desc: "흡수율·형태별 차이와 복용법 정리" },
+                    ],
+                    "omega3": [
+                        { href: "/blog/omega3-selection-guide", label: "오메가3 알티지 vs 에틸에스텔 선택 가이드", desc: "흡수율·형태별 차이와 복용법 정리" },
+                    ],
+                    "유산균": [
+                        { href: "/blog/probiotics-selection-guide", label: "유산균 균주 선택 가이드", desc: "목적별 균주 선택법과 CFU 해석" },
+                    ],
+                    "probiotics": [
+                        { href: "/blog/probiotics-selection-guide", label: "유산균 균주 선택 가이드", desc: "목적별 균주 선택법과 CFU 해석" },
+                    ],
+                    "눈건강": [
+                        { href: "/blog/lutein-astaxanthin-guide", label: "루테인 vs 아스타잔틴 눈 건강 비교", desc: "황반 보호·항산화력·병용 여부 정리" },
+                    ],
+                    "eye": [
+                        { href: "/blog/lutein-astaxanthin-guide", label: "루테인 vs 아스타잔틴 눈 건강 비교", desc: "황반 보호·항산화력·병용 여부 정리" },
+                    ],
+                    "뼈": [
+                        { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "결핍 증상과 올바른 보충 방법" },
+                        { href: "/blog/magnesium-deficiency-guide", label: "마그네슘 부족 신호 6가지", desc: "형태별 흡수율과 올바른 복용법" },
+                    ],
+                    "bone": [
+                        { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "결핍 증상과 올바른 보충 방법" },
+                        { href: "/blog/magnesium-deficiency-guide", label: "마그네슘 부족 신호 6가지", desc: "형태별 흡수율과 올바른 복용법" },
+                    ],
+                    "면역력": [
+                        { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "결핍 증상과 올바른 보충 방법" },
+                    ],
+                    "immune": [
+                        { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "결핍 증상과 올바른 보충 방법" },
+                    ],
+                };
+                const relatedPosts = CATEGORY_BLOGS[rawKeyword] || CATEGORY_BLOGS[keyword] || [];
+                if (relatedPosts.length === 0) return null;
+                return (
+                    <section className="pt-6 border-t border-slate-100">
+                        <h2 className="text-lg font-black text-slate-900 mb-4">관련 가이드</h2>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                            {relatedPosts.map((post) => (
+                                <Link
+                                    key={post.href}
+                                    href={post.href}
+                                    className="rounded-xl border border-gray-100 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+                                >
+                                    <p className="font-bold text-gray-900 text-sm">{post.label}</p>
+                                    <p className="text-xs text-gray-500">{post.desc}</p>
+                                </Link>
+                            ))}
+                        </div>
+                    </section>
+                );
+            })()}
         </div>
     );
 }
