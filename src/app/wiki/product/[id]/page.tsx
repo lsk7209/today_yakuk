@@ -4,7 +4,6 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { NutrientDisplay } from "@/components/wiki/NutrientDisplay";
 import { linkIngredients } from "@/utils/text-linker";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { AdditiveSignal } from "@/components/wiki/AdditiveSignal";
 import { MapPin } from "lucide-react";
 import { getSupplementById, type Supplement } from "@/lib/data/pharmacies";
@@ -25,12 +24,10 @@ interface NutritionFactItem {
 
 async function getAllIngredients(): Promise<{ name: string; slug: string }[]> {
   try {
-    const supabase = getSupabaseServerClient();
-    const { data, error } = await supabase
-      .from("ingredients")
-      .select("name, slug");
-    if (error) return [];
-    return data || [];
+    const { getTursoClient } = await import("@/lib/turso");
+    const db = getTursoClient();
+    const result = await db.execute("SELECT name, slug FROM ingredients");
+    return result.rows.map((r) => ({ name: r.name as string, slug: r.slug as string }));
   } catch {
     return [];
   }

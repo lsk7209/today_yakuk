@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { unstable_cache } from "next/cache";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getTursoClient, parseJson } from "@/lib/turso";
 import { Filter } from "lucide-react";
 import Image from "next/image";
 import WikiSearch from "@/components/wiki/WikiSearch";
@@ -21,15 +21,17 @@ export const metadata: Metadata = {
 
 // searchParams makes this page dynamic — cache the expensive count separately
 const getCachedTotalCount = unstable_cache(
-    async () => {
-        const supabase = getSupabaseServerClient();
-        const { count } = await supabase
-            .from("supplements")
-            .select("*", { count: "estimated", head: true });
-        return count ?? 0;
-    },
-    ["supplements-total-count"],
-    { revalidate: 3600 }
+  async () => {
+    try {
+      const db = getTursoClient();
+      const result = await db.execute("SELECT COUNT(*) as cnt FROM supplements");
+      return Number(result.rows[0]?.cnt ?? 0);
+    } catch {
+      return 0;
+    }
+  },
+  ["supplements-total-count"],
+  { revalidate: 3600 }
 );
 
 interface Supplement {
@@ -73,37 +75,51 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
     const page = parseInt(searchParams.page || "1", 10);
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
-    const supabase = getSupabaseServerClient();
+    const db = getTursoClient();
 
-    // Separated count (estimated, cached 1h) + data queries for better performance
-    let countQuery = supabase
-        .from("supplements")
-        .select("*", { count: "estimated", head: true });
+    let filteredCount: number;
+    let productsRows: Record<string, unknown>[];
 
-    let dataQuery = supabase
-        .from("supplements")
-        .select("id, name, manufacturer, image_url, ai_summary, tags");
-
-    if (currentCategory !== "all") {
+    if (currentCategory === "all") {
+        const keyword = TAG_SLUG_MAP[currentCategory] || currentCategory;
+        void keyword; // unused for "all"
+        const [countResult, dataResult] = await Promise.all([
+            getCachedTotalCount(),
+            db.execute({
+                sql: "SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements ORDER BY created_at DESC LIMIT ? OFFSET ?",
+                args: [ITEMS_PER_PAGE, offset],
+            }),
+        ]);
+        filteredCount = countResult;
+        productsRows = dataResult.rows as Record<string, unknown>[];
+    } else {
         const keyword = TAG_SLUG_MAP[currentCategory] || currentCategory;
         const searchTerms = Array.from(new Set([currentCategory, keyword]));
-        const filterStr = `tags.cs.{${searchTerms.join(',')}}`;
-        countQuery = countQuery.or(filterStr);
-        dataQuery = dataQuery.or(filterStr);
+        const inClause = searchTerms.map(() => "?").join(", ");
+        const filterArgs = [...searchTerms];
+
+        const [countResult, dataResult] = await Promise.all([
+            db.execute({
+                sql: `SELECT COUNT(*) as cnt FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause}))`,
+                args: filterArgs,
+            }),
+            db.execute({
+                sql: `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+                args: [...filterArgs, ITEMS_PER_PAGE, offset],
+            }),
+        ]);
+        filteredCount = Number(countResult.rows[0]?.cnt ?? 0);
+        productsRows = dataResult.rows as Record<string, unknown>[];
     }
 
-    const [{ count: filteredCount }, { data: products, error }] = await Promise.all([
-        currentCategory === "all"
-            ? getCachedTotalCount().then((n) => ({ count: n }))
-            : countQuery,
-        dataQuery
-            .range(offset, offset + ITEMS_PER_PAGE - 1)
-            .order("created_at", { ascending: false }),
-    ]);
-
-    if (error) {
-        console.error("Wiki fetch error:", error);
-    }
+    const products = productsRows.map((r) => ({
+        id: r.id as string,
+        name: r.name as string,
+        manufacturer: r.manufacturer as string | null,
+        image_url: r.image_url as string | null,
+        ai_summary: r.ai_summary as string | null,
+        tags: parseJson(r.tags, null) as string[] | null,
+    }));
 
     const count = filteredCount ?? 0;
     const totalPages = count ? Math.ceil(count / ITEMS_PER_PAGE) : 1;

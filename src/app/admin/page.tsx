@@ -1,4 +1,4 @@
-import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getTursoClient } from "@/lib/turso";
 import {
     Activity,
     Database,
@@ -12,49 +12,46 @@ import {
 import Link from "next/link";
 import QuickActions from "@/components/admin/quick-actions";
 
-// SSR force dynamic
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-    const supabase = getSupabaseServerClient();
+    const db = getTursoClient();
 
-    // 통계 쿼리 (병렬 실행)
-    // Analytics: 오늘 방문자 수 (Table might not exist yet)
     const today = new Date().toISOString().split('T')[0];
     let todayVisitors = 0;
 
     try {
-        const { count } = await supabase
-            .from("analytics_logs")
-            .select("id", { count: "exact", head: true })
-            .gte("created_at", today);
-        todayVisitors = count || 0;
-    } catch (error) {
-        console.error("Analytics table not ready", error);
+        const visitResult = await db.execute({
+            sql: "SELECT COUNT(*) as cnt FROM analytics_logs WHERE created_at >= ?",
+            args: [today],
+        });
+        todayVisitors = Number(visitResult.rows[0]?.cnt ?? 0);
+    } catch {
+        // analytics_logs 테이블 없을 수 있음
     }
 
-    // Analytics: 인기 페이지 (Top 5) - Simple client-side aggregation simulation (Real aggregation best done in RPC)
-    // For MVP, we fetch recent logs and aggregate in JS or use a basic count if volume is low.
-    // For scalable solution, create a database function. Here we just show the placeholder or simple stats.
+    let totalPharmacies = 0, pendingCount = 0, publishedCount = 0, failedCount = 0, totalSupplements = 0, enrichedSupplements = 0;
 
-    // AI Stats
-    const [
-        { count: totalPharmacies },
-        { count: pendingCount },
-        { count: publishedCount },
-        { count: failedCount },
-        { count: totalSupplements },
-        { count: enrichedSupplements },
-    ] = await Promise.all([
-        supabase.from("pharmacies").select("*", { count: "exact", head: true }),
-        supabase.from("content_queue").select("*", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("content_queue").select("*", { count: "exact", head: true }).eq("status", "published"),
-        supabase.from("content_queue").select("*", { count: "exact", head: true }).eq("status", "failed"),
-        supabase.from("supplements").select("*", { count: "exact", head: true }),
-        supabase.from("supplements").select("*", { count: "exact", head: true }).not("ai_summary", "is", null),
-    ]);
+    try {
+        const [p, pend, pub, fail, supp, enriched] = await Promise.all([
+            db.execute("SELECT COUNT(*) as cnt FROM pharmacies"),
+            db.execute("SELECT COUNT(*) as cnt FROM content_queue WHERE status = 'pending'"),
+            db.execute("SELECT COUNT(*) as cnt FROM content_queue WHERE status = 'published'"),
+            db.execute("SELECT COUNT(*) as cnt FROM content_queue WHERE status = 'failed'"),
+            db.execute("SELECT COUNT(*) as cnt FROM supplements"),
+            db.execute("SELECT COUNT(*) as cnt FROM supplements WHERE ai_summary IS NOT NULL"),
+        ]);
+        totalPharmacies = Number(p.rows[0]?.cnt ?? 0);
+        pendingCount = Number(pend.rows[0]?.cnt ?? 0);
+        publishedCount = Number(pub.rows[0]?.cnt ?? 0);
+        failedCount = Number(fail.rows[0]?.cnt ?? 0);
+        totalSupplements = Number(supp.rows[0]?.cnt ?? 0);
+        enrichedSupplements = Number(enriched.rows[0]?.cnt ?? 0);
+    } catch (e) {
+        console.error("Admin stats error", e);
+    }
 
-    const enrichmentRate = totalSupplements ? Math.round(((enrichedSupplements || 0) / totalSupplements) * 100) : 0;
+    const enrichmentRate = totalSupplements ? Math.round((enrichedSupplements / totalSupplements) * 100) : 0;
 
     return (
         <div className="max-w-7xl mx-auto space-y-8">
@@ -74,10 +71,8 @@ export default async function AdminDashboardPage() {
                 </div>
             </header>
 
-            {/* Quick Actions */}
             <QuickActions />
 
-            {/* Analytics Overview (New) */}
             <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
                     <div className="p-3 bg-indigo-50 rounded-2xl">
@@ -86,7 +81,7 @@ export default async function AdminDashboardPage() {
                     <div>
                         <div className="text-sm font-medium text-slate-500">오늘 방문자</div>
                         <div className="text-3xl font-black text-slate-900">
-                            {(todayVisitors || 0).toLocaleString()}
+                            {todayVisitors.toLocaleString()}
                         </div>
                     </div>
                 </div>
@@ -108,7 +103,6 @@ export default async function AdminDashboardPage() {
                 </div>
             </section>
 
-            {/* AI Enrichment Stats (New) */}
             <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-8 opacity-5">
                     <Zap className="w-48 h-48" />
@@ -123,7 +117,7 @@ export default async function AdminDashboardPage() {
                     <div className="space-y-2">
                         <div className="text-slate-500 font-medium text-sm">전체 데이터베이스</div>
                         <div className="text-3xl font-black text-slate-900">
-                            {(totalSupplements || 0).toLocaleString()}
+                            {totalSupplements.toLocaleString()}
                             <span className="text-base font-bold text-slate-400 ml-1">건</span>
                         </div>
                     </div>
@@ -134,7 +128,7 @@ export default async function AdminDashboardPage() {
                             <span className="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold">New</span>
                         </div>
                         <div className="text-3xl font-black text-green-600">
-                            {(enrichedSupplements || 0).toLocaleString()}
+                            {enrichedSupplements.toLocaleString()}
                             <span className="text-base font-bold text-slate-400 ml-1">건</span>
                         </div>
                     </div>
@@ -150,15 +144,12 @@ export default async function AdminDashboardPage() {
                                 style={{ width: `${enrichmentRate}%` }}
                             />
                         </div>
-                        <p className="text-xs text-slate-400">
-                            * 매일 약 800개씩 자동으로 채워집니다.
-                        </p>
+                        <p className="text-xs text-slate-400">* 매일 약 800개씩 자동으로 채워집니다.</p>
                     </div>
                 </div>
             </section>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Content Queue Status */}
                 <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm">
                     <h2 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
                         <Activity className="w-6 h-6 text-blue-500" />
@@ -170,18 +161,14 @@ export default async function AdminDashboardPage() {
                             <div className="flex items-center gap-2 text-orange-700 font-bold mb-2">
                                 <Clock className="w-4 h-4" /> 대기 중
                             </div>
-                            <div className="text-2xl font-black text-slate-900">
-                                {(pendingCount || 0).toLocaleString()}
-                            </div>
+                            <div className="text-2xl font-black text-slate-900">{pendingCount.toLocaleString()}</div>
                         </div>
 
                         <div className="bg-green-50 p-5 rounded-2xl border border-green-100">
                             <div className="flex items-center gap-2 text-green-700 font-bold mb-2">
                                 <CheckCircle className="w-4 h-4" /> 발행 완료
                             </div>
-                            <div className="text-2xl font-black text-slate-900">
-                                {(publishedCount || 0).toLocaleString()}
-                            </div>
+                            <div className="text-2xl font-black text-slate-900">{publishedCount.toLocaleString()}</div>
                         </div>
 
                         <div className="col-span-2 bg-red-50 p-5 rounded-2xl border border-red-100 flex items-center justify-between">
@@ -189,18 +176,13 @@ export default async function AdminDashboardPage() {
                                 <div className="flex items-center gap-2 text-red-700 font-bold mb-1">
                                     <AlertCircle className="w-4 h-4" /> 실패 / 오류
                                 </div>
-                                <div className="text-xs text-red-600/80">
-                                    컨텐츠 생성 실패 건수
-                                </div>
+                                <div className="text-xs text-red-600/80">컨텐츠 생성 실패 건수</div>
                             </div>
-                            <div className="text-2xl font-black text-slate-900">
-                                {(failedCount || 0).toLocaleString()}
-                            </div>
+                            <div className="text-2xl font-black text-slate-900">{failedCount.toLocaleString()}</div>
                         </div>
                     </div>
                 </section>
 
-                {/* Infrastructure Stats */}
                 <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm">
                     <h2 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
                         <Server className="w-6 h-6 text-slate-500" />
@@ -218,9 +200,7 @@ export default async function AdminDashboardPage() {
                                     <div className="text-xs text-slate-500">Live Database Code</div>
                                 </div>
                             </div>
-                            <div className="text-xl font-black text-slate-900">
-                                {(totalPharmacies || 0).toLocaleString()}
-                            </div>
+                            <div className="text-xl font-black text-slate-900">{totalPharmacies.toLocaleString()}</div>
                         </div>
 
                         <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">

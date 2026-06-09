@@ -1,22 +1,13 @@
-import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { listContentQueue } from "@/lib/data/content";
 import QueueActions from "@/components/admin/queue-actions";
 import { ContentQueueItem } from "@/types/content";
-
 import CleanupFailedButton from "@/components/admin/cleanup-failed-button";
 
 export const dynamic = "force-dynamic";
 
 export default async function QueueManagementPage() {
-    const supabase = getSupabaseServerClient();
-
-    // 최근 50개 항목 조회
-    const { data } = await supabase
-        .from("content_queue")
-        .select("*")
-        .order("publish_at", { ascending: false }) // 미래 예약부터 과거순
-        .limit(50);
-
-    const queue = data as ContentQueueItem[] | null;
+    const items = await listContentQueue(50);
+    const queue = items as ContentQueueItem[];
 
     return (
         <div>
@@ -39,7 +30,7 @@ export default async function QueueManagementPage() {
                         {queue?.map((item) => (
                             <tr key={item.id}>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                 ${item.status === 'published' ? 'bg-green-100 text-green-800' :
                                             item.status === 'pending' ? 'bg-orange-100 text-orange-800' :
                                                 'bg-red-100 text-red-800'}`}>

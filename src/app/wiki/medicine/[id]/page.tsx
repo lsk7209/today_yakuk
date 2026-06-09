@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { MapPin } from "lucide-react";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSiteUrl } from "@/lib/site-url";
 
 // ISR: Revalidate every 24 hours
@@ -27,18 +26,26 @@ interface Medicine {
 
 async function getMedicineById(id: string): Promise<Medicine | null> {
     try {
-        const supabase = getSupabaseServerClient();
-        const { data, error } = await supabase
-            .from("medicines")
-            .select("*")
-            .eq("id", id)
-            .maybeSingle();
-
-        if (error) {
-            console.error("medicine fetch error", error);
-            return null;
-        }
-        return data as Medicine | null;
+        const { getTursoClient } = await import("@/lib/turso");
+        const db = getTursoClient();
+        const result = await db.execute({ sql: "SELECT * FROM medicines WHERE id = ? LIMIT 1", args: [id] });
+        if (!result.rows.length) return null;
+        const r = result.rows[0];
+        return {
+            id: r.id as string,
+            item_seq: r.item_seq as string,
+            name: r.name as string,
+            manufacturer: r.manufacturer as string | null,
+            efficacy: r.efficacy as string | null,
+            use_method: r.use_method as string | null,
+            warning_general: r.warning_general as string | null,
+            warning_usage: r.warning_usage as string | null,
+            interactions: r.interactions as string | null,
+            side_effects: r.side_effects as string | null,
+            storage_method: r.storage_method as string | null,
+            image_url: r.image_url as string | null,
+            created_at: r.created_at as string,
+        };
     } catch (e) {
         console.error("medicine fetch exception", e);
         return null;

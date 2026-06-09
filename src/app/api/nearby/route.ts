@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { distanceKm } from "@/lib/data/pharmacies";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getTursoClient } from "@/lib/turso";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,30 +15,26 @@ export async function GET(request: Request) {
   const limit = Number.isFinite(requestedLimit)
     ? Math.min(Math.max(Math.trunc(requestedLimit), 1), 50)
     : 40;
-  const supabase = getSupabaseServerClient();
+
+  const db = getTursoClient();
 
   if (q) {
     if (q.length < 2) {
       return NextResponse.json({ message: "검색어는 2글자 이상 입력해주세요." }, { status: 400 });
     }
 
-    const { data: searchResults, error: searchError } = await supabase
-      .from("pharmacies")
-      .select("*")
-      .or(`name.ilike.%${q}%,address.ilike.%${q}%`)
-      .limit(limit);
-
-    if (searchError) {
+    try {
+      const result = await db.execute({
+        sql: "SELECT * FROM pharmacies WHERE name LIKE ? OR address LIKE ? LIMIT ?",
+        args: [`%${q}%`, `%${q}%`, limit],
+      });
+      return NextResponse.json({
+        items: result.rows.map((p) => ({ ...p, distanceKm: undefined })),
+        total: result.rows.length,
+      });
+    } catch {
       return NextResponse.json({ message: "검색 중 오류가 발생했습니다." }, { status: 500 });
     }
-
-    return NextResponse.json({
-      items: (searchResults ?? []).map((p: any) => ({
-        ...p,
-        distanceKm: undefined,
-      })),
-      total: searchResults?.length ?? 0,
-    });
   }
 
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
@@ -52,35 +48,31 @@ export async function GET(request: Request) {
   const minLon = lon - delta;
   const maxLon = lon + delta;
 
-  const { data, error } = await supabase
-    .from("pharmacies")
-    .select("*")
-    .gte("latitude", minLat)
-    .lte("latitude", maxLat)
-    .gte("longitude", minLon)
-    .lte("longitude", maxLon)
-    .limit(400); // defensive cap
+  try {
+    const result = await db.execute({
+      sql: "SELECT * FROM pharmacies WHERE latitude BETWEEN ? AND ? AND longitude BETWEEN ? AND ? LIMIT 400",
+      args: [minLat, maxLat, minLon, maxLon],
+    });
 
-  if (error) {
+    const within = (result.rows as any[])
+      .filter((p) => p.latitude && p.longitude)
+      .map((p) => ({
+        pharmacy: p,
+        distance: distanceKm(lat, lon, p.latitude as number, p.longitude as number),
+      }))
+      .filter((item) => item.distance <= radiusKm)
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, limit);
+
+    return NextResponse.json({
+      items: within.map((w) => ({
+        ...w.pharmacy,
+        distanceKm: w.distance,
+      })),
+      total: within.length,
+    });
+  } catch {
     return NextResponse.json({ message: "데이터를 불러오지 못했습니다." }, { status: 500 });
   }
-
-  const within = ((data ?? []) as any[])
-    .filter((p) => p.latitude && p.longitude)
-    .map((p) => ({
-      pharmacy: p,
-      distance: distanceKm(lat, lon, p.latitude as number, p.longitude as number),
-    }))
-    .filter((item) => item.distance <= radiusKm)
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, limit);
-
-  return NextResponse.json({
-    items: within.map((w) => ({
-      ...w.pharmacy,
-      distanceKm: w.distance,
-    })),
-    total: within.length,
-  });
 }
 

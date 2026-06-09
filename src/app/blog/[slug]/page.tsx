@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getPublishedContentBySlug, listPublishedContent } from "@/lib/data/content";
 import {
   JsonLd,
   buildArticleSchema,
@@ -39,13 +39,7 @@ function addHeadingIds(html: string): string {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const supabase = getSupabaseServerClient();
-  const { data: post } = await supabase
-    .from("content_queue")
-    .select("title, ai_summary, slug, image_url")
-    .eq("slug", params.slug)
-    .eq("status", "published")
-    .maybeSingle();
+  const post = await getPublishedContentBySlug(params.slug);
 
   if (!post || Array.isArray(post)) {
     return {
@@ -100,29 +94,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const supabase = getSupabaseServerClient();
+  const post = await getPublishedContentBySlug(params.slug);
 
-  // 현재 글 가져오기
-  const { data: post } = await supabase
-    .from("content_queue")
-    .select("*")
-    .eq("slug", params.slug)
-    .eq("status", "published")
-    .maybeSingle();
-
-  if (!post || Array.isArray(post)) {
+  if (!post) {
     notFound();
   }
 
-  // 관련 글 가져오기
-  const { data: relatedPosts } = await supabase
-    .from("content_queue")
-    .select("slug, title, ai_summary, published_at, image_url")
-    .eq("status", "published")
-    .neq("slug", params.slug)
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .order("updated_at", { ascending: false })
-    .limit(4);
+  const allRecent = await listPublishedContent(10);
+  const relatedPosts = allRecent
+    .filter((p) => p.slug !== params.slug)
+    .slice(0, 4)
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      ai_summary: p.ai_summary,
+      published_at: p.published_at,
+      image_url: p.image_url,
+    }));
 
   // 헤딩에 ID 추가
   const contentWithIds = addHeadingIds(sanitizeTrustedHtml(post.content_html));
@@ -246,18 +234,10 @@ export default async function BlogPostPage({ params }: Props) {
       {/* 관련 글 */}
       <RelatedPosts
         posts={
-          relatedPosts?.map(
-            (p: {
-              slug: string;
-              title: string;
-              ai_summary: string | null;
-              published_at: string | null;
-              image_url: string | null;
-            }) => ({
+          relatedPosts.map((p) => ({
               ...p,
               imageUrl: getBlogFeaturedImage(p.slug, p.title, p.image_url),
-            }),
-          ) || []
+            }))
         }
       />
     </article>

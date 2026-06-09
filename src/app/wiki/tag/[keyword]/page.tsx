@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getTursoClient, parseJson } from "@/lib/turso";
 import { getSiteUrl } from "@/lib/site-url";
 import { Tag } from "lucide-react";
 import { Breadcrumb } from "@/components/breadcrumb";
@@ -65,25 +65,41 @@ export default async function TagPage({
     const page = parseInt(searchParams.page || '1', 10);
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
-    const supabase = getSupabaseServerClient();
-
     // 3. Search for both slug (URL) and mapped keyword (Korean)
     // This handles both cases: data stored as "fatigue" and "피로회복"
     const searchTerms = Array.from(new Set([rawKeyword, keyword]));
 
-    // Separate count (estimated, fast) + data queries
-    const filterStr = `tags.cs.{${searchTerms.join(',')}}`;
-    const [{ count }, { data: products, error }] = await Promise.all([
-        supabase.from('supplements').select('*', { count: 'estimated', head: true }).or(filterStr),
-        supabase.from('supplements').select('id, name, manufacturer, image_url, ai_summary, tags')
-            .or(filterStr)
-            .range(offset, offset + ITEMS_PER_PAGE - 1),
-    ]);
+    const db = getTursoClient();
+    const inClause = searchTerms.map(() => "?").join(", ");
 
-    if (error) {
-        console.error('Tag page fetch error:', error);
+    let count: number;
+    let productsRows: Record<string, unknown>[];
+    try {
+        const [countResult, dataResult] = await Promise.all([
+            db.execute({
+                sql: `SELECT COUNT(*) as cnt FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause}))`,
+                args: searchTerms,
+            }),
+            db.execute({
+                sql: `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) LIMIT ? OFFSET ?`,
+                args: [...searchTerms, ITEMS_PER_PAGE, offset],
+            }),
+        ]);
+        count = Number(countResult.rows[0]?.cnt ?? 0);
+        productsRows = dataResult.rows as Record<string, unknown>[];
+    } catch (e) {
+        console.error('Tag page fetch error:', e);
         notFound();
     }
+
+    const products = productsRows!.map((r) => ({
+        id: r.id as string,
+        name: r.name as string,
+        manufacturer: r.manufacturer as string | null,
+        image_url: r.image_url as string | null,
+        ai_summary: r.ai_summary as string | null,
+        tags: parseJson(r.tags, null) as string[] | null,
+    }));
 
     const totalPages = count ? Math.ceil(count / ITEMS_PER_PAGE) : 1;
 

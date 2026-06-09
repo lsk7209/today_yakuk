@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getTursoClient, parseJson } from "@/lib/turso";
 
 export const dynamic = "force-dynamic";
 
@@ -17,33 +17,40 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabase = getSupabaseServerClient();
+    const db = getTursoClient();
+    const likeQ = `%${query}%`;
 
-    let dbQuery = supabase
-      .from("supplements")
-      .select("id, name, manufacturer, image_url, ai_summary, tags")
-      .or(`name.ilike.%${query}%,manufacturer.ilike.%${query}%,ai_summary.ilike.%${query}%`)
-      .limit(limit);
+    let sql: string;
+    let args: (string | number)[];
 
     if (category && category !== "all") {
-      dbQuery = dbQuery.contains("tags", [category]);
+      sql = `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements
+             WHERE (name LIKE ? OR manufacturer LIKE ? OR ai_summary LIKE ?)
+             AND tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value = ?)
+             LIMIT ?`;
+      args = [likeQ, likeQ, likeQ, category, limit];
+    } else {
+      sql = `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements
+             WHERE name LIKE ? OR manufacturer LIKE ? OR ai_summary LIKE ?
+             LIMIT ?`;
+      args = [likeQ, likeQ, likeQ, limit];
     }
 
-    const { data: products, error } = await dbQuery;
-
-    if (error) {
-      console.error("Wiki search error:", error);
-      return NextResponse.json(
-        { success: false, message: "검색 중 오류가 발생했습니다.", products: [] },
-        { status: 500 },
-      );
-    }
+    const result = await db.execute({ sql, args });
+    const products = result.rows.map((r) => ({
+      id: r.id as string,
+      name: r.name as string,
+      manufacturer: r.manufacturer as string | null,
+      image_url: r.image_url as string | null,
+      ai_summary: r.ai_summary as string | null,
+      tags: parseJson(r.tags, null) as string[] | null,
+    }));
 
     return NextResponse.json({
       success: true,
       query,
-      count: products?.length || 0,
-      products: products || [],
+      count: products.length,
+      products,
     });
   } catch (error) {
     console.error("Wiki search error:", error);

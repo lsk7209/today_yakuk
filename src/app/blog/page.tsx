@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getTursoClient, parseJson } from "@/lib/turso";
 import { getBlogFeaturedImage } from "@/lib/blog-image";
 import type { Metadata } from "next";
 import { AdSlotInFeed } from "@/components/ads/AdSlot";
@@ -197,18 +197,27 @@ export default async function BlogIndexPage({
   const currentPage = getCurrentPage(searchParams?.page);
   const from = (currentPage - 1) * POSTS_PER_PAGE;
   const to = from + POSTS_PER_PAGE - 1;
-  const supabase = getSupabaseServerClient();
-  const { data: posts, count } = await supabase
-    .from("content_queue")
-    .select("title, slug, ai_summary, published_at, image_url", {
-      count: "exact",
-    })
-    .eq("status", "published")
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .order("updated_at", { ascending: false })
-    .range(from, to);
+  const db = getTursoClient();
+  const [countResult, dataResult] = await Promise.all([
+    db.execute("SELECT COUNT(*) as cnt FROM content_queue WHERE status = 'published'"),
+    db.execute({
+      sql: `SELECT title, slug, ai_summary, published_at, image_url FROM content_queue
+            WHERE status = 'published'
+            ORDER BY CASE WHEN published_at IS NULL THEN 1 ELSE 0 END, published_at DESC, updated_at DESC
+            LIMIT ? OFFSET ?`,
+      args: [POSTS_PER_PAGE, from],
+    }),
+  ]);
+  const count = Number(countResult.rows[0]?.cnt ?? 0);
+  const posts = dataResult.rows.map((r) => ({
+    title: r.title as string,
+    slug: r.slug as string,
+    ai_summary: r.ai_summary as string | null,
+    published_at: r.published_at as string | null,
+    image_url: parseJson(r.image_url, r.image_url as string | null),
+  }));
 
-  const totalPosts = count ?? 0;
+  const totalPosts = count;
   const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE));
 
   const allPosts = [
@@ -217,7 +226,7 @@ export default async function BlogIndexPage({
       url: `/blog/${p.slug}`,
       name: p.title,
     })),
-    ...((posts as BlogPost[]) ?? []).map((p, i) => ({
+    ...(posts as BlogPost[]).map((p, i) => ({
       position: STATIC_POSTS.length + i + 1,
       url: `/blog/${p.slug}`,
       name: p.title,
