@@ -37,34 +37,25 @@ jobs:
         run: |
           set -e
           missing=0
-          for k in NEXT_PUBLIC_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY GEMINI_API_KEY; do
+          for k in TURSO_DATABASE_URL TURSO_AUTH_TOKEN GEMINI_API_KEY; do
             if [ -z "${!k}" ]; then
               echo "::error title=Missing secret::환경변수 ${k} 가 비어있습니다. GitHub Secrets 설정을 확인하세요."
               missing=1
             fi
           done
-          if ! echo "${NEXT_PUBLIC_SUPABASE_URL}" | grep -qiE '^https?://.+\.supabase\.co/?$'; then
-            echo "::error title=Invalid secret::NEXT_PUBLIC_SUPABASE_URL이 Supabase 프로젝트 URL 형식이 아닙니다. (예: https://<project-ref>.supabase.co)"
-            missing=1
-          fi
           if [ "${missing}" -ne 0 ]; then
             exit 1
           fi
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Generate pharmacy content
         run: npm run generate:content ${{ github.event.inputs.limit || '10' }}
         env:
-          # 실제 GitHub Secrets에 있는 변수 사용
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: gemini-2.5-flash-lite
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
-          # SUPABASE_URL은 NEXT_PUBLIC_SUPABASE_URL과 동일하게 설정
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-

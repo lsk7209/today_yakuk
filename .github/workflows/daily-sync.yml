@@ -26,33 +26,23 @@ jobs:
         run: |
           set -e
           missing=0
-          if [ -z "${NEXT_PUBLIC_SUPABASE_URL}" ] && [ -z "${SUPABASE_URL}" ]; then
-            echo "::error title=Missing secret::NEXT_PUBLIC_SUPABASE_URL 또는 SUPABASE_URL 중 하나가 필요합니다."
-            missing=1
-          fi
-          if [ -z "${SUPABASE_SERVICE_ROLE_KEY}" ]; then
-            echo "::error title=Missing secret::SUPABASE_SERVICE_ROLE_KEY 가 비어있습니다."
-            missing=1
-          fi
-          if [ -z "${FOOD_SAFETY_API_KEY}" ]; then
-            echo "::error title=Missing secret::FOOD_SAFETY_API_KEY 가 비어있습니다."
-            missing=1
-          fi
+          for k in TURSO_DATABASE_URL TURSO_AUTH_TOKEN FOOD_SAFETY_API_KEY; do
+            if [ -z "${!k}" ]; then
+              echo "::error title=Missing secret::환경변수 ${k} 가 비어있습니다."
+              missing=1
+            fi
+          done
           if [ "${missing}" -ne 0 ]; then
             exit 1
           fi
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           FOOD_SAFETY_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}
 
       - name: Run daily sync
         run: npm run sync
         env:
-          # 우선순위: NEXT_PUBLIC_SUPABASE_URL → SUPABASE_URL
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          FOOD_SAFETY_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}
-
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          PUBLIC_DATA_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}

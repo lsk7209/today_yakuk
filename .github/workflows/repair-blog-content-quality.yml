@@ -1,22 +1,6 @@
 name: Repair Blog Content Quality
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/repair-blog-content-quality.yml"
-      - "content/blog-campaign-2026-05-04.json"
-      - "content/blog-campaign-2026-05-04-v2.json"
-      - "content/blog-campaign-2026-05-05-v3.json"
-      - "content/blog-campaign-2026-05-05-v4.json"
-      - "scripts/repair-blog-content-quality.ts"
-      - "scripts/prepare-blog-campaign.ts"
-      - "scripts/prepare-blog-campaign-v2.ts"
-      - "scripts/prepare-blog-campaign-v3.ts"
-      - "scripts/prepare-blog-campaign-v4.ts"
-      - "package.json"
-      - "package-lock.json"
   workflow_dispatch:
 
 jobs:
@@ -39,7 +23,6 @@ jobs:
 
       - name: Repair content queue rows
         env:
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: npm run repair:blog-content -- --update-db

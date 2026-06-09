@@ -1,18 +1,15 @@
 import "dotenv/config";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { getTursoClient } from "../src/lib/turso";
 import { XMLParser } from "fast-xml-parser";
 
 const API_URL =
   "http://apis.data.go.kr/B552657/ErmctInsttInfoInqireService/getParmacyFullDown";
 const ROWS_PER_PAGE = 1000;
-const UPSERT_BATCH_SIZE = 400;
+const UPSERT_BATCH_SIZE = 200;
 
 type OperatingHours = Record<
   string,
-  {
-    open: string | null;
-    close: string | null;
-  }
+  { open: string | null; close: string | null }
 >;
 
 type PharmacyRecord = {
@@ -29,43 +26,17 @@ type PharmacyRecord = {
   updated_at: string;
 };
 
-type Database = {
-  public: {
-    Tables: {
-      pharmacies: {
-        Row: PharmacyRecord;
-        Insert: PharmacyRecord;
-        Update: Partial<PharmacyRecord>;
-        Relationships: [];
-      };
-    };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
-    CompositeTypes: Record<string, never>;
-  };
-};
-
 type ApiResponse = {
   totalCount: number;
   items: Record<string, string | undefined>[];
 };
 
-const supabaseUrl =
-  process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const apiKey = process.env.PUBLIC_DATA_API_KEY;
 
 function ensureEnv() {
-  if (!supabaseUrl) {
-    throw new Error("SUPABASE_URL 또는 NEXT_PUBLIC_SUPABASE_URL이 필요합니다.");
-  }
-  if (!supabaseServiceKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY가 필요합니다.");
-  }
-  if (!apiKey) {
-    throw new Error("PUBLIC_DATA_API_KEY가 필요합니다.");
-  }
+  if (!process.env.TURSO_DATABASE_URL) throw new Error("TURSO_DATABASE_URL이 필요합니다.");
+  if (!process.env.TURSO_AUTH_TOKEN) throw new Error("TURSO_AUTH_TOKEN이 필요합니다.");
+  if (!apiKey) throw new Error("PUBLIC_DATA_API_KEY가 필요합니다.");
 }
 
 function normalizeArray<T>(value: T | T[] | undefined): T[] {
@@ -83,27 +54,17 @@ function buildOperatingHours(
   item: Record<string, string | undefined>,
 ): OperatingHours | null {
   const dayKeyMap: Record<number, string> = {
-    1: "mon",
-    2: "tue",
-    3: "wed",
-    4: "thu",
-    5: "fri",
-    6: "sat",
-    7: "sun",
-    8: "holiday",
+    1: "mon", 2: "tue", 3: "wed", 4: "thu",
+    5: "fri", 6: "sat", 7: "sun", 8: "holiday",
   };
 
   const result: OperatingHours = {};
-
   Object.entries(dayKeyMap).forEach(([numStr, key]) => {
     const num = Number(numStr);
     const open = item[`dutyTime${num}s`];
     const close = item[`dutyTime${num}c`];
     if (open || close) {
-      result[key] = {
-        open: open ?? null,
-        close: close ?? null,
-      };
+      result[key] = { open: open ?? null, close: close ?? null };
     }
   });
 
@@ -115,14 +76,9 @@ function extractRegion(address?: string): { province?: string | null; city?: str
   const tokens = address.trim().split(/\s+/);
   const provinceRaw = tokens[0] ?? null;
   const cityRaw = tokens[1] ?? null;
-
   const province =
     provinceRaw === "경기도" ? "경기" : provinceRaw === "경기" ? "경기" : provinceRaw ?? null;
-
-  return {
-    province,
-    city: cityRaw ?? null,
-  };
+  return { province, city: cityRaw ?? null };
 }
 
 function mapToRecord(item: Record<string, string | undefined>): PharmacyRecord {
@@ -148,9 +104,7 @@ async function fetchPage(pageNo: number): Promise<ApiResponse> {
   )}&pageNo=${pageNo}&numOfRows=${ROWS_PER_PAGE}`;
 
   const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`API 요청 실패: ${res.status} ${res.statusText}`);
-  }
+  if (!res.ok) throw new Error(`API 요청 실패: ${res.status} ${res.statusText}`);
 
   const text = await res.text();
   const parser = new XMLParser({
@@ -162,31 +116,36 @@ async function fetchPage(pageNo: number): Promise<ApiResponse> {
   const parsed = parser.parse(text);
   const body = parsed?.response?.body;
   const totalCount = Number(body?.totalCount ?? 0);
-  const itemsRaw = body?.items?.item;
-  const items = normalizeArray<Record<string, string | undefined>>(itemsRaw);
+  const items = normalizeArray<Record<string, string | undefined>>(body?.items?.item);
 
   return { totalCount, items };
 }
 
-async function upsertRecords(
-  supabase: SupabaseClient<Database>,
-  records: PharmacyRecord[],
-) {
+async function upsertBatch(records: PharmacyRecord[]) {
   if (!records.length) return;
-  const { error } = await supabase
-    .from("pharmacies")
-    .upsert(records, { onConflict: "hpid" });
-  if (error) {
-    throw error;
-  }
+  const db = getTursoClient();
+
+  const statements = records.map((r) => ({
+    sql: `INSERT INTO pharmacies (hpid, name, address, tel, latitude, longitude, operating_hours, description_raw, province, city, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ON CONFLICT(hpid) DO UPDATE SET
+            name=excluded.name, address=excluded.address, tel=excluded.tel,
+            latitude=excluded.latitude, longitude=excluded.longitude,
+            operating_hours=excluded.operating_hours, description_raw=excluded.description_raw,
+            province=excluded.province, city=excluded.city, updated_at=excluded.updated_at`,
+    args: [
+      r.hpid, r.name, r.address ?? null, r.tel ?? null,
+      r.latitude, r.longitude,
+      r.operating_hours ? JSON.stringify(r.operating_hours) : null,
+      r.description_raw ?? null, r.province ?? null, r.city ?? null, r.updated_at,
+    ],
+  }));
+
+  await db.batch(statements, "write");
 }
 
 async function main() {
   ensureEnv();
-  const supabase = createClient<Database>(
-    supabaseUrl as string,
-    supabaseServiceKey as string,
-  );
 
   const allItems: Record<string, string | undefined>[] = [];
   console.info("첫 페이지 수집 중...");
@@ -196,7 +155,7 @@ async function main() {
   const totalPages = Math.ceil(first.totalCount / ROWS_PER_PAGE) || 1;
   console.info(`총 ${first.totalCount}건, 페이지 ${totalPages}개 예상`);
 
-  for (let page = 2; page <= totalPages; page += 1) {
+  for (let page = 2; page <= totalPages; page++) {
     const pageData = await fetchPage(page);
     allItems.push(...pageData.items);
     console.info(`페이지 ${page}/${totalPages} 수집 완료 (누적 ${allItems.length}건)`);
@@ -209,7 +168,7 @@ async function main() {
   console.info(`총 ${records.length}건 Upsert 진행...`);
   for (let i = 0; i < records.length; i += UPSERT_BATCH_SIZE) {
     const batch = records.slice(i, i + UPSERT_BATCH_SIZE);
-    await upsertRecords(supabase, batch);
+    await upsertBatch(batch);
     console.info(`배치 ${i + 1}-${Math.min(i + UPSERT_BATCH_SIZE, records.length)} 완료`);
   }
 
@@ -220,4 +179,3 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-

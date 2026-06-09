@@ -1,14 +1,6 @@
 name: Seed Blog Campaign
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/seed-blog-campaign.yml"
-      - "content/blog-campaign-2026-05-04.json"
-      - "content/title-candidates-2026-05-04.csv"
-      - "scripts/prepare-blog-campaign.ts"
   workflow_dispatch:
 
 jobs:
@@ -31,7 +23,6 @@ jobs:
 
       - name: Generate and insert campaign
         env:
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: npm run prepare:blog-campaign -- --insert
