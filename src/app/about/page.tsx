@@ -33,8 +33,90 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
+  const aboutJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "약국오늘 소개",
+    description:
+      "약국오늘은 지금 문 연 약국을 빠르게 찾도록 돕는 실시간 약국 검색 서비스입니다.",
+    url: `${siteUrl}/about`,
+    inLanguage: "ko",
+    isPartOf: { "@type": "WebSite", name: "약국오늘", url: siteUrl },
+  };
+
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "약국오늘로 약국 찾는 방법 (3단계)",
+    description: "스마트폰에서 지금 문 연 약국을 찾는 3단계 방법",
+    url: `${siteUrl}/about`,
+    step: [
+      {
+        "@type": "HowToStep",
+        position: 1,
+        name: "GPS 버튼 누르기",
+        text: "위치 설정 버튼을 누르면 현재 위치를 기반으로 주변 약국을 불러옵니다. 권한 요청이 뜨면 '허용'을 선택하세요.",
+      },
+      {
+        "@type": "HowToStep",
+        position: 2,
+        name: "'영업 중' 배지 확인",
+        text: "추천 목록에서 영업 중 또는 곧 종료 배지를 확인하세요. 곧 종료인 경우 방문 전 전화 확인을 권장합니다.",
+      },
+      {
+        "@type": "HowToStep",
+        position: 3,
+        name: "'전화'·'길찾기'로 바로 행동",
+        text: "상세 페이지에서 전화로 운영 여부를 확인한 뒤, 길찾기로 바로 이동하세요. 헛걸음을 크게 줄일 수 있습니다.",
+      },
+    ],
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "약국오늘의 영업 상태는 실시간인가요?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "영업 상태는 등록된 영업시간 정보를 기준으로 계산합니다. 실제 현장 운영은 변동될 수 있으니 방문 전 전화 확인을 권장합니다.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "공휴일에도 검색이 가능한가요?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "네. 공휴일/주말 운영 정보를 함께 표시합니다. 다만 공휴일 운영은 변동이 잦아 전화 확인이 가장 안전합니다.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "정보가 틀렸거나 업데이트가 필요하면 어떻게 하나요?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "문의 페이지로 알려주시면 확인 후 반영합니다. https://todaypharm.kr/contact",
+        },
+      },
+    ],
+  };
+
   return (
     <div className="bg-[var(--background)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="container py-10 sm:py-14 space-y-10">
         {/* Hero */}
         <header className="rounded-3xl border border-gray-200 bg-white shadow-lg overflow-hidden">

@@ -21,8 +21,24 @@ export const metadata: Metadata = {
 };
 
 export default function TermsPage() {
+  const webPageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "이용약관 | 약국오늘",
+    description:
+      "약국오늘 서비스 이용 시 적용되는 이용 조건, 면책, 책임 제한, 문의 방법을 확인하세요.",
+    url: `${siteUrl}/terms`,
+    datePublished: "2026-04-23",
+    inLanguage: "ko",
+    isPartOf: { "@type": "WebSite", name: "약국오늘", url: siteUrl },
+  };
+
   return (
     <div className="container py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+      />
       <article className="prose prose-slate max-w-4xl">
         <h1>이용약관</h1>
         <p>

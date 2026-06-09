@@ -20,8 +20,24 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
+  const webPageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "개인정보처리방침 | 약국오늘",
+    description:
+      "약국오늘 서비스 이용 시 적용되는 개인정보 수집, 이용, 보관, 쿠키 정책을 확인하세요.",
+    url: `${siteUrl}/privacy`,
+    datePublished: "2025-01-01",
+    inLanguage: "ko",
+    isPartOf: { "@type": "WebSite", name: "약국오늘", url: siteUrl },
+  };
+
   return (
     <div className="container py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+      />
       <article className="prose prose-slate max-w-4xl">
         <h1>개인정보처리방침</h1>
         <p>

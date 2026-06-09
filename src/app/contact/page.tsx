@@ -33,8 +33,23 @@ const responseSteps = [
 ];
 
 export default function ContactPage() {
+  const contactJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "문의하기 | 약국오늘",
+    description:
+      "약국 정보 수정 요청, 제휴 문의, 서비스 개선 제안을 약국오늘 운영팀에 전달하세요.",
+    url: `${siteUrl}/contact`,
+    inLanguage: "ko",
+    isPartOf: { "@type": "WebSite", name: "약국오늘", url: siteUrl },
+  };
+
   return (
     <div className="bg-[var(--background)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }}
+      />
       <div className="container py-10 sm:py-14 space-y-6">
         <header className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm space-y-4">
           <p className="text-xs font-black tracking-[0.18em] text-brand-700">CONTACT</p>
