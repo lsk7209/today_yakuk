@@ -154,6 +154,12 @@ export default function Page() {
                     오메가-3·칼슘·마그네슘도 적절 용량 범위 안에서 섭취하면 도움이 되지만, 고용량 보충제를 임의로 여러 종류 복용하는 것은 피하는 것이 좋습니다.
                     건강기능식품이나 한약도 &apos;천연이라서 안전하다&apos;는 생각은 금물이며, 복용 전 반드시 산부인과 의사나 약사와 상의하세요.
                 </p>
+                <Link
+                    href="/wiki"
+                    className="inline-flex items-center gap-2 mt-3 text-sm font-bold text-brand-700 hover:underline"
+                >
+                    약국오늘 영양제 위키에서 성분·제품 정보 확인하기 →
+                </Link>
 
                 <hr />
 

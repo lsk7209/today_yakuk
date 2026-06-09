@@ -71,12 +71,14 @@ export default async function TagPage({
     // This handles both cases: data stored as "fatigue" and "피로회복"
     const searchTerms = Array.from(new Set([rawKeyword, keyword]));
 
-    // Get products with this tag
-    const { data: products, error, count } = await supabase
-        .from('supplements')
-        .select('id, name, manufacturer, image_url, ai_summary, tags', { count: 'exact' })
-        .or(`tags.cs.{${searchTerms.join(',')}}`)
-        .range(offset, offset + ITEMS_PER_PAGE - 1);
+    // Separate count (estimated, fast) + data queries
+    const filterStr = `tags.cs.{${searchTerms.join(',')}}`;
+    const [{ count }, { data: products, error }] = await Promise.all([
+        supabase.from('supplements').select('*', { count: 'estimated', head: true }).or(filterStr),
+        supabase.from('supplements').select('id, name, manufacturer, image_url, ai_summary, tags')
+            .or(filterStr)
+            .range(offset, offset + ITEMS_PER_PAGE - 1),
+    ]);
 
     if (error) {
         console.error('Tag page fetch error:', error);

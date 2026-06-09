@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { Filter } from "lucide-react";
 import Image from "next/image";
@@ -18,8 +19,18 @@ export const metadata: Metadata = {
     },
 };
 
-// Revalidate every 24 hours
-export const revalidate = 86400;
+// searchParams makes this page dynamic — cache the expensive count separately
+const getCachedTotalCount = unstable_cache(
+    async () => {
+        const supabase = getSupabaseServerClient();
+        const { count } = await supabase
+            .from("supplements")
+            .select("*", { count: "estimated", head: true });
+        return count ?? 0;
+    },
+    ["supplements-total-count"],
+    { revalidate: 3600 }
+);
 
 interface Supplement {
     id: string;
@@ -64,25 +75,37 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
 
     const supabase = getSupabaseServerClient();
 
-    let query = supabase
+    // Separated count (estimated, cached 1h) + data queries for better performance
+    let countQuery = supabase
         .from("supplements")
-        .select("id, name, manufacturer, image_url, ai_summary, tags", { count: "exact" });
+        .select("*", { count: "estimated", head: true });
 
-    // Apply category filter if not "all"
+    let dataQuery = supabase
+        .from("supplements")
+        .select("id, name, manufacturer, image_url, ai_summary, tags");
+
     if (currentCategory !== "all") {
         const keyword = TAG_SLUG_MAP[currentCategory] || currentCategory;
         const searchTerms = Array.from(new Set([currentCategory, keyword]));
-        query = query.or(`tags.cs.{${searchTerms.join(',')}}`);
+        const filterStr = `tags.cs.{${searchTerms.join(',')}}`;
+        countQuery = countQuery.or(filterStr);
+        dataQuery = dataQuery.or(filterStr);
     }
 
-    const { data: products, count, error } = await query
-        .range(offset, offset + ITEMS_PER_PAGE - 1)
-        .order("created_at", { ascending: false });
+    const [{ count: filteredCount }, { data: products, error }] = await Promise.all([
+        currentCategory === "all"
+            ? getCachedTotalCount().then((n) => ({ count: n }))
+            : countQuery,
+        dataQuery
+            .range(offset, offset + ITEMS_PER_PAGE - 1)
+            .order("created_at", { ascending: false }),
+    ]);
 
     if (error) {
         console.error("Wiki fetch error:", error);
     }
 
+    const count = filteredCount ?? 0;
     const totalPages = count ? Math.ceil(count / ITEMS_PER_PAGE) : 1;
 
     return (
@@ -195,6 +218,27 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                     </p>
                 </div>
             </div>
+
+            {/* Related Blog Posts */}
+            <section className="pt-6 border-t border-slate-100">
+                <h2 className="text-xl font-black text-slate-900 mb-6">영양제 관련 건강 정보</h2>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[
+                        { href: "/blog/pregnancy-pharmacy-guide", label: "임산부 안전한 영양제 섭취 가이드", desc: "엽산·철분·비타민D 필수 영양소와 주의사항" },
+                        { href: "/blog/hypertension-diabetes-holiday-tips", label: "고혈압·당뇨 복용자 연휴 대비", desc: "만성질환 약과 영양제 연휴 준비 체크리스트" },
+                        { href: "/blog/pharmacy-faq-top10", label: "약국 자주 묻는 질문 TOP10", desc: "일반의약품·건강기능식품 함께 복용 시 주의점" },
+                    ].map((item) => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+                        >
+                            <p className="font-bold text-gray-900 text-sm leading-snug">{item.label}</p>
+                            <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+                        </Link>
+                    ))}
+                </div>
+            </section>
         </div>
     );
 }
