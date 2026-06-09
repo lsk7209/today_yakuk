@@ -2,7 +2,7 @@ import "dotenv/config";
 import path from "path";
 import dotenv from "dotenv";
 import fs from "fs";
-import { createClient } from "@supabase/supabase-js";
+import { getTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
@@ -326,17 +326,11 @@ async function collectExistingTitles(): Promise<ExistingTitle[]> {
     });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (supabaseUrl && serviceKey) {
-    const supabase = createClient(supabaseUrl, serviceKey);
-    const { data, error } = await supabase
-      .from("content_queue")
-      .select("title, slug")
-      .in("status", ["published", "pending", "review"]);
-    if (error) throw error;
-    data?.forEach((item) => existing.push({ title: item.title, slug: item.slug }));
-  }
+  try {
+    const db = getTursoClient();
+    const result = await db.execute("SELECT title, slug FROM content_queue WHERE status IN ('published', 'pending', 'review')");
+    result.rows.forEach((row) => existing.push({ title: String(row.title), slug: String(row.slug) }));
+  } catch { /* ok if DB not available */ }
 
   return existing;
 }
@@ -592,27 +586,35 @@ async function buildCampaign() {
 }
 
 async function insertCampaign(items: ScoredQueueItem[]) {
-  const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceKey) {
-    throw new Error("Supabase env not found for --insert mode.");
-  }
-
-  const supabase = createClient(supabaseUrl, serviceKey);
+  const db = getTursoClient();
   const slugs = items.map((item) => item.slug);
-  const { data: existing, error: existingError } = await supabase
-    .from("content_queue")
-    .select("slug")
-    .in("slug", slugs);
-  if (existingError) throw existingError;
-  const existingSlugs = new Set(existing?.map((item) => item.slug) ?? []);
+  const placeholders = slugs.map(() => "?").join(", ");
+  const existingResult = await db.execute({ sql: `SELECT slug FROM content_queue WHERE slug IN (${placeholders})`, args: slugs });
+  const existingSlugs = new Set(existingResult.rows.map((r) => String(r.slug)));
   const freshItems = items
     .filter((item) => !existingSlugs.has(item.slug))
     .map(({ quality_score: _qualityScore, ...item }) => item);
   if (!freshItems.length) return { inserted: 0, skipped: items.length };
-
-  const { error } = await supabase.from("content_queue").insert(freshItems);
-  if (error) throw error;
+  const statements = freshItems.map((item) => ({
+    sql: `INSERT INTO content_queue (hpid, title, slug, region, theme, content_html, ai_summary, ai_faq, ai_bullets, ai_cta, extra_sections, status, publish_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    args: [
+      item.hpid,
+      item.title,
+      item.slug,
+      item.region,
+      item.theme,
+      item.content_html,
+      item.ai_summary,
+      JSON.stringify(item.ai_faq),
+      item.ai_bullets !== null ? JSON.stringify(item.ai_bullets) : null,
+      item.ai_cta,
+      item.extra_sections !== null ? JSON.stringify(item.extra_sections) : null,
+      item.status,
+      item.publish_at,
+    ],
+  }));
+  await db.batch(statements, "write");
   return { inserted: freshItems.length, skipped: items.length - freshItems.length };
 }
 

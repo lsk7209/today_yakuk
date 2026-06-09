@@ -1,7 +1,6 @@
 import "dotenv/config";
 import "tsconfig-paths/register";
-import { createClient } from "@supabase/supabase-js";
-import { getSupabaseServerClient } from "../src/lib/supabase-server";
+import { getTursoClient } from "../src/lib/turso";
 import { generatePharmacyContent } from "../src/lib/gemini";
 import type { Pharmacy } from "../src/types/pharmacy";
 import * as dotenv from "dotenv";
@@ -10,22 +9,22 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 dotenv.config(); // .env 파일도 로드
 
-const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const geminiApiKey = process.env.GEMINI_API_KEY;
 
-async function getPharmacyByHpid(hpid: string, supabase: any): Promise<Pharmacy | null> {
+async function getPharmacyByHpid(hpid: string): Promise<Pharmacy | null> {
   try {
-    const { data, error } = await supabase
-      .from("pharmacies")
-      .select("*")
-      .eq("hpid", hpid)
-      .maybeSingle();
-    if (error) {
-      console.error("pharmacy fetch error", error);
-      return null;
-    }
-    return data as Pharmacy | null;
+    const db = getTursoClient();
+    const result = await db.execute({ sql: "SELECT * FROM pharmacies WHERE hpid = ? LIMIT 1", args: [hpid] });
+    if (!result.rows[0]) return null;
+    const row = result.rows[0];
+    return {
+      hpid: String(row.hpid ?? ""),
+      name: String(row.name ?? ""),
+      address: String(row.address ?? ""),
+      province: row.province ? String(row.province) : undefined,
+      city: row.city ? String(row.city) : undefined,
+      gemini_summary: row.gemini_summary ? String(row.gemini_summary) : undefined,
+    } as unknown as Pharmacy;
   } catch (e) {
     console.error("pharmacy fetch exception", e);
     return null;
@@ -37,18 +36,10 @@ async function generateAndSaveSummary(hpid: string): Promise<void> {
     throw new Error("GEMINI_API_KEY가 설정되지 않았습니다.");
   }
 
-  // Supabase 클라이언트 생성
-  let supabase;
-  if (supabaseUrl && supabaseServiceKey) {
-    supabase = createClient(supabaseUrl, supabaseServiceKey);
-  } else {
-    console.warn("⚠️ SUPABASE_URL 또는 SUPABASE_SERVICE_ROLE_KEY가 없습니다. getSupabaseServerClient()를 사용합니다.");
-    supabase = getSupabaseServerClient();
-  }
-
+  const db = getTursoClient();
   console.info(`\n=== 약국 요약 생성 시작: ${hpid} ===`);
 
-  const pharmacy = await getPharmacyByHpid(hpid, supabase);
+  const pharmacy = await getPharmacyByHpid(hpid);
   if (!pharmacy) {
     console.error(`❌ 약국 정보를 찾을 수 없습니다: ${hpid}`);
     return;
@@ -75,15 +66,10 @@ async function generateAndSaveSummary(hpid: string): Promise<void> {
     }
 
     // pharmacies 테이블에 gemini_summary 저장
-    const { error } = await supabase
-      .from("pharmacies")
-      .update({
-        gemini_summary: geminiContent.summary,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("hpid", pharmacy.hpid);
-
-    if (error) throw error;
+    await db.execute({
+      sql: "UPDATE pharmacies SET gemini_summary = ?, updated_at = ? WHERE hpid = ?",
+      args: [geminiContent.summary, new Date().toISOString(), pharmacy.hpid],
+    });
     console.info(`✅ [SUCCESS] ${pharmacy.name} (${pharmacy.hpid}): 요약 저장 완료`);
     console.info(`요약: ${geminiContent.summary.substring(0, 150)}...`);
   } catch (error) {

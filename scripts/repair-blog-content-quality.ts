@@ -2,7 +2,7 @@ import "dotenv/config";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
-import { createClient } from "@supabase/supabase-js";
+import { getTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
@@ -188,31 +188,26 @@ function qualityReport(filePath: string, items: QueueItem[]) {
 }
 
 async function updateSupabase(items: QueueItem[]) {
-  const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceKey) throw new Error("Supabase env not found.");
-
-  const supabase = createClient(supabaseUrl, serviceKey);
+  const db = getTursoClient();
   const seenSlugs = new Set<string>();
   let updated = 0;
   for (const item of items) {
     if (seenSlugs.has(item.slug)) continue;
     seenSlugs.add(item.slug);
-    const { error, count } = await supabase
-      .from("content_queue")
-      .update({
-        content_html: item.content_html,
-        ai_summary: item.ai_summary,
-        ai_faq: item.ai_faq,
-        updated_at: new Date().toISOString(),
-      }, { count: "exact" })
-      .eq("slug", item.slug)
-      .in("status", ["pending", "review", "published"]);
-
-    if (error) throw error;
-    updated += count ?? 0;
+    const result = await db.execute({
+      sql: `UPDATE content_queue
+            SET content_html = ?, ai_summary = ?, ai_faq = ?, updated_at = ?
+            WHERE slug = ? AND status IN ('pending', 'review', 'published')`,
+      args: [
+        item.content_html,
+        item.ai_summary,
+        JSON.stringify(item.ai_faq),
+        new Date().toISOString(),
+        item.slug,
+      ],
+    });
+    updated += result.rowsAffected ?? 0;
   }
-
   return updated;
 }
 
