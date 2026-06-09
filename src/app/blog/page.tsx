@@ -124,8 +124,45 @@ export default async function BlogIndexPage({
   const totalPosts = count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE));
 
+  const allPosts = [
+    ...STATIC_POSTS.map((p, i) => ({
+      position: i + 1,
+      url: `/blog/${p.slug}`,
+      name: p.title,
+    })),
+    ...((posts as BlogPost[]) ?? []).map((p, i) => ({
+      position: STATIC_POSTS.length + i + 1,
+      url: `/blog/${p.slug}`,
+      name: p.title,
+    })),
+  ];
+
+  const itemListJsonLd =
+    currentPage === 1
+      ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "약국 이용 인사이트",
+          description: BLOG_DESCRIPTION,
+          url: "https://todaypharm.kr/blog",
+          numberOfItems: allPosts.length,
+          itemListElement: allPosts.map((p) => ({
+            "@type": "ListItem",
+            position: p.position,
+            url: `https://todaypharm.kr${p.url}`,
+            name: p.name,
+          })),
+        }
+      : null;
+
   return (
     <div className="container py-10 sm:py-14 space-y-8 bg-white min-h-screen">
+      {itemListJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        />
+      )}
       <header className="space-y-3">
         <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">
           블로그

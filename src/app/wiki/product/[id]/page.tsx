@@ -147,30 +147,7 @@ export default async function ProductDetailPage({
       "@type": "Organization",
       name: supplement.manufacturer || "Unknown",
     },
-    offers: {
-      "@type": "Offer",
-      url: productUrl,
-      priceCurrency: "KRW",
-      price: "0",
-      availability: "https://schema.org/InStock",
-    },
-    review: {
-      "@type": "Review",
-      reviewRating: {
-        "@type": "Rating",
-        ratingValue: "5",
-        bestRating: "5",
-      },
-      author: {
-        "@type": "Organization",
-        name: "약국오늘 AI 분석",
-      },
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "120",
-    },
+    url: productUrl,
   };
 
   const faqLd =

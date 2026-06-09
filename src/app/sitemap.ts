@@ -24,6 +24,7 @@ export default async function sitemap({
   if (id === "static") {
     const now = new Date();
     const blogDate = new Date("2026-05-16");
+    const guideDate = new Date("2026-06-09");
     return [
       // Core pages
       { url: `${siteUrl}/`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
@@ -36,8 +37,8 @@ export default async function sitemap({
       { url: `${siteUrl}/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
       { url: `${siteUrl}/blog`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
       // Guide pages
-      { url: `${siteUrl}/guide/night-weekend`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.8 },
-      { url: `${siteUrl}/guide/holiday-checklist`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/guide/night-weekend`, lastModified: guideDate, changeFrequency: "monthly", priority: 0.8 },
+      { url: `${siteUrl}/guide/holiday-checklist`, lastModified: guideDate, changeFrequency: "monthly", priority: 0.8 },
       { url: `${siteUrl}/guide/call-scripts`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
       { url: `${siteUrl}/guide/call-navigation-tips`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },
       { url: `${siteUrl}/guide/radius-selection`, lastModified: blogDate, changeFrequency: "monthly", priority: 0.7 },

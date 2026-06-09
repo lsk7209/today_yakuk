@@ -78,6 +78,20 @@ export default function GuideNightWeekendPage() {
       { "@type": "ListItem", position: 3, name: "야간·주말 약국 찾기 가이드", item: "https://todaypharm.kr/guide/night-weekend" },
     ],
   };
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "야간·주말 약국 찾기 완전 가이드",
+    description: metaDescription,
+    url: "https://todaypharm.kr/guide/night-weekend",
+    step: sections.map((section, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: section.title,
+      text: section.bullets.join(" / "),
+    })),
+  };
+
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -195,6 +209,10 @@ export default function GuideNightWeekendPage() {
         </div>
       </section>
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
