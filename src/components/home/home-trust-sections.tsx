@@ -37,7 +37,7 @@ const proofPoints = [
   {
     title: "콘텐츠형 페이지도 함께 운영합니다",
     description:
-      "가이드와 블로그에서 심야 약국 찾기, 공휴일 체크리스트, 전화 스크립트처럼 실제 사용 맥락을 설명해 단순 목록형 사이트와 차별화합니다.",
+      "가이드·블로그에서 심야 약국 찾기, 공휴일 체크리스트를 안내하고, 영양제 위키에서 오메가3·유산균·비타민D 등 4만여 건의 성분·제품 정보를 제공합니다.",
   },
 ];
 
@@ -71,9 +71,9 @@ const featuredGuides = [
     href: "/guide/holiday-checklist",
   },
   {
-    title: "약국 전화 스크립트",
-    description: "재고, 영업 여부, 상담 가능 여부를 짧게 확인할 수 있는 통화 문장을 제공합니다.",
-    href: "/guide/call-scripts",
+    title: "영양제 위키",
+    description: "식약처 공공데이터 기반 영양제 성분·제품 정보. 오메가3·유산균·비타민D 등 4만여 건 수록.",
+    href: "/wiki",
   },
 ];
 
@@ -104,7 +104,7 @@ export function HomeTrustSections() {
       <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
         <div className="max-w-3xl space-y-3">
           <p className="text-xs font-black tracking-[0.18em] text-brand-700">EDITORIAL POLICY</p>
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-900">애드센스 검수에 맞춘 정보 운영 기준</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900">신뢰할 수 있는 정보 운영 기준</h2>
           <p className="text-gray-600 leading-relaxed">
             약국오늘의 글과 검색 화면은 사용자가 광고보다 먼저 필요한 정보를 확인할 수 있도록 설계합니다. 의료적
             판단이 필요한 내용은 일반 정보와 구분하고, 공공데이터 기반 서비스의 한계를 화면 안에서 반복 안내합니다.
@@ -123,7 +123,7 @@ export function HomeTrustSections() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-black tracking-[0.18em] text-brand-700">GUIDES</p>
-            <h2 className="text-2xl font-black text-gray-900">자주 쓰는 약국 이용 가이드</h2>
+            <h2 className="text-2xl font-black text-gray-900">가이드 · 영양제 위키</h2>
           </div>
           <Link href="/blog" className="text-sm font-black text-brand-700 hover:text-brand-800">
             블로그 전체 보기
