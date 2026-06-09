@@ -291,6 +291,7 @@ export default function Page() {
           {[
             { href: "/blog/omega3-selection-guide", label: "오메가3 알티지 vs 에틸에스텔 가이드", desc: "형태별 흡수율 차이와 올바른 선택법" },
             { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "결핍 증상과 올바른 보충 방법" },
+            { href: "/blog/magnesium-deficiency-guide", label: "마그네슘 부족 신호 6가지", desc: "장 건강과 관련 있는 마그네슘 결핍" },
             { href: "/wiki?category=probiotics", label: "유산균 제품 전체 목록 →", desc: "약국오늘 영양제 위키에서 확인" },
           ].map((item) => (
             <Link

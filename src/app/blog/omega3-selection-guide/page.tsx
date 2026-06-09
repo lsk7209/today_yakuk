@@ -280,6 +280,7 @@ export default function Page() {
           {[
             { href: "/blog/probiotics-selection-guide", label: "유산균 균주 선택 가이드", desc: "목적별 균주 선택법과 CFU 해석" },
             { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "결핍 증상과 올바른 보충 방법" },
+            { href: "/blog/lutein-astaxanthin-guide", label: "루테인 vs 아스타잔틴 비교", desc: "눈 건강 영양제 선택 기준 정리" },
             { href: "/wiki?category=omega3", label: "오메가3 제품 전체 목록 →", desc: "약국오늘 영양제 위키에서 확인" },
           ].map((item) => (
             <Link

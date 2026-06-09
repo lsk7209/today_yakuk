@@ -108,6 +108,21 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
     const count = filteredCount ?? 0;
     const totalPages = count ? Math.ceil(count / ITEMS_PER_PAGE) : 1;
 
+  const collectionPageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "영양제 위키 | 약국오늘",
+    description: "식약처 공공데이터 기반 영양제 성분 정보와 객관적 분석을 제공합니다.",
+    url: "https://todaypharm.kr/wiki",
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+        { "@type": "ListItem", position: 2, name: "영양제 위키", item: "https://todaypharm.kr/wiki" },
+      ],
+    },
+  };
+
     return (
         <div className="container py-8 sm:py-12 max-w-6xl space-y-10">
             {/* Hero Section */}
@@ -239,6 +254,10 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                     ))}
                 </div>
             </section>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }}
+      />
         </div>
     );
 }

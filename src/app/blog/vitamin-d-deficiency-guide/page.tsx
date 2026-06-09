@@ -315,7 +315,8 @@ export default function Page() {
         <div className="grid sm:grid-cols-2 gap-3">
           {[
             { href: "/blog/omega3-selection-guide", label: "오메가3 알티지 vs 에틸에스텔 가이드", desc: "형태별 흡수율 차이와 올바른 선택법" },
-            { href: "/blog/probiotics-selection-guide", label: "유산균 균주 선택 가이드", desc: "CFU보다 균주 종류가 중요한 이유" },
+            { href: "/blog/magnesium-deficiency-guide", label: "마그네슘 부족 신호 6가지", desc: "비타민D와 함께 필요한 마그네슘 보충법" },
+            { href: "/blog/lutein-astaxanthin-guide", label: "루테인 vs 아스타잔틴 비교", desc: "자외선 차단 시 눈 건강 영양제 선택" },
             { href: "/wiki?category=bone", label: "뼈/치아 영양제 전체 목록 →", desc: "약국오늘 영양제 위키에서 확인" },
           ].map((item) => (
             <Link
