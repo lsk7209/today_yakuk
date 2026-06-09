@@ -69,6 +69,24 @@ export default function Page() {
         description: metaDescription,
         slug: "/blog/pharmacy-faq-top10",
     });
+    const faqJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqList.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        })),
+    };
+    const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+            { "@type": "ListItem", position: 2, name: "블로그", item: "https://todaypharm.kr/blog" },
+            { "@type": "ListItem", position: 3, name: "약국에서 자주 묻는 질문 TOP10", item: "https://todaypharm.kr/blog/pharmacy-faq-top10" },
+        ],
+    };
 
     return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
@@ -145,6 +163,14 @@ export default function Page() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
             />
         </div>
     );

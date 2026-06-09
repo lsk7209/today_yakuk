@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { JsonLd, buildArticleSchema, buildFAQSchema } from "@/components/seo/json-ld";
+import { JsonLd, buildArticleSchema, buildFAQSchema, buildBreadcrumbSchema } from "@/components/seo/json-ld";
 import StaticTOC from "@/components/blog/StaticTOC";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
@@ -59,12 +59,18 @@ export default function Page() {
   });
 
   const faqSchema = buildFAQSchema(faqItems);
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "홈", url: "https://todaypharm.kr/" },
+    { name: "블로그", url: "https://todaypharm.kr/blog" },
+    { name: TITLE, url: `https://todaypharm.kr${CANONICAL}` },
+  ]);
 
   return (
     <article className="container max-w-3xl py-12">
       {/* JSON-LD */}
       <JsonLd id="article-schema" data={articleSchema} />
       <JsonLd id="faq-schema" data={faqSchema} />
+      <JsonLd id="breadcrumb-schema" data={breadcrumbSchema} />
 
       {/* 헤더 */}
       <header className="mb-10 space-y-4">

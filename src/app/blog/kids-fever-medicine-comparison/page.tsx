@@ -106,6 +106,15 @@ export default function KidsFeverMedicineComparisonPage() {
     description: metaDescription,
     slug,
   });
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: "https://todaypharm.kr/" },
+      { "@type": "ListItem", position: 2, name: "블로그", item: "https://todaypharm.kr/blog" },
+      { "@type": "ListItem", position: 3, name: "어린이 해열제 올바르게 고르는 법", item: `https://todaypharm.kr${slug}` },
+    ],
+  };
 
   return (
     <div className="mx-auto max-w-3xl space-y-12 px-4 py-10 sm:py-14">
@@ -539,6 +548,10 @@ export default function KidsFeverMedicineComparisonPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     </div>
   );
