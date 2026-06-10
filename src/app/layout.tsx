@@ -98,9 +98,6 @@ export const metadata: Metadata = {
   other: {
     "google-adsense-account": adsenseId,
   },
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 export default function RootLayout({
