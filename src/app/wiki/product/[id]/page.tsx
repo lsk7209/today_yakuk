@@ -71,7 +71,7 @@ export async function generateMetadata({
       url: canonicalUrl,
       images: supplement.image_url
         ? [{ url: supplement.image_url }]
-        : undefined,
+        : [{ url: `${siteUrl}/api/og?title=${encodeURIComponent(supplement.name)}` }],
     },
     ...(isThin ? { robots: { index: false, follow: true } } : {}),
   };
