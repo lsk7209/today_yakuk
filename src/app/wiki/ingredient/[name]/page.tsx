@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getIngredientBySlug } from "@/lib/data/pharmacies";
+import { getSiteUrl } from "@/lib/site-url";
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
@@ -41,8 +42,23 @@ export default async function IngredientDetailPage({
         notFound();
     }
 
+    const siteUrl = getSiteUrl();
+    const breadcrumbLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "홈", item: siteUrl },
+            { "@type": "ListItem", position: 2, name: "영양제 위키", item: `${siteUrl}/wiki` },
+            { "@type": "ListItem", position: 3, name: ingredient.name, item: `${siteUrl}/wiki/ingredient/${params.name}` },
+        ],
+    };
+
     return (
         <div className="container py-8 max-w-4xl">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+            />
             {/* Breadcrumb */}
             <nav className="text-sm text-[var(--muted)] mb-6">
                 <Link href="/wiki" className="hover:text-brand-700">

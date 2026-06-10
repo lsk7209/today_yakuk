@@ -70,8 +70,23 @@ export default async function CompareProductsPage({
         ])
     );
 
+    const siteUrl = getSiteUrl();
+    const breadcrumbLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "홈", item: siteUrl },
+            { "@type": "ListItem", position: 2, name: "영양제 위키", item: `${siteUrl}/wiki` },
+            { "@type": "ListItem", position: 3, name: `${product1.name} vs ${product2.name}`, item: `${siteUrl}/wiki/vs/${params.compareId}` },
+        ],
+    };
+
     return (
         <div className="container py-8 max-w-6xl">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+            />
             {/* Breadcrumb */}
             <Link href="/wiki" className="inline-flex items-center text-sm text-brand-600 hover:text-brand-700 mb-6">
                 <ChevronLeft className="w-4 h-4 mr-1" />

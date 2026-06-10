@@ -62,6 +62,7 @@ export default async function TagPage({
     // 2. UI 표시용 태그 (매핑된 경우 한글, 아니면 그대로)
     const displayKeyword = keyword;
 
+    const siteUrl = getSiteUrl();
     const page = parseInt(searchParams.page || '1', 10);
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
@@ -108,8 +109,22 @@ export default async function TagPage({
         { label: `#${displayKeyword}` },
     ];
 
+    const breadcrumbLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "홈", item: siteUrl },
+            { "@type": "ListItem", position: 2, name: "영양제 위키", item: `${siteUrl}/wiki` },
+            { "@type": "ListItem", position: 3, name: `#${displayKeyword}`, item: `${siteUrl}/wiki/tag/${params.keyword}` },
+        ],
+    };
+
     return (
         <div className="container py-8 sm:py-12 max-w-6xl space-y-8">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+            />
             <Breadcrumb items={breadcrumbItems} />
 
             {/* Header */}
