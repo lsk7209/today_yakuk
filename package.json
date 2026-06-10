@@ -30,7 +30,6 @@
     "gsc:sitemap:status": "ts-node --project tsconfig.sync.json scripts/submit-gsc-sitemap.ts --status-only"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "@libsql/client": "^0.17.3",
     "@supabase/supabase-js": "^2.87.0",
     "chart.js": "^4.5.1",

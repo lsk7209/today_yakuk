@@ -1,34 +1,37 @@
 /**
  * Auto Enrich Supplements Script
  *
- * Fetches supplements with missing nutrition_facts and enriches them using:
- * 1. Food Safety Korea API for raw data
- * 2. Gemini AI for structured analysis
+ * C003 식약처 API로 원재료·영양성분 텍스트를 가져오고,
+ * Claude Code가 직접 작성한 nutrition-parser로 구조화.
+ * 외부 AI API(Gemini, OpenAI 등) 사용 없음.
+ *
+ * Usage: npx tsx scripts/auto-enrich-supplements.ts [limit]
  */
 
 import dotenv from "dotenv";
 import { getTursoClient } from "../src/lib/turso";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { generateAIAnalysis, createMixedSummary } from "./lib/gemini-nutrition-analyzer";
+import { analyzeProduct, createMixedSummary } from "./lib/nutrition-parser";
 import { detectAdditives } from "./lib/additive-keywords";
 
 dotenv.config({ path: ".env.local" });
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
 const FOOD_SAFETY_API_KEY = process.env.FOOD_SAFETY_API_KEY!;
-
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 async function autoEnrichSupplements() {
   const limit = parseInt(process.argv[2] || "100", 10);
-  console.log(`🚀 Starting automated nutrition info enrichment (Limit: ${limit})...\n`);
+  console.log(`🚀 Starting enrichment (Limit: ${limit})...\n`);
+
+  if (!FOOD_SAFETY_API_KEY) {
+    console.error("❌ FOOD_SAFETY_API_KEY 환경변수가 없습니다.");
+    process.exit(1);
+  }
 
   const db = getTursoClient();
 
-  // Fetch supplements where nutrition_facts is missing
   const result = await db.execute({
     sql: `SELECT id, name, product_report_no FROM supplements
-          WHERE nutrition_facts IS NULL OR nutrition_facts = '[]' OR nutrition_facts = 'null'
+          WHERE (nutrition_facts IS NULL OR nutrition_facts = '[]' OR nutrition_facts = 'null')
+          AND product_report_no IS NOT NULL AND product_report_no != ''
           LIMIT ?`,
     args: [limit],
   });
@@ -42,12 +45,13 @@ async function autoEnrichSupplements() {
 
   let successCount = 0;
   let failCount = 0;
+  let noDataCount = 0;
 
   for (const item of result.rows) {
     const id = item.id as string;
     const name = item.name as string;
     const product_report_no = item.product_report_no as string;
-    console.log(`Processing: ${name} (Rule: ${product_report_no}, ID: ${id})...`);
+    console.log(`Processing: ${name} (${product_report_no})...`);
 
     const SERVICE_ID = "C003";
     const url = `http://openapi.foodsafetykorea.go.kr/api/${FOOD_SAFETY_API_KEY}/${SERVICE_ID}/json/1/1/PRDLST_REPORT_NO=${product_report_no}`;
@@ -58,41 +62,43 @@ async function autoEnrichSupplements() {
       const rawItem = apiData[SERVICE_ID]?.row?.[0];
 
       if (!rawItem) {
-        console.warn(`⚠️ Could not find raw data for ${name}`);
-        failCount++;
+        console.warn(`  ⚠️ No C003 data for ${name}`);
+        noDataCount++;
         continue;
       }
 
       const rawMaterials = rawItem.RAWMTRL_NM || "";
       const nutritionStr = rawItem.NUT_MTR || rawItem.STDR_STND || "";
 
-      const aiAnalysis = await generateAIAnalysis(genAI, name, rawMaterials, nutritionStr);
+      const analysis = analyzeProduct(name, rawMaterials, nutritionStr);
       const additives = detectAdditives(rawMaterials);
-      const mixedSummary = createMixedSummary(aiAnalysis);
+      const mixedSummary = createMixedSummary(analysis);
 
       await db.execute({
         sql: `UPDATE supplements SET nutrition_facts = ?, ai_summary = ?, additives = ? WHERE id = ?`,
         args: [
-          JSON.stringify(aiAnalysis.nutrition_facts || []),
+          JSON.stringify(analysis.nutrition_facts),
           mixedSummary,
           JSON.stringify(additives),
           id,
         ],
       });
 
-      console.log(`✅ Enriched: ${name} (${aiAnalysis.nutrition_facts.length} nutrients found)`);
+      console.log(`  ✅ ${name} — ${analysis.nutrition_facts.length} nutrients`);
       successCount++;
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // C003 API rate limit 대응
+      await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (err) {
-      console.error(`Error processing ${name}:`, err);
+      console.error(`  ❌ Error: ${name}:`, err);
       failCount++;
     }
   }
 
-  console.log(`\n✨ Enrichment batch completed!`);
-  console.log(`   Success: ${successCount}`);
-  console.log(`   Failed: ${failCount}`);
+  console.log(`\n✨ Done`);
+  console.log(`  Success:  ${successCount}`);
+  console.log(`  No data:  ${noDataCount}`);
+  console.log(`  Errors:   ${failCount}`);
 }
 
 autoEnrichSupplements().catch(console.error);

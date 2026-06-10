@@ -10,18 +10,15 @@
  */
 
 import dotenv from "dotenv";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { generateAIAnalysis, parseNutritionFacts, createMixedSummary } from "./lib/gemini-nutrition-analyzer";
+import { analyzeProduct, parseNutritionFacts, createMixedSummary } from "./lib/nutrition-parser";
 import { detectAdditives } from "./lib/additive-keywords";
 import { getTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: ".env.local" });
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
 const FOOD_SAFETY_API_KEY = process.env.FOOD_SAFETY_API_KEY!;
 
 const db = getTursoClient();
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 const TAG_MAP: Record<string, string[]> = {
     "vitamin-c": ["비타민C", "비타민 C", "Vitamin C", "Ascorbic Acid", "아스코르브산"],
@@ -108,16 +105,15 @@ async function syncSupplements() {
 
             console.log(`Processing: ${name}...`);
 
-            const aiAnalysis = await generateAIAnalysis(genAI, name, rawMaterials, nutritionStr);
+            const analysis = analyzeProduct(name, rawMaterials, nutritionStr);
 
-            let nutritionFacts = aiAnalysis.nutrition_facts;
+            let nutritionFacts = analysis.nutrition_facts;
             if (nutritionFacts.length === 0) {
                 nutritionFacts = parseNutritionFacts(nutritionStr);
             }
 
             const additives = detectAdditives(rawMaterials);
-            const mixedSummary = createMixedSummary(aiAnalysis);
-            const enrichmentStatus = aiAnalysis.status === 'failed' ? 'failed' : 'success';
+            const mixedSummary = createMixedSummary(analysis);
 
             await db.execute({
                 sql: `INSERT OR REPLACE INTO supplements
@@ -128,7 +124,7 @@ async function syncSupplements() {
                     JSON.stringify(nutritionFacts),
                     JSON.stringify(additives),
                     mixedSummary,
-                    JSON.stringify(generateTags(name, aiAnalysis.summary, nutritionFacts)),
+                    JSON.stringify(generateTags(name, analysis.summary, nutritionFacts)),
                 ],
             });
 
