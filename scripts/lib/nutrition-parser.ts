@@ -117,13 +117,19 @@ export function generateSummaryTexts(
   const hasZinc = nutrientNames.some(n => n === "아연");
   const hasIron = nutrientNames.some(n => n.includes("철") || n === "철분");
   const hasMagnesium = nutrientNames.some(n => n === "마그네슘");
-  const hasOmega3 = rawMaterials.includes("오메가") || rawMaterials.includes("EPA") || rawMaterials.includes("DHA") || productName.includes("오메가");
-  const hasProbiotic = rawMaterials.includes("유산균") || productName.includes("유산균") || productName.includes("프로바이오틱");
-  const hasCollagen = rawMaterials.includes("콜라겐") || productName.includes("콜라겐");
-  const hasLutein = rawMaterials.includes("루테인") || productName.includes("루테인");
-  const hasMelatonin = rawMaterials.includes("멜라토닌") || productName.includes("멜라토닌");
-  const hasCoQ10 = rawMaterials.includes("코엔자임Q10") || rawMaterials.includes("CoQ10") || productName.includes("코큐텐");
-  const hasGlucosamine = rawMaterials.includes("글루코사민") || productName.includes("글루코사민");
+  const combined = productName + " " + rawMaterials;
+  const hasOmega3 = /오메가|EPA|DHA|앤초비|크릴/.test(combined);
+  const hasProbiotic = /유산균|프로바이오틱|락토바실|비피도|바실러스/.test(combined);
+  const hasCollagen = /콜라겐|collagen/i.test(combined);
+  const hasLutein = /루테인/.test(combined);
+  const hasMelatonin = /멜라토닌/.test(combined);
+  const hasCoQ10 = /코엔자임Q10|CoQ10|코큐텐/.test(combined);
+  const hasGlucosamine = /글루코사민/.test(combined);
+  const hasMilkThistle = /밀크씨슬|실리마린|milk\s?thistle/i.test(combined);
+  const hasTheanine = /테아닌/.test(combined);
+  const hasGABA = /GABA|가바\b/.test(combined);
+  const hasGarcinia = /가르시니아/.test(combined);
+  const hasSawPalmetto = /쏘팔메토|saw\s?palmetto/i.test(combined);
 
   // 주요 성분 목록 생성
   const keyNutrients = nutrientNames.slice(0, 3).join(", ");
@@ -146,6 +152,11 @@ export function generateSummaryTexts(
   if (hasMelatonin) effectParts.push("멜라토닌은 수면의 질 개선에 도움을 줄 수 있습니다.");
   if (hasCoQ10) effectParts.push("코엔자임Q10은 항산화 작용과 에너지 생성에 기여합니다.");
   if (hasGlucosamine) effectParts.push("글루코사민은 관절 연골 구성 성분으로 관절 건강 유지에 도움을 줄 수 있습니다.");
+  if (hasMilkThistle) effectParts.push("밀크씨슬 실리마린은 간 세포 보호 및 간 기능 개선에 도움을 줄 수 있습니다.");
+  if (hasTheanine) effectParts.push("L-테아닌은 이완 및 스트레스 완화에 도움을 줄 수 있습니다.");
+  if (hasGABA) effectParts.push("GABA는 긴장 완화와 수면의 질 개선에 도움을 줄 수 있습니다.");
+  if (hasGarcinia) effectParts.push("가르시니아캄보지아 HCA는 탄수화물의 지방 전환을 억제하여 체중 조절에 도움을 줄 수 있습니다.");
+  if (hasSawPalmetto) effectParts.push("쏘팔메토는 남성 전립선 건강 유지에 도움을 줄 수 있습니다.");
 
   const effects = effectParts.length > 0
     ? effectParts.slice(0, 3).join(" ")
@@ -172,10 +183,10 @@ const PRODUCT_NAME_KEYWORDS: Array<{
   nutrient: string;
   defaultUnit: string;
 }> = [
-  { patterns: [/비타민\s?C|비타민씨|아스코르빈산/i], nutrient: "비타민C", defaultUnit: "mg" },
-  { patterns: [/비타민\s?D3?|콜레칼시페롤/i], nutrient: "비타민D", defaultUnit: "μg" },
-  { patterns: [/비타민\s?E|토코페롤/i], nutrient: "비타민E", defaultUnit: "mg" },
-  { patterns: [/비타민\s?K2?|메나퀴논/i], nutrient: "비타민K", defaultUnit: "μg" },
+  { patterns: [/비타민\s?C|비타민씨|아스코르빈산|VITAMIN\s?C|VIT\.?\s?C\b/i], nutrient: "비타민C", defaultUnit: "mg" },
+  { patterns: [/비타민\s?D3?|콜레칼시페롤|VITAMIN\s?D3?|VIT\.?\s?D\b|썬디/i], nutrient: "비타민D", defaultUnit: "μg" },
+  { patterns: [/비타민\s?E|토코페롤|VITAMIN\s?E|VIT\.?\s?E\b/i], nutrient: "비타민E", defaultUnit: "mg" },
+  { patterns: [/비타민\s?K2?|메나퀴논|VITAMIN\s?K|VIT\.?\s?K\b/i], nutrient: "비타민K", defaultUnit: "μg" },
   { patterns: [/비타민\s?B1|티아민/i], nutrient: "비타민B1", defaultUnit: "mg" },
   { patterns: [/비타민\s?B2|리보플라빈/i], nutrient: "비타민B2", defaultUnit: "mg" },
   { patterns: [/비타민\s?B6|피리독신/i], nutrient: "비타민B6", defaultUnit: "mg" },
@@ -184,25 +195,44 @@ const PRODUCT_NAME_KEYWORDS: Array<{
   { patterns: [/비오틴/i], nutrient: "비오틴", defaultUnit: "μg" },
   { patterns: [/나이아신/i], nutrient: "나이아신", defaultUnit: "mg" },
   { patterns: [/칼슘/i], nutrient: "칼슘", defaultUnit: "mg" },
-  { patterns: [/마그네슘/i], nutrient: "마그네슘", defaultUnit: "mg" },
-  { patterns: [/아연/i], nutrient: "아연", defaultUnit: "mg" },
-  { patterns: [/철분|철\b/i], nutrient: "철분", defaultUnit: "mg" },
+  { patterns: [/마그네슘|마그\b|Mg\b/i], nutrient: "마그네슘", defaultUnit: "mg" },
+  { patterns: [/아연|zinc\b/i], nutrient: "아연", defaultUnit: "mg" },
+  { patterns: [/철분|철\b|iron\b|훼로/i], nutrient: "철분", defaultUnit: "mg" },
   { patterns: [/셀레늄/i], nutrient: "셀레늄", defaultUnit: "μg" },
   { patterns: [/루테인/i], nutrient: "루테인", defaultUnit: "mg" },
+  { patterns: [/지아잔틴|제아잔틴/i], nutrient: "지아잔틴", defaultUnit: "mg" },
+  { patterns: [/아스타잔틴|아스타크산틴/i], nutrient: "아스타잔틴", defaultUnit: "mg" },
   { patterns: [/코엔자임\s?Q10|CoQ10|코큐텐/i], nutrient: "코엔자임Q10", defaultUnit: "mg" },
   { patterns: [/글루코사민/i], nutrient: "글루코사민", defaultUnit: "mg" },
   { patterns: [/콘드로이틴/i], nutrient: "콘드로이틴황산", defaultUnit: "mg" },
   { patterns: [/MSM|엠에스엠/i], nutrient: "MSM(메칠설포닐메탄)", defaultUnit: "mg" },
-  { patterns: [/오메가.?3|EPA|DHA/i], nutrient: "EPA+DHA", defaultUnit: "mg" },
-  { patterns: [/콜라겐/i], nutrient: "콜라겐펩타이드", defaultUnit: "g" },
-  { patterns: [/프로바이오틱|유산균/i], nutrient: "유산균(프로바이오틱스)", defaultUnit: "억 CFU" },
-  { patterns: [/밀크씨슬|실리마린/i], nutrient: "밀크씨슬추출물", defaultUnit: "mg" },
-  { patterns: [/홍삼|인삼/i], nutrient: "홍삼", defaultUnit: "mg" },
-  { patterns: [/은행잎|징코|징코빌로바/i], nutrient: "은행잎추출물", defaultUnit: "mg" },
+  { patterns: [/오메가.?3|EPA|DHA|앤초비|크릴/i], nutrient: "EPA+DHA", defaultUnit: "mg" },
+  { patterns: [/콜라겐|collagen/i], nutrient: "콜라겐펩타이드", defaultUnit: "g" },
+  { patterns: [/프로바이오틱|유산균|락토바실|비피도|비피더스|바실러스/i], nutrient: "유산균(프로바이오틱스)", defaultUnit: "억 CFU" },
+  { patterns: [/밀크씨슬|실리마린|milk\s?thistle/i], nutrient: "밀크씨슬추출물", defaultUnit: "mg" },
+  { patterns: [/홍삼|인삼|백삼|흑삼/i], nutrient: "홍삼", defaultUnit: "mg" },
+  { patterns: [/은행잎|징코|징코빌로바|ginkgo/i], nutrient: "은행잎추출물", defaultUnit: "mg" },
   { patterns: [/멜라토닌/i], nutrient: "멜라토닌", defaultUnit: "mg" },
-  { patterns: [/알파리포산|ALA|알파-리포산/i], nutrient: "알파리포산", defaultUnit: "mg" },
-  { patterns: [/크릴/i], nutrient: "크릴오일", defaultUnit: "mg" },
+  { patterns: [/알파.?리포산|ALA\b/i], nutrient: "알파리포산", defaultUnit: "mg" },
   { patterns: [/베타글루칸/i], nutrient: "베타글루칸", defaultUnit: "mg" },
+  { patterns: [/카테킨|녹차\s?(추출|성분)/i], nutrient: "녹차카테킨", defaultUnit: "mg" },
+  { patterns: [/테아닌/i], nutrient: "L-테아닌", defaultUnit: "mg" },
+  { patterns: [/GABA|가바\b/i], nutrient: "GABA(가바)", defaultUnit: "mg" },
+  { patterns: [/가르시니아|HCA\b/i], nutrient: "가르시니아캄보지아추출물", defaultUnit: "mg" },
+  { patterns: [/포스파티딜세린|PS\b/i], nutrient: "포스파티딜세린", defaultUnit: "mg" },
+  { patterns: [/초록입홍합|리프리놀/i], nutrient: "초록입홍합추출오일", defaultUnit: "mg" },
+  { patterns: [/쏘팔메토|saw\s?palmetto/i], nutrient: "쏘팔메토열매추출물", defaultUnit: "mg" },
+  { patterns: [/마카/i], nutrient: "마카분말", defaultUnit: "mg" },
+  { patterns: [/노니/i], nutrient: "노니분말", defaultUnit: "mg" },
+  { patterns: [/프로폴리스/i], nutrient: "프로폴리스추출물", defaultUnit: "mg" },
+  { patterns: [/스피루리나|클로렐라/i], nutrient: "스피루리나", defaultUnit: "mg" },
+  { patterns: [/히알루론산|hyaluronic/i], nutrient: "히알루론산", defaultUnit: "mg" },
+  { patterns: [/엘-카르니틴|L-carnitine|카르니틴/i], nutrient: "L-카르니틴", defaultUnit: "mg" },
+  { patterns: [/CLA\b|공액리놀레산/i], nutrient: "CLA(공액리놀레산)", defaultUnit: "mg" },
+  { patterns: [/아르기닌/i], nutrient: "L-아르기닌", defaultUnit: "mg" },
+  { patterns: [/트립토판/i], nutrient: "L-트립토판", defaultUnit: "mg" },
+  { patterns: [/바나바|코로솔산/i], nutrient: "바나바잎추출물", defaultUnit: "mg" },
+  { patterns: [/크롬|chromium/i], nutrient: "크롬", defaultUnit: "μg" },
 ];
 
 /**
