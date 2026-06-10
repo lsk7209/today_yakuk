@@ -12,8 +12,8 @@ import { Breadcrumb } from "@/components/breadcrumb";
 
 import { AlertTriangle, ShieldCheck } from "lucide-react";
 
-// ISR: Revalidate every 24 hours
-export const revalidate = 86400;
+// ISR: Revalidate every hour (nutrition_facts 데이터 반영)
+export const revalidate = 3600;
 
 interface NutritionFactItem {
   name: string;
