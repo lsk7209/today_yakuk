@@ -1,0 +1,28 @@
+name: Apply Turso Schema/Index
+
+# 수동 실행 전용 — turso-schema.sql 기반 스키마/인덱스를 운영 DB에 적용.
+# 모든 문장이 CREATE ... IF NOT EXISTS 라 기존 데이터/테이블에 안전(idempotent).
+on:
+  workflow_dispatch:
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply schema/index
+        run: node scripts/init-turso-schema.mjs
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
