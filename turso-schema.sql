@@ -92,6 +92,8 @@ CREATE INDEX IF NOT EXISTS idx_pharmacies_province_city ON pharmacies(province, 
 CREATE INDEX IF NOT EXISTS idx_pharmacies_lat_lon ON pharmacies(latitude, longitude);
 CREATE INDEX IF NOT EXISTS idx_supplements_created_at ON supplements(created_at);
 CREATE INDEX IF NOT EXISTS idx_content_queue_status ON content_queue(status);
+-- publish-queue.ts: WHERE status='pending' AND publish_at<=? ORDER BY publish_at 를 위한 복합 인덱스
+CREATE INDEX IF NOT EXISTS idx_content_queue_status_publish_at ON content_queue(status, publish_at);
 CREATE INDEX IF NOT EXISTS idx_content_queue_published_at ON content_queue(published_at);
 CREATE INDEX IF NOT EXISTS idx_content_queue_slug ON content_queue(slug);
 CREATE INDEX IF NOT EXISTS idx_content_queue_hpid ON content_queue(hpid);

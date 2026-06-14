@@ -5,11 +5,16 @@ import "tsconfig-paths/register";
 import { getTursoClient, parseJson } from "../src/lib/turso";
 import { generatePharmacyContent } from "../src/lib/gemini";
 import type { Pharmacy } from "../src/types/pharmacy";
-import { getPharmacyByHpid, getPharmaciesByRegion } from "@/lib/data/pharmacies";
+import {
+  getPharmacyByHpid,
+  getPharmaciesByRegion,
+} from "@/lib/data/pharmacies";
 import { getNextSlot } from "../src/lib/scheduler";
 
 const geminiApiKey = process.env.GEMINI_API_KEY;
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://todaypharm.kr").replace(/\/$/, "");
+const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://todaypharm.kr"
+).replace(/\/$/, "");
 
 type ContentQueueInsert = {
   hpid: string | null;
@@ -37,9 +42,26 @@ function normalizeTextForSimilarity(input: string): string {
 
 function tokenizeKorean(input: string): string[] {
   const stop = new Set([
-    "약국", "위치", "운영", "영업", "시간", "정보", "확인", "가능",
-    "입니다", "있습니다", "합니다", "위해", "및", "또는", "통해",
-    "방문", "문의", "오늘", "지역", "주민",
+    "약국",
+    "위치",
+    "운영",
+    "영업",
+    "시간",
+    "정보",
+    "확인",
+    "가능",
+    "입니다",
+    "있습니다",
+    "합니다",
+    "위해",
+    "및",
+    "또는",
+    "통해",
+    "방문",
+    "문의",
+    "오늘",
+    "지역",
+    "주민",
   ]);
   return normalizeTextForSimilarity(input)
     .split(" ")
@@ -57,7 +79,11 @@ function jaccardSimilarity(a: string, b: string): number {
   return union === 0 ? 0 : inter / union;
 }
 
-function pickNearDuplicates(newSummary: string, existing: string[], threshold = 0.58): string[] {
+function pickNearDuplicates(
+  newSummary: string,
+  existing: string[],
+  threshold = 0.58,
+): string[] {
   return existing
     .map((s) => ({ s, sim: jaccardSimilarity(newSummary, s) }))
     .filter((x) => x.sim >= threshold)
@@ -80,14 +106,18 @@ async function getRecentSummariesForDedupe(limit = 200): Promise<string[]> {
 }
 
 function ensureEnv() {
-  if (!process.env.TURSO_DATABASE_URL) throw new Error("TURSO_DATABASE_URL이 필요합니다.");
-  if (!process.env.TURSO_AUTH_TOKEN) throw new Error("TURSO_AUTH_TOKEN이 필요합니다.");
+  if (!process.env.TURSO_DATABASE_URL)
+    throw new Error("TURSO_DATABASE_URL이 필요합니다.");
+  if (!process.env.TURSO_AUTH_TOKEN)
+    throw new Error("TURSO_AUTH_TOKEN이 필요합니다.");
   if (!geminiApiKey) throw new Error("GEMINI_API_KEY가 필요합니다.");
 }
 
 async function generateAndQueueContent(
   pharmacy: Pharmacy,
   publishAt: string,
+  recentSummaries: string[] = [],
+  regionCache: Map<string, Pharmacy[]> = new Map(),
 ): Promise<void> {
   const db = getTursoClient();
   const now = new Date().toISOString();
@@ -105,43 +135,67 @@ async function generateAndQueueContent(
     const ai_faq = existing.ai_faq as string | null;
 
     if (status === "published" && ai_summary && ai_faq) {
-      console.info(`[SKIP] ${pharmacy.name} (${pharmacy.hpid}): 이미 발행된 컨텐츠 존재`);
+      console.info(
+        `[SKIP] ${pharmacy.name} (${pharmacy.hpid}): 이미 발행된 컨텐츠 존재`,
+      );
       return;
     }
     if (status === "pending" && ai_summary && ai_faq) {
-      console.info(`[SKIP] ${pharmacy.name} (${pharmacy.hpid}): 발행 대기 중인 컨텐츠 존재`);
+      console.info(
+        `[SKIP] ${pharmacy.name} (${pharmacy.hpid}): 발행 대기 중인 컨텐츠 존재`,
+      );
       return;
     }
     if (status === "failed" || !ai_summary || !ai_faq) {
-      console.info(`[RETRY] ${pharmacy.name} (${pharmacy.hpid}): 컨텐츠 재생성 (이전: ${status})`);
+      console.info(
+        `[RETRY] ${pharmacy.name} (${pharmacy.hpid}): 컨텐츠 재생성 (이전: ${status})`,
+      );
     }
   }
 
   try {
-    const regionList =
-      pharmacy.province && pharmacy.city
-        ? await getPharmaciesByRegion(pharmacy.province, pharmacy.city)
-        : [];
+    // 지역별 약국 목록 캐시 사용 — 동일 지역 반복 조회 방지 (500 rows × N → 500 rows × 1/region)
+    let regionList: Pharmacy[] = [];
+    if (pharmacy.province && pharmacy.city) {
+      const cacheKey = `${pharmacy.province}|${pharmacy.city}`;
+      if (regionCache.has(cacheKey)) {
+        regionList = regionCache.get(cacheKey)!;
+      } else {
+        regionList = await getPharmaciesByRegion(
+          pharmacy.province,
+          pharmacy.city,
+        );
+        regionCache.set(cacheKey, regionList);
+      }
+    }
     const nearby = regionList.slice(0, 5);
 
     console.info(`[GENERATE] ${pharmacy.name} (${pharmacy.hpid})...`);
-    const recentSummaries = await getRecentSummariesForDedupe(200);
+    // recentSummaries는 호출자(generateBatchContent)가 루프 전 1회 조회해서 주입
     let geminiContent = await generatePharmacyContent(pharmacy, nearby);
 
     if (geminiContent?.summary && recentSummaries.length) {
-      const nearDups = pickNearDuplicates(geminiContent.summary, recentSummaries);
+      const nearDups = pickNearDuplicates(
+        geminiContent.summary,
+        recentSummaries,
+      );
       if (nearDups.length) {
         console.info(`[DEDUPE] ${pharmacy.name}: 유사 요약 감지 → 재생성`);
-        geminiContent = await generatePharmacyContent(pharmacy, nearby, { avoidSummaries: nearDups });
+        geminiContent = await generatePharmacyContent(pharmacy, nearby, {
+          avoidSummaries: nearDups,
+        });
       }
     }
 
     if (!geminiContent) {
-      console.warn(`[WARN] ${pharmacy.name} (${pharmacy.hpid}): Gemini API 호출 실패`);
+      console.warn(
+        `[WARN] ${pharmacy.name} (${pharmacy.hpid}): Gemini API 호출 실패`,
+      );
       return;
     }
 
-    const bullets = geminiContent.bullets?.map((b) => `<li>${b}</li>`).join("") ?? "";
+    const bullets =
+      geminiContent.bullets?.map((b) => `<li>${b}</li>`).join("") ?? "";
     const faq =
       geminiContent.faq
         ?.map((f) => `<div><h3>${f.question}</h3><p>${f.answer}</p></div>`)
@@ -164,7 +218,7 @@ async function generateAndQueueContent(
     const region =
       pharmacy.province && pharmacy.city
         ? `${pharmacy.province} ${pharmacy.city}`
-        : pharmacy.province ?? null;
+        : (pharmacy.province ?? null);
 
     const title = `${pharmacy.name} | ${region ?? "약국"} 영업시간 및 안내`;
     const slug = `pharmacy-${pharmacy.hpid}`;
@@ -172,7 +226,9 @@ async function generateAndQueueContent(
     const aiBulletsJson = geminiContent.bullets
       ? JSON.stringify(geminiContent.bullets.map((text) => ({ text })))
       : null;
-    const aiFaqJson = geminiContent.faq ? JSON.stringify(geminiContent.faq) : null;
+    const aiFaqJson = geminiContent.faq
+      ? JSON.stringify(geminiContent.faq)
+      : null;
     const extraSectionsJson = geminiContent.extra_sections
       ? JSON.stringify(geminiContent.extra_sections)
       : null;
@@ -181,23 +237,45 @@ async function generateAndQueueContent(
       await db.execute({
         sql: `UPDATE content_queue SET title=?, slug=?, region=?, content_html=?, ai_summary=?, ai_bullets=?, ai_faq=?, ai_cta=?, extra_sections=?, status='pending', publish_at=?, updated_at=? WHERE id=?`,
         args: [
-          title, slug, region, contentHtml, geminiContent.summary ?? null,
-          aiBulletsJson, aiFaqJson, geminiContent.cta ?? null, extraSectionsJson,
-          publishAt, now, existing.id as string,
+          title,
+          slug,
+          region,
+          contentHtml,
+          geminiContent.summary ?? null,
+          aiBulletsJson,
+          aiFaqJson,
+          geminiContent.cta ?? null,
+          extraSectionsJson,
+          publishAt,
+          now,
+          existing.id as string,
         ],
       });
-      console.info(`[UPDATE] ${pharmacy.name} (${pharmacy.hpid}): 컨텐츠 업데이트 완료`);
+      console.info(
+        `[UPDATE] ${pharmacy.name} (${pharmacy.hpid}): 컨텐츠 업데이트 완료`,
+      );
     } else {
       await db.execute({
         sql: `INSERT INTO content_queue (hpid, title, slug, region, content_html, ai_summary, ai_bullets, ai_faq, ai_cta, extra_sections, status, publish_at, updated_at)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)`,
         args: [
-          pharmacy.hpid, title, slug, region, contentHtml, geminiContent.summary ?? null,
-          aiBulletsJson, aiFaqJson, geminiContent.cta ?? null, extraSectionsJson,
-          publishAt, now,
+          pharmacy.hpid,
+          title,
+          slug,
+          region,
+          contentHtml,
+          geminiContent.summary ?? null,
+          aiBulletsJson,
+          aiFaqJson,
+          geminiContent.cta ?? null,
+          extraSectionsJson,
+          publishAt,
+          now,
         ],
       });
-      console.info(`[CREATE] ${pharmacy.name} (${pharmacy.hpid}): 컨텐츠 생성 완료`);
+      console.info(
+        `[CREATE] ${pharmacy.name} (${pharmacy.hpid}): 컨텐츠 생성 완료`,
+      );
     }
   } catch (error) {
     console.error(`[ERROR] ${pharmacy.name} (${pharmacy.hpid}):`, error);
@@ -225,22 +303,30 @@ async function generateBatchContent(limit: number = 10): Promise<void> {
     return;
   }
 
-  // 이미 컨텐츠가 있는 hpid 가져오기
-  const existingResult = await db.execute(
-    `SELECT hpid, status, ai_summary, ai_faq FROM content_queue WHERE hpid IS NOT NULL AND status IN ('published', 'pending')`
-  );
-
+  // 이미 컨텐츠가 있는 hpid 확인 — 전체 테이블 스캔 대신 현재 배치 hpid만 조회 (idx_content_queue_hpid 활용)
+  const batchHpids = pharmaciesResult.rows
+    .map((p) => p.hpid as string)
+    .filter(Boolean);
   const completedHpidSet = new Set<string>();
-  for (const item of existingResult.rows) {
-    const hpid = item.hpid as string;
-    const status = item.status as string;
-    const ai_summary = item.ai_summary as string | null;
-    const ai_faq = item.ai_faq as string | null;
-    if (
-      hpid &&
-      (status === "published" || (status === "pending" && ai_summary && ai_faq))
-    ) {
-      completedHpidSet.add(hpid);
+  if (batchHpids.length > 0) {
+    const placeholders = batchHpids.map(() => "?").join(",");
+    const existingResult = await db.execute({
+      sql: `SELECT hpid, status, ai_summary, ai_faq FROM content_queue
+            WHERE hpid IN (${placeholders}) AND status IN ('published', 'pending')`,
+      args: batchHpids,
+    });
+    for (const item of existingResult.rows) {
+      const hpid = item.hpid as string;
+      const status = item.status as string;
+      const ai_summary = item.ai_summary as string | null;
+      const ai_faq = item.ai_faq as string | null;
+      if (
+        hpid &&
+        (status === "published" ||
+          (status === "pending" && ai_summary && ai_faq))
+      ) {
+        completedHpidSet.add(hpid);
+      }
     }
   }
 
@@ -258,7 +344,7 @@ async function generateBatchContent(limit: number = 10): Promise<void> {
 
   // 마지막 예약 시간 확인
   const lastResult = await db.execute(
-    `SELECT publish_at FROM content_queue WHERE status = 'pending' ORDER BY publish_at DESC LIMIT 1`
+    `SELECT publish_at FROM content_queue WHERE status = 'pending' ORDER BY publish_at DESC LIMIT 1`,
   );
   let lastScheduledTime = lastResult.rows[0]?.publish_at
     ? new Date(lastResult.rows[0].publish_at as string)
@@ -269,6 +355,11 @@ async function generateBatchContent(limit: number = 10): Promise<void> {
   }
 
   console.info(`예약 발행 시작 기준 시간: ${lastScheduledTime.toISOString()}`);
+
+  // 중복 요약 방지용 최근 요약 — 루프 바깥에서 1회만 조회 (N×200 rows → 1×200 rows 절감)
+  const recentSummaries = await getRecentSummariesForDedupe(200);
+  // 지역별 약국 목록 캐시 — 같은 지역 반복 DB 조회 방지 (500 rows × N → 500 rows × unique_regions)
+  const regionCache = new Map<string, Pharmacy[]>();
 
   for (let i = 0; i < targetHpids.length; i++) {
     const hpid = targetHpids[i];
@@ -283,7 +374,12 @@ async function generateBatchContent(limit: number = 10): Promise<void> {
     lastScheduledTime = nextSlot;
 
     console.info(`[SCHEDULE] ${pharmacy.name} -> ${nextSlot.toISOString()}`);
-    await generateAndQueueContent(pharmacy, nextSlot.toISOString());
+    await generateAndQueueContent(
+      pharmacy,
+      nextSlot.toISOString(),
+      recentSummaries,
+      regionCache,
+    );
 
     if (i < targetHpids.length - 1) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
