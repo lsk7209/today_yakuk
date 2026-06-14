@@ -4,8 +4,13 @@
  */
 import { createClient } from "@libsql/client";
 
-const TURSO_URL = process.env.TURSO_DATABASE_URL || "libsql://todaypharmkr-lsk7209.aws-ap-northeast-1.turso.io";
-const TURSO_TOKEN = process.env.TURSO_AUTH_TOKEN || "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODEwMTY5NDQsImlkIjoiMDE5ZWFjZTEtY2UwMS03Yjk0LWI2YjMtYzRmODhjOTc2ODI3IiwicmlkIjoiMmQ5YjUyYjYtMTFhMy00NzMyLTk4NDAtZjgxOTUyZGI5YTE0In0.uFplGEXW4aaNsn34ODhPI_lfPG7skPLrwSxlTy9qL3euFt-Gxkni4_Xg5xUtDog2_17IcjV73hF1x0IEOwWuDw";
+// 보안: 자격증명 하드코딩 금지 — 환경변수로만 주입 (노출 시 외부 무단 read/write 위험)
+const TURSO_URL = process.env.TURSO_DATABASE_URL;
+const TURSO_TOKEN = process.env.TURSO_AUTH_TOKEN;
+if (!TURSO_URL || !TURSO_TOKEN) {
+  console.error("TURSO_DATABASE_URL / TURSO_AUTH_TOKEN 환경변수가 필요합니다.");
+  process.exit(1);
+}
 
 const db = createClient({ url: TURSO_URL, authToken: TURSO_TOKEN });
 
