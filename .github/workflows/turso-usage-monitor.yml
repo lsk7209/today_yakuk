@@ -1,0 +1,25 @@
+name: Turso Usage Monitor
+
+# org 전체 Turso rows_read 사용량을 매일 점검.
+# 무료 한도 80% 도달 시 job이 실패하여 GitHub이 repo owner에게 자동 이메일 알림.
+on:
+  schedule:
+    - cron: "0 0 * * *" # 매일 09:00 KST (00:00 UTC)
+  workflow_dispatch:
+
+jobs:
+  check-usage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check Turso usage
+        run: node scripts/check-turso-usage.mjs
+        env:
+          TURSO_PLATFORM_TOKEN: ${{ secrets.TURSO_PLATFORM_TOKEN }}
