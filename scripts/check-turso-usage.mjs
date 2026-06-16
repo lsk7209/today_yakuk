@@ -1,28 +1,47 @@
 /**
- * Turso org 전체 rows_read 사용량 점검 — 무료 한도 임박 시 경고.
- * 임계 초과하면 exit 1 → GitHub Actions 실패 → repo owner에게 자동 이메일 알림.
- * 실행: TURSO_PLATFORM_TOKEN=... node scripts/check-turso-usage.mjs
+ * Checks organization-wide Turso rows_read usage and fails only when usage
+ * exceeds the warning threshold. Missing or under-scoped platform tokens are
+ * configuration gaps, so scheduled runs should report them without creating
+ * repeated failure notifications.
  */
 const ORG = "lsk7209";
-const READ_LIMIT = 500_000_000; // starter 무료 플랜 월 rows_read 한도
-const WARN_PCT = 80; // 이 비율 도달 시 경고
+const READ_LIMIT = 500_000_000;
+const WARN_PCT = 80;
 
 const token = process.env.TURSO_PLATFORM_TOKEN;
 if (!token) {
-  console.error("TURSO_PLATFORM_TOKEN 환경변수가 필요합니다.");
-  process.exit(2);
+  console.log("::notice::Skipping Turso usage monitor. TURSO_PLATFORM_TOKEN is not set.");
+  process.exit(0);
 }
 
 const headers = { Authorization: `Bearer ${token}` };
+
 const api = async (path) => {
   const res = await fetch(`https://api.turso.tech${path}`, { headers });
-  if (!res.ok) throw new Error(`${path} -> HTTP ${res.status}`);
+  if (!res.ok) {
+    const error = new Error(`${path} -> HTTP ${res.status}`);
+    error.status = res.status;
+    throw error;
+  }
   return res.json();
 };
 
-const { databases } = await api(`/v1/organizations/${ORG}/databases`);
+let databases = [];
+try {
+  ({ databases } = await api(`/v1/organizations/${ORG}/databases`));
+} catch (err) {
+  if (err.status === 401 || err.status === 403) {
+    console.log(
+      `::notice::Skipping Turso usage monitor. TURSO_PLATFORM_TOKEN cannot access org "${ORG}" (${err.message}).`,
+    );
+    process.exit(0);
+  }
+  throw err;
+}
+
 let totalReads = 0;
 const perDb = [];
+
 for (const db of databases) {
   try {
     const usage = await api(
@@ -32,7 +51,7 @@ for (const db of databases) {
     totalReads += reads;
     perDb.push([db.Name, reads]);
   } catch (err) {
-    console.warn(`usage 조회 실패: ${db.Name} (${err.message})`);
+    console.warn(`usage lookup failed: ${db.Name} (${err.message})`);
   }
 }
 
@@ -46,15 +65,15 @@ console.log(
   "Top 5:",
   perDb
     .slice(0, 5)
-    .map(([n, r]) => `${n}=${r.toLocaleString()}`)
+    .map(([name, reads]) => `${name}=${reads.toLocaleString()}`)
     .join(", "),
 );
 
 if (pct >= WARN_PCT) {
   console.error(
-    `::error::⚠️ Turso reads ${pct.toFixed(1)}% — 무료 한도(${READ_LIMIT / 1e6}M) 임박! 위 Top 사이트의 폭주 점검 필요.`,
+    `::error::Turso reads are at ${pct.toFixed(1)}% of the free limit (${READ_LIMIT / 1e6}M). Review high-usage sites.`,
   );
   process.exit(1);
 }
 
-console.log(`✅ 정상 (경고 임계 ${WARN_PCT}% 미만)`);
+console.log(`Usage is below warning threshold (${WARN_PCT}%).`);

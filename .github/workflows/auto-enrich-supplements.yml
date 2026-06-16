@@ -24,10 +24,32 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Check required secrets
+        id: preflight
+        shell: bash
+        run: |
+          missing=()
+          [ -z "$TURSO_DATABASE_URL" ] && missing+=("TURSO_DATABASE_URL")
+          [ -z "$TURSO_AUTH_TOKEN" ] && missing+=("TURSO_AUTH_TOKEN")
+          [ -z "$FOOD_SAFETY_API_KEY" ] && missing+=("FOOD_SAFETY_API_KEY")
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::notice::Skipping supplement enrichment. Missing secrets: ${missing[*]}"
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          FOOD_SAFETY_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}
+
       - name: Install dependencies
+        if: steps.preflight.outputs.run == 'true'
         run: npm ci
 
       - name: Run enrichment
+        if: steps.preflight.outputs.run == 'true'
         run: npx ts-node --project tsconfig.sync.json scripts/auto-enrich-supplements.ts ${{ github.event.inputs.limit || '15' }}
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
