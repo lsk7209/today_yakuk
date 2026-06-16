@@ -1,4 +1,5 @@
 import { getTursoClient, parseJson } from "@/lib/turso";
+import { cacheDbRead } from "@/lib/db-read-cache";
 import { Pharmacy } from "@/types/pharmacy";
 
 export const PROVINCE_MAP: Record<string, string> = {
@@ -65,6 +66,12 @@ function rowToPharmacy(row: any): Pharmacy {
 }
 
 export async function getPharmacyByHpid(hpid: string): Promise<Pharmacy | null> {
+  return cacheDbRead(["pharmacy", "by-hpid", hpid], () =>
+    getPharmacyByHpidUncached(hpid),
+  );
+}
+
+async function getPharmacyByHpidUncached(hpid: string): Promise<Pharmacy | null> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
@@ -139,6 +146,10 @@ export async function getPharmaciesByRegionPaginated(
 }
 
 export async function getPharmacyCount(): Promise<number> {
+  return cacheDbRead(["pharmacy", "count"], () => getPharmacyCountUncached());
+}
+
+async function getPharmacyCountUncached(): Promise<number> {
   try {
     const db = getTursoClient();
     const result = await db.execute("SELECT COUNT(*) as cnt FROM pharmacies");
@@ -153,13 +164,22 @@ export async function getPharmacyHpidsChunk(
   offset: number,
   limit: number,
 ): Promise<{ hpid: string; updated_at: string | null }[]> {
+  return cacheDbRead(["pharmacy", "hpids", String(offset), String(limit)], () =>
+    getPharmacyHpidsChunkUncached(offset, limit),
+  );
+}
+
+async function getPharmacyHpidsChunkUncached(
+  offset: number,
+  limit: number,
+): Promise<{ hpid: string; updated_at: string | null }[]> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
       sql: "SELECT hpid, updated_at FROM pharmacies ORDER BY hpid ASC LIMIT ? OFFSET ?",
       args: [limit, offset],
     });
-    return result.rows.map((r) => ({
+    return result.rows.map((r: Record<string, unknown>) => ({
       hpid: r.hpid as string,
       updated_at: r.updated_at as string | null,
     }));
@@ -173,13 +193,22 @@ export async function getPharmacySitemapChunk(
   offset: number,
   limit: number,
 ): Promise<{ hpid: string; updated_at: string | null; address: string | null; tel: string | null; operating_hours: Pharmacy["operating_hours"] }[]> {
+  return cacheDbRead(["pharmacy", "sitemap", String(offset), String(limit)], () =>
+    getPharmacySitemapChunkUncached(offset, limit),
+  );
+}
+
+async function getPharmacySitemapChunkUncached(
+  offset: number,
+  limit: number,
+): Promise<{ hpid: string; updated_at: string | null; address: string | null; tel: string | null; operating_hours: Pharmacy["operating_hours"] }[]> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
       sql: "SELECT hpid, updated_at, address, tel, operating_hours FROM pharmacies ORDER BY hpid ASC LIMIT ? OFFSET ?",
       args: [limit, offset],
     });
-    return result.rows.map((r) => ({
+    return result.rows.map((r: Record<string, unknown>) => ({
       hpid: r.hpid as string,
       updated_at: r.updated_at as string | null,
       address: r.address as string | null,
@@ -291,6 +320,10 @@ function rowToIngredient(row: any): Ingredient {
 }
 
 export async function getSupplementById(id: string): Promise<Supplement | null> {
+  return cacheDbRead(["supplement", "by-id", id], () => getSupplementByIdUncached(id));
+}
+
+async function getSupplementByIdUncached(id: string): Promise<Supplement | null> {
   try {
     const db = getTursoClient();
     const result = await db.execute({ sql: "SELECT * FROM supplements WHERE id = ? LIMIT 1", args: [id] });
@@ -303,6 +336,12 @@ export async function getSupplementById(id: string): Promise<Supplement | null> 
 }
 
 export async function getIngredientBySlug(slug: string): Promise<Ingredient | null> {
+  return cacheDbRead(["ingredient", "by-slug", slug], () =>
+    getIngredientBySlugUncached(slug),
+  );
+}
+
+async function getIngredientBySlugUncached(slug: string): Promise<Ingredient | null> {
   try {
     const db = getTursoClient();
     const result = await db.execute({ sql: "SELECT * FROM ingredients WHERE slug = ? LIMIT 1", args: [slug] });
@@ -315,6 +354,10 @@ export async function getIngredientBySlug(slug: string): Promise<Ingredient | nu
 }
 
 export async function getSupplementCount(): Promise<number> {
+  return cacheDbRead(["supplement", "count"], () => getSupplementCountUncached());
+}
+
+async function getSupplementCountUncached(): Promise<number> {
   try {
     const db = getTursoClient();
     const result = await db.execute("SELECT COUNT(*) as cnt FROM supplements");
@@ -326,13 +369,19 @@ export async function getSupplementCount(): Promise<number> {
 }
 
 export async function getSupplementSitemapChunk(offset: number, limit: number): Promise<{ id: string; created_at: string | null }[]> {
+  return cacheDbRead(["supplement", "sitemap", String(offset), String(limit)], () =>
+    getSupplementSitemapChunkUncached(offset, limit),
+  );
+}
+
+async function getSupplementSitemapChunkUncached(offset: number, limit: number): Promise<{ id: string; created_at: string | null }[]> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
       sql: "SELECT id, created_at FROM supplements ORDER BY created_at DESC LIMIT ? OFFSET ?",
       args: [limit, offset],
     });
-    return result.rows.map((r) => ({ id: r.id as string, created_at: r.created_at as string | null }));
+    return result.rows.map((r: Record<string, unknown>) => ({ id: r.id as string, created_at: r.created_at as string | null }));
   } catch (e) {
     console.error("supplement sitemap chunk fetch exception", e);
     return [];
@@ -340,6 +389,10 @@ export async function getSupplementSitemapChunk(offset: number, limit: number): 
 }
 
 export async function getMedicineCount(): Promise<number> {
+  return cacheDbRead(["medicine", "count"], () => getMedicineCountUncached());
+}
+
+async function getMedicineCountUncached(): Promise<number> {
   try {
     const db = getTursoClient();
     const result = await db.execute("SELECT COUNT(*) as cnt FROM medicines");
@@ -351,13 +404,19 @@ export async function getMedicineCount(): Promise<number> {
 }
 
 export async function getMedicineSitemapChunk(offset: number, limit: number): Promise<{ id: string; created_at: string | null }[]> {
+  return cacheDbRead(["medicine", "sitemap", String(offset), String(limit)], () =>
+    getMedicineSitemapChunkUncached(offset, limit),
+  );
+}
+
+async function getMedicineSitemapChunkUncached(offset: number, limit: number): Promise<{ id: string; created_at: string | null }[]> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
       sql: "SELECT id, created_at FROM medicines ORDER BY created_at DESC LIMIT ? OFFSET ?",
       args: [limit, offset],
     });
-    return result.rows.map((r) => ({ id: r.id as string, created_at: r.created_at as string | null }));
+    return result.rows.map((r: Record<string, unknown>) => ({ id: r.id as string, created_at: r.created_at as string | null }));
   } catch (e) {
     console.error("medicine sitemap chunk fetch exception", e);
     return [];

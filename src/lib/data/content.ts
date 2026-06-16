@@ -1,4 +1,5 @@
 import { getTursoClient, parseJson } from "@/lib/turso";
+import { cacheDbRead } from "@/lib/db-read-cache";
 
 export type ContentItem = {
   id: string;
@@ -44,6 +45,12 @@ function rowToContent(row: any): ContentItem {
 }
 
 export async function getPublishedContentBySlug(slug: string): Promise<ContentItem | null> {
+  return cacheDbRead(["content", "published-by-slug", slug], () =>
+    getPublishedContentBySlugUncached(slug),
+  );
+}
+
+async function getPublishedContentBySlugUncached(slug: string): Promise<ContentItem | null> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
@@ -77,6 +84,12 @@ export async function getPublishedContentByHpid(hpid: string): Promise<ContentIt
 }
 
 export async function listPublishedContent(limit = 20): Promise<ContentItem[]> {
+  return cacheDbRead(["content", "published-list", String(limit)], () =>
+    listPublishedContentUncached(limit),
+  );
+}
+
+async function listPublishedContentUncached(limit = 20): Promise<ContentItem[]> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
@@ -94,6 +107,12 @@ export async function listPublishedContent(limit = 20): Promise<ContentItem[]> {
 }
 
 export async function getPublishedContentCount(): Promise<number> {
+  return cacheDbRead(["content", "published-count"], () =>
+    getPublishedContentCountUncached(),
+  );
+}
+
+async function getPublishedContentCountUncached(): Promise<number> {
   try {
     const db = getTursoClient();
     const result = await db.execute("SELECT COUNT(*) as cnt FROM content_queue WHERE status = 'published'");
@@ -108,6 +127,15 @@ export async function getPublishedContentSitemapChunk(
   offset: number,
   limit: number,
 ): Promise<{ slug: string; updated_at: string; published_at: string | null }[]> {
+  return cacheDbRead(["content", "published-sitemap", String(offset), String(limit)], () =>
+    getPublishedContentSitemapChunkUncached(offset, limit),
+  );
+}
+
+async function getPublishedContentSitemapChunkUncached(
+  offset: number,
+  limit: number,
+): Promise<{ slug: string; updated_at: string; published_at: string | null }[]> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
@@ -117,7 +145,7 @@ export async function getPublishedContentSitemapChunk(
             LIMIT ? OFFSET ?`,
       args: [limit, offset],
     });
-    return result.rows.map((r) => ({
+    return result.rows.map((r: Record<string, unknown>) => ({
       slug: r.slug as string,
       updated_at: r.updated_at as string,
       published_at: r.published_at as string | null,
