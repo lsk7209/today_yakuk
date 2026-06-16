@@ -2,7 +2,7 @@ name: Daily Pharmacy Sync
 
 on:
   schedule:
-    # 매일 04:00 KST = 19:00 UTC
+    # Daily 04:00 KST = 19:00 UTC
     - cron: "0 19 * * *"
   workflow_dispatch:
 
@@ -26,9 +26,9 @@ jobs:
         run: |
           set -e
           missing=0
-          for k in TURSO_DATABASE_URL TURSO_AUTH_TOKEN FOOD_SAFETY_API_KEY; do
+          for k in TURSO_DATABASE_URL TURSO_AUTH_TOKEN PUBLIC_DATA_API_KEY; do
             if [ -z "${!k}" ]; then
-              echo "::error title=Missing secret::환경변수 ${k} 가 비어있습니다."
+              echo "::error title=Missing secret::GitHub secret ${k} is empty."
               missing=1
             fi
           done
@@ -38,11 +38,11 @@ jobs:
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
-          FOOD_SAFETY_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}
+          PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
 
       - name: Run daily sync
         run: npm run sync
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
-          PUBLIC_DATA_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}
+          PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
