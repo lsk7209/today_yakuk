@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     canonical: "/privacy",
   },
   openGraph: {
-    title: "개인정보처리방침 | 약국오늘",
+    title: "개인정보처리방침",
     description: "위치 정보, 쿠키, 문의 정보 처리 기준을 안내하는 공식 정책 페이지입니다.",
     url: `${siteUrl}/privacy`,
     siteName: "약국오늘",
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
   const webPageJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "개인정보처리방침 | 약국오늘",
+    name: "개인정보처리방침",
     description:
       "약국오늘 서비스 이용 시 적용되는 개인정보 수집, 이용, 보관, 쿠키 정책을 확인하세요.",
     url: `${siteUrl}/privacy`,

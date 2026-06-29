@@ -4,7 +4,7 @@ import { buildArticleJsonLd } from "@/lib/seo";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 import { JsonLd } from "@/components/seo/json-ld";
 
-const metaTitle = "심야 약국 찾기 체크리스트: 헛걸음 방지 | 약국오늘";
+const metaTitle = "심야 약국 찾기 체크리스트: 헛걸음 방지";
 const metaDescription =
   "심야 시간대 종료 임박 확인, 전화/길찾기 활용, 반경 확장 탐색으로 빠르게 약국을 찾는 방법을 정리했습니다.";
 

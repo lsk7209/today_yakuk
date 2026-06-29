@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
-const metaTitle = "고혈압·당뇨약 복용자, 명절/연휴 대비 필수 체크리스트 | 약국오늘";
+const metaTitle = "고혈압·당뇨약 복용자, 명절/연휴 대비 필수 체크리스트";
 const metaDescription =
     "약이 떨어지면 큰일 나는 만성질환자분들을 위해! 연휴 전 약 관리법, 깜빡했을 때 대처법, 그리고 음식 조절 팁까지 정리했습니다.";
 

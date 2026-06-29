@@ -16,7 +16,7 @@ export async function generateMetadata({
 
     if (!ingredient) {
         return {
-            title: "성분을 찾을 수 없습니다 | 약국오늘",
+            title: "성분을 찾을 수 없습니다",
             description: "요청하신 성분 정보를 찾을 수 없습니다.",
         };
     }
@@ -25,7 +25,7 @@ export async function generateMetadata({
         title: `${ingredient.name} - 성분 정보`,
         description: ingredient.summary || `${ingredient.name}의 상세 정보를 확인하세요.`,
         openGraph: {
-            title: `${ingredient.name} 성분 백과 | 약국오늘`,
+            title: `${ingredient.name} 성분 백과`,
             description: ingredient.summary || `${ingredient.name}의 상세 정보를 확인하세요.`,
         },
     };

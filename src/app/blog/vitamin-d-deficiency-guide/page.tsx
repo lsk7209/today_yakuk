@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
-const metaTitle = "비타민D 결핍 신호 7가지와 올바른 보충 방법 | 약국오늘";
+const metaTitle = "비타민D 결핍 신호 7가지와 올바른 보충 방법";
 const metaDescription =
     "국내 성인의 약 75%가 비타민D 부족 상태입니다. 결핍 증상, 혈중 농도 기준, 용량별 보충 방법, 비타민D3 vs D2 차이를 정리했습니다.";
 

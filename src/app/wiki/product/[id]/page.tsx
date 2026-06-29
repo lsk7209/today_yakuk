@@ -1,13 +1,18 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { NutrientDisplay } from "@/components/wiki/NutrientDisplay";
 import { linkIngredients } from "@/utils/text-linker";
 import { AdditiveSignal } from "@/components/wiki/AdditiveSignal";
 import { MapPin } from "lucide-react";
 import { getSupplementById, type Supplement } from "@/lib/data/pharmacies";
 import { getSiteUrl } from "@/lib/site-url";
+import {
+  buildWikiProductPath,
+  buildWikiProductSlug,
+  extractWikiEntityId,
+} from "@/lib/wiki-slug";
 import { Breadcrumb } from "@/components/breadcrumb";
 
 import { AlertTriangle, ShieldCheck } from "lucide-react";
@@ -38,18 +43,18 @@ export async function generateMetadata({
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const supplement = await getSupplementById(params.id);
+  const supplement = await getSupplementById(extractWikiEntityId(params.id));
 
   if (!supplement) {
     return {
-      title: "제품을 찾을 수 없습니다 | 약국오늘",
+      title: "제품을 찾을 수 없습니다",
       description: "요청하신 영양제 정보를 찾을 수 없습니다.",
       robots: { index: false, follow: false },
     };
   }
 
   const siteUrl = getSiteUrl();
-  const canonicalUrl = `${siteUrl}/wiki/product/${params.id}`;
+  const canonicalUrl = `${siteUrl}${buildWikiProductPath(supplement)}`;
 
   const isThin =
     !supplement.ai_summary &&
@@ -58,13 +63,13 @@ export async function generateMetadata({
     (!supplement.tags || supplement.tags.length === 0);
 
   return {
-    title: `${supplement.name} 효능/부작용 및 성분 분석 - 약국오늘`,
+    title: `${supplement.name} 효능/부작용 및 성분 분석`,
     description: `${supplement.name} (${supplement.manufacturer || "제조사"})의 영양 성분, 첨가물 정보, 정밀 분석 리포트를 확인하세요. 약사가 검증한 안전한 영양제 정보.`,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: `${supplement.name} | 약국오늘 영양제 위키`,
+      title: `${supplement.name} 영양제 위키`,
       description:
         supplement.ai_summary ||
         `${supplement.name}의 상세 영양 정보를 확인하세요.`,
@@ -82,10 +87,14 @@ export default async function ProductDetailPage({
 }: {
   params: { id: string };
 }) {
-  const supplement = await getSupplementById(params.id);
+  const supplement = await getSupplementById(extractWikiEntityId(params.id));
 
   if (!supplement) {
     notFound();
+  }
+
+  if (params.id !== buildWikiProductSlug(supplement)) {
+    permanentRedirect(buildWikiProductPath(supplement));
   }
 
   // Transform nutrition_facts to match component interface
@@ -100,7 +109,7 @@ export default async function ProductDetailPage({
     ) || [];
 
   const siteUrl = getSiteUrl();
-  const productUrl = `${siteUrl}/wiki/product/${params.id}`;
+  const productUrl = `${siteUrl}${buildWikiProductPath(supplement)}`;
 
   // AI Summary Parsing for FAQ Schema
   const faqItems: { question: string; answer: string }[] = [];

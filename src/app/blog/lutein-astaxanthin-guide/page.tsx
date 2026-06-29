@@ -4,7 +4,7 @@ import { buildArticleJsonLd } from "@/lib/seo";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle =
-    "루테인 vs 아스타잔틴: 눈 건강 영양제, 어떻게 다르고 같이 먹어도 될까 | 약국오늘";
+    "루테인 vs 아스타잔틴: 눈 건강 영양제, 어떻게 다르고 같이 먹어도 될까";
 const metaDescription =
     "루테인과 아스타잔틴은 모두 눈 건강에 좋다고 알려져 있지만 작용 방식이 다릅니다. 황반 보호, 항산화력, 용량, 병용 여부를 비교 정리했습니다.";
 

@@ -91,7 +91,8 @@ const STATEMENTS = [
     side_effects TEXT,
     storage_method TEXT,
     image_url TEXT,
-    created_at TEXT DEFAULT (datetime('now'))
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
   )`,
 
   `CREATE TABLE IF NOT EXISTS analytics_logs (
@@ -106,11 +107,25 @@ const STATEMENTS = [
   `CREATE INDEX IF NOT EXISTS idx_pharmacies_province_city ON pharmacies(province, city)`,
   `CREATE INDEX IF NOT EXISTS idx_pharmacies_lat_lon ON pharmacies(latitude, longitude)`,
   `CREATE INDEX IF NOT EXISTS idx_supplements_created_at ON supplements(created_at)`,
+  `CREATE INDEX IF NOT EXISTS idx_medicines_created_at ON medicines(created_at)`,
+  `CREATE INDEX IF NOT EXISTS idx_medicines_updated_at ON medicines(updated_at)`,
   `CREATE INDEX IF NOT EXISTS idx_content_queue_status ON content_queue(status)`,
   `CREATE INDEX IF NOT EXISTS idx_content_queue_published_at ON content_queue(published_at)`,
   `CREATE INDEX IF NOT EXISTS idx_content_queue_slug ON content_queue(slug)`,
   `CREATE INDEX IF NOT EXISTS idx_content_queue_hpid ON content_queue(hpid)`,
   `CREATE INDEX IF NOT EXISTS idx_analytics_logs_created_at ON analytics_logs(created_at)`,
+];
+
+const MIGRATIONS = [
+  {
+    name: "medicines.updated_at",
+    sql: `ALTER TABLE medicines ADD COLUMN updated_at TEXT`,
+    ignore: "duplicate column name",
+  },
+  {
+    name: "medicines.updated_at backfill",
+    sql: `UPDATE medicines SET updated_at = COALESCE(created_at, datetime('now')) WHERE updated_at IS NULL`,
+  },
 ];
 
 async function main() {
@@ -124,6 +139,20 @@ async function main() {
       console.log(`✅ ${name}`);
     } catch (e) {
       console.error(`❌ 실패: ${name}\n   ${e.message}`);
+    }
+  }
+
+  for (const migration of MIGRATIONS) {
+    try {
+      await db.execute(migration.sql);
+      console.log(`✅ migration: ${migration.name}`);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      if (migration.ignore && message.toLowerCase().includes(migration.ignore)) {
+        console.log(`⏭️ migration skipped: ${migration.name}`);
+      } else {
+        console.error(`❌ 실패: migration ${migration.name}\n   ${message}`);
+      }
     }
   }
 

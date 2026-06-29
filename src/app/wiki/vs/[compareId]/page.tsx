@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getSupplementById, Supplement } from "@/lib/data/pharmacies";
 import { getSiteUrl } from "@/lib/site-url";
+import { buildWikiProductPath } from "@/lib/wiki-slug";
 import { ChevronLeft, ArrowLeftRight } from "lucide-react";
 
 // ISR: Revalidate every 24 hours
@@ -19,7 +20,7 @@ export async function generateMetadata({
     const ids = params.compareId.split('_vs_');
     if (ids.length !== 2) {
         return {
-            title: "비교할 제품을 찾을 수 없습니다 | 약국오늘",
+            title: "비교할 제품을 찾을 수 없습니다",
             robots: { index: false, follow: false },
         };
     }
@@ -31,14 +32,14 @@ export async function generateMetadata({
 
     if (!product1 || !product2) {
         return {
-            title: "비교할 제품을 찾을 수 없습니다 | 약국오늘",
+            title: "비교할 제품을 찾을 수 없습니다",
             robots: { index: false, follow: false },
         };
     }
 
     const siteUrl = getSiteUrl();
     return {
-        title: `${product1.name} vs ${product2.name} 비교 - 약국오늘`,
+        title: `${product1.name} vs ${product2.name} 비교`,
         description: `${product1.name}와 ${product2.name}의 영양 성분, 첨가물, 가격 등을 한눈에 비교하세요.`,
         alternates: {
             canonical: `${siteUrl}/wiki/vs/${params.compareId}`,
@@ -170,7 +171,7 @@ function ProductCard({ product }: { product: Supplement }) {
                     </div>
                 )}
                 <div className="flex-1">
-                    <Link href={`/wiki/product/${product.id}`} className="text-lg font-bold hover:text-brand-600 transition-colors">
+                    <Link href={buildWikiProductPath(product)} className="text-lg font-bold hover:text-brand-600 transition-colors">
                         {product.name}
                     </Link>
                     <p className="text-sm text-[var(--muted)] mt-1">{product.manufacturer}</p>

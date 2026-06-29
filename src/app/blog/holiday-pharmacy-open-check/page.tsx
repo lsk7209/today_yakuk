@@ -4,7 +4,7 @@ import StaticTOC from "@/components/blog/StaticTOC";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const SLUG = "/blog/holiday-pharmacy-open-check";
-const metaTitle = "공휴일에 약국이 열려 있나요? 빠른 확인 방법 | 약국오늘";
+const metaTitle = "공휴일에 약국이 열려 있나요? 빠른 확인 방법";
 const metaDescription =
   "공휴일 약국 영업 여부와 휴일지킴이약국을 30초 안에 확인하는 4가지 방법을 정리했습니다. e-약은요·콜센터·지역 약사회·약국오늘 서비스 활용법 포함.";
 

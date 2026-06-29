@@ -368,20 +368,24 @@ async function getSupplementCountUncached(): Promise<number> {
   }
 }
 
-export async function getSupplementSitemapChunk(offset: number, limit: number): Promise<{ id: string; created_at: string | null }[]> {
+export async function getSupplementSitemapChunk(offset: number, limit: number): Promise<{ id: string; name: string; created_at: string | null }[]> {
   return cacheDbRead(["supplement", "sitemap", String(offset), String(limit)], () =>
     getSupplementSitemapChunkUncached(offset, limit),
   );
 }
 
-async function getSupplementSitemapChunkUncached(offset: number, limit: number): Promise<{ id: string; created_at: string | null }[]> {
+async function getSupplementSitemapChunkUncached(offset: number, limit: number): Promise<{ id: string; name: string; created_at: string | null }[]> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
-      sql: "SELECT id, created_at FROM supplements ORDER BY created_at DESC LIMIT ? OFFSET ?",
+      sql: "SELECT id, name, created_at FROM supplements ORDER BY created_at DESC LIMIT ? OFFSET ?",
       args: [limit, offset],
     });
-    return result.rows.map((r: Record<string, unknown>) => ({ id: r.id as string, created_at: r.created_at as string | null }));
+    return result.rows.map((r: Record<string, unknown>) => ({
+      id: r.id as string,
+      name: r.name as string,
+      created_at: r.created_at as string | null,
+    }));
   } catch (e) {
     console.error("supplement sitemap chunk fetch exception", e);
     return [];
@@ -403,20 +407,24 @@ async function getMedicineCountUncached(): Promise<number> {
   }
 }
 
-export async function getMedicineSitemapChunk(offset: number, limit: number): Promise<{ id: string; created_at: string | null }[]> {
+export async function getMedicineSitemapChunk(offset: number, limit: number): Promise<{ id: string; name: string; created_at: string | null }[]> {
   return cacheDbRead(["medicine", "sitemap", String(offset), String(limit)], () =>
     getMedicineSitemapChunkUncached(offset, limit),
   );
 }
 
-async function getMedicineSitemapChunkUncached(offset: number, limit: number): Promise<{ id: string; created_at: string | null }[]> {
+async function getMedicineSitemapChunkUncached(offset: number, limit: number): Promise<{ id: string; name: string; created_at: string | null }[]> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
-      sql: "SELECT id, created_at FROM medicines ORDER BY created_at DESC LIMIT ? OFFSET ?",
+      sql: "SELECT id, name, created_at FROM medicines ORDER BY created_at DESC LIMIT ? OFFSET ?",
       args: [limit, offset],
     });
-    return result.rows.map((r: Record<string, unknown>) => ({ id: r.id as string, created_at: r.created_at as string | null }));
+    return result.rows.map((r: Record<string, unknown>) => ({
+      id: r.id as string,
+      name: r.name as string,
+      created_at: r.created_at as string | null,
+    }));
   } catch (e) {
     console.error("medicine sitemap chunk fetch exception", e);
     return [];

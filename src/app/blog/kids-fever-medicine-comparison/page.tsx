@@ -6,7 +6,7 @@ import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 // ─── Meta ────────────────────────────────────────────────────────────────────
 const metaTitle =
-  "어린이 해열제 올바르게 고르는 법: 아세트아미노펜 vs 이부프로펜 | 약국오늘";
+  "어린이 해열제 올바르게 고르는 법: 아세트아미노펜 vs 이부프로펜";
 const metaDescription =
   "아세트아미노펜과 이부프로펜의 적용 나이·체중별 용량·복용 간격·금기 사항을 식약처 기준으로 비교 정리했습니다. 아이 나이에 맞는 해열제 선택 기준과 올바른 복용법을 확인하세요.";
 const slug = "/blog/kids-fever-medicine-comparison";

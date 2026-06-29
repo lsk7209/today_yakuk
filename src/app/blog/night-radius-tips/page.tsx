@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
-const metaTitle = "심야 약국 헛걸음 막는 거리·반경 활용법 | 약국오늘";
+const metaTitle = "심야 약국 헛걸음 막는 거리·반경 활용법";
 const metaDescription =
   "반경 2/3/5km 설정과 거리순 정렬을 활용해 심야 시간대 헛걸음을 줄이는 방법을 정리했습니다.";
 

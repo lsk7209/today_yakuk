@@ -6,6 +6,7 @@ import {
 } from "@/lib/data/pharmacies";
 import { getSiteUrl } from "@/lib/site-url";
 import { getSitemapIds, SITEMAP_CHUNK_SIZE } from "@/lib/sitemap";
+import { buildWikiMedicinePath, buildWikiProductPath } from "@/lib/wiki-slug";
 
 const siteUrl = getSiteUrl();
 
@@ -85,7 +86,7 @@ export default async function sitemap({
   if (type === "supplements") {
     const items = await getSupplementSitemapChunk(offset, SITEMAP_CHUNK_SIZE);
     return items.map((item) => ({
-      url: `${siteUrl}/wiki/product/${item.id}`,
+      url: `${siteUrl}${buildWikiProductPath(item)}`,
       lastModified: item.created_at ? new Date(item.created_at) : new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.8,
@@ -95,7 +96,7 @@ export default async function sitemap({
   if (type === "medicines") {
     const items = await getMedicineSitemapChunk(offset, SITEMAP_CHUNK_SIZE);
     return items.map((item) => ({
-      url: `${siteUrl}/wiki/medicine/${item.id}`,
+      url: `${siteUrl}${buildWikiMedicinePath(item)}`,
       lastModified: item.created_at ? new Date(item.created_at) : new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.8,

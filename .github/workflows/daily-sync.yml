@@ -1,14 +1,32 @@
-name: Daily Pharmacy Sync
+name: Scheduled Public Data Sync
 
 on:
   schedule:
-    # Daily 04:00 KST = 19:00 UTC
+    # Pharmacies: daily 04:00 KST = 19:00 UTC
     - cron: "0 19 * * *"
+    # Wiki source data: Monday 04:30 KST = Sunday 19:30 UTC
+    - cron: "30 19 * * 0"
   workflow_dispatch:
+    inputs:
+      sources:
+        description: "Comma-separated sources: pharmacies,hff,medicines"
+        required: false
+        default: "pharmacies,hff,medicines"
+      hff_mode:
+        description: "HFF sync mode: all or start index"
+        required: false
+        default: "all"
+      medicines_mode:
+        description: "Medicine sync mode: all or page number"
+        required: false
+        default: "all"
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+    concurrency:
+      group: public-data-sync
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,27 +40,52 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate required secrets
+      - name: Resolve sync plan
+        id: plan
+        shell: bash
         run: |
-          set -e
-          missing=0
-          for k in TURSO_DATABASE_URL TURSO_AUTH_TOKEN PUBLIC_DATA_API_KEY; do
-            if [ -z "${!k}" ]; then
-              echo "::error title=Missing secret::GitHub secret ${k} is empty."
-              missing=1
-            fi
-          done
-          if [ "${missing}" -ne 0 ]; then
-            exit 1
-          fi
-        env:
-          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
-          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
-          PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+          set -euo pipefail
 
-      - name: Run daily sync
-        run: npm run sync
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            case "${{ github.event.schedule }}" in
+              "0 19 * * *")
+                echo "sources=pharmacies" >> "$GITHUB_OUTPUT"
+                echo "hff_mode=all" >> "$GITHUB_OUTPUT"
+                echo "medicines_mode=all" >> "$GITHUB_OUTPUT"
+                ;;
+              "30 19 * * 0")
+                echo "sources=hff,medicines" >> "$GITHUB_OUTPUT"
+                echo "hff_mode=all" >> "$GITHUB_OUTPUT"
+                echo "medicines_mode=all" >> "$GITHUB_OUTPUT"
+                ;;
+              *)
+                echo "::error title=Unknown schedule::${{ github.event.schedule }}"
+                exit 1
+                ;;
+            esac
+          else
+            sources="${{ github.event.inputs.sources || 'pharmacies,hff,medicines' }}"
+            hff_mode="${{ github.event.inputs.hff_mode || 'all' }}"
+            medicines_mode="${{ github.event.inputs.medicines_mode || 'all' }}"
+            echo "sources=${sources}" >> "$GITHUB_OUTPUT"
+            echo "hff_mode=${hff_mode}" >> "$GITHUB_OUTPUT"
+            echo "medicines_mode=${medicines_mode}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ensure Turso schema is compatible
+        run: node scripts/init-turso-schema.mjs
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+
+      - name: Run selected public-data sync
+        run: npm run sync:public-data -- --only="$SYNC_SOURCES" --hff-mode="$HFF_MODE" --medicines-mode="$MEDICINES_MODE"
+        env:
+          SYNC_SOURCES: ${{ steps.plan.outputs.sources }}
+          HFF_MODE: ${{ steps.plan.outputs.hff_mode }}
+          MEDICINES_MODE: ${{ steps.plan.outputs.medicines_mode }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+          FOOD_SAFETY_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}
+          MEDICINE_API_KEY: ${{ secrets.MEDICINE_API_KEY }}

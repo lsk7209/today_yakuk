@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "전화·길찾기 활용 팁: 헛걸음 줄이기 | 약국오늘";
+const metaTitle = "전화·길찾기 활용 팁: 헛걸음 줄이기";
 const metaDescription =
   "전화로 영업·재고 확인 후 바로 길찾기 실행, 반경 확장 탐색으로 헛걸음을 줄이는 실전 팁을 안내합니다.";
 

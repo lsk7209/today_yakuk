@@ -4,15 +4,23 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config();
 import { getTursoClient } from "../src/lib/turso";
 
-const API_KEY = process.env.MEDICINE_API_KEY;
+const API_KEY = process.env.MEDICINE_API_KEY || process.env.PUBLIC_DATA_API_KEY;
 const BASE_URL = "http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList";
 const BATCH_SIZE = 100;
 
 const db = getTursoClient();
 
 if (!API_KEY) {
-    console.error("❌ Error: Missing MEDICINE_API_KEY environment variable.");
+    console.error("❌ Error: Missing MEDICINE_API_KEY or PUBLIC_DATA_API_KEY environment variable.");
     process.exit(1);
+}
+
+function normalizeServiceKey(key: string): string {
+    try {
+        return decodeURIComponent(key);
+    } catch {
+        return key;
+    }
 }
 
 interface MedItem {
@@ -33,7 +41,7 @@ const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 async function fetchMedicineData(pageNo: number, numOfRows: number): Promise<{ items: MedItem[], total: number }> {
     const params = new URLSearchParams({
-        serviceKey: API_KEY!,
+        serviceKey: normalizeServiceKey(API_KEY!),
         pageNo: pageNo.toString(),
         numOfRows: numOfRows.toString(),
         type: 'json'

@@ -8,7 +8,7 @@ import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 // ── 페르소나: P1(Curator) + P4(AI Disclosed) / YMYL=medical / 타깃=P3(만성질환자·고령자)
 
 const metaTitle =
-  "처방전 약 연휴에 못 받을 때 대처법 — 유효기간·비상약국·응급 절차 총정리 | 약국오늘";
+  "처방전 약 연휴에 못 받을 때 대처법 — 유효기간·비상약국·응급 절차 총정리";
 const metaDescription =
   "국내 만성질환자 1,500만 명 이상이 연휴마다 처방약 수령 문제에 직면합니다. 처방전 유효기간 3일 규정부터 비상약국 조회, 응급실 대체 방법까지 보건복지부·심평원 자료 기준으로 정리했습니다.";
 

@@ -5,16 +5,17 @@ import { getTursoClient, parseJson } from "@/lib/turso";
 import { Filter } from "lucide-react";
 import Image from "next/image";
 import WikiSearch from "@/components/wiki/WikiSearch";
+import { buildWikiProductPath } from "@/lib/wiki-slug";
 
 export const metadata: Metadata = {
     title: "영양제 정보",
-    description: "식약처 공공데이터 기반 영양제 성분 정보와 객관적 분석을 제공합니다.",
+    description: "식약처 공공데이터 기반 영양제 성분, 기능성 원료, 첨가물, 제품 비교 정보를 검색하고 객관적인 분석을 확인하세요.",
     alternates: {
         canonical: "/wiki",
     },
     openGraph: {
-        title: "영양제 정보 | 약국오늘",
-        description: "건강기능식품 성분과 제품을 찾고, 객관적인 정보를 확인하세요.",
+        title: "영양제 정보",
+        description: "건강기능식품 성분, 기능성 원료, 첨가물, 제품 비교 정보를 검색하고 객관적인 분석을 확인하세요.",
         type: "website",
     },
 };
@@ -126,8 +127,8 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
   const collectionPageJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "영양제 위키 | 약국오늘",
-    description: "식약처 공공데이터 기반 영양제 성분 정보와 객관적 분석을 제공합니다.",
+    name: "영양제 위키",
+    description: "식약처 공공데이터 기반 영양제 성분, 기능성 원료, 첨가물, 제품 비교 정보를 검색하고 객관적인 분석을 확인하세요.",
     url: "https://todaypharm.kr/wiki",
     breadcrumb: {
       "@type": "BreadcrumbList",
@@ -280,7 +281,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
 function ProductCard({ product }: { product: Supplement }) {
     return (
         <Link
-            href={`/wiki/product/${product.id}`}
+            href={buildWikiProductPath(product)}
             className="group bg-white border border-slate-50 rounded-[2.5rem] p-6 hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 flex flex-col h-full shadow-sm"
         >
             <div className="flex items-start gap-5 mb-6">

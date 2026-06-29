@@ -11,11 +11,11 @@ const CANONICAL = "/blog/night-pharmacy-3steps";
 const DATE_PUBLISHED = "2026-05-16";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | 약국오늘`,
+  title: `${TITLE}`,
   description: DESCRIPTION,
   alternates: { canonical: CANONICAL },
   openGraph: {
-    title: `${TITLE} | 약국오늘`,
+    title: `${TITLE}`,
     description: DESCRIPTION,
     url: CANONICAL,
     type: "article",

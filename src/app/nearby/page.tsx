@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     canonical: "/nearby",
   },
   openGraph: {
-    title: "내 주변 문 연 약국 찾기 | 약국오늘",
+    title: "내 주변 문 연 약국 찾기",
     description: "GPS 위치 기반으로 가까운 영업 약국과 방문 전 확인 정보를 제공합니다.",
     type: "website",
   },

@@ -5,7 +5,7 @@ import StaticTOC from "@/components/blog/StaticTOC";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 // ─── 메타데이터 ───────────────────────────────────────────────
-const metaTitle = "약국 방문 전 꼭 확인해야 할 것들: 영업·재고·처방 3가지 | 약국오늘";
+const metaTitle = "약국 방문 전 꼭 확인해야 할 것들: 영업·재고·처방 3가지";
 const metaDescription =
   "약국에 헛걸음하지 않으려면 영업 여부만이 아니라 재고 확인과 처방전 유효기간까지 세 가지를 미리 점검해야 합니다. 보건복지부·심평원 기준으로 정리했습니다.";
 const slug = "/blog/pharmacy-visit-checklist-3";

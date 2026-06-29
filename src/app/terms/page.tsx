@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     canonical: "/terms",
   },
   openGraph: {
-    title: "이용약관 | 약국오늘",
+    title: "이용약관",
     description: "약국오늘 서비스 이용에 적용되는 기본 약관과 면책 기준을 안내합니다.",
     url: `${siteUrl}/terms`,
     siteName: "약국오늘",
@@ -24,7 +24,7 @@ export default function TermsPage() {
   const webPageJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "이용약관 | 약국오늘",
+    name: "이용약관",
     description:
       "약국오늘 서비스 이용 시 적용되는 이용 조건, 면책, 책임 제한, 문의 방법을 확인하세요.",
     url: `${siteUrl}/terms`,

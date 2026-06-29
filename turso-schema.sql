@@ -76,7 +76,8 @@ CREATE TABLE IF NOT EXISTS medicines (
   side_effects TEXT,
   storage_method TEXT,
   image_url TEXT,
-  created_at TEXT DEFAULT (datetime('now'))
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now'))
 );
 
 CREATE TABLE IF NOT EXISTS analytics_logs (
@@ -91,6 +92,8 @@ CREATE INDEX IF NOT EXISTS idx_pharmacies_province ON pharmacies(province);
 CREATE INDEX IF NOT EXISTS idx_pharmacies_province_city ON pharmacies(province, city);
 CREATE INDEX IF NOT EXISTS idx_pharmacies_lat_lon ON pharmacies(latitude, longitude);
 CREATE INDEX IF NOT EXISTS idx_supplements_created_at ON supplements(created_at);
+CREATE INDEX IF NOT EXISTS idx_medicines_created_at ON medicines(created_at);
+CREATE INDEX IF NOT EXISTS idx_medicines_updated_at ON medicines(updated_at);
 CREATE INDEX IF NOT EXISTS idx_content_queue_status ON content_queue(status);
 -- publish-queue.ts: WHERE status='pending' AND publish_at<=? ORDER BY publish_at 를 위한 복합 인덱스
 CREATE INDEX IF NOT EXISTS idx_content_queue_status_publish_at ON content_queue(status, publish_at);

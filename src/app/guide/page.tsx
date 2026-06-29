@@ -8,7 +8,7 @@ const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   title: "약국 이용 가이드",
-  description: "야간·주말·공휴일에 문 연 약국을 빠르게 찾는 방법과 이용 팁을 모았습니다.",
+  description: "야간·주말·공휴일에 문 연 약국을 빠르게 찾는 방법, 반경 검색 기준, 전화 확인, 길찾기 활용 팁을 상황별로 정리했습니다.",
   alternates: {
     canonical: "/guide",
   },
@@ -57,7 +57,7 @@ export default function GuideIndexPage() {
   // ItemList JSON-LD for SEO
   const itemListSchema = buildItemListSchema({
     name: "약국 이용 가이드 모음",
-    description: "야간·주말·공휴일에 문 연 약국을 빠르게 찾는 방법과 이용 팁",
+    description: "야간·주말·공휴일에 문 연 약국을 빠르게 찾는 방법, 반경 검색 기준, 전화 확인, 길찾기 활용 팁",
     items: guides.map((guide) => ({
       name: guide.title,
       url: `${siteUrl}/guide/${guide.slug}`,

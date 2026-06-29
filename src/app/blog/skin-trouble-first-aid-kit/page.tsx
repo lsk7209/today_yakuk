@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
-const metaTitle = "피부 트러블(벌레·햇빛) 응급 처치 키트 | 약국오늘";
+const metaTitle = "피부 트러블(벌레·햇빛) 응급 처치 키트";
 const metaDescription =
     "여름철 야외활동이나 여행 시 필수! 벌레 물렸을 때, 햇빛 화상 입었을 때, 갑작스러운 알러지에 대비하는 약국 상비약 키트를 소개합니다.";
 

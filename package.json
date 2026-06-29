@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "sync": "ts-node --project tsconfig.sync.json scripts/sync-pharmacies.ts",
+    "sync:public-data": "ts-node --project tsconfig.sync.json scripts/sync-public-data.ts",
     "sync:json": "ts-node --project tsconfig.sync.json scripts/sync-pharmacies-from-json.ts",
     "sync:supplements": "ts-node --project tsconfig.sync.json scripts/sync-supplements.ts",
     "publish:queue": "ts-node --project tsconfig.sync.json scripts/publish-queue.ts",

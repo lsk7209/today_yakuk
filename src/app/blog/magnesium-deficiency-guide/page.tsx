@@ -4,7 +4,7 @@ import { buildArticleJsonLd } from "@/lib/seo";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle =
-    "마그네슘 부족 신호 6가지와 영양제 선택법: 산화마그네슘 vs 글리시네이트 | 약국오늘";
+    "마그네슘 부족 신호 6가지와 영양제 선택법: 산화마그네슘 vs 글리시네이트";
 const metaDescription =
     "다리 경련, 수면 장애, 만성 피로가 마그네슘 부족 신호일 수 있습니다. 흡수율이 다른 형태별 마그네슘 영양제 비교와 올바른 복용법을 정리했습니다.";
 

@@ -6,6 +6,7 @@ import { getTursoClient, parseJson } from "@/lib/turso";
 import { getSiteUrl } from "@/lib/site-url";
 import { Tag } from "lucide-react";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { buildWikiProductPath } from "@/lib/wiki-slug";
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
@@ -43,7 +44,7 @@ export async function generateMetadata({
     const siteUrl = getSiteUrl();
 
     return {
-        title: `${keyword} 관련 영양제 - 약국오늘`,
+        title: `${keyword} 관련 영양제`,
         description: `${keyword}에 도움이 되는 영양제와 건강기능식품을 찾아보세요.`,
         alternates: {
             canonical: `${siteUrl}/wiki/tag/${params.keyword}`,
@@ -252,7 +253,7 @@ export default async function TagPage({
 function ProductCard({ product }: { product: Supplement }) {
     return (
         <Link
-            href={`/wiki/product/${product.id}`}
+            href={buildWikiProductPath(product)}
             className="group premium-card bg-white border border-gray-100 rounded-[2rem] p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full"
         >
             <div className="flex items-start gap-4 mb-5">

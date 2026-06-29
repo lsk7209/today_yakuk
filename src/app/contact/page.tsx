@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     canonical: "/contact",
   },
   openGraph: {
-    title: "문의하기 | 약국오늘",
+    title: "문의하기",
     description: "약국 정보 수정 요청과 서비스 문의를 남길 수 있는 공식 문의 페이지입니다.",
     url: `${siteUrl}/contact`,
     siteName: "약국오늘",
@@ -36,7 +36,7 @@ export default function ContactPage() {
   const contactJsonLd = {
     "@context": "https://schema.org",
     "@type": "ContactPage",
-    name: "문의하기 | 약국오늘",
+    name: "문의하기",
     description:
       "약국 정보 수정 요청, 제휴 문의, 서비스 개선 제안을 약국오늘 운영팀에 전달하세요.",
     url: `${siteUrl}/contact`,

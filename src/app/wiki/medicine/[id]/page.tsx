@@ -1,9 +1,14 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { MapPin } from "lucide-react";
 import { getSiteUrl } from "@/lib/site-url";
+import {
+    buildWikiMedicinePath,
+    buildWikiMedicineSlug,
+    extractWikiEntityId,
+} from "@/lib/wiki-slug";
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
@@ -57,27 +62,27 @@ export async function generateMetadata({
 }: {
     params: { id: string };
 }): Promise<Metadata> {
-    const medicine = await getMedicineById(params.id);
+    const medicine = await getMedicineById(extractWikiEntityId(params.id));
 
     if (!medicine) {
         return {
-            title: "의약품을 찾을 수 없습니다 | 약국오늘",
+            title: "의약품을 찾을 수 없습니다",
             description: "요청하신 의약품 정보를 찾을 수 없습니다.",
             robots: { index: false, follow: false },
         };
     }
 
     const siteUrl = getSiteUrl();
-    const canonicalUrl = `${siteUrl}/wiki/medicine/${params.id}`;
+    const canonicalUrl = `${siteUrl}${buildWikiMedicinePath(medicine)}`;
 
     return {
-        title: `${medicine.name} 효능/부작용/복용법 - 약국오늘`,
+        title: `${medicine.name} 효능/부작용/복용법`,
         description: `${medicine.name} (${medicine.manufacturer || "제조사"})의 효능, 사용법, 주의사항, 부작용 정보를 확인하세요. 식약처 인증 의약품 정보.`,
         alternates: {
             canonical: canonicalUrl,
         },
         openGraph: {
-            title: `${medicine.name} | 약국오늘 의약품 정보`,
+            title: `${medicine.name} 의약품 정보`,
             description: medicine.efficacy || `${medicine.name}의 상세 정보를 확인하세요.`,
             url: canonicalUrl,
             images: medicine.image_url ? [{ url: medicine.image_url }] : undefined,
@@ -90,11 +95,18 @@ export default async function MedicineDetailPage({
 }: {
     params: { id: string };
 }) {
-    const medicine = await getMedicineById(params.id);
+    const medicine = await getMedicineById(extractWikiEntityId(params.id));
 
     if (!medicine) {
         notFound();
     }
+
+    if (params.id !== buildWikiMedicineSlug(medicine)) {
+        permanentRedirect(buildWikiMedicinePath(medicine));
+    }
+
+    const siteUrl = getSiteUrl();
+    const medicineUrl = `${siteUrl}${buildWikiMedicinePath(medicine)}`;
 
     // JSON-LD for SEO
     const jsonLd = {
@@ -103,6 +115,7 @@ export default async function MedicineDetailPage({
         "name": medicine.name,
         "image": medicine.image_url ? [medicine.image_url] : [],
         "description": medicine.efficacy || `${medicine.name} 의약품 정보`,
+        "url": medicineUrl,
         "manufacturer": {
             "@type": "Organization",
             "name": medicine.manufacturer || "Unknown"

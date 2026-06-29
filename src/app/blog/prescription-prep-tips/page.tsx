@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
-const metaTitle = "처방전 준비와 약국 방문 전 점검 7가지 | 약국오늘";
+const metaTitle = "처방전 준비와 약국 방문 전 점검 7가지";
 const metaDescription =
   "공휴일·야간에 처방전 준비, 신분증/보험증 확인, 대기 시간 단축 팁을 정리했습니다.";
 

@@ -4,7 +4,7 @@ import { buildArticleJsonLd } from "@/lib/seo";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle =
-    "유산균(프로바이오틱스) 선택 가이드: 균주 수보다 균주 종류가 중요한 이유 | 약국오늘";
+    "유산균(프로바이오틱스) 선택 가이드: 균주 수보다 균주 종류가 중요한 이유";
 const metaDescription =
     "프로바이오틱스 제품의 CFU 수치, 균주 종류(락토바실러스 vs 비피도박테리움), 장용정 코팅 여부, 냉장 보관 필요성 등 선택 기준을 정리했습니다.";
 

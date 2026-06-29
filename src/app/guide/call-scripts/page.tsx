@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildArticleJsonLd } from "@/lib/seo";
 
-const metaTitle = "전화 스크립트: 영업·재고 확인 템플릿 | 약국오늘";
+const metaTitle = "전화 스크립트: 영업·재고 확인 템플릿";
 const metaDescription =
   "영업 여부, 조기 마감, 재고 확인을 빠르게 묻는 한국어 전화 스크립트와 활용 팁을 제공합니다.";
 

@@ -4,7 +4,7 @@ import { buildArticleJsonLd } from "@/lib/seo";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle =
-    "오메가3 선택 가이드: 알티지형 vs 에틸에스텔형, 어떤 게 내 몸에 맞을까 | 약국오늘";
+    "오메가3 선택 가이드: 알티지형 vs 에틸에스텔형, 어떤 게 내 몸에 맞을까";
 const metaDescription =
     "오메가3 제품 선택 시 가장 헷갈리는 알티지(rTG)형과 에틸에스텔(EE)형의 차이점, 흡수율 비교, 용량과 복용법, 부작용 주의사항을 정리했습니다.";
 

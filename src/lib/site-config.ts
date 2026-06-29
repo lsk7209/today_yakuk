@@ -1,6 +1,6 @@
 export const SITE_NAME = "약국오늘";
 export const SITE_TAGLINE = "실시간 영업 약국 검색";
-export const SITE_DESCRIPTION = "지금 문 연 근처 약국을 빠르게 찾고 영업시간·위치를 확인하세요.";
+export const SITE_DESCRIPTION = "지금 문 연 근처 약국을 빠르게 찾고, 야간·주말·공휴일 영업시간과 위치, 전화 확인, 길찾기까지 한 번에 확인하세요.";
 export const DEFAULT_OG_IMAGE_PATH = "/og-image.svg";
 export const DEFAULT_GOOGLE_SITE_VERIFICATION = "_U2SIVpJyJOB7BDkrQSxnHPyPGbLebmxu4bSNzWskmA";
 export const ADDITIONAL_GOOGLE_SITE_VERIFICATIONS = [
