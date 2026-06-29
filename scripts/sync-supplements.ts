@@ -116,9 +116,16 @@ async function syncSupplements() {
             const mixedSummary = createMixedSummary(analysis);
 
             await db.execute({
-                sql: `INSERT OR REPLACE INTO supplements
+                sql: `INSERT INTO supplements
                       (product_report_no, name, manufacturer, nutrition_facts, additives, ai_summary, tags)
-                      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                      VALUES (?, ?, ?, ?, ?, ?, ?)
+                      ON CONFLICT(product_report_no) DO UPDATE SET
+                        name = excluded.name,
+                        manufacturer = excluded.manufacturer,
+                        nutrition_facts = excluded.nutrition_facts,
+                        additives = excluded.additives,
+                        ai_summary = excluded.ai_summary,
+                        tags = excluded.tags`,
                 args: [
                     productReportNo, name, manufacturer,
                     JSON.stringify(nutritionFacts),

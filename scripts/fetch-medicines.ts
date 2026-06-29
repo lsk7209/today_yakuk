@@ -82,9 +82,21 @@ async function processBatch(items: MedItem[]) {
     if (items.length === 0) return;
 
     const statements = items.map(item => ({
-        sql: `INSERT OR REPLACE INTO medicines
+        sql: `INSERT INTO medicines
               (item_seq, name, manufacturer, efficacy, use_method, warning_general, warning_usage, interactions, side_effects, storage_method, image_url, updated_at)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              ON CONFLICT(item_seq) DO UPDATE SET
+                name = excluded.name,
+                manufacturer = excluded.manufacturer,
+                efficacy = excluded.efficacy,
+                use_method = excluded.use_method,
+                warning_general = excluded.warning_general,
+                warning_usage = excluded.warning_usage,
+                interactions = excluded.interactions,
+                side_effects = excluded.side_effects,
+                storage_method = excluded.storage_method,
+                image_url = excluded.image_url,
+                updated_at = excluded.updated_at`,
         args: [
             item.itemSeq, item.itemName, item.entpName,
             normalizeText(item.efcyQesitm),

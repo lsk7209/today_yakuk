@@ -68,9 +68,16 @@ async function processBatch(items: HffItem[]) {
     if (items.length === 0) return;
 
     const statements = items.map(item => ({
-        sql: `INSERT OR REPLACE INTO supplements
+        sql: `INSERT INTO supplements
               (product_report_no, name, manufacturer, ai_summary, additives, nutrition_facts, tags)
-              VALUES (?, ?, ?, ?, ?, ?, ?)`,
+              VALUES (?, ?, ?, ?, ?, ?, ?)
+              ON CONFLICT(product_report_no) DO UPDATE SET
+                name = excluded.name,
+                manufacturer = excluded.manufacturer,
+                ai_summary = excluded.ai_summary,
+                additives = excluded.additives,
+                nutrition_facts = excluded.nutrition_facts,
+                tags = excluded.tags`,
         args: [
             item.PRDLST_REPORT_NO,
             item.PRDLST_NM,
