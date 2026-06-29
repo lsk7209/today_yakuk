@@ -7,6 +7,7 @@
 const ORG = "lsk7209";
 const READ_LIMIT = 500_000_000;
 const WARN_PCT = 80;
+const FAIL_ON_WARN = process.env.FAIL_ON_TURSO_USAGE_WARN === "1";
 
 const token = process.env.TURSO_PLATFORM_TOKEN;
 if (!token) {
@@ -70,10 +71,18 @@ console.log(
 );
 
 if (pct >= WARN_PCT) {
-  console.error(
-    `::error::Turso reads are at ${pct.toFixed(1)}% of the free limit (${READ_LIMIT / 1e6}M). Review high-usage sites.`,
+  const message = `Turso reads are at ${pct.toFixed(1)}% of the free limit (${READ_LIMIT / 1e6}M). Review high-usage sites.`;
+  console.warn(`::warning::${message}`);
+  if (FAIL_ON_WARN) {
+    console.error(
+      "::error::Turso usage warning promoted to failure by FAIL_ON_TURSO_USAGE_WARN=1.",
+    );
+    process.exit(1);
+  }
+  console.log(
+    "Usage warning recorded without failing the scheduled monitor. Set FAIL_ON_TURSO_USAGE_WARN=1 to fail on this threshold.",
   );
-  process.exit(1);
+  process.exit(0);
 }
 
 console.log(`Usage is below warning threshold (${WARN_PCT}%).`);
