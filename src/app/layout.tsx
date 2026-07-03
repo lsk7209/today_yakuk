@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { getSiteUrl } from "@/lib/site-url";
 import AnalyticsTracker from "@/components/analytics/AnalyticsTracker";
+import CoupangAffiliateBanner from "@/components/affiliate/CoupangAffiliateBanner";
 import { JsonLd, buildWebSiteSchema, buildOrganizationSchema } from "@/components/seo/json-ld";
 import {
   DEFAULT_OG_IMAGE_PATH,
@@ -205,6 +206,7 @@ export default function RootLayout({
             </div>
           </header>
           <main id="main-content" className="flex-1">{children}</main>
+          <CoupangAffiliateBanner />
           <footer className="border-t border-[var(--border)] bg-white">
             <div className="container py-6 text-sm text-[var(--muted)] flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <p>© {new Date().getFullYear()} {SITE_NAME} TodayPharmacy</p>
