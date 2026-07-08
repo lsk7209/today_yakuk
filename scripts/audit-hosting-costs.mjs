@@ -208,7 +208,7 @@ for (const projectDir of projects) {
   }
 
   for (const [name, command] of Object.entries(scripts)) {
-    if (/deploy|publish:vercel|git-push-auto/.test(name) || /\bvercel\s+--prod\b|\bwrangler\s+pages\s+deploy\b/.test(command)) {
+    if (/deploy|publish:vercel|git-push-auto/.test(name) || /\bvercel\s+--prod\b/.test(command)) {
       findings.push({
         project,
         severity: "warn",
