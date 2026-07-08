@@ -21,12 +21,12 @@
 - 실제 현장과 차이가 날 수 있다는 면책과 확인 가이드 제공
 
 ## 우선 참고 URL
-- https://www.todaypharm.kr/
-- https://www.todaypharm.kr/nearby
-- https://www.todaypharm.kr/guide
-- https://www.todaypharm.kr/blog
-- https://www.todaypharm.kr/wiki
-- https://www.todaypharm.kr/about
-- https://www.todaypharm.kr/contact
-- https://www.todaypharm.kr/privacy
-- https://www.todaypharm.kr/terms
+- https://todaypharm.kr/
+- https://todaypharm.kr/nearby
+- https://todaypharm.kr/guide
+- https://todaypharm.kr/blog
+- https://todaypharm.kr/wiki
+- https://todaypharm.kr/about
+- https://todaypharm.kr/contact
+- https://todaypharm.kr/privacy
+- https://todaypharm.kr/terms

@@ -5,42 +5,42 @@
 
 ## 주요 페이지
 
-- [홈](https://www.todaypharm.kr/): 현재 위치 기반 근처 약국 찾기
-- [내 주변 약국](https://www.todaypharm.kr/nearby): 반경별 주변 약국 탐색
-- [약국 이용 가이드](https://www.todaypharm.kr/guide): 야간·주말·공휴일 약국 이용 기준
-- [블로그](https://www.todaypharm.kr/blog): 약국 이용 팁과 건강 정보 콘텐츠
-- [영양제 정보](https://www.todaypharm.kr/wiki): 영양제 및 의약 정보 탐색
-- [서비스 소개](https://www.todaypharm.kr/about): 데이터 출처와 운영 원칙
-- [문의하기](https://www.todaypharm.kr/contact): 정보 수정 및 제휴 문의
-- [개인정보처리방침](https://www.todaypharm.kr/privacy): 개인정보 처리 기준
-- [이용약관](https://www.todaypharm.kr/terms): 서비스 이용 조건
-- [사이트맵](https://www.todaypharm.kr/sitemap.xml): 검색엔진용 URL 목록
+- [홈](https://todaypharm.kr/): 현재 위치 기반 근처 약국 찾기
+- [내 주변 약국](https://todaypharm.kr/nearby): 반경별 주변 약국 탐색
+- [약국 이용 가이드](https://todaypharm.kr/guide): 야간·주말·공휴일 약국 이용 기준
+- [블로그](https://todaypharm.kr/blog): 약국 이용 팁과 건강 정보 콘텐츠
+- [영양제 정보](https://todaypharm.kr/wiki): 영양제 및 의약 정보 탐색
+- [서비스 소개](https://todaypharm.kr/about): 데이터 출처와 운영 원칙
+- [문의하기](https://todaypharm.kr/contact): 정보 수정 및 제휴 문의
+- [개인정보처리방침](https://todaypharm.kr/privacy): 개인정보 처리 기준
+- [이용약관](https://todaypharm.kr/terms): 서비스 이용 조건
+- [사이트맵](https://todaypharm.kr/sitemap.xml): 검색엔진용 URL 목록
 
 ## 주요 가이드
 
-- [야간·주말 약국 찾기 완전 가이드](https://www.todaypharm.kr/guide/night-weekend)
-- [공휴일 대비 약국 이용 체크리스트](https://www.todaypharm.kr/guide/holiday-checklist)
-- [약국 전화 스크립트](https://www.todaypharm.kr/guide/call-scripts)
-- [반경 설정 가이드](https://www.todaypharm.kr/guide/radius-selection)
+- [야간·주말 약국 찾기 완전 가이드](https://todaypharm.kr/guide/night-weekend)
+- [공휴일 대비 약국 이용 체크리스트](https://todaypharm.kr/guide/holiday-checklist)
+- [약국 전화 스크립트](https://todaypharm.kr/guide/call-scripts)
+- [반경 설정 가이드](https://todaypharm.kr/guide/radius-selection)
 
 ## 주요 블로그 포스트
 
-- [공휴일에 약국이 열려 있나요? 빠른 확인 방법](https://www.todaypharm.kr/blog/holiday-pharmacy-open-check)
-- [약국 방문 전 꼭 확인해야 할 것들: 영업·재고·처방 3가지](https://www.todaypharm.kr/blog/pharmacy-visit-checklist-3)
-- [처방전 약 연휴에 못 받을 때 대처법](https://www.todaypharm.kr/blog/prescription-holiday-guide)
-- [야간 약국 찾기 3단계](https://www.todaypharm.kr/blog/night-pharmacy-3steps)
-- [소아 발열 약 비교](https://www.todaypharm.kr/blog/kids-fever-medicine-comparison)
+- [공휴일에 약국이 열려 있나요? 빠른 확인 방법](https://todaypharm.kr/blog/holiday-pharmacy-open-check)
+- [약국 방문 전 꼭 확인해야 할 것들: 영업·재고·처방 3가지](https://todaypharm.kr/blog/pharmacy-visit-checklist-3)
+- [처방전 약 연휴에 못 받을 때 대처법](https://todaypharm.kr/blog/prescription-holiday-guide)
+- [야간 약국 찾기 3단계](https://todaypharm.kr/blog/night-pharmacy-3steps)
+- [소아 발열 약 비교](https://todaypharm.kr/blog/kids-fever-medicine-comparison)
 
 ## 지역별 약국 목록
 
-- [서울 약국](https://www.todaypharm.kr/서울/전체)
-- [경기 약국](https://www.todaypharm.kr/경기/전체)
-- [인천 약국](https://www.todaypharm.kr/인천/전체)
-- [부산 약국](https://www.todaypharm.kr/부산/전체)
-- [대구 약국](https://www.todaypharm.kr/대구/전체)
-- [대전 약국](https://www.todaypharm.kr/대전/전체)
-- [광주 약국](https://www.todaypharm.kr/광주/전체)
-- [울산 약국](https://www.todaypharm.kr/울산/전체)
+- [서울 약국](https://todaypharm.kr/서울/전체)
+- [경기 약국](https://todaypharm.kr/경기/전체)
+- [인천 약국](https://todaypharm.kr/인천/전체)
+- [부산 약국](https://todaypharm.kr/부산/전체)
+- [대구 약국](https://todaypharm.kr/대구/전체)
+- [대전 약국](https://todaypharm.kr/대전/전체)
+- [광주 약국](https://todaypharm.kr/광주/전체)
+- [울산 약국](https://todaypharm.kr/울산/전체)
 
 ## 데이터 원칙
 

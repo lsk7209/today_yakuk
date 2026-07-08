@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "약국오늘",
-    "url": "https://www.todaypharm.kr",
+    "url": "https://todaypharm.kr",
     "locale": "ko-KR",
     "description": "실시간 영업 약국 검색 및 이용 가이드 서비스",
     "category": "YMYL / Medical / Local Search",
