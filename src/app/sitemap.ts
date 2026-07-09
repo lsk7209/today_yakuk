@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next";
 import { getPublishedContentSitemapChunk } from "@/lib/data/content";
 import {
+  getPharmacySitemapChunk,
   getMedicineSitemapChunk,
   getSupplementSitemapChunk,
 } from "@/lib/data/pharmacies";
@@ -82,6 +83,16 @@ export default async function sitemap({
   const [type, indexText] = id.split("-");
   const index = Number.parseInt(indexText, 10);
   const offset = index * SITEMAP_CHUNK_SIZE;
+
+  if (type === "pharmacies") {
+    const items = await getPharmacySitemapChunk(offset, SITEMAP_CHUNK_SIZE);
+    return items.map((item) => ({
+      url: `${siteUrl}/pharmacy/${item.hpid}`,
+      lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.9,
+    }));
+  }
 
   if (type === "supplements") {
     const items = await getSupplementSitemapChunk(offset, SITEMAP_CHUNK_SIZE);

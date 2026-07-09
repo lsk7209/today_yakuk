@@ -160,6 +160,43 @@ async function getPharmacyCountUncached(): Promise<number> {
   }
 }
 
+const PHARMACY_INDEXABLE_WHERE = `
+WHERE address IS NOT NULL
+  AND LENGTH(TRIM(address)) >= 8
+  AND (
+    (
+      tel IS NOT NULL
+      AND LENGTH(
+        REPLACE(REPLACE(REPLACE(REPLACE(TRIM(tel), '-', ''), ' ', ''), ')', ''), '(', '')
+      ) BETWEEN 9 AND 11
+      AND REPLACE(REPLACE(REPLACE(REPLACE(TRIM(tel), '-', ''), ' ', ''), ')', ''), '(', '') LIKE '0%'
+    )
+    OR (
+      operating_hours IS NOT NULL
+      AND TRIM(operating_hours) != ''
+      AND operating_hours LIKE '%open%'
+      AND operating_hours LIKE '%close%'
+    )
+  )
+`;
+
+export async function getIndexablePharmacyCount(): Promise<number> {
+  return cacheDbRead(["pharmacy", "indexable-count"], () =>
+    getIndexablePharmacyCountUncached(),
+  );
+}
+
+async function getIndexablePharmacyCountUncached(): Promise<number> {
+  try {
+    const db = getTursoClient();
+    const result = await db.execute(`SELECT COUNT(*) as cnt FROM pharmacies ${PHARMACY_INDEXABLE_WHERE}`);
+    return Number(result.rows[0]?.cnt ?? 0);
+  } catch (e) {
+    console.error("indexable pharmacy count exception", e);
+    return 0;
+  }
+}
+
 export async function getPharmacyHpidsChunk(
   offset: number,
   limit: number,
@@ -205,7 +242,11 @@ async function getPharmacySitemapChunkUncached(
   try {
     const db = getTursoClient();
     const result = await db.execute({
-      sql: "SELECT hpid, updated_at, address, tel, operating_hours FROM pharmacies ORDER BY hpid ASC LIMIT ? OFFSET ?",
+      sql: `SELECT hpid, updated_at, address, tel, operating_hours
+            FROM pharmacies
+            ${PHARMACY_INDEXABLE_WHERE}
+            ORDER BY updated_at DESC, hpid ASC
+            LIMIT ? OFFSET ?`,
       args: [limit, offset],
     });
     return result.rows.map((r: Record<string, unknown>) => ({

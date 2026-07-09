@@ -113,7 +113,7 @@ async function publishPending(limit = 2) {
   }
 
   if (publishedUrls.length > 0) {
-    await submitSitemapToGSC(siteUrl, `${siteUrl}/sitemap-index.xml`);
+    await submitSitemapToGSC(siteUrl, `${siteUrl}/sitemap.xml`);
   }
 }
 
