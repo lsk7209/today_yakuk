@@ -288,6 +288,27 @@ export interface Ingredient {
   created_at: string;
 }
 
+const SUPPLEMENT_INDEXABLE_WHERE = `
+WHERE TRIM(name) != ''
+  AND LOWER(TRIM(name)) NOT LIKE 'test%'
+  AND (
+    ai_summary IS NOT NULL
+    OR nutrition_facts IS NOT NULL
+    OR tags IS NOT NULL
+  )
+`;
+
+const MEDICINE_INDEXABLE_WHERE = `
+WHERE TRIM(name) != ''
+  AND LOWER(TRIM(name)) NOT LIKE 'test%'
+  AND (
+    efficacy IS NOT NULL
+    OR use_method IS NOT NULL
+    OR warning_general IS NOT NULL
+    OR side_effects IS NOT NULL
+  )
+`;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function rowToSupplement(row: any): Supplement {
   return {
@@ -360,7 +381,7 @@ export async function getSupplementCount(): Promise<number> {
 async function getSupplementCountUncached(): Promise<number> {
   try {
     const db = getTursoClient();
-    const result = await db.execute("SELECT COUNT(*) as cnt FROM supplements");
+    const result = await db.execute(`SELECT COUNT(*) as cnt FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE}`);
     return Number(result.rows[0]?.cnt ?? 0);
   } catch (e) {
     console.error("supplement count fetch exception", e);
@@ -378,7 +399,7 @@ async function getSupplementSitemapChunkUncached(offset: number, limit: number):
   try {
     const db = getTursoClient();
     const result = await db.execute({
-      sql: "SELECT id, name, created_at FROM supplements ORDER BY created_at DESC LIMIT ? OFFSET ?",
+      sql: `SELECT id, name, created_at FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
       args: [limit, offset],
     });
     return result.rows.map((r: Record<string, unknown>) => ({
@@ -399,7 +420,7 @@ export async function getMedicineCount(): Promise<number> {
 async function getMedicineCountUncached(): Promise<number> {
   try {
     const db = getTursoClient();
-    const result = await db.execute("SELECT COUNT(*) as cnt FROM medicines");
+    const result = await db.execute(`SELECT COUNT(*) as cnt FROM medicines ${MEDICINE_INDEXABLE_WHERE}`);
     return Number(result.rows[0]?.cnt ?? 0);
   } catch (e) {
     console.error("medicine count fetch exception", e);
@@ -417,7 +438,7 @@ async function getMedicineSitemapChunkUncached(offset: number, limit: number): P
   try {
     const db = getTursoClient();
     const result = await db.execute({
-      sql: "SELECT id, name, created_at FROM medicines ORDER BY created_at DESC LIMIT ? OFFSET ?",
+      sql: `SELECT id, name, created_at FROM medicines ${MEDICINE_INDEXABLE_WHERE} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
       args: [limit, offset],
     });
     return result.rows.map((r: Record<string, unknown>) => ({

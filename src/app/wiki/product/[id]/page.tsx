@@ -56,7 +56,9 @@ export async function generateMetadata({
   const siteUrl = getSiteUrl();
   const canonicalUrl = `${siteUrl}${buildWikiProductPath(supplement)}`;
 
+  const isTestName = supplement.name.trim().toLowerCase().startsWith("test");
   const isThin =
+    isTestName ||
     !supplement.ai_summary &&
     (!supplement.nutrition_facts ||
       (supplement.nutrition_facts as NutritionFactItem[]).length === 0) &&

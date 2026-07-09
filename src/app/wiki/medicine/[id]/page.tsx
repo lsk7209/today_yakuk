@@ -74,6 +74,12 @@ export async function generateMetadata({
 
     const siteUrl = getSiteUrl();
     const canonicalUrl = `${siteUrl}${buildWikiMedicinePath(medicine)}`;
+    const isThin =
+        medicine.name.trim().toLowerCase().startsWith("test") ||
+        (!medicine.efficacy &&
+            !medicine.use_method &&
+            !medicine.warning_general &&
+            !medicine.side_effects);
 
     return {
         title: `${medicine.name} 효능/부작용/복용법`,
@@ -87,6 +93,7 @@ export async function generateMetadata({
             url: canonicalUrl,
             images: medicine.image_url ? [{ url: medicine.image_url }] : undefined,
         },
+        ...(isThin ? { robots: { index: false, follow: true } } : {}),
     };
 }
 
