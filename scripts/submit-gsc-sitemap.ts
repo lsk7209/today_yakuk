@@ -13,7 +13,7 @@ const credentialsPath =
   "D:/env/gsc_credentials.json";
 
 const siteUrl = getSiteUrl();
-const sitemapUrl = `${siteUrl}/sitemap.xml`;
+const sitemapUrl = `${siteUrl}/sitemap-index.xml`;
 const host = new URL(siteUrl).hostname;
 const preferredProperties = [`sc-domain:${host}`, `${siteUrl}/`];
 const statusOnly = process.argv.includes("--status-only");
