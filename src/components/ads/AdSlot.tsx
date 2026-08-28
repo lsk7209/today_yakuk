@@ -108,6 +108,7 @@ export function AdSlotInFeed({ className = "" }: { className?: string }) {
       format="fluid"
       layoutKey="-ef+6k-30-ac+ty"
       className={`my-4 ${className}`}
+      style={{ minHeight: 180 }}
     />
   );
 }

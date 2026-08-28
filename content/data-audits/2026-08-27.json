@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-08-27T12:43:45.502Z",
+  "readOnly": true,
+  "publicSitemap": {
+    "indexUrl": "https://todaypharm.kr/sitemap-index.xml",
+    "cutoff": "2026-08-23T19:00:00.000Z",
+    "command": "npm run audit:data-content -- --since=2026-08-23T19:00:00Z --types=supplements,medicines --candidate-limit=3 --json",
+    "datasets": {
+      "supplements": {
+        "entriesSinceCutoff": 989,
+        "chunksFetched": 1,
+        "lastModified": "2026-08-23T19:45:22.000Z",
+        "candidates": [
+          {
+            "name": "혈당앤콜레스테롤 트리플케어",
+            "loc": "https://todaypharm.kr/wiki/product/%ED%98%88%EB%8B%B9%EC%95%A4%EC%BD%9C%EB%A0%88%EC%8A%A4%ED%85%8C%EB%A1%A4-%ED%8A%B8%EB%A6%AC%ED%94%8C%EC%BC%80%EC%96%B4-4e83b80f-d5e7-47df-9123-81930490ef4b",
+            "lastModified": "2026-08-23T19:45:22.000Z"
+          },
+          {
+            "name": "포스파티딜세린 두뇌엔 인지력 PS 80 플러스",
+            "loc": "https://todaypharm.kr/wiki/product/%ED%8F%AC%EC%8A%A4%ED%8C%8C%ED%8B%B0%EB%94%9C%EC%84%B8%EB%A6%B0-%EB%91%90%EB%87%8C%EC%97%94-%EC%9D%B8%EC%A7%80%EB%A0%A5-ps-80-%ED%94%8C%EB%9F%AC%EC%8A%A4-00652dd6-8198-4d74-b260-49b3dabefec7",
+            "lastModified": "2026-08-23T19:45:22.000Z"
+          },
+          {
+            "name": "캠브록스 셀레늄",
+            "loc": "https://todaypharm.kr/wiki/product/%EC%BA%A0%EB%B8%8C%EB%A1%9D%EC%8A%A4-%EC%85%80%EB%A0%88%EB%8A%84-38d0724d-ea44-4abe-be99-686d346aa094",
+            "lastModified": "2026-08-23T19:45:22.000Z"
+          }
+        ]
+      },
+      "medicines": {
+        "entriesSinceCutoff": 25,
+        "chunksFetched": 1,
+        "lastModifiedRange": {
+          "newest": "2026-08-23T19:46:49.000Z",
+          "oldest": "2026-08-23T19:45:32.000Z"
+        },
+        "candidates": [
+          {
+            "name": "엑스콜큐코프시럽",
+            "loc": "https://todaypharm.kr/wiki/medicine/%EC%97%91%EC%8A%A4%EC%BD%9C%ED%81%90%EC%BD%94%ED%94%84%EC%8B%9C%EB%9F%BD-8b00470d-b936-4175-a963-f84a77906a81",
+            "lastModified": "2026-08-23T19:46:49.000Z"
+          },
+          {
+            "name": "엑스콜큐콜드시럽",
+            "loc": "https://todaypharm.kr/wiki/medicine/%EC%97%91%EC%8A%A4%EC%BD%9C%ED%81%90%EC%BD%9C%EB%93%9C%EC%8B%9C%EB%9F%BD-6553d034-1335-4e31-b6e9-e5d3a29fb8b5",
+            "lastModified": "2026-08-23T19:46:49.000Z"
+          },
+          {
+            "name": "케어콜정",
+            "loc": "https://todaypharm.kr/wiki/medicine/%EC%BC%80%EC%96%B4%EC%BD%9C%EC%A0%95-73e4af89-f47a-4137-84e4-7b763b9ddb6b",
+            "lastModified": "2026-08-23T19:46:49.000Z"
+          }
+        ]
+      }
+    }
+  },
+  "contentArtifact": {
+    "status": "draft",
+    "route": "/blog/data-update-2026-08",
+    "title": "2026년 8월 약국·의약품·건강기능식품 데이터 업데이트",
+    "publishedAt": null,
+    "modifiedAt": null,
+    "indexing": "noindex,nofollow",
+    "listingAndSitemap": "excluded until an actual publication time is approved"
+  },
+  "duplicateCoverage": {
+    "observedAt": "2026-08-27T13:02:32.173Z",
+    "readOnly": true,
+    "command": "npm run audit:content-duplicates -- --slug=data-update-2026-08 --title=2026년 8월 약국·의약품·건강기능식품 데이터 업데이트 --delay-ms=100",
+    "target": {
+      "slug": "data-update-2026-08",
+      "title": "2026년 8월 약국·의약품·건강기능식품 데이터 업데이트",
+      "route": "/blog/data-update-2026-08"
+    },
+    "localStatic": {
+      "comparedRouteFiles": 22,
+      "comparedRegistry": "src/app/blog/page.tsx",
+      "slugMatchesExcludingTarget": 0,
+      "titleMatchesExcludingTarget": 0
+    },
+    "localCampaigns": {
+      "files": 4,
+      "entries": 306,
+      "slugMatches": 0,
+      "titleMatches": 0
+    },
+    "publishedPublicCoverage": {
+      "sitemapIndexUrl": "https://todaypharm.kr/sitemap-index.xml",
+      "sitemapChunksFetched": 1,
+      "sitemapEntries": 712,
+      "slugMatches": 0,
+      "renderedPublishedEntries": 712,
+      "listingPagesFetched": 60,
+      "titleMatchPages": []
+    },
+    "boundary": "Public sitemap and rendered blog pagination were read sequentially. No production DB credential or write was used; the target draft route itself was excluded from local route comparison."
+  },
+  "githubActions": {
+    "weeklyHealthData": {
+      "runId": 32662024573,
+      "url": "https://github.com/lsk7209/today_yakuk/actions/runs/32662024573",
+      "createdAt": "2026-08-23T19:41:11Z",
+      "databaseCountsBeforeSync": {
+        "observedAt": "2026-08-23T19:41:51Z",
+        "contentQueue": 781,
+        "medicines": 4931,
+        "pharmacies": 25959,
+        "supplements": 47029,
+        "interpretation": "Pre-sync counts printed by the workflow; they are not current table totals."
+      },
+      "hff": {
+        "sourceTotal": 45720,
+        "processed": 45720,
+        "failedBatches": 0
+      },
+      "medicines": {
+        "sourceTotal": 4765,
+        "processed": 4765,
+        "completed": true
+      }
+    },
+    "autoEnrichment": {
+      "runId": 33027321710,
+      "url": "https://github.com/lsk7209/today_yakuk/actions/runs/33027321710",
+      "createdAt": "2026-08-27T00:35:02Z",
+      "selectionRule": "The checked-out script selected supplement rows with missing nutrition_data and a report_no, limited to 15.",
+      "attempted": 15,
+      "success": 0,
+      "noData": 0,
+      "errors": 15,
+      "failure": "UND_ERR_CONNECT_TIMEOUT to openapi.foodsafetykorea.go.kr:80",
+      "workflowConclusion": "success under the remote baseline because the old script did not propagate row failures",
+      "candidates": [
+        { "name": "뷰티몬스터 칼로컷 다이어트", "reportNo": "200400151101113" },
+        { "name": "닥터바이탈 갱년기건강", "reportNo": "2009001702331" },
+        { "name": "MS-10 엉겅퀴등복합추출물", "reportNo": "2013001700114" },
+        { "name": "슈퍼에이지", "reportNo": "2020001625250" },
+        { "name": "레드맥스플러스", "reportNo": "2015000215229" },
+        { "name": "한미멀티비타민(Multivitamin, 전량수출용)", "reportNo": "20040015110777" },
+        { "name": "종합비타민+", "reportNo": "200400200022793" },
+        { "name": "술술살살", "reportNo": "20040015162378" },
+        { "name": "아라클라 아라브이에스", "reportNo": "20040015107796" },
+        { "name": "미스터콜레우스포스콜리", "reportNo": "20040020046537" },
+        { "name": "마이락토 씨 플러스(MYLACTO C PLUS)", "reportNo": "20100016005339" },
+        { "name": "드시모네 365 바나나향", "reportNo": "200400200082221" },
+        { "name": "유로피안오트화이버", "reportNo": "20040015104114" },
+        { "name": "식물성알티지오메가600", "reportNo": "2024002023335" },
+        { "name": "도둑다이어트 오", "reportNo": "20040020046509" }
+      ],
+      "localRepairBoundary": "The local remediation uses HTTPS and returns a nonzero exit on failures, but it has not been committed or pushed."
+    },
+    "pharmacyCurrent": {
+      "runId": 33016179844,
+      "url": "https://github.com/lsk7209/today_yakuk/actions/runs/33016179844",
+      "createdAt": "2026-08-26T21:36:51Z",
+      "sourceTotal": 25295,
+      "upsertProcessed": 25295
+    },
+    "pharmacyPrevious": {
+      "runId": 32889652029,
+      "url": "https://github.com/lsk7209/today_yakuk/actions/runs/32889652029",
+      "createdAt": "2026-08-25T19:27:15Z",
+      "sourceTotal": 25291,
+      "upsertProcessed": 25291
+    }
+  },
+  "method": {
+    "sitemap": "Counts same-origin public sitemap entries whose lastmod is at or after the cutoff.",
+    "duplicateCoverage": "Checks the target against local static routes, 306 local campaign rows, all 712 public blog sitemap slugs, and all 60 rendered public blog index pages.",
+    "actionLogs": "Counts were transcribed from read-only gh run view --log output for the listed public runs.",
+    "secretHandling": "No environment secret value was present or printed.",
+    "writes": "No DB/API write, workflow dispatch, content publication, commit, push, or deployment was performed."
+  },
+  "limitations": [
+    "Supplement and medicine lastmod represents the site database created_at, not a regulatory approval or market launch date.",
+    "Pharmacy updated_at is refreshed by full sync, so the source-total delta cannot identify newly opened pharmacies.",
+    "The manifest is a point-in-time observation and must be regenerated before publishing a later update."
+  ]
+}

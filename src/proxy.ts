@@ -8,7 +8,7 @@ import { verifyAdminToken } from "@/lib/jwt";
 const BOT_UA =
   /bot|crawl|spider|slurp|Googlebot|bingbot|Bytespider|GPTBot|ClaudeBot|PerplexityBot|OAI-SearchBot|YandexBot|Baiduspider|DuckDuckBot|Yeti|Daumoa/i;
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isAdmin =
     pathname.startsWith("/admin") || pathname.startsWith("/api/admin");

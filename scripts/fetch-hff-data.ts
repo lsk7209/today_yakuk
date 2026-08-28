@@ -3,10 +3,11 @@ import path from "path";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config();
 import { getTursoClient } from "../src/lib/turso";
+import { buildHffUpsertStatement } from "../src/lib/hff-upsert";
 
 const API_KEY = process.env.FOOD_SAFETY_API_KEY;
 const SERVICE_ID = "C003";
-const BASE_URL = "http://openapi.foodsafetykorea.go.kr/api";
+const BASE_URL = "https://openapi.foodsafetykorea.go.kr/api";
 const BATCH_SIZE = 1000;
 const DELAY_MS = 1000;
 
@@ -20,7 +21,7 @@ if (!API_KEY) {
 interface HffApiResponse {
     C003: {
         total_count: string;
-        row: HffItem[];
+        row?: HffItem[];
         RESULT: { CODE: string; MSG: string };
     };
 }
@@ -46,48 +47,30 @@ const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 async function fetchHffData(startIdx: number, endIdx: number): Promise<{ items: HffItem[], total: number }> {
     const url = `${BASE_URL}/${API_KEY}/${SERVICE_ID}/json/${startIdx}/${endIdx}`;
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`API fetch failed: ${response.statusText}`);
-        const data: HffApiResponse = await response.json();
-
-        if (data.C003.RESULT.CODE !== "INFO-000") {
-            console.warn(`⚠️ API Result Code: ${data.C003.RESULT.CODE} (${data.C003.RESULT.MSG})`);
-            return { items: [], total: 0 };
-        }
-
-        const total = parseInt(data.C003.total_count, 10) || 0;
-        return { items: data.C003.row ?? [], total };
-    } catch (error) {
-        console.error(`❌ Fetch error (Idx: ${startIdx}-${endIdx}):`, error);
-        return { items: [], total: 0 };
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`HFF API request failed (${response.status} ${response.statusText})`);
     }
+
+    const data = await response.json() as HffApiResponse;
+    if (!data.C003?.RESULT) {
+        throw new Error("HFF API returned an invalid response shape");
+    }
+    if (data.C003.RESULT.CODE !== "INFO-000") {
+        throw new Error(`HFF API error ${data.C003.RESULT.CODE}: ${data.C003.RESULT.MSG}`);
+    }
+
+    const total = Number.parseInt(data.C003.total_count, 10);
+    if (!Number.isSafeInteger(total) || total < 0) {
+        throw new Error("HFF API returned an invalid total_count");
+    }
+    return { items: Array.isArray(data.C003.row) ? data.C003.row : [], total };
 }
 
 async function processBatch(items: HffItem[]) {
     if (items.length === 0) return;
 
-    const statements = items.map(item => ({
-        sql: `INSERT INTO supplements
-              (product_report_no, name, manufacturer, ai_summary, additives, nutrition_facts, tags)
-              VALUES (?, ?, ?, ?, ?, ?, ?)
-              ON CONFLICT(product_report_no) DO UPDATE SET
-                name = excluded.name,
-                manufacturer = excluded.manufacturer,
-                ai_summary = excluded.ai_summary,
-                additives = excluded.additives,
-                nutrition_facts = excluded.nutrition_facts,
-                tags = excluded.tags`,
-        args: [
-            item.PRDLST_REPORT_NO,
-            item.PRDLST_NM,
-            item.BSSH_NM,
-            item.PRIMARY_FNCLTY || null,
-            JSON.stringify({ has_preservatives: false, details: [item.RAWMTRL_NM] }),
-            null,
-            JSON.stringify([]),
-        ],
-    }));
+    const statements = items.map(buildHffUpsertStatement);
 
     await db.batch(statements, "write");
 }
@@ -113,6 +96,10 @@ async function main() {
 
             try {
                 const { items } = await fetchHffData(start, end);
+                const expectedCount = end - start + 1;
+                if (items.length !== expectedCount) {
+                    throw new Error(`HFF API returned ${items.length}/${expectedCount} expected rows`);
+                }
                 await processBatch(items);
                 processed += items.length;
                 process.stdout.write(`\r✅ Processed: ${processed}/${total}`);
@@ -124,13 +111,25 @@ async function main() {
             }
         }
 
-        console.log(`\n\n🎉 Full Sync Completed!`);
+        console.log(`\n\nHFF sync summary`);
         console.log(`Total Processed: ${processed}`);
         console.log(`Failed Batches: ${failedBatches}`);
+        if (failedBatches > 0 || processed !== total) {
+            throw new Error(`HFF sync incomplete: processed=${processed}, total=${total}, failedBatches=${failedBatches}`);
+        }
+        console.log("🎉 Full Sync Completed!");
 
     } else {
-        const startArg = parseInt(args[0] || "1", 10);
-        const limitArg = parseInt(args[1] || "100", 10);
+        const startText = args[0] || "1";
+        const limitText = args[1] || "100";
+        if (!/^[1-9]\d*$/.test(startText) || !/^[1-9]\d*$/.test(limitText)) {
+            throw new Error("Start and limit must be positive integers");
+        }
+        const startArg = Number(startText);
+        const limitArg = Number(limitText);
+        if (!Number.isSafeInteger(startArg) || !Number.isSafeInteger(limitArg) || limitArg > BATCH_SIZE) {
+            throw new Error(`Start must be safe and limit must be at most ${BATCH_SIZE}`);
+        }
 
         console.log(`🚀 Starting Single Batch Fetch... (Start: ${startArg}, Limit: ${limitArg})`);
         const { items, total } = await fetchHffData(startArg, startArg + limitArg - 1);
@@ -145,4 +144,7 @@ async function main() {
     }
 }
 
-main().catch(console.error);
+main().catch((error) => {
+    console.error("❌ HFF sync failed:", error);
+    process.exitCode = 1;
+});

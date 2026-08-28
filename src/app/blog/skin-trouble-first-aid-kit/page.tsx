@@ -271,13 +271,13 @@ export default function Page() {
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">여름 응급 키트 구성법</p>
                         <p className="text-xs text-gray-500 mt-1">휴가철 대비 키트</p>
                     </Link>
-                    <Link href="/blog/insect-bite-medicine" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
-                        <p className="text-sm font-bold text-gray-900 hover:text-brand-700">벌레 물렸을 때 약 선택법</p>
-                        <p className="text-xs text-gray-500 mt-1">증상별 벌레약 가이드</p>
+                    <Link href="/blog/pharmacy-visit-checklist-3" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                        <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 3가지 확인</p>
+                        <p className="text-xs text-gray-500 mt-1">영업·재고·처방 확인</p>
                     </Link>
-                    <Link href="/blog/sunburn-treatment" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
-                        <p className="text-sm font-bold text-gray-900 hover:text-brand-700">일광화상 단계별 대처법</p>
-                        <p className="text-xs text-gray-500 mt-1">화상 정도별 처치 안내</p>
+                    <Link href="/guide/call-scripts" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                        <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 전화 확인 문장</p>
+                        <p className="text-xs text-gray-500 mt-1">방문 전 문의 체크리스트</p>
                     </Link>
                 </div>
             </section>

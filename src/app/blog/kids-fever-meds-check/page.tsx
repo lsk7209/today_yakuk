@@ -5,7 +5,7 @@ import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle = "어린이 해열제 구비 체크포인트";
 const metaDescription =
-  "연령·체중별 용량, 계량 스푼, 보관법, 부작용 주의점까지 어린이 해열제 구비 전 필수 체크사항을 정리했습니다.";
+  "제품 표시사항, 계량 기구, 보관법, 중복 성분 주의점까지 어린이 해열제 구비 전 확인할 사항을 정리했습니다.";
 
 export const metadata: Metadata = {
   title: metaTitle,
@@ -24,7 +24,7 @@ const checklist = [
   "연령·체중별 용량표 확인",
   "계량 스푼/컵 동봉 여부 확인",
   "성분(아세트아미노펜/이부프로펜) 중복 주의",
-  "복용 간격(보통 4~6시간) 반드시 확인",
+  "제품 표시사항의 복용 간격과 1일 최대 횟수 확인",
   "부작용(구토·두드러기 등) 시 즉시 중단",
   "실온 보관, 유효기간 점검",
 ];
@@ -48,11 +48,11 @@ const faqs = [
   },
   {
     q: "아세트아미노펜과 이부프로펜을 교대로 사용해도 되나요?",
-    a: "두 성분은 작용 기전이 달라 교대 사용이 가능하지만, 반드시 약사나 의사의 안내를 받아야 합니다. 임의로 교대 투여하면 용량 계산이 복잡해져 과용 위험이 있습니다. 특히 6개월 미만 영아에게는 이부프로펜 사용이 권장되지 않으므로 반드시 연령을 확인하세요.",
+    a: "한 번에는 한 가지 해열제만 복용해야 합니다. 먼저 복용한 뒤에도 고열이 지속되어 다른 계열의 해열제를 고려한다면, 의사의 처방과 복용 간격 안내를 따라야 합니다.",
   },
   {
     q: "해열제를 미리 사두는 것이 좋은가요?",
-    a: "갑자기 아이가 열이 날 때를 대비해 체중에 맞는 용량의 해열제를 한두 병 미리 준비해 두는 것이 좋습니다. 단, 유효기간을 분기마다 점검하고 개봉 후 제조사 권장 기간을 넘기지 않도록 주의하세요. 한 가지 성분만 과도하게 비축하기보다 두 성분을 각각 소량 구비해 두면 상황에 따라 유연하게 대응할 수 있습니다.",
+    a: "상비약을 준비한다면 아이의 연령·체중과 기존 복용약을 의사 또는 약사에게 알리고 적합한 한 제품을 확인하세요. 유효기간과 개봉 후 사용 기간은 제품 표시사항에 따라 점검하고, 여러 성분을 임의로 함께 비축·전환하지 마세요.",
   },
 ];
 
@@ -81,18 +81,6 @@ export default function BlogKidsFeverMedsCheck() {
       { "@type": "ListItem", position: 3, name: "어린이 해열제 구비 체크포인트", item: "https://todaypharm.kr/blog/kids-fever-meds-check" },
     ],
   };
-  const howToJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    name: "어린이 해열제 구비 체크리스트",
-    description: metaDescription,
-    step: checklist.map((item: string | { title?: string; q?: string; step?: string; text?: string; desc?: string; detail?: string }, i: number) => ({
-      "@type": "HowToStep",
-      position: i + 1,
-      name: typeof item === "string" ? item : (item.title || item.step || item.q || String(i + 1)),
-      text: typeof item === "string" ? item : (item.desc || item.detail || item.text || item.title || String(i + 1)),
-    })),
-  };
   return (
     <div className="container py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
@@ -102,6 +90,9 @@ export default function BlogKidsFeverMedsCheck() {
         <div className="flex flex-wrap gap-2">
           <Link
             href="/nearby"
+            data-analytics-event="content_to_nearby_click"
+            data-source-surface="blog_article"
+            data-cta-placement="article_header"
             className="inline-flex items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-brand-700"
           >
             내 주변 바로 찾기
@@ -159,7 +150,7 @@ export default function BlogKidsFeverMedsCheck() {
           <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
             <h3 className="text-lg font-semibold">용량과 간격</h3>
             <p className="text-[var(--muted)] leading-relaxed">
-              체중·연령에 맞는 용량표를 확인하고, 보통 4~6시간 간격을 지키세요. 과량 복용을 피하기 위해 중복 성분을 확인합니다. 예를 들어 아세트아미노펜 계열 해열제를 복용 중이라면 같은 성분이 포함된 종합감기약을 함께 먹이지 않도록 주의해야 합니다. 용량표는 kg 단위로 표기되므로 방문 전 아이의 최근 체중을 확인해 두면 약사와 상담 시 정확한 용량을 안내받을 수 있습니다.
+              체중·연령에 맞는 제품 표시사항의 용량과 간격을 확인하세요. 과량 복용을 피하기 위해 중복 성분을 확인합니다. 예를 들어 아세트아미노펜 계열 해열제를 복용 중이라면 같은 성분이 포함된 종합감기약을 함께 먹이지 않도록 주의해야 합니다. 방문 전 아이의 최근 체중과 복용 중인 약을 확인해 두면 의사·약사 상담에 도움이 됩니다.
             </p>
           </div>
           <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
@@ -204,7 +195,7 @@ export default function BlogKidsFeverMedsCheck() {
               <h3 className="text-base font-bold text-gray-900">해열제 복용 후에도 열이 내리지 않을 때</h3>
             </div>
             <p className="text-sm text-gray-600 leading-relaxed">
-              아세트아미노펜 계열 해열제를 올바른 용량으로 먹였는데 1시간이 지나도 열이 내리지 않는 경우, 약사 상담 후 이부프로펜 계열로 전환하거나 교대 투여를 검토할 수 있습니다. 단, 체온이 40도를 넘거나 경기·의식 저하가 동반된다면 약국 방문보다 응급실 방문이나 119 상담을 먼저 해야 합니다. 약국에서 구매 전 현재 상태를 약사에게 상세히 설명하면 더 정확한 조언을 받을 수 있습니다.
+              먼저 복용한 해열제 뒤에도 열이 지속되더라도 다른 성분을 임의로 추가하거나 교대하지 마세요. 다른 계열의 해열제를 고려한다면 의사의 처방과 복용 간격 안내를 따라야 합니다. 체온이 매우 높거나 경기·의식 저하가 동반된다면 약국 방문보다 응급실 방문이나 119 상담을 먼저 하세요.
             </p>
           </div>
         </div>
@@ -236,6 +227,9 @@ export default function BlogKidsFeverMedsCheck() {
           <div className="flex gap-2">
             <Link
               href="/nearby"
+              data-analytics-event="content_to_nearby_click"
+              data-source-surface="blog_article"
+              data-cta-placement="article_footer"
               className="inline-flex items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-brand-700"
             >
               내 주변 찾기
@@ -289,10 +283,6 @@ export default function BlogKidsFeverMedsCheck() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
       <script
         type="application/ld+json"

@@ -1,6 +1,14 @@
+import "server-only";
+
 import { getTursoClient, parseJson } from "@/lib/turso";
 import { cacheDbRead } from "@/lib/db-read-cache";
 import { Pharmacy } from "@/types/pharmacy";
+import { distanceKm } from "@/lib/geo-distance";
+import { PHARMACY_INDEXABLE_WHERE } from "@/lib/pharmacy-indexability";
+import {
+  MEDICINE_INDEXABLE_WHERE,
+  SUPPLEMENT_INDEXABLE_WHERE,
+} from "@/lib/wiki-indexability";
 
 export const PROVINCE_MAP: Record<string, string> = {
   서울: "서울특별시",
@@ -39,11 +47,36 @@ export const PROVINCE_MAP: Record<string, string> = {
   제주특별자치도: "제주특별자치도",
 };
 
+const PROVINCE_SLUG_BY_NORMALIZED: Record<string, string> = {
+  서울특별시: "서울",
+  부산광역시: "부산",
+  대구광역시: "대구",
+  인천광역시: "인천",
+  광주광역시: "광주",
+  대전광역시: "대전",
+  울산광역시: "울산",
+  세종특별자치시: "세종",
+  경기: "경기",
+  강원특별자치도: "강원",
+  충청남도: "충남",
+  충청북도: "충북",
+  전라남도: "전남",
+  전라북도: "전북",
+  경상남도: "경남",
+  경상북도: "경북",
+  제주특별자치도: "제주",
+};
+
 function normalizeProvince(input: unknown): string | null {
   if (typeof input !== "string") return null;
   const trimmed = input.trim();
   if (!trimmed) return null;
   return PROVINCE_MAP[trimmed] ?? trimmed;
+}
+
+export function getCanonicalProvinceSlug(input: string): string {
+  const normalized = normalizeProvince(input);
+  return normalized ? PROVINCE_SLUG_BY_NORMALIZED[normalized] ?? input.trim() : input.trim();
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -145,6 +178,66 @@ export async function getPharmaciesByRegionPaginated(
   }
 }
 
+export async function getCitiesByProvince(
+  province: string,
+): Promise<Array<{ city: string; pharmacyCount: number }>> {
+  return cacheDbRead(["pharmacy", "cities", province], async () => {
+    try {
+      const db = getTursoClient();
+      const normalized = normalizeProvince(province);
+      if (!normalized) return [];
+      const result = await db.execute({
+        sql: `SELECT city, COUNT(*) AS cnt
+              FROM pharmacies
+              WHERE province = ? AND city IS NOT NULL AND TRIM(city) != ''
+              GROUP BY city
+              ORDER BY city ASC`,
+        args: [normalized],
+      });
+      return result.rows.map((row: Record<string, unknown>) => ({
+        city: String(row.city),
+        pharmacyCount: Number(row.cnt ?? 0),
+      }));
+    } catch (error) {
+      console.error("pharmacy city list exception", error);
+      return [];
+    }
+  });
+}
+
+export async function getRegionSitemapEntries(): Promise<
+  Array<{ province: string; city: string; updated_at: string | null }>
+> {
+  return cacheDbRead(["pharmacy", "region-sitemap"], async () => {
+    try {
+      const db = getTursoClient();
+      const result = await db.execute(`SELECT province, city, MAX(updated_at) AS updated_at
+        FROM pharmacies
+        WHERE province IS NOT NULL AND TRIM(province) != ''
+          AND city IS NOT NULL AND TRIM(city) != ''
+        GROUP BY province, city
+        ORDER BY province ASC, city ASC`);
+      const deduplicated = new Map<string, { province: string; city: string; updated_at: string | null }>();
+      for (const row of result.rows as Record<string, unknown>[]) {
+        const entry = {
+          province: getCanonicalProvinceSlug(String(row.province)),
+          city: String(row.city),
+          updated_at: row.updated_at ? String(row.updated_at) : null,
+        };
+        const key = `${entry.province}\u0000${entry.city}`;
+        const previous = deduplicated.get(key);
+        if (!previous || (entry.updated_at ?? "") > (previous.updated_at ?? "")) {
+          deduplicated.set(key, entry);
+        }
+      }
+      return Array.from(deduplicated.values());
+    } catch (error) {
+      console.error("region sitemap fetch exception", error);
+      return [];
+    }
+  });
+}
+
 export async function getPharmacyCount(): Promise<number> {
   return cacheDbRead(["pharmacy", "count"], () => getPharmacyCountUncached());
 }
@@ -159,26 +252,6 @@ async function getPharmacyCountUncached(): Promise<number> {
     return 0;
   }
 }
-
-const PHARMACY_INDEXABLE_WHERE = `
-WHERE address IS NOT NULL
-  AND LENGTH(TRIM(address)) >= 8
-  AND (
-    (
-      tel IS NOT NULL
-      AND LENGTH(
-        REPLACE(REPLACE(REPLACE(REPLACE(TRIM(tel), '-', ''), ' ', ''), ')', ''), '(', '')
-      ) BETWEEN 9 AND 11
-      AND REPLACE(REPLACE(REPLACE(REPLACE(TRIM(tel), '-', ''), ' ', ''), ')', ''), '(', '') LIKE '0%'
-    )
-    OR (
-      operating_hours IS NOT NULL
-      AND TRIM(operating_hours) != ''
-      AND operating_hours LIKE '%open%'
-      AND operating_hours LIKE '%close%'
-    )
-  )
-`;
 
 export async function getIndexablePharmacyCount(): Promise<number> {
   return cacheDbRead(["pharmacy", "indexable-count"], () =>
@@ -285,24 +358,6 @@ export function findNearbyWithinKm(
     .map((item) => item.pharmacy);
 }
 
-function toRad(num: number) {
-  return (num * Math.PI) / 180;
-}
-
-export function distanceKm(
-  lat1: number | null | undefined,
-  lon1: number | null | undefined,
-  lat2: number | null | undefined,
-  lon2: number | null | undefined,
-): number {
-  if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return 0;
-  const R = 6371;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
 // Supplement types
 export interface Supplement {
   id: string;
@@ -310,7 +365,13 @@ export interface Supplement {
   name: string;
   manufacturer: string | null;
   image_url: string | null;
-  nutrition_facts: Array<{ name: string; amount: number; unit: string; percent_dv: number }> | null;
+  nutrition_facts: Array<{
+    name: string;
+    amount: number;
+    unit: string;
+    percent_dv: number | null;
+    source?: string;
+  }> | null;
   additives: { has_preservatives?: boolean; has_coloring?: boolean; has_artificial_sweeteners?: boolean; details?: string[] } | null;
   ai_summary: string | null;
   tags: string[] | null;
@@ -328,27 +389,6 @@ export interface Ingredient {
   tags: string[] | null;
   created_at: string;
 }
-
-const SUPPLEMENT_INDEXABLE_WHERE = `
-WHERE TRIM(name) != ''
-  AND LOWER(TRIM(name)) NOT LIKE 'test%'
-  AND (
-    ai_summary IS NOT NULL
-    OR nutrition_facts IS NOT NULL
-    OR tags IS NOT NULL
-  )
-`;
-
-const MEDICINE_INDEXABLE_WHERE = `
-WHERE TRIM(name) != ''
-  AND LOWER(TRIM(name)) NOT LIKE 'test%'
-  AND (
-    efficacy IS NOT NULL
-    OR use_method IS NOT NULL
-    OR warning_general IS NOT NULL
-    OR side_effects IS NOT NULL
-  )
-`;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function rowToSupplement(row: any): Supplement {

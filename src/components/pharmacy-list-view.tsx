@@ -46,7 +46,7 @@ export function PharmacyListView({ list }: { list: Pharmacy[] }) {
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold border transition ${active
+                className={`min-h-11 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold border transition ${active
                   ? "bg-brand-600 text-white border-brand-600 shadow-sm"
                   : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
                   }`}
@@ -64,9 +64,9 @@ export function PharmacyListView({ list }: { list: Pharmacy[] }) {
         </div>
       ) : (
         <div className="space-y-4">
-          {filtered.map((item) => (
+          {filtered.map((item, index) => (
             <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
-              <PharmacyCard pharmacy={item} />
+              <PharmacyCard pharmacy={item} sourceSurface="pharmacy_list" resultRank={index + 1} />
             </div>
           ))}
         </div>

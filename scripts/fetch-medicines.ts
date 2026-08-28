@@ -5,7 +5,7 @@ dotenv.config();
 import { getTursoClient } from "../src/lib/turso";
 
 const API_KEY = process.env.MEDICINE_API_KEY || process.env.PUBLIC_DATA_API_KEY;
-const BASE_URL = "http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList";
+const BASE_URL = "https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList";
 const BATCH_SIZE = 100;
 
 const db = getTursoClient();
@@ -48,29 +48,35 @@ async function fetchMedicineData(pageNo: number, numOfRows: number): Promise<{ i
     });
     const url = `${BASE_URL}?${params.toString()}`;
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`API fetch failed: ${response.statusText}`);
-
-        const text = await response.text();
-        let data;
-        try { data = JSON.parse(text); } catch {
-            console.error("JSON Parse Error. Raw text:", text.substring(0, 100));
-            return { items: [], total: 0 };
-        }
-
-        if (!data.body || !data.body.items) {
-            console.warn("No body/items in response:", JSON.stringify(data).substring(0, 100));
-            return { items: [], total: 0 };
-        }
-
-        const total = data.body.totalCount ?? 0;
-        const items = Array.isArray(data.body.items) ? data.body.items : (data.body.items ? [data.body.items] : []);
-        return { items, total };
-    } catch (error) {
-        console.error(`Fetch error (Page: ${pageNo}):`, error);
-        return { items: [], total: 0 };
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Medicine API request failed (${response.status} ${response.statusText})`);
     }
+
+    const text = await response.text();
+    let data: { body?: { items?: MedItem | MedItem[]; totalCount?: number | string } };
+    try {
+        data = JSON.parse(text) as typeof data;
+    } catch {
+        throw new Error("Medicine API returned invalid JSON");
+    }
+
+    if (!data.body) {
+        throw new Error("Medicine API returned an invalid response shape");
+    }
+    const total = Number(data.body.totalCount);
+    if (!Number.isSafeInteger(total) || total < 0) {
+        throw new Error("Medicine API returned an invalid totalCount");
+    }
+    const items = Array.isArray(data.body.items)
+        ? data.body.items
+        : data.body.items
+            ? [data.body.items]
+            : [];
+    if (total > 0 && items.length === 0) {
+        throw new Error(`Medicine API returned no rows for page ${pageNo}`);
+    }
+    return { items, total };
 }
 
 function normalizeText(text: string | null): string | null {
@@ -128,27 +134,42 @@ async function main() {
 
         const totalPages = Math.ceil(total / BATCH_SIZE);
         let processed = 0;
+        let failedPages = 0;
 
         for (let page = 1; page <= totalPages; page++) {
             console.log(`🔄 Fetching Page ${page}/${totalPages}...`);
             try {
                 const { items } = await fetchMedicineData(page, BATCH_SIZE);
-                if (items.length > 0) {
-                    await processBatch(items);
-                    processed += items.length;
+                const expectedCount = Math.min(BATCH_SIZE, total - (page - 1) * BATCH_SIZE);
+                if (items.length !== expectedCount) {
+                    throw new Error(`Medicine API returned ${items.length}/${expectedCount} expected rows`);
                 }
+                await processBatch(items);
+                processed += items.length;
                 process.stdout.write(`\r✅ Processed: ${processed}/${total}`);
                 await sleep(200);
             } catch {
                 console.error(`\n❌ Page ${page} failed.`);
+                failedPages++;
                 await sleep(1000);
             }
         }
-        console.log(`\n🎉 Full Sync Completed! Total: ${processed}`);
+        console.log(`\nMedicine sync summary: processed=${processed}, total=${total}, failedPages=${failedPages}`);
+        if (failedPages > 0 || processed !== total) {
+            throw new Error(`Medicine sync incomplete: processed=${processed}, total=${total}, failedPages=${failedPages}`);
+        }
+        console.log("🎉 Full Sync Completed!");
 
     } else {
-        const page = parseInt(mode, 10);
-        const limit = parseInt(args[1] || "10", 10);
+        const limitText = args[1] || "10";
+        if (!/^[1-9]\d*$/.test(mode) || !/^[1-9]\d*$/.test(limitText)) {
+            throw new Error("Page and limit must be positive integers");
+        }
+        const page = Number(mode);
+        const limit = Number(limitText);
+        if (!Number.isSafeInteger(page) || !Number.isSafeInteger(limit) || limit > BATCH_SIZE) {
+            throw new Error(`Page must be safe and limit must be at most ${BATCH_SIZE}`);
+        }
 
         console.log(`🚀 Fetching Page ${page} (Limit ${limit})...`);
         const { items, total } = await fetchMedicineData(page, limit);
@@ -161,4 +182,7 @@ async function main() {
     }
 }
 
-main().catch(console.error);
+main().catch((error) => {
+    console.error("❌ Medicine sync failed:", error);
+    process.exitCode = 1;
+});

@@ -2,6 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import { usePathname } from "next/navigation";
+import Script from "next/script";
 
 const DASHBOARD_BASE = "https://multi-dashboard-one.vercel.app";
 const SITE_KEY = "todaypharm";
@@ -60,7 +61,11 @@ export default function CoupangAffiliateBanner() {
       </a>
       <p style={{ color: "#6b7280", fontSize: 12, lineHeight: 1.5, margin: "8px 0 0" }}>{DISCLOSURE}</p>
     </aside>
-    <script src={`${DASHBOARD_BASE}/banner-measurement.js`} defer />
+    <Script
+      id="coupang-banner-measurement"
+      src={`${DASHBOARD_BASE}/banner-measurement.js`}
+      strategy="afterInteractive"
+    />
     </div>
   );
 }

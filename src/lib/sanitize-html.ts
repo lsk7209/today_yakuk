@@ -1,22 +1,36 @@
-const BLOCKED_TAGS =
-  /<\s*(script|style|iframe|object|embed|link|meta|base|form|input|button|textarea|select|option|svg|math)\b[\s\S]*?<\s*\/\s*\1\s*>/gi;
-const BLOCKED_SELF_CLOSING_TAGS =
-  /<\s*(script|style|iframe|object|embed|link|meta|base|form|input|button|textarea|select|option|svg|math)\b[^>]*\/?\s*>/gi;
-const EVENT_HANDLER_ATTRIBUTES = /\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi;
-const STYLE_ATTRIBUTES = /\s+style\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi;
-const DANGEROUS_URL_ATTRIBUTES =
-  /\s+(href|src|xlink:href|formaction)\s*=\s*(["'])\s*(?:javascript|vbscript|data:text\/html)[\s\S]*?\2/gi;
-const DANGEROUS_UNQUOTED_URL_ATTRIBUTES =
-  /\s+(href|src|xlink:href|formaction)\s*=\s*(?:javascript|vbscript|data:text\/html)[^\s>]*/gi;
+import sanitizeHtml from "sanitize-html";
+
+const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: [...sanitizeHtml.defaults.allowedTags, "img"],
+  allowedAttributes: {
+    "*": ["class", "title", "aria-label", "aria-describedby", "role"],
+    a: ["href", "name", "target", "rel"],
+    img: ["src", "srcset", "sizes", "alt", "title", "width", "height", "loading", "decoding"],
+    ol: ["start"],
+    li: ["value"],
+    td: ["colspan", "rowspan"],
+    th: ["colspan", "rowspan", "scope"],
+    time: ["datetime"],
+    data: ["value"],
+  },
+  allowedSchemes: ["http", "https", "mailto", "tel"],
+  allowedSchemesByTag: {
+    img: ["http", "https"],
+  },
+  allowProtocolRelative: false,
+  enforceHtmlBoundary: true,
+  transformTags: {
+    a: (tagName, attribs) => {
+      const safeAttributes = { ...attribs };
+      if (safeAttributes.target === "_blank") {
+        safeAttributes.rel = "nofollow noopener noreferrer";
+      }
+      return { tagName, attribs: safeAttributes };
+    },
+  },
+};
 
 export function sanitizeTrustedHtml(html: string | null | undefined) {
   if (!html) return "";
-
-  return html
-    .replace(BLOCKED_TAGS, "")
-    .replace(BLOCKED_SELF_CLOSING_TAGS, "")
-    .replace(EVENT_HANDLER_ATTRIBUTES, "")
-    .replace(STYLE_ATTRIBUTES, "")
-    .replace(DANGEROUS_URL_ATTRIBUTES, ' $1="#"')
-    .replace(DANGEROUS_UNQUOTED_URL_ATTRIBUTES, ' $1="#"');
+  return sanitizeHtml(html, SANITIZE_OPTIONS);
 }

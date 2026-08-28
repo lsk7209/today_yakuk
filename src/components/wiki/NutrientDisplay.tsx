@@ -78,7 +78,7 @@ export function NutrientDisplay({ nutrients }: NutrientDisplayProps) {
                             <h3 className="font-bold text-slate-900 truncate group-hover:text-brand-600 transition-colors uppercase tracking-tight">{nutrient.name}</h3>
                             {isActiveComp && (
                                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-black border border-blue-100">
-                                    핵심 활성 성분
+                                    기준치 미표시
                                 </span>
                             )}
                         </div>
@@ -93,10 +93,10 @@ export function NutrientDisplay({ nutrients }: NutrientDisplayProps) {
                                 <div className="space-y-1.5">
                                     <div className="flex justify-between items-end">
                                         <span className={`text-xs font-black ${percent >= 100 ? 'text-emerald-700' : 'text-slate-400'}`}>
-                                            {percent === 0 ? '극소량' : `${percent.toLocaleString()}% 권장량`}
+                                            {`${percent.toLocaleString()}% 1일 기준치`}
                                         </span>
                                         {percent > 100 && (
-                                            <span className="text-[10px] text-emerald-500 font-bold animate-pulse">최적 함량</span>
+                                            <span className="text-[10px] text-emerald-600 font-bold">100% 초과 표시</span>
                                         )}
                                     </div>
                                     <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200/50">

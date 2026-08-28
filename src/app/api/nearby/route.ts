@@ -1,16 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-import { distanceKm } from "@/lib/data/pharmacies";
+import { distanceKm } from "@/lib/geo-distance";
 import { getTursoClient } from "@/lib/turso";
+import {
+  getCoordinateBounds,
+  isValidLatitude,
+  isValidLongitude,
+  parseNearbyRadius,
+} from "@/lib/geo-bounds";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get("q")?.trim();
   const latParam = searchParams.get("lat");
   const lonParam = searchParams.get("lon");
-  const lat = latParam === null ? Number.NaN : Number(latParam);
-  const lon = lonParam === null ? Number.NaN : Number(lonParam);
-  const radiusKm = Number(searchParams.get("radiusKm") ?? 3);
+  const lat = latParam === null || latParam.trim() === "" ? Number.NaN : Number(latParam);
+  const lon = lonParam === null || lonParam.trim() === "" ? Number.NaN : Number(lonParam);
   const requestedLimit = Number(searchParams.get("limit") ?? 40);
   const limit = Number.isFinite(requestedLimit)
     ? Math.min(Math.max(Math.trunc(requestedLimit), 1), 50)
@@ -37,16 +42,20 @@ export async function GET(request: Request) {
     }
   }
 
-  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+  if (!isValidLatitude(lat) || !isValidLongitude(lon)) {
     return NextResponse.json({ message: "lat/lon or q is required" }, { status: 400 });
   }
 
-  // Rough bounding box filter to reduce rows, then precise distance calc.
-  const delta = Math.max(radiusKm / 111, 0.05); // ~1deg lat ~111km, min bbox
-  const minLat = lat - delta;
-  const maxLat = lat + delta;
-  const minLon = lon - delta;
-  const maxLon = lon + delta;
+  const radiusKm = parseNearbyRadius(searchParams.get("radiusKm"));
+  if (radiusKm === null) {
+    return NextResponse.json(
+      { message: "radiusKm must be between 0.1 and 50" },
+      { status: 400 },
+    );
+  }
+
+  // Reduce rows with a latitude-aware bounding box, then calculate exact distance.
+  const { minLat, maxLat, minLon, maxLon } = getCoordinateBounds(lat, lon, radiusKm);
 
   try {
     const result = await db.execute({
@@ -55,7 +64,7 @@ export async function GET(request: Request) {
     });
 
     const within = (result.rows as any[])
-      .filter((p) => p.latitude && p.longitude)
+      .filter((p) => Number.isFinite(Number(p.latitude)) && Number.isFinite(Number(p.longitude)))
       .map((p) => ({
         pharmacy: p,
         distance: distanceKm(lat, lon, p.latitude as number, p.longitude as number),

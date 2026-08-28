@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-08-27T22:31:26.243Z",
+  "observedAtKst": "2026-08-28T07:31:26.243+09:00",
+  "readOnly": true,
+  "baseline": {
+    "manifest": "content/data-audits/2026-08-27.json",
+    "cutoff": "2026-08-27T12:43:45.502Z",
+    "meaning": "Only public sitemap entries and GitHub Actions created after the prior observation are treated as follow-up candidates."
+  },
+  "publicDelta": {
+    "command": "npm run audit:data-content -- --since=2026-08-27T12:43:45.502Z --types=pharmacies,supplements,medicines,blog --candidate-limit=10 --json",
+    "sitemapIndexUrl": "https://todaypharm.kr/sitemap-index.xml",
+    "sitemapChildren": 82,
+    "datasets": {
+      "pharmacies": {
+        "chunksFetched": 26,
+        "publicEntries": 25971,
+        "latestLastModified": "2026-08-26T21:38:22.480Z",
+        "entriesSinceBaseline": 0,
+        "candidates": []
+      },
+      "supplements": {
+        "chunksFetched": 49,
+        "publicEntries": 48016,
+        "latestLastModified": "2026-08-23T19:45:22.000Z",
+        "entriesSinceBaseline": 0,
+        "candidates": []
+      },
+      "medicines": {
+        "chunksFetched": 5,
+        "publicEntries": 4952,
+        "latestLastModified": "2026-08-23T19:46:49.000Z",
+        "entriesSinceBaseline": 0,
+        "candidates": []
+      },
+      "blog": {
+        "chunksFetched": 1,
+        "publicEntries": 712,
+        "latestLastModified": "2026-08-27T11:58:02.280Z",
+        "entriesSinceBaseline": 0,
+        "candidates": []
+      }
+    }
+  },
+  "githubActions": {
+    "newPublicRecordRuns": 0,
+    "autoEnrichment": {
+      "runId": 33079730318,
+      "url": "https://github.com/lsk7209/today_yakuk/actions/runs/33079730318",
+      "createdAt": "2026-08-27T13:59:06Z",
+      "afterBaseline": true,
+      "attemptedExistingRows": 15,
+      "reportedSuccess": 15,
+      "reportedNoData": 0,
+      "reportedErrors": 0,
+      "structuredNutritionFactsFound": 0,
+      "meaningfulEnrichments": 0,
+      "newRowsInserted": 0,
+      "interpretation": "The checked-out workflow updated 15 existing rows while logging zero parsed nutrients for every row. This is not a new product record and is not counted as a meaningful nutrition enrichment.",
+      "localRepair": "The local script now leaves a row unchanged when the official response yields zero structured nutrition facts, no longer writes name-derived summaries, tags verified C003 facts with provenance, hides legacy unmarked facts from public nutrition surfaces, and rotates the enrichment cursor to avoid first-page starvation."
+    },
+    "latestDailySync": {
+      "runId": 33016179844,
+      "createdAt": "2026-08-26T21:36:51Z",
+      "afterBaseline": false
+    },
+    "latestPublish": {
+      "runId": 33069633577,
+      "afterBaseline": false
+    }
+  },
+  "duplicateCoverage": {
+    "observedAt": "2026-08-27T22:51:31.272Z",
+    "command": "npm run audit:content-duplicates -- --slug=supplement-label-reading-guide --title=영양제 라벨 읽는 순서: 기능성·원료명·섭취량 --delay-ms=100",
+    "target": {
+      "slug": "supplement-label-reading-guide",
+      "title": "영양제 라벨 읽는 순서: 기능성·원료명·섭취량",
+      "route": "/blog/supplement-label-reading-guide"
+    },
+    "localStatic": {
+      "comparedRouteFiles": 23,
+      "comparedRegistry": "src/app/blog/page.tsx",
+      "slugMatchesExcludingTarget": 0,
+      "titleMatchesExcludingTarget": 0
+    },
+    "localCampaigns": {
+      "entries": 306,
+      "slugMatches": 0,
+      "titleMatches": 0
+    },
+    "publishedPublicCoverage": {
+      "sitemapEntries": 712,
+      "renderedPublishedEntries": 712,
+      "listingPagesFetched": 60,
+      "slugMatches": 0,
+      "titleMatchPages": []
+    }
+  },
+  "decision": {
+    "newDeltaArticle": "not created because all four public sitemap datasets have zero entries after the baseline",
+    "followUp": "add the zero-delta and zero-nutrient interpretation to the existing monthly draft",
+    "evergreenDraft": "create one noindex label-reading guide from the previously verified 989 supplement paths and three non-recommendation samples",
+    "claimBoundary": "A blank structured field does not prove that an ingredient is absent, and a site tag does not prove functionality, efficacy, or safety."
+  },
+  "contentArtifacts": [
+    {
+      "route": "/blog/data-update-2026-08",
+      "status": "draft",
+      "publishedAt": null,
+      "indexing": "noindex,nofollow",
+      "listingAndSitemap": "excluded"
+    },
+    {
+      "route": "/blog/supplement-label-reading-guide",
+      "title": "영양제 라벨 읽는 순서: 기능성·원료명·섭취량",
+      "status": "draft",
+      "publishedAt": null,
+      "indexing": "noindex,nofollow",
+      "listingAndSitemap": "excluded"
+    }
+  ],
+  "officialSources": [
+    {
+      "name": "식품안전나라 건강기능식품 검색",
+      "url": "https://www.foodsafetykorea.go.kr/portal/healthyfoodlife/searchHomeHF.do",
+      "use": "product identity, company, report number, and registration-date lookup"
+    },
+    {
+      "name": "식품의약품안전처 건강기능식품의 표시기준",
+      "url": "https://www.mfds.go.kr/brd/m_207/view.do?Data_stts_gubun=C9999&company_cd=&company_nm=&itm_seq_1=0&itm_seq_2=0&multi_itm_seq=0&page=1&seq=15095&srchFr=&srchTo=&srchTp=0&srchWord=%EA%B1%B4%EA%B0%95%EA%B8%B0%EB%8A%A5%EC%8B%9D%ED%92%88",
+      "use": "official labeling-standard reference"
+    }
+  ],
+  "method": {
+    "publicData": "Fetched same-origin public sitemap XML sequentially and counted lastmod values at or after the prior observation.",
+    "actions": "Inspected GitHub Actions metadata and logs read-only; no workflow was dispatched.",
+    "writing": "All Korean body copy was written directly in the active Codex session without an external writing API.",
+    "writes": "No production database write, API write, publication, commit, push, or deployment was performed."
+  },
+  "limitations": [
+    "The public sitemap is a point-in-time view and does not expose every internal field mutation.",
+    "The enrichment log proves that the parser produced zero structured nutrients; it does not prove that the products contain no nutrients.",
+    "Legacy nutrition facts without the foodsafetykorea:C003 source marker are intentionally hidden from public detail, comparison, and sitemap signals until authoritative re-enrichment.",
+    "Production database values were not queried because no database credential was available in the local environment."
+  ]
+}

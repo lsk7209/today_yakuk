@@ -1,11 +1,11 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const title = searchParams.get("title") ?? "약국오늘";
-  const subtitle = searchParams.get("subtitle") ?? "실시간 영업 약국 검색";
+  const subtitle = searchParams.get("subtitle") ?? "등록 영업시간 기반 약국 찾기";
 
   // title을 seed로 사용하여 일관된 랜덤 스타일 생성
   const seed = title.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -84,7 +84,7 @@ export async function GET(request: Request) {
           <div style={{ fontSize: 20, color: "#64748B", fontWeight: 500 }}>todaypharm.kr</div>
           <div style={{ display: "flex", gap: 12 }}>
             <div style={{ padding: "8px 16px", borderRadius: 20, background: theme.accent, color: theme.text, fontSize: 16, fontWeight: 700 }}>
-              실시간 확인
+              영업시간 확인
             </div>
             <div style={{ padding: "8px 16px", borderRadius: 20, background: "#F1F5F9", color: "#64748B", fontSize: 16, fontWeight: 600 }}>
               SEO · AEO

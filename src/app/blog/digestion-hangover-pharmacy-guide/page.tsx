@@ -5,7 +5,7 @@ import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 
 const metaTitle = "소화불량·과음 후 약국에서 물어볼 것";
 const metaDescription =
-    "속이 더부룩하거나 술 마신 다음 날 머리가 깨질 듯 아플 때! 약국에서 증상에 딱 맞는 약을 고르는 꿀팁을 알려드립니다.";
+    "소화불량이나 과음 후 불편할 때 약사에게 전달할 증상과 복용 중인 약, 진료가 우선인 위험 신호를 정리했습니다.";
 
 const faqs = [
     {
@@ -14,11 +14,11 @@ const faqs = [
     },
     {
         q: "술 마신 날 타이레놀을 먹으면 왜 안 되나요?",
-        a: "타이레놀의 주성분 아세트아미노펜은 간에서 대사되는데, 알코올도 동일한 간 대사 경로를 사용합니다. 두 물질이 경쟁적으로 간을 거치면 독성 대사물질이 과생성되어 간세포가 심각하게 손상될 수 있습니다. 음주 후 두통에는 반드시 이부프로펜 또는 덱시부프로펜 계열 진통제를 소량의 식사와 함께 복용하세요.",
+        a: "아세트아미노펜 제품은 간 손상 관련 음주 주의사항이 있고, 다른 진통제도 위장 출혈·신장 질환 등 개인별 위험이 있습니다. 음주 직후나 숙취 상태에서는 진통제를 임의로 바꾸지 말고 제품 표시사항을 확인한 뒤 의사 또는 약사와 상담하세요.",
     },
     {
         q: "숙취해소 음료는 마시기 전에 마셔야 하나요, 후에 마셔야 하나요?",
-        a: "제품 성분에 따라 다릅니다. 간 대사를 돕는 앰플 타입(헤포스, 가네스 등)은 음주 전 복용 시 알코올 분해 속도를 높이는 효과가 있습니다. 전해질·비타민 보충 위주의 타입은 음주 후나 다음 날 아침에 마셔도 회복에 도움이 되므로, 라벨의 복용 타이밍 안내를 꼭 확인하세요.",
+        a: "제품마다 성분과 섭취 방법이 다르며 숙취 예방·치료 효과를 동일하게 볼 수 없습니다. 표시사항을 확인하고, 증상이 심하거나 오래 지속되면 제품에 의존하지 말고 의료진과 상담하세요.",
     },
 ];
 
@@ -60,16 +60,6 @@ export default function Page() {
       { "@type": "ListItem", position: 3, name: "소화불량·숙취 약국 이용 가이드", item: "https://todaypharm.kr/blog/digestion-hangover-pharmacy-guide" },
     ],
   };
-  const howToJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    name: "소화불량·숙취 증상별 약국 대처 2단계",
-    description: metaDescription,
-    step: [
-      { "@type": "HowToStep", position: 1, name: "소화불량 증상에 맞는 약 선택", text: "더부룩함에는 소화효소제, 속 쓰림에는 제산제·위산분비억제제, 가스에는 가스제거제를 선택하세요. 복합 증상이라면 약사에게 정확히 설명하고 추천을 받으세요." },
-      { "@type": "HowToStep", position: 2, name: "숙취 타이밍별 대처", text: "음주 전에는 간 보호제, 음주 중에는 수분 섭취, 음주 후에는 전해질 보충·아세트아미노펜(두통)·소화제를 활용하세요." },
-    ],
-  };
   return (
         <div className="mx-auto max-w-3xl space-y-10 py-10">
             <div className="space-y-4 text-center">
@@ -81,7 +71,7 @@ export default function Page() {
                 </h1>
                 <p className="text-lg text-gray-600">
                     &quot;그냥 소화제 주세요&quot;, &quot;술 깨는 약 주세요&quot;라고만 하시나요? <br className="hidden sm:block" />
-                    증상을 더 구체적으로 말하면 효과 직빵(?)인 약을 받을 수 있습니다.
+                    증상과 복용 중인 약을 구체적으로 말하면 더 안전하고 정확한 상담을 받을 수 있습니다.
                 </p>
             </div>
 
@@ -119,71 +109,44 @@ export default function Page() {
                 <h3>🤢 PART 1: 소화불량, 증상별로 약이 다르다!</h3>
                 <p>
                     단순히 &apos;소화제&apos; 하나가 만능이 아닙니다. 내 증상을 체크해보세요.
-                    소화 관련 약은 크게 소화효소제·위장운동 촉진제·제산제·진경제 네 가지로 나뉘며, 각각 완전히 다른 메커니즘으로 작용합니다.
-                    잘못된 약을 선택하면 증상이 완화되지 않거나 오히려 불편함이 커질 수 있으니, 아래 기준을 참고해 자신의 상황에 맞는 약을 선택하세요.
+                    소화 관련 제품은 성분과 주의사항이 서로 다릅니다. 아래 항목은 약을 직접 고르는 처방표가 아니라, 약사에게 증상을 빠짐없이 설명하기 위한 질문 목록으로 활용하세요.
                 </p>
                 <ul>
                     <li>
-                        <strong>과식으로 꽉 막힌 느낌:</strong> 소화효소제(베아제, 훼스탈 등)가 음식물 분해를 돕습니다.
-                        아밀라아제·프로테아제·리파아제 등 다양한 효소가 포함된 복합 소화효소제를 선택하면 탄수화물·단백질·지방을 고루 분해할 수 있습니다.
-                        식사 직전 또는 식사 중 복용 시 가장 효과적이며, 이미 더부룩한 상태라면 식후에 복용해도 어느 정도 도움이 됩니다.
-                        증상이 반복된다면 위장운동 촉진제 추가 여부를 약사와 상의해보세요.
+                        <strong>과식으로 꽉 막힌 느낌:</strong> 언제부터 불편했는지, 마지막 식사와 구토 여부, 평소 복용약을 약사에게 알려주세요. 증상이 반복되거나 악화되면 약을 추가하기보다 의료기관 상담이 필요합니다.
                     </li>
                     <li>
-                        <strong>명치가 아프고 위경련이 올 때:</strong> 진경제(부스코판 등)가 위장 근육의 경련을 풀어주어 통증을 줄입니다.
-                        스트레스성 복통이나 과민성 대장 증상에도 효과적으로 쓰이며, 보통 15~30분 내에 작용이 시작됩니다.
-                        진경제는 근육 이완을 유도하는 약이므로, 단순 소화불량용 소화효소제와는 전혀 다른 계열임을 기억하세요.
-                        만약 통증이 매우 심하거나 발열·혈변 등 다른 증상이 동반된다면 약국보다 의료기관 방문이 우선입니다.
+                        <strong>명치 통증이나 경련이 있을 때:</strong> 통증 위치와 강도, 지속 시간, 발열·혈변·흉통 여부를 먼저 확인하세요. 통증이 매우 심하거나 다른 위험 신호가 동반되면 약국보다 의료기관 방문이 우선입니다.
                     </li>
                     <li>
-                        <strong>속이 쓰리고 신물이 올라올 때:</strong> 제산제(개비스콘, 알마겔 등)나 위산분비억제제가 필요합니다.
-                        제산제는 즉각적으로 위산을 중화하는 반면, 파모티딘 같은 H2 차단제는 위산 분비 자체를 억제해 효과가 더 오래 지속됩니다.
-                        공복에 증상이 심하다면 식전에, 식후 역류가 주 증상이라면 식후 30분 이내에 복용하는 것이 효과적입니다.
-                        <br />
-                        <span className="text-sm text-gray-500">* 이때 소화효소제만 먹으면 오히려 속이 더 쓰릴 수 있어요!</span>
+                        <strong>속이 쓰리고 신물이 올라올 때:</strong> 공복·식후 중 언제 심한지, 증상 지속 기간과 복용 중인 약을 알려주세요. 제품마다 복용 시점과 금기가 다르므로 표시사항과 약사의 안내를 확인하세요.
                     </li>
                     <li>
-                        <strong>배에 가스가 차서 빵빵할 때:</strong> 가스제거 성분(시메티콘)이 포함된 약을 고르세요.
-                        시메티콘은 장 내 가스 기포를 뭉쳐서 자연스럽게 배출되도록 돕는 물리적 작용을 하며, 흡수되지 않으므로 비교적 안전합니다.
-                        탄산음료·콩류·유제품 섭취 후 자주 발생하는 분들은 식사 후 즉시 복용하면 팽만감을 빠르게 완화할 수 있습니다.
-                        시메티콘 단독 제품이 없다면 소화효소와 시메티콘이 복합된 제품을 약사에게 요청해보세요.
+                        <strong>배에 가스가 차고 팽만할 때:</strong> 최근 먹은 음식, 배변 변화, 통증 위치를 함께 설명하세요. 임신·수유, 만성질환, 다른 약 복용 여부에 따라 제품 선택이 달라질 수 있습니다.
                     </li>
                 </ul>
 
                 <hr />
 
-                <h3>🍺 PART 2: 숙취해소, 타이밍과 증상이 생명!</h3>
+                <h3>🍺 PART 2: 과음 후에는 약보다 안전 확인이 먼저</h3>
                 <p>
-                    숙취도 두통형·구토형·피로형 등 유형이 다양합니다.
-                    알코올이 간에서 분해되는 과정에서 생성되는 아세트알데히드가 주요 원인이며, 탈수·전해질 불균형·저혈당이 복합적으로 작용해 증상이 심해집니다.
-                    단순히 물만 많이 마신다고 해결되지 않는 이유가 여기 있으며, 증상 유형에 맞는 제품 선택이 회복 속도를 크게 좌우합니다.
-                    가능하다면 음주 전부터 준비하는 것이 가장 효과적인 전략입니다.
+                    과음 후 증상은 음주량, 수분 상태, 기존 질환과 복용약에 따라 다릅니다. 특정 숙취 제품이나 진통제를 정답처럼 선택하지 말고, 위험 신호와 제품 표시사항을 먼저 확인하세요.
                 </p>
                 <ul>
                     <li>
-                        <strong>음주 전 미리 방어:</strong> 간 대사를 돕는 앰플(헤포스, 가네스 등)이나 숙취해소음료를 미리 마시면 알코올 분해를 돕습니다.
-                        밀크씨슬(실리마린) 성분은 간세포 보호 효과가 있어 음주 전 복용 시 간 부담을 줄여주는 데 도움이 됩니다.
-                        음주 전 가벼운 식사도 알코올 흡수 속도를 늦춰주므로, 빈속 음주는 최대한 피하는 것이 좋습니다.
-                        약국에서 &quot;술자리 전에 쓸 제품&quot;이라고 말하면 성분과 복용 타이밍을 함께 안내받을 수 있습니다.
+                        <strong>음주 전 확인:</strong> 숙취해소 제품은 성분과 표시된 섭취 방법이 서로 다르며, 음주 위험을 없애거나 숙취를 치료한다고 단정할 수 없습니다.
+                        음주량을 줄이고 빈속 음주를 피하며 물을 함께 마시는 것이 우선입니다. 복용 중인 약이 있다면 술자리 전에 의사 또는 약사에게 음주 가능 여부를 확인하세요.
                     </li>
                     <li>
-                        <strong>머리가 깨질 듯 아플 때:</strong>
-                        <span className="text-red-500 font-bold">주의!</span> 술 마신 후 <strong>타이레놀(아세트아미노펜)은 절대 금지</strong>입니다. 간 독성을 유발할 수 있습니다.
-                        대신 이부프로펜/덱시부프로펜 계열 진통제를 드시되, 위장 장애가 있다면 반하사심탕 같은 한방 제제가 더 안전할 수 있습니다.
-                        진통제 복용 전에는 반드시 소량의 음식이나 우유를 먹어 위장 자극을 줄이는 것이 중요합니다.
-                        음주 직후 상태라면 진통제보다 충분한 수면과 전해질 보충이 우선입니다.
+                        <strong>두통이 심할 때:</strong>
+                        <span className="text-red-500 font-bold">주의!</span> 음주 직후나 숙취 상태에서는 아세트아미노펜을 포함한 진통제를 임의로 선택하거나 서로 바꾸지 마세요.
+                        제품별 음주·간 질환·위장 출혈·신장 질환 관련 주의사항이 다르므로 표시사항을 확인하고 의사 또는 약사에게 현재 음주 상태와 복용 중인 약을 알리세요.
                     </li>
                     <li>
-                        <strong>속이 울렁거리고 토할 것 같을 때:</strong> 반하사심탕, 인진호탕 등 위장 운동을 조절하고 구역감을 줄이는 생약 성분 드링크가 효과적입니다.
-                        이런 한방 제제는 위장 점막을 자극하지 않으면서 구역감을 완화해주므로 위가 예민한 분들에게도 비교적 안전하게 사용할 수 있습니다.
-                        구역감이 심할 때는 차갑게 마시기보다 상온이나 따뜻하게 마시는 것이 위장에 덜 자극적입니다.
-                        증상이 12시간 이상 지속되거나 혈변·극심한 복통이 동반되면 즉시 의료기관을 찾으세요.
+                        <strong>속이 울렁거리고 토할 것 같을 때:</strong> 여러 일반약이나 생약 제품을 임의로 섞지 마세요. 물도 마시기 어렵거나 반복 구토, 의식 변화, 혈변·극심한 복통이 있으면 의료기관에 연락하세요.
                     </li>
                     <li>
-                        <strong>물만 마시면 된다?</strong> 수분 섭취는 필수지만, 전해질과 당분이 포함된 이온음료나 포도당 캔디, 꿀물을 곁들이면 회복이 훨씬 빠릅니다.
-                        알코올의 이뇨 작용으로 나트륨·칼륨 등 전해질도 함께 손실되기 때문에 순수한 물만으로는 전해질 불균형이 해소되지 않습니다.
-                        약국에서 경구수액제(ORS) 또는 전해질 보충 제품을 구매하면 더욱 빠른 회복에 도움이 됩니다.
-                        소량씩 자주 마시는 것이 한꺼번에 많이 마시는 것보다 위장 부담이 적습니다.
+                        <strong>수분은 어떻게 마시나요?</strong> 의식이 또렷하고 마실 수 있다면 물을 조금씩 나누어 마시며 쉬세요. 구토 때문에 수분을 유지하지 못하거나 탈수 징후가 있으면 음료나 보충제에 의존하지 말고 의료기관에 문의하세요.
                     </li>
                 </ul>
 
@@ -210,8 +173,7 @@ export default function Page() {
                         </div>
                         <p className="text-sm text-gray-600 leading-relaxed">
                             어젯밤 팀 회식에서 소주 두 병을 마신 뒤 아침에 일어나니 머리가 지끈거리고 속도 울렁입니다.
-                            이런 경우 타이레놀 대신 이부프로펜 계열 진통제를 소량의 음식과 함께 복용하고, 반하사심탕 드링크로 구역감을 먼저 잡아주세요.
-                            이온음료 한 병을 함께 마시면 전해질 보충이 되어 전반적인 회복 속도가 눈에 띄게 빨라집니다.
+                            이런 경우 특정 진통제나 생약 제제를 임의로 함께 복용하지 말고, 물을 조금씩 마시며 쉬세요. 두통·구토가 심하거나 의식 변화, 심한 복통, 탈수 징후가 있으면 의료기관에 연락하세요. 약국에 문의할 때는 음주량과 마지막 음주 시각, 복용 중인 약을 함께 알려야 합니다.
                         </p>
                     </div>
                     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
@@ -228,12 +190,11 @@ export default function Page() {
                     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
-                            <h3 className="text-base font-bold text-gray-900">저녁 술자리 전, 미리 약국에 들렀을 때</h3>
+                            <h3 className="text-base font-bold text-gray-900">술자리 전, 복용 중인 약이 있을 때</h3>
                         </div>
                         <p className="text-sm text-gray-600 leading-relaxed">
-                            오늘 저녁 피할 수 없는 술자리가 있을 때, 미리 약국에 들러 예방적으로 준비할 수 있습니다.
-                            간 대사 보조 앰플이나 밀크씨슬 성분 제품을 술자리 30분 전에 복용하고, 이부프로펜 계열 진통제와 전해질 보충 제품을 함께 챙겨두면 다음 날 아침 회복에 큰 도움이 됩니다.
-                            약사에게 &quot;오늘 저녁 술자리 전후로 쓸 제품을 추천해 주세요&quot;라고 하면 한 번에 패키지처럼 안내받을 수 있습니다.
+                            처방약이나 일반약을 복용 중이라면 음주 전에 약사 또는 담당 의료진에게 함께 복용해도 되는지 확인하세요.
+                            숙취를 확실히 예방하는 약처럼 믿고 여러 제품을 미리 함께 복용하지 마세요. 음주량을 줄이고 식사와 수분을 챙기며, 복용 중인 약이 있다면 의사 또는 약사에게 음주 가능 여부를 먼저 확인하세요. 음주 후에는 운전하지 말고 귀가 방법을 미리 정해두세요.
                         </p>
                     </div>
                 </div>
@@ -251,18 +212,33 @@ export default function Page() {
                 </div>
             </section>
 
+            <aside className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-900">
+                약물 복용 중에는 음주를 피하라는 식품의약품안전처 안전정보와 각 제품 표시사항을 우선합니다. 술을 마셨다는 이유만으로 다른 진통제를 자동 대체하지 마세요.{" "}
+                <a
+                    href="https://impfood.mfds.go.kr/CFBBB02F02/getCntntsDetail?cntntsSn=281429"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold underline"
+                >
+                    식품의약품안전처 안전정보 확인
+                </a>
+            </aside>
+
             <section className="rounded-2xl border border-gray-200 p-6 sm:p-8 mt-10">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 className="text-xl font-bold text-gray-900">지금 바로 약국에 가야 한다면?</h2>
                         <p className="text-sm text-gray-600 mt-1">
-                            음주 후에는 운전 금지! 가까운 약국을 걸어서 찾아보세요.
+                            음주 후에는 운전하지 말고, 필요하면 보호자 동행이나 안전한 이동 수단을 이용하세요.
                         </p>
                     </div>
                     <div className="flex gap-2">
                         <Link
                             href="/nearby"
-                            className="inline-flex items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-bold text-white shadow-md hover:bg-brand-700 transition-colors"
+                            data-analytics-event="content_to_nearby_click"
+                            data-source-surface="blog_article"
+                            data-cta-placement="article_footer"
+                            className="inline-flex min-h-11 items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-bold text-white shadow-md hover:bg-brand-700 transition-colors"
                         >
                             내 주변 약국 찾기
                         </Link>
@@ -314,10 +290,6 @@ export default function Page() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-            />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
             />
             <script
                 type="application/ld+json"

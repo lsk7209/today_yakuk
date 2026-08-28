@@ -1,5 +1,14 @@
 import { test, expect } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+    await page.route("**/*", (route) => {
+        const url = new URL(route.request().url());
+        return ["localhost", "127.0.0.1"].includes(url.hostname)
+            ? route.continue()
+            : route.abort();
+    });
+});
+
 test.describe("Homepage", () => {
     test("should load homepage successfully", async ({ page }) => {
         await page.goto("/");
@@ -26,22 +35,28 @@ test.describe("Homepage", () => {
     test("should navigate to about page", async ({ page }) => {
         await page.goto("/");
 
-        await page.click('header nav a[href="/about"]');
-        await expect(page).toHaveURL("/about");
+        await Promise.all([
+            page.waitForURL("/about"),
+            page.locator('header nav a[href="/about"]').click(),
+        ]);
     });
 
     test("should navigate to blog page", async ({ page }) => {
         await page.goto("/");
 
-        await page.click('header nav a[href="/blog"]');
-        await expect(page).toHaveURL("/blog");
+        await Promise.all([
+            page.waitForURL("/blog"),
+            page.locator('header nav a[href="/blog"]').click(),
+        ]);
     });
 
     test("should navigate to wiki page", async ({ page }) => {
         await page.goto("/");
 
-        await page.click('header nav a[href="/wiki"]');
-        await expect(page).toHaveURL("/wiki");
+        await Promise.all([
+            page.waitForURL("/wiki"),
+            page.locator('header nav a[href="/wiki"]').click(),
+        ]);
     });
 });
 

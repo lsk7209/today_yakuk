@@ -8,6 +8,7 @@ export interface NutritionFact {
   amount: number;
   unit: string;
   percent_dv: number | null;
+  source: "foodsafetykorea:C003" | "product-name-inference";
 }
 
 export interface AnalysisResult {
@@ -87,15 +88,18 @@ export function parseNutritionFacts(nutStr: string): NutritionFact[] {
     const rawUnit = m[3].replace(/mcg|ug|㎍/i, "μg");
     const percentRaw = m[4] ? parseFloat(m[4]) : null;
 
-    const dvRef = DV_REFERENCE[rawName];
     const percent_dv =
       percentRaw != null
         ? Math.round(percentRaw)
-        : dvRef && dvRef.unit === rawUnit
-        ? Math.round((amount / dvRef.dv) * 100)
         : null;
 
-    results.push({ name: rawName, amount, unit: rawUnit, percent_dv });
+    results.push({
+      name: rawName,
+      amount,
+      unit: rawUnit,
+      percent_dv,
+      source: "foodsafetykorea:C003",
+    });
   }
 
   return results;
@@ -268,7 +272,13 @@ export function parseFromProductName(productName: string): NutritionFact[] {
       ? Math.round((amount / dvRef.dv) * 100)
       : null;
 
-    results.push({ name: nutrient, amount, unit, percent_dv });
+    results.push({
+      name: nutrient,
+      amount,
+      unit,
+      percent_dv,
+      source: "product-name-inference",
+    });
     seen.add(nutrient);
   }
 
@@ -283,11 +293,9 @@ export function analyzeProduct(
   rawMaterials: string,
   nutritionStr: string
 ): AnalysisResult {
-  // NUT_MTR 파싱 우선, 없으면 제품명 기반 추론
-  let nutrition_facts = parseNutritionFacts(nutritionStr);
-  if (nutrition_facts.length === 0) {
-    nutrition_facts = parseFromProductName(productName);
-  }
+  // API 보강 경로에서는 원문 NUT_MTR/STDR_STND에서 명시적으로 파싱된 값만 저장한다.
+  // 제품명 키워드는 성분의 실제 포함 여부나 함량을 증명하지 못한다.
+  const nutrition_facts = parseNutritionFacts(nutritionStr);
   const { summary, effects, cautions } = generateSummaryTexts(productName, rawMaterials, nutrition_facts);
   return { summary, effects, cautions, nutrition_facts };
 }
@@ -296,9 +304,10 @@ export function analyzeProduct(
  * C003 API 없이 제품명만으로 분석
  */
 export function analyzeFromNameOnly(productName: string): AnalysisResult {
-  const nutrition_facts = parseFromProductName(productName);
-  const { summary, effects, cautions } = generateSummaryTexts(productName, "", nutrition_facts);
-  return { summary, effects, cautions, nutrition_facts };
+  void productName;
+  throw new Error(
+    "Product-name-only nutrition inference is disabled. Use an explicit Food Safety Korea C003 field.",
+  );
 }
 
 /**

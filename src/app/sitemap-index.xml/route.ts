@@ -4,16 +4,15 @@ import { getSitemapIds } from "@/lib/sitemap";
 const siteUrl = getSiteUrl();
 
 export const revalidate = 600;
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const ids = await getSitemapIds();
-  const lastModified = new Date().toISOString();
   const items = ids
     .map(
       (id) => `
   <sitemap>
     <loc>${siteUrl}/sitemap/${id}.xml</loc>
-    <lastmod>${lastModified}</lastmod>
   </sitemap>`,
     )
     .join("");

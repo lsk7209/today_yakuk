@@ -34,6 +34,10 @@ export default defineConfig({
     webServer: {
         command: `npm run dev -- -p ${port}`,
         url: `http://localhost:${port}`,
+        env: {
+            TURSO_DATABASE_URL: "",
+            TURSO_AUTH_TOKEN: "",
+        },
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,
     },

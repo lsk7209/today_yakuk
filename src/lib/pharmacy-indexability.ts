@@ -5,7 +5,7 @@ function hasUsefulHours(hours?: OperatingHours | null): boolean {
   return Object.values(hours).some((slot) => !!slot?.open && !!slot?.close);
 }
 
-function hasPhone(tel?: string | null): boolean {
+export function hasValidPhone(tel?: string | null): boolean {
   if (!tel) return false;
   const digits = tel.replace(/\D/g, "");
   // 대한민국 전화번호(대표): 02(9~10자리), 0xx(10~11자리), 070/050x 등 포함
@@ -36,8 +36,32 @@ export function isIndexablePharmacy(pharmacy: {
   operating_hours?: OperatingHours | null;
 }): boolean {
   if (!hasAddress(pharmacy.address ?? null)) return false;
-  const useful = hasPhone(pharmacy.tel ?? null) || hasUsefulHours(pharmacy.operating_hours ?? null);
+  const useful = hasValidPhone(pharmacy.tel ?? null) || hasUsefulHours(pharmacy.operating_hours ?? null);
   return useful;
 }
+
+export const PHARMACY_INDEXABLE_WHERE = `
+WHERE address IS NOT NULL
+  AND LENGTH(TRIM(address)) >= 8
+  AND (
+    (
+      tel IS NOT NULL
+      AND LENGTH(
+        REPLACE(REPLACE(REPLACE(REPLACE(TRIM(tel), '-', ''), ' ', ''), ')', ''), '(', '')
+      ) BETWEEN 9 AND 11
+      AND REPLACE(REPLACE(REPLACE(REPLACE(TRIM(tel), '-', ''), ' ', ''), ')', ''), '(', '') LIKE '0%'
+      AND REPLACE(REPLACE(REPLACE(REPLACE(TRIM(tel), '-', ''), ' ', ''), ')', ''), '(', '') NOT GLOB '*[^0-9]*'
+      AND REPLACE(REPLACE(REPLACE(REPLACE(TRIM(tel), '-', ''), ' ', ''), ')', ''), '(', '') NOT LIKE '%0000000%'
+    )
+    OR EXISTS (
+      SELECT 1
+      FROM json_each(
+        CASE WHEN json_valid(operating_hours) THEN operating_hours ELSE '{}' END
+      ) AS day
+      WHERE NULLIF(TRIM(CAST(json_extract(day.value, '$.open') AS TEXT)), '') IS NOT NULL
+        AND NULLIF(TRIM(CAST(json_extract(day.value, '$.close') AS TEXT)), '') IS NOT NULL
+    )
+  )
+`;
 
 

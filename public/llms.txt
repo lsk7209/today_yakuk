@@ -1,7 +1,7 @@
 # 약국오늘
 
-약국오늘은 한국 사용자를 위한 실시간 약국 검색 및 약국 이용 가이드 서비스입니다.
-공공데이터포털·건강보험심사평가원(HIRA)·보건복지부 자료 기반, YMYL 의료 카테고리, 광고 포함 사이트.
+약국오늘은 한국 사용자를 위한 등록 영업시간 기반 약국 검색 및 이용 가이드 서비스입니다.
+약국 검색은 공공데이터포털 API를 주기적으로 동기화한 등록 영업시간을 사용하며, 가이드에는 공공기관 공개 자료를 참고합니다. YMYL 의료 카테고리와 광고를 포함합니다.
 
 ## 주요 페이지
 
@@ -41,6 +41,15 @@
 - [대전 약국](https://todaypharm.kr/대전/전체)
 - [광주 약국](https://todaypharm.kr/광주/전체)
 - [울산 약국](https://todaypharm.kr/울산/전체)
+- [세종 약국](https://todaypharm.kr/세종/전체)
+- [강원 약국](https://todaypharm.kr/강원/전체)
+- [충북 약국](https://todaypharm.kr/충북/전체)
+- [충남 약국](https://todaypharm.kr/충남/전체)
+- [전북 약국](https://todaypharm.kr/전북/전체)
+- [전남 약국](https://todaypharm.kr/전남/전체)
+- [경북 약국](https://todaypharm.kr/경북/전체)
+- [경남 약국](https://todaypharm.kr/경남/전체)
+- [제주 약국](https://todaypharm.kr/제주/전체)
 
 ## 데이터 원칙
 

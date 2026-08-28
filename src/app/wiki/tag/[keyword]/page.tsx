@@ -7,6 +7,7 @@ import { getSiteUrl } from "@/lib/site-url";
 import { Tag } from "lucide-react";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { buildWikiProductPath } from "@/lib/wiki-slug";
+import { safeJsonStringify } from "@/components/seo/json-ld";
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
@@ -16,13 +17,12 @@ interface Supplement {
     name: string;
     manufacturer: string | null;
     image_url: string | null;
-    ai_summary: string | null;
     tags: string[] | null;
 }
 
 interface TagPageProps {
-    params: { keyword: string };
-    searchParams: { page?: string };
+    params: Promise<{ keyword: string }>;
+    searchParams: Promise<{ page?: string }>;
 }
 
 const ITEMS_PER_PAGE = 12;
@@ -38,17 +38,22 @@ const TAG_SLUG_MAP: Record<string, string> = {
 
 export async function generateMetadata({
     params,
+    searchParams,
 }: TagPageProps): Promise<Metadata> {
-    const rawKeyword = decodeURIComponent(params.keyword);
+    const [{ keyword: rawParamKeyword }, { page: pageParam }] = await Promise.all([params, searchParams]);
+    const rawKeyword = decodeURIComponent(rawParamKeyword);
     const keyword = TAG_SLUG_MAP[rawKeyword] || rawKeyword;
     const siteUrl = getSiteUrl();
+    const page = getPageNumber(pageParam);
+    const canonicalPath = `/wiki/tag/${encodeURIComponent(rawKeyword)}${page > 1 ? `?page=${page}` : ""}`;
 
     return {
         title: `${keyword} 관련 영양제`,
-        description: `${keyword}에 도움이 되는 영양제와 건강기능식품을 찾아보세요.`,
+        description: `${keyword} 태그로 분류된 건강기능식품의 공개 성분과 제품 정보를 확인하세요.`,
         alternates: {
-            canonical: `${siteUrl}/wiki/tag/${params.keyword}`,
+            canonical: `${siteUrl}${canonicalPath}`,
         },
+        robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true },
     };
 }
 
@@ -56,7 +61,8 @@ export default async function TagPage({
     params,
     searchParams,
 }: TagPageProps) {
-    const rawKeyword = decodeURIComponent(params.keyword);
+    const [{ keyword: rawParamKeyword }, { page: pageParam }] = await Promise.all([params, searchParams]);
+    const rawKeyword = decodeURIComponent(rawParamKeyword);
     // 1. 매핑된 태그가 있다면 사용, 없다면 원래 키워드 사용 (한글 유입 고려)
     const keyword = TAG_SLUG_MAP[rawKeyword] || rawKeyword;
 
@@ -64,7 +70,7 @@ export default async function TagPage({
     const displayKeyword = keyword;
 
     const siteUrl = getSiteUrl();
-    const page = parseInt(searchParams.page || '1', 10);
+    const page = getPageNumber(pageParam);
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
     // 3. Search for both slug (URL) and mapped keyword (Korean)
@@ -83,7 +89,7 @@ export default async function TagPage({
                 args: searchTerms,
             }),
             db.execute({
-                sql: `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
+                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
                 args: searchTerms,
             }),
         ]);
@@ -99,11 +105,12 @@ export default async function TagPage({
         name: r.name as string,
         manufacturer: r.manufacturer as string | null,
         image_url: r.image_url as string | null,
-        ai_summary: r.ai_summary as string | null,
         tags: parseJson(r.tags, null) as string[] | null,
     }));
 
-    const totalPages = count ? Math.ceil(count / ITEMS_PER_PAGE) : 1;
+    if (!count) notFound();
+    const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+    if (page > totalPages) notFound();
 
     const breadcrumbItems = [
         { label: "영양제 위키", href: "/wiki" },
@@ -116,7 +123,7 @@ export default async function TagPage({
         itemListElement: [
             { "@type": "ListItem", position: 1, name: "홈", item: siteUrl },
             { "@type": "ListItem", position: 2, name: "영양제 위키", item: `${siteUrl}/wiki` },
-            { "@type": "ListItem", position: 3, name: `#${displayKeyword}`, item: `${siteUrl}/wiki/tag/${params.keyword}` },
+            { "@type": "ListItem", position: 3, name: `#${displayKeyword}`, item: `${siteUrl}/wiki/tag/${rawParamKeyword}` },
         ],
     };
 
@@ -124,7 +131,7 @@ export default async function TagPage({
         <div className="container py-8 sm:py-12 max-w-6xl space-y-8">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+                dangerouslySetInnerHTML={{ __html: safeJsonStringify(breadcrumbLd) }}
             />
             <Breadcrumb items={breadcrumbItems} />
 
@@ -168,7 +175,7 @@ export default async function TagPage({
                         <div className="flex justify-center gap-2">
                             {page > 1 && (
                                 <Link
-                                    href={`/wiki/tag/${params.keyword}?page=${page - 1}`}
+                                    href={`/wiki/tag/${rawParamKeyword}?page=${page - 1}`}
                                     className="px-4 py-2 bg-white border border-[var(--border)] rounded-lg hover:bg-gray-50 transition-colors"
                                 >
                                     이전
@@ -179,7 +186,7 @@ export default async function TagPage({
                             </div>
                             {page < totalPages && (
                                 <Link
-                                    href={`/wiki/tag/${params.keyword}?page=${page + 1}`}
+                                    href={`/wiki/tag/${rawParamKeyword}?page=${page + 1}`}
                                     className="px-4 py-2 bg-white border border-[var(--border)] rounded-lg hover:bg-gray-50 transition-colors"
                                 >
                                     다음
@@ -250,6 +257,11 @@ export default async function TagPage({
     );
 }
 
+function getPageNumber(pageParam?: string) {
+    const value = Number.parseInt(pageParam || "1", 10);
+    return Number.isFinite(value) && value >= 1 ? value : 1;
+}
+
 function ProductCard({ product }: { product: Supplement }) {
     return (
         <Link
@@ -280,12 +292,6 @@ function ProductCard({ product }: { product: Supplement }) {
                     )}
                 </div>
             </div>
-
-            {product.ai_summary && (
-                <p className="text-sm text-slate-600 line-clamp-3 mb-6 flex-1 leading-relaxed">
-                    {product.ai_summary}
-                </p>
-            )}
 
             {product.tags && product.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-auto border-t border-slate-50 pt-4">

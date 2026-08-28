@@ -3,14 +3,14 @@
  *
  * This script:
  * 1. Fetches supplement data from Food Safety Korea API
- * 2. Processes with Gemini AI for summaries
- * 3. Upserts to Turso (supplements table)
+ * 2. Parses explicitly reported nutrition data without name-based inference
+ * 3. Upserts factual fields to Turso (supplements table)
  *
  * Usage: npm run sync:supplements
  */
 
 import dotenv from "dotenv";
-import { analyzeProduct, parseNutritionFacts, createMixedSummary } from "./lib/nutrition-parser";
+import { parseNutritionFacts } from "./lib/nutrition-parser";
 import { detectAdditives } from "./lib/additive-keywords";
 import { getTursoClient } from "../src/lib/turso";
 
@@ -35,32 +35,45 @@ const TAG_MAP: Record<string, string[]> = {
 
 interface RawSupplementData {
     PRDLST_REPORT_NO: string;
-    PRDUCT: string;
+    PRDUCT?: string;
+    PRDLST_NM?: string;
     BSSH_NM: string;
     RAWMTRL_NM: string;
     NUT_MTR: string;
     STDR_STND: string;
-    LCNS_NO?: string;
 }
 
-async function fetchSupplementData(pageNo: number = 1, numOfRows: number = 100): Promise<RawSupplementData[]> {
+interface HffApiResponse {
+    C003?: {
+        row?: RawSupplementData[];
+        RESULT?: { CODE?: string; MSG?: string };
+    };
+}
+
+async function fetchSupplementData(startIdx = 1, endIdx = 10): Promise<RawSupplementData[]> {
     const SERVICE_ID = "C003";
-    const url = `http://openapi.foodsafetykorea.go.kr/api/${FOOD_SAFETY_API_KEY}/${SERVICE_ID}/json/${pageNo}/${numOfRows}`;
-
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data[SERVICE_ID]?.row) return data[SERVICE_ID].row;
-        console.warn("No data found in API response");
-        return [];
-    } catch (error) {
-        console.error("Failed to fetch supplement data:", error);
-        return [];
+    const url = `https://openapi.foodsafetykorea.go.kr/api/${FOOD_SAFETY_API_KEY}/${SERVICE_ID}/json/${startIdx}/${endIdx}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`HFF API request failed (${response.status} ${response.statusText})`);
     }
+
+    const data = await response.json() as HffApiResponse;
+    const service = data.C003;
+    if (!service?.RESULT) {
+        throw new Error("HFF API returned an invalid response shape");
+    }
+    if (service.RESULT.CODE !== "INFO-000") {
+        throw new Error(`HFF API error ${service.RESULT.CODE}: ${service.RESULT.MSG || "unknown"}`);
+    }
+    if (!Array.isArray(service.row) || service.row.length === 0) {
+        throw new Error("HFF API returned no rows for the requested range");
+    }
+    return service.row;
 }
 
-function generateTags(name: string, aiSummary: string, nutritionFacts: unknown[]): string[] {
-    const contentToSearch = [name, aiSummary, JSON.stringify(nutritionFacts)].join(" ").toLowerCase();
+function generateTags(name: string, reportedMaterials: string, nutritionFacts: unknown[]): string[] {
+    const contentToSearch = [name, reportedMaterials, JSON.stringify(nutritionFacts)].join(" ").toLowerCase();
     const tags: Set<string> = new Set();
 
     for (const [tagId, keywords] of Object.entries(TAG_MAP)) {
@@ -78,60 +91,59 @@ function generateTags(name: string, aiSummary: string, nutritionFacts: unknown[]
 async function syncSupplements() {
     console.log("🚀 Starting supplement data sync...\n");
 
-    const rawData = await fetchSupplementData(1, 10);
-    console.log(`📦 Fetched ${rawData.length} supplements from API\n`);
-
-    if (rawData.length > 0) {
-        console.log("DEBUG: Raw first item keys:", Object.keys(rawData[0]));
-        console.log("DEBUG: Raw first item sample:", JSON.stringify(rawData[0], null, 2));
+    if (!FOOD_SAFETY_API_KEY) {
+        throw new Error("FOOD_SAFETY_API_KEY 환경변수가 없습니다.");
     }
+
+    const rawData = await fetchSupplementData(1, 10);
+    if (rawData.length !== 10) {
+        throw new Error(`HFF API returned ${rawData.length}/10 expected rows`);
+    }
+    console.log(`📦 Fetched ${rawData.length} supplements from API\n`);
 
     let successCount = 0;
     let failCount = 0;
+    let noDataCount = 0;
 
     for (const rawItem of rawData) {
         try {
             const item = rawItem as unknown as Record<string, string>;
-            const productReportNo = item.PRDLST_REPORT_NO || item.LCNS_NO || item.lcns_no;
+            const productReportNo = item.PRDLST_REPORT_NO || item.prdlst_report_no;
             const name = item.PRDUCT || item.PRDLST_NM || item.prdlst_nm;
             const manufacturer = item.BSSH_NM || item.MAKE_IT_NM || item.make_it_nm;
             const rawMaterials = item.RAWMTRL_NM || item.RAW_MATERIALS || item.raw_materials || "";
             const nutritionStr = item.NUT_MTR || item.STDR_STND || item.stnd_stnd || "";
 
-            if (!name) {
-                console.warn("⚠️ Skip: Product name is missing in raw data.");
-                continue;
+            if (!productReportNo || !name) {
+                throw new Error("Product report number or product name is missing in raw data");
             }
 
             console.log(`Processing: ${name}...`);
 
-            const analysis = analyzeProduct(name, rawMaterials, nutritionStr);
-
-            let nutritionFacts = analysis.nutrition_facts;
+            const nutritionFacts = parseNutritionFacts(nutritionStr);
             if (nutritionFacts.length === 0) {
-                nutritionFacts = parseNutritionFacts(nutritionStr);
+                console.warn(`⚠️ Skip without DB write: no structured C003 nutrition facts for ${name}`);
+                noDataCount++;
+                continue;
             }
 
             const additives = detectAdditives(rawMaterials);
-            const mixedSummary = createMixedSummary(analysis);
 
             await db.execute({
                 sql: `INSERT INTO supplements
-                      (product_report_no, name, manufacturer, nutrition_facts, additives, ai_summary, tags)
-                      VALUES (?, ?, ?, ?, ?, ?, ?)
+                      (product_report_no, name, manufacturer, nutrition_facts, additives, tags)
+                      VALUES (?, ?, ?, ?, ?, ?)
                       ON CONFLICT(product_report_no) DO UPDATE SET
                         name = excluded.name,
                         manufacturer = excluded.manufacturer,
                         nutrition_facts = excluded.nutrition_facts,
                         additives = excluded.additives,
-                        ai_summary = excluded.ai_summary,
                         tags = excluded.tags`,
                 args: [
                     productReportNo, name, manufacturer,
                     JSON.stringify(nutritionFacts),
                     JSON.stringify(additives),
-                    mixedSummary,
-                    JSON.stringify(generateTags(name, analysis.summary, nutritionFacts)),
+                    JSON.stringify(generateTags(name, rawMaterials, nutritionFacts)),
                 ],
             });
 
@@ -147,7 +159,16 @@ async function syncSupplements() {
 
     console.log(`\n✨ Sync completed!`);
     console.log(`   Success: ${successCount}`);
+    console.log(`   No data: ${noDataCount}`);
     console.log(`   Failed: ${failCount}`);
+    if (failCount > 0 || noDataCount > 0 || successCount !== rawData.length) {
+        throw new Error(
+            `Supplement sync incomplete: success=${successCount}, noData=${noDataCount}, failed=${failCount}`,
+        );
+    }
 }
 
-syncSupplements().catch(console.error);
+syncSupplements().catch((error) => {
+    console.error("Supplement sync failed:", error);
+    process.exitCode = 1;
+});

@@ -1,11 +1,8 @@
 name: Generate Blog Post
 
 on:
-  schedule:
-    # 매일 07:00 KST (UTC 22:00) - 아침 발행 슬롯 채우기용
-    # Morning (KST 07:00) & Evening (KST 19:00)
-    # UTC: 22, 10
-    - cron: "0 22,10 * * *"
+  # 기존 예약 큐는 publish-content.yml이 계속 처리한다.
+  # 새 본문은 검토 없이 외부 생성 API로 자동 추가하지 않고 수동 실행만 허용한다.
   workflow_dispatch:
 
 jobs:

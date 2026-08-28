@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getIngredientBySlug } from "@/lib/data/pharmacies";
 import { getSiteUrl } from "@/lib/site-url";
+import { safeJsonStringify } from "@/components/seo/json-ld";
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
@@ -10,23 +11,29 @@ export const revalidate = 86400;
 export async function generateMetadata({
     params,
 }: {
-    params: { name: string };
+    params: Promise<{ name: string }>;
 }): Promise<Metadata> {
-    const ingredient = await getIngredientBySlug(params.name);
+    const { name } = await params;
+    const ingredient = await getIngredientBySlug(name);
 
     if (!ingredient) {
         return {
             title: "성분을 찾을 수 없습니다",
             description: "요청하신 성분 정보를 찾을 수 없습니다.",
+            robots: { index: false, follow: false },
         };
     }
+
+    const canonicalPath = `/wiki/ingredient/${encodeURIComponent(name)}`;
 
     return {
         title: `${ingredient.name} - 성분 정보`,
         description: ingredient.summary || `${ingredient.name}의 상세 정보를 확인하세요.`,
+        alternates: { canonical: canonicalPath },
         openGraph: {
             title: `${ingredient.name} 성분 백과`,
             description: ingredient.summary || `${ingredient.name}의 상세 정보를 확인하세요.`,
+            url: canonicalPath,
         },
     };
 }
@@ -34,9 +41,10 @@ export async function generateMetadata({
 export default async function IngredientDetailPage({
     params,
 }: {
-    params: { name: string };
+    params: Promise<{ name: string }>;
 }) {
-    const ingredient = await getIngredientBySlug(params.name);
+    const { name } = await params;
+    const ingredient = await getIngredientBySlug(name);
 
     if (!ingredient) {
         notFound();
@@ -49,7 +57,7 @@ export default async function IngredientDetailPage({
         itemListElement: [
             { "@type": "ListItem", position: 1, name: "홈", item: siteUrl },
             { "@type": "ListItem", position: 2, name: "영양제 위키", item: `${siteUrl}/wiki` },
-            { "@type": "ListItem", position: 3, name: ingredient.name, item: `${siteUrl}/wiki/ingredient/${params.name}` },
+            { "@type": "ListItem", position: 3, name: ingredient.name, item: `${siteUrl}/wiki/ingredient/${name}` },
         ],
     };
 
@@ -57,7 +65,7 @@ export default async function IngredientDetailPage({
         <div className="container py-8 max-w-4xl">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+                dangerouslySetInnerHTML={{ __html: safeJsonStringify(breadcrumbLd) }}
             />
             {/* Breadcrumb */}
             <nav className="text-sm text-[var(--muted)] mb-6">
@@ -165,10 +173,13 @@ export default async function IngredientDetailPage({
                     수 없습니다.
                 </p>
                 <Link
-                    href="/"
+                    href="/nearby"
+                    data-analytics-event="content_to_nearby_click"
+                    data-source-surface="wiki_ingredient"
+                    data-cta-placement="article_bottom"
                     className="inline-block px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors"
                 >
-                    내 주변 약국에서 상담받기
+                    가까운 약국 찾기
                 </Link>
             </section>
         </div>

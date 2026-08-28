@@ -1,5 +1,9 @@
 import { getTursoClient, parseJson } from "@/lib/turso";
 import { cacheDbRead } from "@/lib/db-read-cache";
+import {
+  CONTENT_ITEM_UPDATE_FIELDS,
+  type ContentItemUpdate,
+} from "@/lib/content-update";
 
 export type ContentItem = {
   id: string;
@@ -70,8 +74,8 @@ export async function getPublishedContentByHpid(hpid: string): Promise<ContentIt
     const db = getTursoClient();
     const result = await db.execute({
       sql: `SELECT * FROM content_queue
-            WHERE hpid = ? AND status IN ('published', 'pending')
-            ORDER BY CASE WHEN published_at IS NULL THEN 1 ELSE 0 END, published_at DESC, updated_at DESC
+            WHERE hpid = ? AND status = 'published'
+            ORDER BY published_at DESC, updated_at DESC
             LIMIT 1`,
       args: [hpid],
     });
@@ -157,10 +161,12 @@ async function getPublishedContentSitemapChunkUncached(
 }
 
 // Write operations for admin routes
-export async function updateContentItem(id: string, updates: Partial<ContentItem>): Promise<ContentItem | null> {
+export async function updateContentItem(id: string, updates: ContentItemUpdate): Promise<ContentItem | null> {
   try {
     const db = getTursoClient();
-    const fields = Object.keys(updates);
+    const fields = CONTENT_ITEM_UPDATE_FIELDS.filter((field) =>
+      Object.prototype.hasOwnProperty.call(updates, field),
+    );
     if (!fields.length) return null;
 
     const setClauses = fields.map((f) => `${f} = ?`).join(", ");

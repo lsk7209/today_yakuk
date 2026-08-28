@@ -1,12 +1,7 @@
 name: Generate Pharmacy Content
 
 on:
-  schedule:
-    # 한국 시간 08:00 (UTC 23:00)
-    # Aggressive Mode: Every 3 hours during active time (KST 08:00 ~ 23:00)
-    # UTC: 23, 02, 05, 08, 11, 14
-    - cron: "0 23,2,5,8,11,14 * * *"
-  # Gemini 기반 대량 생성은 중단합니다. 필요 시에만 수동 실행하세요.
+  # Gemini 기반 대량 생성은 중단했습니다. 비용 검토 후 수동으로만 실행합니다.
   workflow_dispatch:
     inputs:
       limit:
@@ -52,8 +47,17 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Generate pharmacy content
-        run: npm run generate:content ${{ github.event.inputs.limit || '10' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          limit="${LIMIT_INPUT:-6}"
+          if ! [[ "$limit" =~ ^[1-9][0-9]*$ ]] || [ "$limit" -gt 50 ]; then
+            echo "::error title=Invalid limit::limit must be an integer between 1 and 50"
+            exit 1
+          fi
+          npm run generate:content -- "$limit"
         env:
+          LIMIT_INPUT: ${{ github.event.inputs.limit || '6' }}
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

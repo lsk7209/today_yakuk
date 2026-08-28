@@ -112,7 +112,7 @@ export default function PharmacyVisitChecklist3() {
     name: "약국 방문 전 헛걸음 방지 3단계 확인",
     description: metaDescription,
     step: [
-      { "@type": "HowToStep", position: 1, name: "영업시간 확인", text: "약국오늘에서 현재 시간 기준 실시간 영업 여부를 확인하세요. 건강보험심사평가원 공공데이터 기반으로 제공됩니다." },
+      { "@type": "HowToStep", position: 1, name: "영업시간 확인", text: "약국오늘에서 등록 영업시간 기준 운영 상태를 확인하세요. 실제 현장 운영은 달라질 수 있으므로 전화 확인이 필요합니다." },
       { "@type": "HowToStep", position: 2, name: "재고 확인", text: "방문 전 전화로 필요한 약 재고가 있는지 확인하세요. 처방전에 적힌 약 이름을 말하고 조제 가능 여부를 물어보면 됩니다." },
       { "@type": "HowToStep", position: 3, name: "처방전 유효기간 확인", text: "처방전은 발행일 포함 3일(당일+2일) 이내에만 유효합니다. 기간이 지났다면 발급 병원에서 재발급을 받아야 합니다." },
     ],
@@ -244,7 +244,7 @@ export default function PharmacyVisitChecklist3() {
           을 이용하면 현재 영업 중인 약국만 필터링해 볼 수 있다.
         </p>
         <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 space-y-2">
-          <p className="text-sm font-semibold text-gray-800">실시간 확인 순서</p>
+          <p className="text-sm font-semibold text-gray-800">방문 전 확인 순서</p>
           <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
             <li>지도 앱 또는 약국오늘에서 &apos;영업 중&apos; 필터 켜기</li>
             <li>종료 예정 시간이 30분 이상 남은 약국 우선 선택</li>

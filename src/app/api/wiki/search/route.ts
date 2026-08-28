@@ -24,16 +24,16 @@ export async function GET(request: NextRequest) {
     let args: (string | number)[];
 
     if (category && category !== "all") {
-      sql = `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements
-             WHERE (name LIKE ? OR manufacturer LIKE ? OR ai_summary LIKE ?)
+      sql = `SELECT id, name, manufacturer, image_url, tags FROM supplements
+             WHERE (name LIKE ? OR manufacturer LIKE ?)
              AND tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value = ?)
              LIMIT ?`;
-      args = [likeQ, likeQ, likeQ, category, limit];
+      args = [likeQ, likeQ, category, limit];
     } else {
-      sql = `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements
-             WHERE name LIKE ? OR manufacturer LIKE ? OR ai_summary LIKE ?
+      sql = `SELECT id, name, manufacturer, image_url, tags FROM supplements
+             WHERE name LIKE ? OR manufacturer LIKE ?
              LIMIT ?`;
-      args = [likeQ, likeQ, likeQ, limit];
+      args = [likeQ, likeQ, limit];
     }
 
     const result = await db.execute({ sql, args });
@@ -42,7 +42,6 @@ export async function GET(request: NextRequest) {
       name: r.name as string,
       manufacturer: r.manufacturer as string | null,
       image_url: r.image_url as string | null,
-      ai_summary: r.ai_summary as string | null,
       tags: parseJson(r.tags, null) as string[] | null,
     }));
 

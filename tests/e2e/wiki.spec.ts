@@ -1,5 +1,14 @@
 import { test, expect } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+    await page.route("**/*", (route) => {
+        const url = new URL(route.request().url());
+        return ["localhost", "127.0.0.1"].includes(url.hostname)
+            ? route.continue()
+            : route.abort();
+    });
+});
+
 test.describe("Wiki Page", () => {
     test("should load wiki page successfully", async ({ page }) => {
         await page.goto("/wiki");
@@ -15,10 +24,10 @@ test.describe("Wiki Page", () => {
         await page.goto("/wiki");
 
         // 카테고리 버튼들 확인
-        await expect(page.getByRole("link", { name: /전체/ })).toBeVisible();
-        await expect(page.getByRole("link", { name: /유산균/ })).toBeVisible();
-        await expect(page.getByRole("link", { name: /비타민C/ })).toBeVisible();
-        await expect(page.getByRole("link", { name: /오메가3/ })).toBeVisible();
+        await expect(page.getByRole("link", { name: "✨ 전체", exact: true })).toBeVisible();
+        await expect(page.getByRole("link", { name: "🦠 유산균", exact: true })).toBeVisible();
+        await expect(page.getByRole("link", { name: "🍊 비타민C", exact: true })).toBeVisible();
+        await expect(page.getByRole("link", { name: "🐟 오메가3", exact: true })).toBeVisible();
     });
 
     test("should filter by category", async ({ page }) => {

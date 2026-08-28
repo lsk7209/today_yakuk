@@ -1,7 +1,11 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getPharmaciesByRegionPaginated } from "@/lib/data/pharmacies";
+import {
+  getCanonicalProvinceSlug,
+  getCitiesByProvince,
+  getPharmaciesByRegionPaginated,
+} from "@/lib/data/pharmacies";
 import { PharmacyListInfinite } from "@/components/pharmacy-list-infinite";
 import { JsonLd, buildBreadcrumbSchema } from "@/components/seo/json-ld";
 import { getSiteUrl } from "@/lib/site-url";
@@ -26,24 +30,36 @@ type SearchParams = {
 
 const PAGE_SIZE = 50;
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const province = decodeURIComponent(params.province);
-  const city = decodeURIComponent(params.city);
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<Params>;
+  searchParams: Promise<SearchParams>;
+}): Promise<Metadata> {
+  const [{ province: rawProvince, city: rawCity }, { page: pageParam }] = await Promise.all([params, searchParams]);
+  const province = decodeURIComponent(rawProvince);
+  const city = decodeURIComponent(rawCity);
+  const canonicalProvince = getCanonicalProvinceSlug(province);
   const cityDisplay = city === "전체" ? "전체 지역" : city;
+  const currentPage = getPageNumber(pageParam);
+  const basePath = `/${encodeURIComponent(canonicalProvince)}/${encodeURIComponent(city)}`;
+  const canonicalPath = currentPage > 1 ? `${basePath}?page=${currentPage}` : basePath;
 
-  const title = `${province} ${cityDisplay} 약국 | 문 연 약국 실시간 찾기`;
-  const description = `${province} ${cityDisplay}의 현재 영업 중인 약국을 실시간으로 확인하세요. 야간·주말·공휴일 운영 약국 필터와 길찾기를 제공합니다.`;
+  const title = `${canonicalProvince} ${cityDisplay} 약국${currentPage > 1 ? ` ${currentPage}페이지` : ""} | 영업시간·전화 찾기`;
+  const description = `${canonicalProvince} ${cityDisplay} 약국의 등록 영업시간과 현재 운영 상태, 전화번호를 확인하세요. 실제 운영과 재고는 방문 전 전화 확인을 권장합니다.`;
 
   return {
     title,
     description,
     alternates: {
-      canonical: `/${encodeURIComponent(province)}/${encodeURIComponent(city)}`,
+      canonical: canonicalPath,
     },
+    robots: currentPage > 1 ? { index: false, follow: true } : { index: true, follow: true },
     openGraph: {
       title,
       description,
-      url: `${siteUrl}/${encodeURIComponent(province)}/${encodeURIComponent(city)}`,
+      url: `${siteUrl}${canonicalPath}`,
       siteName: "약국오늘",
       locale: "ko_KR",
       type: "website",
@@ -60,15 +76,24 @@ export default async function ProvinceCityPage({
   params,
   searchParams,
 }: {
-  params: Params;
-  searchParams: SearchParams;
+  params: Promise<Params>;
+  searchParams: Promise<SearchParams>;
 }) {
-  const province = decodeURIComponent(params.province);
-  const city = decodeURIComponent(params.city);
-  const currentPage = Math.max(1, Number(searchParams.page ?? "1"));
+  const [{ province: rawProvince, city: rawCity }, { page: pageParam }] = await Promise.all([params, searchParams]);
+  const province = decodeURIComponent(rawProvince);
+  const city = decodeURIComponent(rawCity);
+  const currentPage = getPageNumber(pageParam);
+  const canonicalProvince = getCanonicalProvinceSlug(province);
+  if (province !== canonicalProvince) {
+    const query = currentPage > 1 ? `?page=${currentPage}` : "";
+    permanentRedirect(`/${encodeURIComponent(canonicalProvince)}/${encodeURIComponent(city)}${query}`);
+  }
   const offset = (currentPage - 1) * PAGE_SIZE;
 
-  const { items, total } = await getPharmaciesByRegionPaginated(province, city, PAGE_SIZE, offset);
+  const [{ items, total }, cities] = await Promise.all([
+    getPharmaciesByRegionPaginated(canonicalProvince, city, PAGE_SIZE, offset),
+    city === "전체" ? getCitiesByProvince(canonicalProvince) : Promise.resolve([]),
+  ]);
 
   if (!items.length) {
     return notFound();
@@ -79,8 +104,8 @@ export default async function ProvinceCityPage({
   // BreadcrumbList JSON-LD
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: "홈", url: siteUrl },
-    { name: province, url: `${siteUrl}/${encodeURIComponent(province)}/전체` },
-    ...(city !== "전체" ? [{ name: city, url: `${siteUrl}/${encodeURIComponent(province)}/${encodeURIComponent(city)}` }] : []),
+    { name: canonicalProvince, url: `${siteUrl}/${encodeURIComponent(canonicalProvince)}/${encodeURIComponent("전체")}` },
+    ...(city !== "전체" ? [{ name: city, url: `${siteUrl}/${encodeURIComponent(canonicalProvince)}/${encodeURIComponent(city)}` }] : []),
   ]);
 
   return (
@@ -88,22 +113,50 @@ export default async function ProvinceCityPage({
       <JsonLd data={breadcrumbSchema} id="breadcrumb-schema" />
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">
-          {province} · {city === "전체" ? "모든 지역" : city}
+          {canonicalProvince} · {city === "전체" ? "모든 지역" : city}
         </p>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <h1 className="text-3xl font-bold">
-            {province} {city === "전체" ? "" : `${city} `}영업 중인 약국 찾기
+            {canonicalProvince} {city === "전체" ? "" : `${city} `}약국 영업시간·전화 찾기
           </h1>
           <p className="text-xs text-[var(--muted)]">
-            현재 시간 기준 상태 및 심야·공휴일 필터 지원
+            등록 운영시간 기준 상태 · 방문 전 전화 확인 권장
           </p>
         </div>
       </header>
 
-      <Pagination currentPage={currentPage} totalPages={totalPages} province={province} city={city} />
+      <p className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-3 text-sm text-emerald-900">
+        목록에서 전화로 실제 영업 여부와 재고를 확인한 뒤 길찾기를 이용하면 헛걸음을 줄일 수 있습니다.
+      </p>
+
+      {cities.length > 0 ? (
+        <nav className="rounded-2xl border border-gray-200 bg-white p-4" aria-label={`${canonicalProvince} 시군구 바로가기`}>
+          <h2 className="text-base font-black text-gray-900">{canonicalProvince} 시·군·구별 약국</h2>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {cities.map(({ city: cityName, pharmacyCount }) => (
+              <Link
+                key={cityName}
+                href={`/${encodeURIComponent(canonicalProvince)}/${encodeURIComponent(cityName)}`}
+                className="inline-flex min-h-11 items-center rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-bold text-gray-800 hover:border-brand-300 hover:bg-brand-50"
+              >
+                {cityName} <span className="ml-1 text-xs font-medium text-gray-500">{pharmacyCount}</span>
+              </Link>
+            ))}
+          </div>
+        </nav>
+      ) : city !== "전체" ? (
+        <Link
+          href={`/${encodeURIComponent(canonicalProvince)}/${encodeURIComponent("전체")}`}
+          className="inline-flex min-h-11 items-center text-sm font-black text-brand-700 hover:text-brand-800"
+        >
+          {canonicalProvince} 전체 약국 보기
+        </Link>
+      ) : null}
+
+      <Pagination currentPage={currentPage} totalPages={totalPages} province={canonicalProvince} city={city} />
 
       <PharmacyListInfinite
-        province={province}
+        province={canonicalProvince}
         city={city === "전체" ? undefined : city}
         initialItems={items}
         total={total}
@@ -111,7 +164,7 @@ export default async function ProvinceCityPage({
         initialOffset={offset}
       />
 
-      <Pagination currentPage={currentPage} totalPages={totalPages} province={province} city={city} />
+      <Pagination currentPage={currentPage} totalPages={totalPages} province={canonicalProvince} city={city} />
 
       {/* 가이드 링크 — 내부 링크 강화 + 이탈률 감소 */}
       <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-3">
@@ -131,6 +184,11 @@ export default async function ProvinceCityPage({
       </section>
     </div>
   );
+}
+
+function getPageNumber(pageParam?: string) {
+  const value = Number.parseInt(pageParam || "1", 10);
+  return Number.isFinite(value) && value >= 1 ? value : 1;
 }
 
 function Pagination({
@@ -156,7 +214,7 @@ function Pagination({
     <nav className="flex items-center gap-2 text-sm text-[var(--muted)]" aria-label="페이지네이션">
       <Link
         href={`${baseHref}${currentPage > 1 ? `?page=${currentPage - 1}` : ""}`}
-        className={`px-3 py-1 rounded-full border ${currentPage === 1 ? "pointer-events-none opacity-50" : "hover:border-brand-200"}`}
+        className={`inline-flex min-h-11 items-center px-3 py-2 rounded-full border ${currentPage === 1 ? "pointer-events-none opacity-50" : "hover:border-brand-200"}`}
       >
         이전
       </Link>
@@ -164,7 +222,7 @@ function Pagination({
         <Link
           key={p}
           href={`${baseHref}${p === 1 ? "" : `?page=${p}`}`}
-          className={`px-3 py-1 rounded-full border ${p === currentPage ? "bg-brand-600 text-white border-brand-600" : "hover:border-brand-200"
+          className={`inline-flex min-h-11 min-w-11 items-center justify-center px-3 py-2 rounded-full border ${p === currentPage ? "bg-brand-600 text-white border-brand-600" : "hover:border-brand-200"
             }`}
         >
           {p}
@@ -172,7 +230,7 @@ function Pagination({
       ))}
       <Link
         href={`${baseHref}${currentPage < totalPages ? `?page=${currentPage + 1}` : ""}`}
-        className={`px-3 py-1 rounded-full border ${currentPage === totalPages ? "pointer-events-none opacity-50" : "hover:border-brand-200"}`}
+        className={`inline-flex min-h-11 items-center px-3 py-2 rounded-full border ${currentPage === totalPages ? "pointer-events-none opacity-50" : "hover:border-brand-200"}`}
       >
         다음
       </Link>

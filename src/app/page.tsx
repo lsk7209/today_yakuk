@@ -10,6 +10,7 @@ import {
   ArrowRight,
   SlidersHorizontal,
   Map as MapIcon,
+  Phone,
 } from "lucide-react";
 
 import type { PharmacyCardProps } from "@/components/pharmacy-card";
@@ -18,6 +19,8 @@ import { HomeTrustSections, HOME_FAQ_ITEMS } from "@/components/home/home-trust-
 import RecentBlogPosts from "@/components/home/recent-blog-posts";
 import DesktopSidebar from "@/components/home/desktop-sidebar";
 import { getOperatingStatus } from "@/lib/hours";
+import { bucketResultCount, trackAnalyticsEvent } from "@/lib/client-analytics";
+import { hasValidPhone } from "@/lib/pharmacy-indexability";
 
 const provinces = [
   "서울",
@@ -53,6 +56,10 @@ export default function Home() {
   const [sortMode, setSortMode] = useState<"distance" | "closing">("distance");
 
   async function fetchNearby() {
+    trackAnalyticsEvent("pharmacy_search_submitted", {
+      search_mode: "gps",
+      source_surface: "home",
+    });
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
       setGeoAvailable(false);
       setStatus("error");
@@ -78,6 +85,12 @@ export default function Home() {
           setItems(list);
           setStatus("success");
           setMessage(list.length ? null : `반경 ${radiusKm}km 내 약국을 찾지 못했습니다.`);
+          trackAnalyticsEvent("pharmacy_results_loaded", {
+            search_mode: "gps",
+            source_surface: "home",
+            result_count_bucket: bucketResultCount(list.length),
+            radius_km: radiusKm,
+          });
         } catch {
           setStatus("error");
           setMessage("데이터를 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.");
@@ -96,6 +109,10 @@ export default function Home() {
   }
 
   async function searchByKeyword(term: string) {
+    trackAnalyticsEvent("pharmacy_search_submitted", {
+      search_mode: "keyword",
+      source_surface: "home",
+    });
     setStatus("loading");
     setMessage("검색어로 약국을 찾고 있습니다...");
     try {
@@ -110,6 +127,11 @@ export default function Home() {
       setItems(list);
       setStatus("success");
       setMessage(list.length ? null : `"${term}" 검색 결과가 없습니다. 현재 위치로 다시 찾아보세요.`);
+      trackAnalyticsEvent("pharmacy_results_loaded", {
+        search_mode: "keyword",
+        source_surface: "home",
+        result_count_bucket: bucketResultCount(list.length),
+      });
     } catch {
       setStatus("error");
       setMessage("검색 중 오류가 발생했습니다. 현재 위치로 다시 시도해 주세요.");
@@ -181,8 +203,8 @@ export default function Home() {
               </span> 찾기
             </h1>
             <p className="text-lg sm:text-xl text-slate-600 max-w-2xl leading-relaxed">
-              위치 기반 실시간 영업 정보를 통해 가장 가까운 약국을 찾아드립니다. <br className="hidden sm:block" />
-              늦은 밤, 공휴일에도 안심하고 방문하세요.
+              등록된 영업시간을 기준으로 가까운 약국과 현재 운영 상태를 확인하세요. <br className="hidden sm:block" />
+              실제 운영과 재고는 달라질 수 있으니 방문 전 전화 확인을 권장합니다.
             </p>
           </div>
 
@@ -196,6 +218,7 @@ export default function Home() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="동 이름 또는 건물명으로 찾기"
+                    aria-label="동 이름 또는 건물명 검색"
                     className="flex-1 bg-transparent outline-none text-lg font-bold text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
@@ -210,13 +233,13 @@ export default function Home() {
                     disabled={!geoAvailable}
                   >
                     <LocateFixed className="h-4 w-4" />
-                    GPS 연결
+                    현재 위치로 찾기
                   </button>
                   <button
                     type="submit"
                     className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-700 text-white px-8 py-4 text-sm font-black hover:bg-brand-800 transition-all shadow-lg hover:shadow-brand-700/30 transform active:scale-95"
                   >
-                    검색
+                    지역·약국명 검색
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </div>
@@ -227,7 +250,7 @@ export default function Home() {
           {status === "idle" ? (
             <div className="mt-4 flex flex-col gap-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
               <p>
-                GPS 연결을 누르면 브라우저 위치 권한 창이 열리고, 현재 위치 기준으로 가까운 약국을 찾습니다.
+                현재 위치로 찾기를 누르면 위치 권한 창이 열립니다. 위치는 검색에만 사용하고 저장하지 않습니다.
               </p>
               <button
                 type="button"
@@ -236,7 +259,7 @@ export default function Home() {
                 disabled={!geoAvailable}
               >
                 <LocateFixed className="h-4 w-4" />
-                내 주변 약국 보기
+                현재 위치로 바로 찾기
               </button>
             </div>
           ) : null}
@@ -275,7 +298,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setSortMode("distance")}
-                className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-bold border ${sortMode === "distance"
+                className={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-bold border ${sortMode === "distance"
                   ? "border-emerald-200 bg-emerald-50 text-emerald-800"
                   : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
                   }`}
@@ -286,7 +309,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setSortMode("closing")}
-                className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-bold border ${sortMode === "closing"
+                className={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-bold border ${sortMode === "closing"
                   ? "border-amber-200 bg-amber-50 text-amber-800"
                   : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
                   }`}
@@ -346,14 +369,19 @@ export default function Home() {
 
           {sorted.length > 0 ? (
             <div className="space-y-3">
-              {sorted.slice(0, 8).map((p) => {
+              {sorted.slice(0, 8).map((p, index) => {
                 const s = getOperatingStatus(p.operating_hours);
+                const callablePhone = hasValidPhone(p.tel) ? p.tel : null;
                 return (
                   <div
                     key={p.hpid}
                     className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm hover:border-brand-200 hover:shadow-md transition-all"
+                    data-pharmacy-id={p.hpid}
+                    data-source-surface="home_results"
+                    data-opening-status={s.label}
+                    data-result-rank={index + 1}
                   >
-                    <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span
@@ -384,8 +412,27 @@ export default function Home() {
                             ? `${Math.round(p.distanceKm * 1000)}m`
                             : "—"}
                         </p>
-                        <ArrowRight className="h-4 w-4 text-gray-300 mt-2" />
                       </div>
+                    </div>
+                    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3">
+                      {callablePhone ? (
+                        <a
+                          href={`tel:${callablePhone}`}
+                          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-700 px-5 py-2 text-sm font-black text-white hover:bg-brand-800"
+                          aria-label={`${p.name}에 전화하기`}
+                        >
+                          <Phone className="h-4 w-4" />
+                          전화 확인
+                        </a>
+                      ) : null}
+                      <Link
+                        href={`/pharmacy/${p.hpid}`}
+                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2 text-sm font-black text-gray-800 hover:border-brand-300"
+                      >
+                        상세·길찾기
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                      <p className="basis-full text-xs text-slate-500">영업 여부와 재고는 방문 전 전화로 확인해 주세요.</p>
                     </div>
                   </div>
                 );
@@ -428,7 +475,7 @@ export default function Home() {
         className="fixed bottom-7 right-5 sm:right-8 z-40 inline-flex items-center gap-2 rounded-full bg-gray-900 text-white px-5 py-3 shadow-2xl hover:shadow-3xl hover:bg-black transition-colors"
       >
         <MapIcon className="h-5 w-5" />
-        지도 보기
+        내 주변 약국 찾기
       </Link>
     </div>
   );

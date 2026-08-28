@@ -8,7 +8,7 @@ import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 const metaTitle =
   "어린이 해열제 올바르게 고르는 법: 아세트아미노펜 vs 이부프로펜";
 const metaDescription =
-  "아세트아미노펜과 이부프로펜의 적용 나이·체중별 용량·복용 간격·금기 사항을 식약처 기준으로 비교 정리했습니다. 아이 나이에 맞는 해열제 선택 기준과 올바른 복용법을 확인하세요.";
+  "아세트아미노펜과 이부프로펜의 적용 나이·복용 간격·주의 사항을 식약처 공개 자료를 참고해 비교했습니다. 실제 복용 전에는 제품 허가사항과 의사·약사의 안내를 확인하세요.";
 const slug = "/blog/kids-fever-medicine-comparison";
 
 export const metadata: Metadata = {
@@ -68,7 +68,7 @@ const comparisonRows = [
 const faqs = [
   {
     q: "아세트아미노펜과 이부프로펜을 교대로 복용해도 되나요?",
-    a: "식약처는 두 성분의 임의 교대 복용은 안전성이 확립되지 않았다고 안내합니다. 교대 복용 여부는 반드시 소아과 의사 또는 약사와 상담한 후 결정해야 합니다.",
+    a: "한 번에는 한 가지 해열제만 복용해야 합니다. 먼저 복용한 뒤에도 고열이 지속되어 다른 계열의 해열제를 고려한다면, 의사의 처방과 복용 간격 안내를 따라야 합니다.",
   },
   {
     q: "생후 3개월 미만 영아는 어떤 해열제를 사용해야 하나요?",
@@ -116,19 +116,6 @@ export default function KidsFeverMedicineComparisonPage() {
     ],
   };
 
-  const howToJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    name: "소아 해열제 올바른 복용 5단계",
-    description: metaDescription,
-    step: [
-      { "@type": "HowToStep", position: 1, name: "체온 측정", text: "38도 이상이면 해열제 투여를 고려하고, 38.5도 이상이면 적극적으로 해열제를 사용하세요." },
-      { "@type": "HowToStep", position: 2, name: "해열제 성분 선택", text: "아세트아미노펜(타이레놀)과 이부프로펜(부루펜) 중 아이의 나이·체중·알러지를 고려해 선택하세요." },
-      { "@type": "HowToStep", position: 3, name: "적정 용량 확인", text: "해열제 용량은 체중 기준으로 계산합니다. 아세트아미노펜은 체중 kg당 10~15mg, 이부프로펜은 5~10mg이 기준입니다." },
-      { "@type": "HowToStep", position: 4, name: "교차복용 여부 판단", text: "38.5도 이상 고열이 지속되면 4~6시간 간격으로 두 성분을 교차 투여할 수 있습니다. 반드시 성분을 구분하여 복용하세요." },
-      { "@type": "HowToStep", position: 5, name: "48시간 모니터링", text: "48시간 이상 열이 지속되거나 증상이 악화되면 소아과를 방문하세요." },
-    ],
-  };
   return (
     <div className="mx-auto max-w-3xl space-y-12 px-4 py-10 sm:py-14">
       {/* ── 헤더 ── */}
@@ -145,6 +132,9 @@ export default function KidsFeverMedicineComparisonPage() {
         <div className="flex flex-wrap gap-2 pt-1">
           <Link
             href="/nearby"
+            data-analytics-event="content_to_nearby_click"
+            data-source-surface="blog_article"
+            data-cta-placement="article_header"
             className="inline-flex items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-brand-700"
           >
             내 주변 약국 찾기
@@ -447,21 +437,19 @@ export default function KidsFeverMedicineComparisonPage() {
             성분명 확인이 중요한 이유
           </p>
           <p className="text-sm leading-relaxed text-gray-600">
-            건강보험심사평가원 통계에 따르면 소아(0~9세) 해열제 관련 처방은
-            연간 약 300만 건 수준이며, 아세트아미노펜 계열이 60% 이상을
-            차지한다. 시중에 유통되는 어린이 해열제의 상당수가 아세트아미노펜
-            성분이므로, 브랜드명이 다른 제품을 동시에 구비했다면 성분명을 반드시
-            확인해 중복 투여를 예방해야 한다.
+            감기약이나 서로 다른 브랜드의 제품에도 같은 해열 성분이 들어 있을 수
+            있습니다. 복용 전에 제품의 성분명과 1일 최대 투여량을 확인하고, 같은
+            성분의 중복 복용을 피해야 합니다.
           </p>
           <p className="text-xs text-gray-500 mt-2">
-            출처:{" "}
+            참고:{" "}
             <a
-              href="https://www.hira.or.kr"
+              href="https://www.mfds.go.kr/brd/m_61/view.do?seq=54388"
               target="_blank"
               rel="noopener noreferrer"
               className="underline"
             >
-              건강보험심사평가원 (hira.or.kr)
+              식품의약품안전처 어린이 해열제 복용 안내
             </a>
           </p>
         </div>
@@ -561,10 +549,6 @@ export default function KidsFeverMedicineComparisonPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
       <script
         type="application/ld+json"

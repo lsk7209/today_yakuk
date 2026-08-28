@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-08-27T23:32:16.203Z",
+  "observedAtKst": "2026-08-28T08:32:16.203+09:00",
+  "readOnly": true,
+  "lastScheduledPost": {
+    "title": "8월 무더위 건강 적신호! 냉방병, 식중독, 벌레 물림, 약국에서 똑똑하게 대비하세요!",
+    "publishAtUtc": "2026-09-21T12:00:00.000Z",
+    "publishAtKst": "2026-09-21T21:00:00.000+09:00",
+    "generatedAtUtc": "2026-08-27T20:10:32.964Z",
+    "generatedAtKst": "2026-08-28T05:10:32.964+09:00",
+    "statusAtInsert": "pending",
+    "currentStatus": "unverified_without_production_db_select",
+    "workflowRunId": 33111937934,
+    "workflowRunUrl": "https://github.com/lsk7209/today_yakuk/actions/runs/33111937934",
+    "evidence": "The Generate Blog Post log printed the completed title, publish_at value, and successful reservation message. No later Generate Blog Post run existed at observation time."
+  },
+  "previousScheduledPost": {
+    "publishAtUtc": "2026-09-21T06:00:00.000Z",
+    "publishAtKst": "2026-09-21T15:00:00.000+09:00",
+    "workflowRunId": 33034865173
+  },
+  "latestPublishRun": {
+    "workflowRunId": 33122828222,
+    "completedAtUtc": "2026-08-27T22:31:49.437Z",
+    "publishedItems": 1,
+    "publishedSlug": "jangmachul-gompangi-jilhan-yebang-yakguk",
+    "relationship": "This run published an already-due row and did not make the September 21 row eligible."
+  },
+  "nextCandidateSlot": {
+    "publishAtUtc": "2026-09-22T00:00:00.000Z",
+    "publishAtKst": "2026-09-22T09:00:00.000+09:00",
+    "reserved": false,
+    "meaning": "This is the next slot returned by the repository scheduler after the observed last pending time. It is not reserved and can be displaced by another remote generator run."
+  },
+  "duplicateCoverage": {
+    "observedAt": "2026-08-27T23:32:16.203Z",
+    "command": "npm run audit:content-duplicates -- --slug=supplement-additives-label-guide --title=영양제 첨가물 표시 읽는 법: 원료·기능성분과 구분하기 --page-size=100 --delay-ms=0",
+    "localStaticRouteFiles": 24,
+    "localCampaignEntries": 306,
+    "publicSitemapEntries": 712,
+    "renderedPublishedEntries": 713,
+    "listingPagesFetched": 8,
+    "slugMatches": 0,
+    "titleMatches": 0
+  },
+  "contentBrief": {
+    "title": "영양제 첨가물 표시 읽는 법: 원료·기능성분과 구분하기",
+    "slug": "supplement-additives-label-guide",
+    "reader": "건강기능식품 라벨이나 약국오늘 제품 상세의 첨가물 신호를 확인하는 사람",
+    "readerProblem": "지정 키워드 미확인이나 자료 없음 표시를 첨가물 부재 또는 안전성 판정으로 오해하기 쉽다.",
+    "searchIntent": "영양제 첨가물 확인, 영양제 무첨가 뜻, 영양제 부원료 구분에 대한 정보형·문제해결형 의도",
+    "articlePurpose": "기능정보, 원료명, 영양정보, 첨가물 관련 표시와 사이트 키워드 신호의 차이를 설명한다.",
+    "desiredAction": "제품 라벨과 공식 제품 정보를 대조하고 필요한 경우 가까운 약국에 상담 가능 여부를 문의한다.",
+    "informationGain": "사이트의 세 가지 첨가물 상태가 원문 키워드 신호일 뿐 부재·안전성·함량 판정이 아님을 화면과 같은 용어로 설명한다.",
+    "internalLinks": [
+      "/blog/supplement-label-reading-guide",
+      "/wiki",
+      "/guide/call-scripts",
+      "/nearby"
+    ],
+    "forbiddenClaims": [
+      "지정 키워드 미확인을 특정 첨가물의 부재나 제품 안전성으로 단정하지 않는다.",
+      "첨가물의 유해성, 효능, 흡수율 또는 건강상 우월성을 일반화하지 않는다.",
+      "제품 추천, 개인별 섭취량, 병용 또는 중단 지시를 하지 않는다.",
+      "특정 약국의 재고, 판매, 상담 또는 영업을 보장하지 않는다."
+    ],
+    "indexing": "noindex,nofollow",
+    "publicationState": "local_draft",
+    "writing": "direct_codex_session_only",
+    "qualityScore": {
+      "searchIntentMatch": 20,
+      "originalAngle": 15,
+      "factualAccuracy": 15,
+      "structureReadability": 14,
+      "seoGeoAeoCompleteness": 14,
+      "linksAndCta": 10,
+      "voiceAndCodexOnlyCompliance": 10,
+      "total": 98
+    }
+  },
+  "officialSources": [
+    {
+      "name": "식품안전나라 건강기능식품 검색",
+      "url": "https://www.foodsafetykorea.go.kr/portal/healthyfoodlife/searchHomeHF.do"
+    },
+    {
+      "name": "국가법령정보센터 건강기능식품의 표시기준",
+      "url": "https://law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000263562&chrClsCd=010201"
+    },
+    {
+      "name": "식품의약품안전처 식품첨가물의 기준 및 규격 고시전문",
+      "url": "https://impfood.mfds.go.kr/CFBDD02F01"
+    }
+  ],
+  "automationDecision": {
+    "localWorkflowChange": "Remove the twice-daily schedule from generate-blog.yml while retaining manual dispatch.",
+    "existingPendingQueue": "unchanged",
+    "publishWorkflow": "unchanged_by_this_follow_up",
+    "remoteEffect": "none_until_a_separately_authorized_git_push"
+  },
+  "boundaries": [
+    "No production Turso credential was available, so the current status and published_at values were not queried directly.",
+    "GitHub Actions logs prove the reservation event, not the absence of a later administrator-side database edit.",
+    "No workflow was dispatched and no database, publication, commit, push, deployment, or Vercel mutation occurred."
+  ]
+}

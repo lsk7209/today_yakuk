@@ -2,21 +2,33 @@ import { updateContentItem, deleteContentItem } from "@/lib/data/content";
 import { NextResponse } from "next/server";
 import { submitToIndexNow } from "@/lib/naver-indexnow";
 import { getSiteUrl } from "@/lib/site-url";
+import { contentItemUpdateSchema } from "@/lib/content-update";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const body = await request.json();
-    const { id } = params;
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+    const { id } = await params;
 
-    if (body.status && !["pending", "review", "published", "failed"].includes(body.status)) {
-      return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+    const parsed = contentItemUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid update fields", details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      );
     }
 
-    const updatedData = await updateContentItem(id, body);
-    if (!updatedData) throw new Error("Item not found");
+    const updatedData = await updateContentItem(id, parsed.data);
+    if (!updatedData) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
 
     if (updatedData.status === "published") {
       const siteUrl = getSiteUrl();
@@ -35,10 +47,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const deletedData = await deleteContentItem(id);
 
     if (deletedData?.status === "published") {

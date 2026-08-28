@@ -10,8 +10,12 @@
 
 import dotenv from "dotenv";
 import { getTursoClient } from "../src/lib/turso";
-import { analyzeProduct, createMixedSummary } from "./lib/nutrition-parser";
+import { analyzeProduct } from "./lib/nutrition-parser";
 import { detectAdditives } from "./lib/additive-keywords";
+import {
+  getEnrichmentOffset,
+  persistSupplementEnrichment,
+} from "./lib/supplement-enrichment";
 
 dotenv.config({ path: ".env.local" });
 
@@ -19,7 +23,14 @@ const FOOD_SAFETY_API_KEY = process.env.FOOD_SAFETY_API_KEY!;
 
 async function autoEnrichSupplements() {
   const limit = parseInt(process.argv[2] || "100", 10);
-  console.log(`🚀 Starting enrichment (Limit: ${limit})...\n`);
+  const defaultCursor = Math.floor(Date.now() / (3 * 60 * 60 * 1000));
+  const cursor = parseInt(process.argv[3] || String(defaultCursor), 10);
+  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 500) {
+    throw new Error("limit must be an integer between 1 and 500");
+  }
+  if (!Number.isSafeInteger(cursor) || cursor < 0) {
+    throw new Error("cursor must be a non-negative integer");
+  }
 
   if (!FOOD_SAFETY_API_KEY) {
     console.error("❌ FOOD_SAFETY_API_KEY 환경변수가 없습니다.");
@@ -28,12 +39,22 @@ async function autoEnrichSupplements() {
 
   const db = getTursoClient();
 
+  const pendingResult = await db.execute(`SELECT COUNT(*) AS cnt FROM supplements
+          WHERE (nutrition_facts IS NULL OR nutrition_facts = '[]' OR nutrition_facts = 'null')
+          AND product_report_no IS NOT NULL AND product_report_no != ''`);
+  const pendingCount = Number(pendingResult.rows[0]?.cnt ?? 0);
+  const offset = getEnrichmentOffset(pendingCount, limit, cursor);
+  console.log(
+    `🚀 Starting enrichment (Pending: ${pendingCount}, Limit: ${limit}, Offset: ${offset})...\n`,
+  );
+
   const result = await db.execute({
     sql: `SELECT id, name, product_report_no FROM supplements
           WHERE (nutrition_facts IS NULL OR nutrition_facts = '[]' OR nutrition_facts = 'null')
           AND product_report_no IS NOT NULL AND product_report_no != ''
-          LIMIT ?`,
-    args: [limit],
+          ORDER BY id
+          LIMIT ? OFFSET ?`,
+    args: [limit, offset],
   });
 
   if (!result.rows.length) {
@@ -54,10 +75,13 @@ async function autoEnrichSupplements() {
     console.log(`Processing: ${name} (${product_report_no})...`);
 
     const SERVICE_ID = "C003";
-    const url = `http://openapi.foodsafetykorea.go.kr/api/${FOOD_SAFETY_API_KEY}/${SERVICE_ID}/json/1/1/PRDLST_REPORT_NO=${product_report_no}`;
+    const url = `https://openapi.foodsafetykorea.go.kr/api/${FOOD_SAFETY_API_KEY}/${SERVICE_ID}/json/1/1/PRDLST_REPORT_NO=${product_report_no}`;
 
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HFF API request failed (${response.status} ${response.statusText})`);
+      }
       const apiData = await response.json();
       const rawItem = apiData[SERVICE_ID]?.row?.[0];
 
@@ -72,17 +96,18 @@ async function autoEnrichSupplements() {
 
       const analysis = analyzeProduct(name, rawMaterials, nutritionStr);
       const additives = detectAdditives(rawMaterials);
-      const mixedSummary = createMixedSummary(analysis);
+      const enrichmentResult = await persistSupplementEnrichment(
+        { id, analysis, additives },
+        (statement) => db.execute(statement),
+      );
 
-      await db.execute({
-        sql: `UPDATE supplements SET nutrition_facts = ?, ai_summary = ?, additives = ? WHERE id = ?`,
-        args: [
-          JSON.stringify(analysis.nutrition_facts),
-          mixedSummary,
-          JSON.stringify(additives),
-          id,
-        ],
-      });
+      if (enrichmentResult === "no_data") {
+        console.warn(
+          `  ⚠️ No structured nutrition facts for ${name}; leaving the database row unchanged.`,
+        );
+        noDataCount++;
+        continue;
+      }
 
       console.log(`  ✅ ${name} — ${analysis.nutrition_facts.length} nutrients`);
       successCount++;
@@ -99,6 +124,12 @@ async function autoEnrichSupplements() {
   console.log(`  Success:  ${successCount}`);
   console.log(`  No data:  ${noDataCount}`);
   console.log(`  Errors:   ${failCount}`);
+  if (failCount > 0) {
+    throw new Error(`Supplement enrichment incomplete: ${failCount} item(s) failed`);
+  }
 }
 
-autoEnrichSupplements().catch(console.error);
+autoEnrichSupplements().catch((error) => {
+  console.error("Fatal enrichment error:", error);
+  process.exitCode = 1;
+});

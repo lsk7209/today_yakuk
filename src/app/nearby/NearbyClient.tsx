@@ -7,6 +7,7 @@ import { PharmacyCard } from "@/components/pharmacy-card";
 
 import { getOperatingStatus } from "@/lib/hours";
 import type { PharmacyCardProps } from "@/components/pharmacy-card";
+import { bucketResultCount, trackAnalyticsEvent } from "@/lib/client-analytics";
 
 type NearbyPharmacy = PharmacyCardProps["pharmacy"] & { distanceKm?: number };
 
@@ -28,6 +29,10 @@ export default function NearbyPage() {
 
   async function fetchNearby(targetRadiusKm = radiusKm) {
     setHasRequestedLocation(true);
+    trackAnalyticsEvent("pharmacy_search_submitted", {
+      search_mode: "gps",
+      source_surface: "nearby",
+    });
 
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
       setGeoAvailable(false);
@@ -55,6 +60,12 @@ export default function NearbyPage() {
           setMessage(
             data.items.length ? null : `반경 ${targetRadiusKm}km 내 영업 약국이 없습니다.`,
           );
+          trackAnalyticsEvent("pharmacy_results_loaded", {
+            search_mode: "gps",
+            source_surface: "nearby",
+            result_count_bucket: bucketResultCount(data.items.length),
+            radius_km: targetRadiusKm,
+          });
         } catch {
           setStatus("error");
           setMessage("데이터를 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.");
@@ -118,7 +129,7 @@ export default function NearbyPage() {
                   void fetchNearby(r);
                 }
               }}
-              className={`rounded-full px-3 py-1 font-semibold border ${radiusKm === r
+              className={`min-h-11 rounded-full px-4 py-2 font-semibold border ${radiusKm === r
                 ? "bg-brand-600 text-white border-brand-600"
                 : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
                 }`}
@@ -129,7 +140,7 @@ export default function NearbyPage() {
           <span className="mx-2 h-4 w-px bg-[var(--border)]" />
           <button
             onClick={() => setSortMode("distance")}
-            className={`rounded-full px-3 py-1 font-semibold border ${sortMode === "distance"
+            className={`min-h-11 rounded-full px-4 py-2 font-semibold border ${sortMode === "distance"
               ? "bg-emerald-50 text-emerald-800 border-emerald-200"
               : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
               }`}
@@ -138,7 +149,7 @@ export default function NearbyPage() {
           </button>
           <button
             onClick={() => setSortMode("closing")}
-            className={`rounded-full px-3 py-1 font-semibold border ${sortMode === "closing"
+            className={`min-h-11 rounded-full px-4 py-2 font-semibold border ${sortMode === "closing"
               ? "bg-amber-50 text-amber-800 border-amber-200"
               : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
               }`}
@@ -172,7 +183,7 @@ export default function NearbyPage() {
               disabled={!geoAvailable}
             >
               <LocateFixed className="h-4 w-4" />
-              GPS 연결하기
+              현재 위치로 약국 찾기
             </button>
           </div>
         </section>
@@ -220,12 +231,17 @@ export default function NearbyPage() {
             </span>
           </div>
           <div className="space-y-3">
-            {topThree.map((item) => (
+            {topThree.map((item, index) => (
               <div
                 key={item.hpid}
                 className="rounded-2xl border border-brand-100 bg-emerald-50/60 p-4 shadow-sm hover:shadow-md transition"
               >
-                <PharmacyCard pharmacy={item} distanceKm={item.distanceKm} />
+                <PharmacyCard
+                  pharmacy={item}
+                  distanceKm={item.distanceKm}
+                  sourceSurface="nearby_results"
+                  resultRank={index + 1}
+                />
               </div>
             ))}
           </div>
@@ -234,9 +250,14 @@ export default function NearbyPage() {
 
       {listForAds.length > 0 ? (
         <div className="space-y-4">
-          {listForAds.map((item) => (
+          {listForAds.map((item, index) => (
             <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
-              <PharmacyCard pharmacy={item} distanceKm={item.distanceKm} />
+              <PharmacyCard
+                pharmacy={item}
+                distanceKm={item.distanceKm}
+                sourceSurface="nearby_results"
+                resultRank={topThree.length ? index + 4 : index + 1}
+              />
             </div>
           ))}
         </div>

@@ -6,6 +6,7 @@ const siteUrl = getSiteUrl();
 // 봇이 쿼리파라미터 조합(?q=, ?page= 등)과 API를 무한 크롤하면
 // Turso reads가 폭주하므로 차단 (정적 콘텐츠 경로는 그대로 허용)
 const CRAWL_BLOCK = ["/admin", "/api/", "/*?"];
+const CRAWL_ALLOW = ["/", "/*?page=", "/wiki?category="];
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -25,16 +26,15 @@ export default function robots(): MetadataRoute.Robots {
           "Google-Extended",
           "anthropic-ai",
         ],
-        allow: "/",
+        allow: CRAWL_ALLOW,
         disallow: CRAWL_BLOCK,
       },
       {
         userAgent: "*",
-        allow: "/",
+        allow: CRAWL_ALLOW,
         disallow: CRAWL_BLOCK,
       },
     ],
     sitemap: [`${siteUrl}/sitemap.xml`],
-    host: siteUrl,
   };
 }

@@ -20,7 +20,8 @@ import {
 } from "@/lib/site-config";
 
 const siteUrl = getSiteUrl();
-const adsenseId = getAdsenseClientId();
+const isProductionRuntime = process.env.NODE_ENV === "production";
+const adsenseId = isProductionRuntime ? getAdsenseClientId() : "";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,7 +38,7 @@ const geistMono = localFont({
 
 const googleVerifications = getGoogleSiteVerifications();
 const naverVerification = getNaverSiteVerification();
-const gaId = getGoogleAnalyticsMeasurementId();
+const gaId = isProductionRuntime ? getGoogleAnalyticsMeasurementId() : "";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
   keywords: [
     SITE_NAME,
     "근처약국",
-    "실시간 약국",
+    "현재 영업 약국",
     "영업 약국 찾기",
     "야간 약국",
     "주말 약국",
@@ -61,7 +62,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: `${SITE_NAME} | ${SITE_TAGLINE}`,
-    description: "지금 문 연 약국을 빠르게 찾고, 영업 시간과 위치를 한 번에 확인하세요.",
+    description: "등록 영업시간 기준으로 문 연 약국을 찾고 전화와 길찾기를 한 번에 확인하세요.",
     url: siteUrl,
     siteName: SITE_NAME,
     locale: "ko_KR",
@@ -109,14 +110,13 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://www.google-analytics.com" />
-        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
-        <link
-          rel="preconnect"
-          href="https://cdn.jsdelivr.net"
-          crossOrigin="anonymous"
-        />
+        {isProductionRuntime ? (
+          <>
+            <link rel="preconnect" href="https://www.googletagmanager.com" />
+            <link rel="preconnect" href="https://www.google-analytics.com" />
+            <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+          </>
+        ) : null}
         {adsenseId ? (
           <script
             id="google-adsense"
@@ -145,14 +145,13 @@ export default function RootLayout({
             </Script>
           </>
         ) : null}
-        {/* WebSite Schema with SearchAction for sitelinks searchbox */}
+        {/* WebSite identity schema. SearchAction is intentionally omitted because this site has no matching server-side search URL. */}
         <JsonLd
           id="website-schema"
           data={buildWebSiteSchema({
             name: SITE_NAME,
             url: siteUrl,
-            description: "실시간 영업 약국 검색 서비스",
-            searchUrl: `${siteUrl}/wiki?q={search_term_string}`,
+            description: "등록 영업시간 기반 약국 검색 및 이용 안내 서비스",
           })}
         />
         {/* Organization Schema — EEAT 신호 */}
@@ -162,7 +161,7 @@ export default function RootLayout({
             name: SITE_NAME,
             url: siteUrl,
             logo: `${siteUrl}/og-image.svg`,
-            description: "공공데이터 기반 실시간 약국 검색 및 이용 가이드 서비스",
+            description: "공공데이터 기반 약국 영업시간 검색 및 이용 가이드 서비스",
           })}
         />
         <Suspense fallback={null}>
@@ -176,7 +175,7 @@ export default function RootLayout({
         </a>
         <div className="min-h-screen flex flex-col">
           <header className="border-b border-[var(--border)] bg-white/80 backdrop-blur">
-            <div className="container flex items-center justify-between py-4">
+            <div className="container flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-4">
               <Link href="/" className="flex items-center gap-2 hover:opacity-90">
                 <div className="h-10 w-10 rounded-full bg-brand-100 border border-brand-200 flex items-center justify-center text-brand-700 font-semibold">
                   약
@@ -185,9 +184,12 @@ export default function RootLayout({
                   <p className="text-lg font-semibold">{SITE_NAME}</p>
                 </div>
               </Link>
-              <nav className="flex items-center gap-1 text-sm text-[var(--muted)] sm:gap-3">
+              <nav className="flex w-full items-center gap-1 overflow-x-auto whitespace-nowrap text-sm text-[var(--muted)] sm:w-auto sm:gap-3">
                 <Link href="/" className="inline-flex min-h-11 items-center px-1 hover:text-brand-700">
                   홈
+                </Link>
+                <Link href="/nearby" className="inline-flex min-h-11 items-center rounded-full bg-brand-700 px-3 font-black text-white hover:bg-brand-800">
+                  내 주변
                 </Link>
                 <Link href="/about" className="inline-flex min-h-11 items-center px-1 hover:text-brand-700">
                   소개
@@ -211,18 +213,21 @@ export default function RootLayout({
             <div className="container py-6 text-sm text-[var(--muted)] flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <p>© {new Date().getFullYear()} {SITE_NAME} TodayPharmacy</p>
               <div className="flex gap-4">
-                <a className="hover:text-brand-700" href="/about">
+                <Link className="hover:text-brand-700" href="/nearby">
+                  내 주변 약국
+                </Link>
+                <Link className="hover:text-brand-700" href="/about">
                   소개
-                </a>
-                <a className="hover:text-brand-700" href="/contact">
+                </Link>
+                <Link className="hover:text-brand-700" href="/contact">
                   문의
-                </a>
-                <a className="hover:text-brand-700" href="/terms">
+                </Link>
+                <Link className="hover:text-brand-700" href="/terms">
                   이용약관
-                </a>
-                <a className="hover:text-brand-700" href="/privacy">
+                </Link>
+                <Link className="hover:text-brand-700" href="/privacy">
                   개인정보 처리방침
-                </a>
+                </Link>
               </div>
             </div>
           </footer>

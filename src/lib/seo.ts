@@ -6,6 +6,7 @@ import {
   getSeoulNow,
 } from "./hours";
 import { getSiteUrl } from "./site-url";
+import { hasValidPhone } from "./pharmacy-indexability";
 
 const siteUrl = getSiteUrl();
 
@@ -68,8 +69,8 @@ export function generateDescription(pharmacy: Pharmacy) {
   return [
     `${pharmacy.name}은 ${region}에 위치한 지역 약국으로, ${dayLabel}요일 영업시간은 ${openText || "미등록"} ~ ${closeText || "미등록"}입니다.`,
     `현재 상태는 '${status.label}'이며, 전화(${pharmacy.tel ?? "번호 미등록"}) 또는 지도 안내를 통해 빠르게 방문하실 수 있습니다.`,
-    `야간·주말 운영 여부를 실시간으로 반영하여 응급 상황에도 이용 가능한 약국을 제공합니다.`,
-    `주변 거주민과 방문객 모두를 위해 복약 상담과 기본 의약품을 안정적으로 제공하는 것을 목표로 합니다.`,
+    `야간·주말 운영 여부는 등록된 영업시간을 기준으로 계산하며 실제 현장과 다를 수 있습니다.`,
+    `방문 전 전화로 실제 운영 여부와 필요한 의약품의 재고를 확인해 주세요.`,
   ];
 }
 
@@ -93,7 +94,7 @@ export function buildPharmacyJsonLd(pharmacy: Pharmacy) {
     "@type": ["Pharmacy", "LocalBusiness"],
     name: pharmacy.name,
     description: dynamicDescription(pharmacy),
-    telephone: pharmacy.tel,
+    telephone: hasValidPhone(pharmacy.tel) ? pharmacy.tel : undefined,
     address: {
       "@type": "PostalAddress",
       streetAddress: pharmacy.address,
@@ -119,19 +120,35 @@ export function buildArticleJsonLd(params: {
   description: string;
   slug: string;
   type?: "Article" | "BlogPosting";
+  datePublished?: string;
+  dateModified?: string;
 }) {
-  const { title, description, slug, type = "BlogPosting" } = params;
+  const { title, description, slug, type = "BlogPosting", datePublished, dateModified } = params;
   const url = `${siteUrl}${slug.startsWith("/") ? slug : `/${slug}`}`;
-  const now = new Date().toISOString();
   return {
     "@context": "https://schema.org",
     "@type": type,
     headline: title,
     description,
-    datePublished: now,
-    dateModified: now,
+    ...(datePublished && { datePublished }),
+    ...(dateModified && { dateModified }),
     mainEntityOfPage: url,
     url,
+    inLanguage: "ko-KR",
+    author: {
+      "@type": "Organization",
+      name: "약국오늘",
+      url: siteUrl,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "약국오늘",
+      url: siteUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/icon`,
+      },
+    },
   };
 }
 

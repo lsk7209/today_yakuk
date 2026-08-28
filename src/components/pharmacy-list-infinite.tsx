@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Pharmacy } from "@/types/pharmacy";
 import { getOperatingStatus } from "@/lib/hours";
 import { PharmacyCard } from "./pharmacy-card";
-import { distanceKm } from "@/lib/data/pharmacies";
+import { distanceKm } from "@/lib/geo-distance";
 
 
 type FilterKey = "all" | "open" | "night" | "holiday";
@@ -137,7 +137,7 @@ export function PharmacyListInfinite({
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold border transition ${active
+                className={`min-h-11 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold border transition ${active
                   ? "bg-brand-600 text-white border-brand-600 shadow-sm"
                   : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
                   }`}
@@ -151,7 +151,7 @@ export function PharmacyListInfinite({
           <button
             onClick={requestLocation}
             disabled={locationLoading}
-            className={`rounded-full px-3 py-1 font-semibold border ${userLocation
+            className={`min-h-11 rounded-full px-4 py-2 font-semibold border ${userLocation
               ? "bg-emerald-50 text-emerald-800 border-emerald-200"
               : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
               } ${locationLoading ? "opacity-60" : ""}`}
@@ -161,7 +161,7 @@ export function PharmacyListInfinite({
           <button
             onClick={() => setSortMode((prev) => (prev === "distance" ? "default" : "distance"))}
             disabled={!userLocation}
-            className={`rounded-full px-3 py-1 font-semibold border ${sortMode === "distance"
+            className={`min-h-11 rounded-full px-4 py-2 font-semibold border ${sortMode === "distance"
               ? "bg-emerald-50 text-emerald-800 border-emerald-200"
               : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-brand-200"
               } ${!userLocation ? "opacity-60 pointer-events-none" : ""}`}
@@ -178,9 +178,14 @@ export function PharmacyListInfinite({
         </div>
       ) : (
         <div className="space-y-4">
-          {filtered.map((item) => (
+          {filtered.map((item, index) => (
             <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
-              <PharmacyCard pharmacy={item} distanceKm={item.distanceKm} />
+              <PharmacyCard
+                pharmacy={item}
+                distanceKm={item.distanceKm}
+                sourceSurface="region_list"
+                resultRank={initialOffset + index + 1}
+              />
             </div>
           ))}
         </div>
@@ -197,7 +202,7 @@ export function PharmacyListInfinite({
           <button
             onClick={loadMore}
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-full bg-brand-600 text-white px-4 py-2 text-sm font-semibold hover:bg-brand-700 disabled:opacity-60"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-brand-600 text-white px-4 py-2 text-sm font-semibold hover:bg-brand-700 disabled:opacity-60"
           >
             {loading ? "불러오는 중..." : "더 불러오기"}
           </button>

@@ -6,18 +6,21 @@ import { getSupplementById, Supplement } from "@/lib/data/pharmacies";
 import { getSiteUrl } from "@/lib/site-url";
 import { buildWikiProductPath } from "@/lib/wiki-slug";
 import { ChevronLeft, ArrowLeftRight } from "lucide-react";
+import { safeJsonStringify } from "@/components/seo/json-ld";
+import { getVerifiedNutritionFacts } from "@/lib/wiki-nutrition";
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
 
 interface ComparePageProps {
-    params: { compareId: string };
+    params: Promise<{ compareId: string }>;
 }
 
 export async function generateMetadata({
     params,
 }: ComparePageProps): Promise<Metadata> {
-    const ids = params.compareId.split('_vs_');
+    const { compareId } = await params;
+    const ids = compareId.split('_vs_');
     if (ids.length !== 2) {
         return {
             title: "비교할 제품을 찾을 수 없습니다",
@@ -39,10 +42,10 @@ export async function generateMetadata({
 
     const siteUrl = getSiteUrl();
     return {
-        title: `${product1.name} vs ${product2.name} 비교`,
-        description: `${product1.name}와 ${product2.name}의 영양 성분, 첨가물, 가격 등을 한눈에 비교하세요.`,
+      title: `${product1.name} vs ${product2.name} 비교`,
+        description: `${product1.name}와 ${product2.name}의 공개 신고정보와 출처가 확인된 영양성분 필드를 비교하세요.`,
         alternates: {
-            canonical: `${siteUrl}/wiki/vs/${params.compareId}`,
+            canonical: `${siteUrl}/wiki/vs/${compareId}`,
         },
     };
 }
@@ -50,7 +53,8 @@ export async function generateMetadata({
 export default async function CompareProductsPage({
     params,
 }: ComparePageProps) {
-    const ids = params.compareId.split('_vs_');
+    const { compareId } = await params;
+    const ids = compareId.split('_vs_');
     if (ids.length !== 2) {
         notFound();
     }
@@ -64,10 +68,12 @@ export default async function CompareProductsPage({
         notFound();
     }
 
+    const product1Nutrition = getVerifiedNutritionFacts(product1.nutrition_facts);
+    const product2Nutrition = getVerifiedNutritionFacts(product2.nutrition_facts);
     const allNutrients = Array.from(
         new Set([
-            ...(product1.nutrition_facts || []).map(n => n.name),
-            ...(product2.nutrition_facts || []).map(n => n.name),
+            ...product1Nutrition.map(n => n.name),
+            ...product2Nutrition.map(n => n.name),
         ])
     );
 
@@ -78,7 +84,7 @@ export default async function CompareProductsPage({
         itemListElement: [
             { "@type": "ListItem", position: 1, name: "홈", item: siteUrl },
             { "@type": "ListItem", position: 2, name: "영양제 위키", item: `${siteUrl}/wiki` },
-            { "@type": "ListItem", position: 3, name: `${product1.name} vs ${product2.name}`, item: `${siteUrl}/wiki/vs/${params.compareId}` },
+            { "@type": "ListItem", position: 3, name: `${product1.name} vs ${product2.name}`, item: `${siteUrl}/wiki/vs/${compareId}` },
         ],
     };
 
@@ -86,7 +92,7 @@ export default async function CompareProductsPage({
         <div className="container py-8 max-w-6xl">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+                dangerouslySetInnerHTML={{ __html: safeJsonStringify(breadcrumbLd) }}
             />
             {/* Breadcrumb */}
             <Link href="/wiki" className="inline-flex items-center text-sm text-brand-600 hover:text-brand-700 mb-6">
@@ -100,7 +106,7 @@ export default async function CompareProductsPage({
                     <ArrowLeftRight className="w-8 h-8 text-brand-600" />
                 </div>
                 <h1 className="text-3xl font-bold mb-2">제품 비교</h1>
-                <p className="text-[var(--muted)]">두 제품의 영양 성분과 특징을 비교해보세요</p>
+                <p className="text-[var(--muted)]">출처가 확인된 공개 필드만 비교합니다</p>
             </div>
 
             {/* Comparison Grid */}
@@ -115,9 +121,9 @@ export default async function CompareProductsPage({
             {/* Nutrient Comparison Table */}
             <div className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
                 <div className="p-6 bg-gray-50 border-b border-[var(--border)]">
-                    <h2 className="text-xl font-bold">영양 성분 비교</h2>
+                    <h2 className="text-xl font-bold">출처 확인 영양성분 필드 비교</h2>
                 </div>
-                <div className="overflow-x-auto">
+                {allNutrients.length > 0 ? <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-gray-100">
                             <tr>
@@ -128,8 +134,8 @@ export default async function CompareProductsPage({
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                             {allNutrients.map((nutrientName, index) => {
-                                const n1 = product1.nutrition_facts?.find(n => n.name === nutrientName);
-                                const n2 = product2.nutrition_facts?.find(n => n.name === nutrientName);
+                                const n1 = product1Nutrition.find(n => n.name === nutrientName);
+                                const n2 = product2Nutrition.find(n => n.name === nutrientName);
 
                                 const amount1 = n1 ? `${n1.amount}${n1.unit}` : '-';
                                 const amount2 = n2 ? `${n2.amount}${n2.unit}` : '-';
@@ -146,7 +152,12 @@ export default async function CompareProductsPage({
                             })}
                         </tbody>
                     </table>
-                </div>
+                </div> : (
+                    <p className="p-6 text-sm leading-relaxed text-gray-600">
+                        두 제품 모두 출처 표식이 있는 구조화 영양성분이 없습니다. 빈 값은 실제
+                        성분 부재를 뜻하지 않으므로 제품 포장과 공식 조회 결과를 확인하세요.
+                    </p>
+                )}
             </div>
         </div>
     );
@@ -178,11 +189,10 @@ function ProductCard({ product }: { product: Supplement }) {
                 </div>
             </div>
 
-            {product.ai_summary && (
-                <p className="text-sm text-gray-700 line-clamp-3 bg-gray-50 p-3 rounded-lg">
-                    {product.ai_summary}
-                </p>
-            )}
+            <p className="text-sm leading-relaxed text-gray-600 bg-gray-50 p-3 rounded-lg">
+                공개 신고정보와 구조화된 영양성분만 비교합니다. 빈 항목은 성분 부재를 뜻하지
+                않습니다.
+            </p>
         </div>
     );
 }

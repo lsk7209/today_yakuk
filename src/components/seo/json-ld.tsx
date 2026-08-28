@@ -1,4 +1,5 @@
 import React from "react";
+import { getSiteUrl } from "@/lib/site-url";
 
 type JsonLdProps = {
   /** JSON-LD object or array. Will be JSON.stringify'd into a <script type="application/ld+json" /> */
@@ -7,7 +8,7 @@ type JsonLdProps = {
   id?: string;
 };
 
-function safeJsonStringify(value: unknown): string {
+export function safeJsonStringify(value: unknown): string {
   // Prevent "</script" from breaking out of the tag in edge cases
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }
@@ -22,7 +23,6 @@ export function JsonLd({ data, id }: JsonLdProps) {
     <script
       id={id}
       type="application/ld+json"
-      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: safeJsonStringify(data) }}
     />
   );
@@ -50,7 +50,7 @@ export function buildArticleSchema({
   dateModified,
   authorName = "약국오늘",
   publisherName = "약국오늘",
-  publisherLogo = "/favicon.ico",
+  publisherLogo = `${getSiteUrl()}/icon`,
   image,
 }: ArticleSchemaProps) {
   return {
@@ -106,14 +106,12 @@ export interface WebSiteSchemaProps {
   name: string;
   url: string;
   description?: string;
-  searchUrl?: string;
 }
 
 export function buildWebSiteSchema({
   name,
   url,
   description,
-  searchUrl,
 }: WebSiteSchemaProps) {
   return {
     "@context": "https://schema.org",
@@ -121,16 +119,6 @@ export function buildWebSiteSchema({
     name,
     url,
     ...(description && { description }),
-    ...(searchUrl && {
-      potentialAction: {
-        "@type": "SearchAction",
-        target: {
-          "@type": "EntryPoint",
-          urlTemplate: searchUrl,
-        },
-        "query-input": "required name=search_term_string",
-      },
-    }),
   };
 }
 

@@ -2,7 +2,7 @@ name: Auto Enrich Supplements
 
 on:
   schedule:
-    # 매일 3시간 간격으로 실행 (하루 총 8번, 총 800개 처리)
+    # 매일 3시간 간격으로 실행 (하루 8번, 예약 실행 기본값 기준 최대 120개 처리)
     - cron: "0 */3 * * *"
   workflow_dispatch:
     inputs:
@@ -50,9 +50,18 @@ jobs:
 
       - name: Run enrichment
         if: steps.preflight.outputs.run == 'true'
-        run: npx ts-node --project tsconfig.sync.json scripts/auto-enrich-supplements.ts ${{ github.event.inputs.limit || '15' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          limit="${LIMIT_INPUT:-15}"
+          cursor="${GITHUB_RUN_NUMBER:-0}"
+          if ! [[ "$limit" =~ ^[1-9][0-9]*$ ]] || [ "$limit" -gt 500 ]; then
+            echo "::error title=Invalid limit::limit must be an integer between 1 and 500"
+            exit 1
+          fi
+          npx ts-node --project tsconfig.sync.json scripts/auto-enrich-supplements.ts "$limit" "$cursor"
         env:
+          LIMIT_INPUT: ${{ github.event.inputs.limit || '15' }}
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           FOOD_SAFETY_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}

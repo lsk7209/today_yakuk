@@ -4,6 +4,8 @@ import Image from "next/image";
 import { notFound, permanentRedirect } from "next/navigation";
 import { MapPin } from "lucide-react";
 import { getSiteUrl } from "@/lib/site-url";
+import { safeJsonStringify } from "@/components/seo/json-ld";
+import { isIndexableMedicine } from "@/lib/wiki-indexability";
 import {
     buildWikiMedicinePath,
     buildWikiMedicineSlug,
@@ -60,9 +62,10 @@ async function getMedicineById(id: string): Promise<Medicine | null> {
 export async function generateMetadata({
     params,
 }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-    const medicine = await getMedicineById(extractWikiEntityId(params.id));
+    const { id } = await params;
+    const medicine = await getMedicineById(extractWikiEntityId(id));
 
     if (!medicine) {
         return {
@@ -74,16 +77,11 @@ export async function generateMetadata({
 
     const siteUrl = getSiteUrl();
     const canonicalUrl = `${siteUrl}${buildWikiMedicinePath(medicine)}`;
-    const isThin =
-        medicine.name.trim().toLowerCase().startsWith("test") ||
-        (!medicine.efficacy &&
-            !medicine.use_method &&
-            !medicine.warning_general &&
-            !medicine.side_effects);
+    const isThin = !isIndexableMedicine(medicine);
 
     return {
-        title: `${medicine.name} 효능/부작용/복용법`,
-        description: `${medicine.name} (${medicine.manufacturer || "제조사"})의 효능, 사용법, 주의사항, 부작용 정보를 확인하세요. 식약처 인증 의약품 정보.`,
+        title: `${medicine.name} 효능·효과/용법/주의사항`,
+        description: `${medicine.name} (${medicine.manufacturer || "제조사"})의 효능·효과, 용법, 주의사항과 이상반응을 확인하세요. 의약품안전나라 공개 허가정보를 바탕으로 정리했습니다.`,
         alternates: {
             canonical: canonicalUrl,
         },
@@ -100,15 +98,16 @@ export async function generateMetadata({
 export default async function MedicineDetailPage({
     params,
 }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }) {
-    const medicine = await getMedicineById(extractWikiEntityId(params.id));
+    const { id } = await params;
+    const medicine = await getMedicineById(extractWikiEntityId(id));
 
     if (!medicine) {
         notFound();
     }
 
-    if (params.id !== buildWikiMedicineSlug(medicine)) {
+    if (id !== buildWikiMedicineSlug(medicine)) {
         permanentRedirect(buildWikiMedicinePath(medicine));
     }
 
@@ -134,7 +133,7 @@ export default async function MedicineDetailPage({
             {/* SEO: JSON-LD */}
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: safeJsonStringify(jsonLd) }}
             />
 
             {/* Breadcrumb */}
@@ -290,16 +289,19 @@ export default async function MedicineDetailPage({
             <section className="mt-12 p-8 bg-brand-50 rounded-2xl border border-brand-100 text-center">
                 <MapPin className="w-10 h-10 mx-auto mb-3 text-brand-600" />
                 <h3 className="text-lg font-bold mb-2 text-brand-900">
-                    내 주변 약국에서 구매하세요
+                    주변 약국에 취급 여부를 확인하세요
                 </h3>
                 <p className="text-sm text-brand-700 mb-6">
-                    가까운 약국을 찾아 처방전과 함께 구매하세요.
+                    처방전 필요 여부와 판매·재고 상황은 제품과 약국마다 다르므로 방문 전 전화로 확인하세요.
                 </p>
                 <Link
-                    href="/"
+                    href="/nearby"
+                    data-analytics-event="content_to_nearby_click"
+                    data-source-surface="wiki_medicine"
+                    data-cta-placement="article_bottom"
                     className="inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-medium rounded-xl hover:bg-brand-700 transition-colors shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
                 >
-                    근처 약국 검색하기
+                    가까운 약국 찾기
                 </Link>
             </section>
         </div>

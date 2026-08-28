@@ -92,7 +92,7 @@ export default function Page() {
       { "@type": "HowToStep", position: 1, name: "연휴 시작 3~7일 전 처방 요청", text: "연휴가 시작되기 최소 3~7일 전에 담당 의사에게 연장 처방을 요청하세요. 만성질환 약이라면 연휴 기간만큼 여유분을 받아두는 것이 안전합니다." },
       { "@type": "HowToStep", position: 2, name: "연휴 운영 약국 사전 조회", text: "건강보험심사평가원 또는 약국오늘에서 연휴 기간 영업하는 인근 약국을 미리 확인해 두세요." },
       { "@type": "HowToStep", position: 3, name: "연휴 첫날 이전 조제 완료", text: "처방전 유효기간은 발행일 포함 3일입니다. 연휴 전에 반드시 조제를 완료해 두세요." },
-      { "@type": "HowToStep", position: 4, name: "연휴 중 당번·야간약국 활용", text: "약을 미처 못 준비했다면 당번약국 또는 야간약국을 이용하세요. 약국오늘에서 실시간으로 확인할 수 있습니다." },
+      { "@type": "HowToStep", position: 4, name: "연휴 중 당번·야간약국 활용", text: "약을 미처 못 준비했다면 당번약국 또는 야간약국 후보를 확인하세요. 등록 영업시간과 실제 운영은 다를 수 있으므로 출발 전 전화 확인이 필요합니다." },
       { "@type": "HowToStep", position: 5, name: "응급 상황 시 응급실 방문", text: "약 부족으로 건강이 위험한 경우 응급실을 방문하면 응급 처방 및 조제가 가능합니다." },
     ],
   };
@@ -484,7 +484,7 @@ export default function Page() {
               지금 주변 연휴 운영 약국을 확인하세요
             </h2>
             <p className="text-sm text-gray-600 mt-1">
-              위치 기반으로 현재 운영 중인 가까운 약국을 실시간으로 조회할 수 있습니다.
+              위치 기반으로 가까운 약국과 등록 영업시간 기준 운영 상태를 확인할 수 있습니다. 출발 전 전화로 실제 운영 여부를 확인하세요.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">

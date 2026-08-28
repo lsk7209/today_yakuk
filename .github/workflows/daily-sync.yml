@@ -46,8 +46,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            case "${{ github.event.schedule }}" in
+          if [ "$EVENT_NAME" = "schedule" ]; then
+            case "$EVENT_SCHEDULE" in
               "0 19 * * *")
                 echo "sources=pharmacies" >> "$GITHUB_OUTPUT"
                 echo "hff_mode=all" >> "$GITHUB_OUTPUT"
@@ -59,18 +59,36 @@ jobs:
                 echo "medicines_mode=all" >> "$GITHUB_OUTPUT"
                 ;;
               *)
-                echo "::error title=Unknown schedule::${{ github.event.schedule }}"
+                echo "::error title=Unknown schedule::$EVENT_SCHEDULE"
                 exit 1
                 ;;
             esac
           else
-            sources="${{ github.event.inputs.sources || 'pharmacies,hff,medicines' }}"
-            hff_mode="${{ github.event.inputs.hff_mode || 'all' }}"
-            medicines_mode="${{ github.event.inputs.medicines_mode || 'all' }}"
+            sources="$INPUT_SOURCES"
+            hff_mode="$INPUT_HFF_MODE"
+            medicines_mode="$INPUT_MEDICINES_MODE"
+            if ! [[ "$sources" =~ ^(pharmacies|hff|medicines)(,(pharmacies|hff|medicines))*$ ]]; then
+              echo "::error title=Invalid sources::Use a comma-separated allowlist of pharmacies,hff,medicines"
+              exit 1
+            fi
+            if ! [[ "$hff_mode" =~ ^(all|[1-9][0-9]*)$ ]]; then
+              echo "::error title=Invalid HFF mode::Use all or a positive start index"
+              exit 1
+            fi
+            if ! [[ "$medicines_mode" =~ ^(all|[1-9][0-9]*)$ ]]; then
+              echo "::error title=Invalid medicine mode::Use all or a positive page number"
+              exit 1
+            fi
             echo "sources=${sources}" >> "$GITHUB_OUTPUT"
             echo "hff_mode=${hff_mode}" >> "$GITHUB_OUTPUT"
             echo "medicines_mode=${medicines_mode}" >> "$GITHUB_OUTPUT"
           fi
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
+          INPUT_SOURCES: ${{ github.event.inputs.sources || 'pharmacies,hff,medicines' }}
+          INPUT_HFF_MODE: ${{ github.event.inputs.hff_mode || 'all' }}
+          INPUT_MEDICINES_MODE: ${{ github.event.inputs.medicines_mode || 'all' }}
 
       - name: Ensure Turso schema is compatible
         run: node scripts/init-turso-schema.mjs

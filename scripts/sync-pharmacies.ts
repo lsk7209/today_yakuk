@@ -3,7 +3,7 @@ import { getTursoClient } from "../src/lib/turso";
 import { XMLParser } from "fast-xml-parser";
 
 const API_URL =
-  "http://apis.data.go.kr/B552657/ErmctInsttInfoInqireService/getParmacyFullDown";
+  "https://apis.data.go.kr/B552657/ErmctInsttInfoInqireService/getParmacyFullDown";
 const ROWS_PER_PAGE = 1000;
 const UPSERT_BATCH_SIZE = 200;
 

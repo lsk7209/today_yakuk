@@ -10,7 +10,6 @@ interface Supplement {
     name: string;
     manufacturer: string | null;
     image_url: string | null;
-    ai_summary: string | null;
     tags: string[] | null;
 }
 
@@ -81,7 +80,7 @@ export default function WikiSearch({ currentCategory = "all" }: WikiSearchProps)
         <div className="relative max-w-2xl mx-auto wiki-search-container">
             <input
                 type="text"
-                placeholder="찾으시는 제품명이나 성분을 검색하세요"
+                placeholder="찾으시는 제품명이나 제조사를 검색하세요"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => results.length > 0 && setShowResults(true)}

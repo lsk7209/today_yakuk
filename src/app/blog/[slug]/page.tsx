@@ -14,6 +14,7 @@ import { getBlogFeaturedImage } from "@/lib/blog-image";
 import { getSiteUrl } from "@/lib/site-url";
 import { sanitizeTrustedHtml } from "@/lib/sanitize-html";
 import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
+import Link from "next/link";
 
 const siteUrl = getSiteUrl();
 
@@ -21,7 +22,7 @@ const siteUrl = getSiteUrl();
 export const revalidate = 3600;
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 // 헤딩에 ID 추가 함수
@@ -39,7 +40,8 @@ function addHeadingIds(html: string): string {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await getPublishedContentBySlug(params.slug);
+  const { slug } = await params;
+  const post = await getPublishedContentBySlug(slug);
 
   if (!post || Array.isArray(post)) {
     return {
@@ -76,7 +78,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: post.title,
     description,
     alternates: {
-      canonical: `/blog/${params.slug}`,
+      canonical: `/blog/${slug}`,
     },
     openGraph: {
       title: post.title,
@@ -94,7 +96,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const post = await getPublishedContentBySlug(params.slug);
+  const { slug } = await params;
+  const post = await getPublishedContentBySlug(slug);
 
   if (!post) {
     notFound();
@@ -102,7 +105,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const allRecent = await listPublishedContent(10);
   const relatedPosts = allRecent
-    .filter((p) => p.slug !== params.slug)
+    .filter((p) => p.slug !== slug)
     .slice(0, 4)
     .map((p) => ({
       slug: p.slug,
@@ -128,12 +131,12 @@ export default async function BlogPostPage({ params }: Props) {
   const articleSchema = buildArticleSchema({
     headline: post.title,
     description: post.ai_summary || "",
-    url: `${siteUrl}/blog/${params.slug}`,
+    url: `${siteUrl}/blog/${slug}`,
     datePublished: post.published_at || post.publish_at || post.updated_at,
     dateModified: post.updated_at || post.published_at || post.publish_at,
     authorName: "약국오늘",
     publisherName: "약국오늘",
-    publisherLogo: `${siteUrl}/favicon.ico`,
+    publisherLogo: `${siteUrl}/icon`,
     image: absoluteImageUrl,
   });
 
@@ -156,7 +159,7 @@ export default async function BlogPostPage({ params }: Props) {
         "@type": "ListItem",
         position: 3,
         name: post.title,
-        item: `${siteUrl}/blog/${params.slug}`,
+        item: `${siteUrl}/blog/${slug}`,
       },
     ],
   };
@@ -227,6 +230,23 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </section>
       )}
+
+      <section className="mt-12 rounded-3xl border border-brand-100 bg-emerald-50/70 p-6 sm:p-8">
+        <h2 className="text-xl font-black text-slate-900">방문 가능한 약국을 찾고 계신가요?</h2>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+          등록된 영업시간을 기준으로 가까운 약국을 확인할 수 있습니다. 실제 운영과 재고는 달라질 수 있으니
+          방문 전 전화로 확인해 주세요.
+        </p>
+        <Link
+          href="/nearby"
+          data-analytics-event="content_to_nearby_click"
+          data-source-surface="blog"
+          data-cta-placement="article_bottom"
+          className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-700 px-6 py-3 text-sm font-black text-white hover:bg-brand-800"
+        >
+          가까운 약국 찾기
+        </Link>
+      </section>
 
       {/* 본문 하단 광고 */}
       <AdSlotBottom />

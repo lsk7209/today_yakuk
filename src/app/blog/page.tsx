@@ -4,6 +4,7 @@ import { getTursoClient, parseJson } from "@/lib/turso";
 import { getBlogFeaturedImage } from "@/lib/blog-image";
 import type { Metadata } from "next";
 import { AdSlotInFeed } from "@/components/ads/AdSlot";
+import { safeJsonStringify } from "@/components/seo/json-ld";
 
 const STATIC_POSTS = [
   // 약국 찾기
@@ -159,15 +160,16 @@ const BLOG_DESCRIPTION =
 export const revalidate = 3600; // 1 hour (ISR 재생성 빈도↓로 비용 절감, 발행은 publish cron이 주도)
 
 type BlogIndexPageProps = {
-  searchParams?: {
+  searchParams: Promise<{
     page?: string;
-  };
+  }>;
 };
 
-export function generateMetadata({
+export async function generateMetadata({
   searchParams,
-}: BlogIndexPageProps): Metadata {
-  const currentPage = getCurrentPage(searchParams?.page);
+}: BlogIndexPageProps): Promise<Metadata> {
+  const { page } = await searchParams;
+  const currentPage = getCurrentPage(page);
   const canonical = getBlogPageHref(currentPage);
 
   return {
@@ -194,7 +196,8 @@ function getBlogPageHref(page: number) {
 export default async function BlogIndexPage({
   searchParams,
 }: BlogIndexPageProps) {
-  const currentPage = getCurrentPage(searchParams?.page);
+  const { page } = await searchParams;
+  const currentPage = getCurrentPage(page);
   const from = (currentPage - 1) * POSTS_PER_PAGE;
   const db = getTursoClient();
   const [countResult, dataResult] = await Promise.all([
@@ -255,7 +258,7 @@ export default async function BlogIndexPage({
       {itemListJsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonStringify(itemListJsonLd) }}
         />
       )}
       <header className="space-y-3">

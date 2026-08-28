@@ -6,19 +6,10 @@ import { Filter } from "lucide-react";
 import Image from "next/image";
 import WikiSearch from "@/components/wiki/WikiSearch";
 import { buildWikiProductPath } from "@/lib/wiki-slug";
+import { safeJsonStringify } from "@/components/seo/json-ld";
+import { notFound } from "next/navigation";
 
-export const metadata: Metadata = {
-    title: "영양제 정보",
-    description: "식약처 공공데이터 기반 영양제 성분, 기능성 원료, 첨가물, 제품 비교 정보를 검색하고 객관적인 분석을 확인하세요.",
-    alternates: {
-        canonical: "/wiki",
-    },
-    openGraph: {
-        title: "영양제 정보",
-        description: "건강기능식품 성분, 기능성 원료, 첨가물, 제품 비교 정보를 검색하고 객관적인 분석을 확인하세요.",
-        type: "website",
-    },
-};
+const WIKI_DESCRIPTION = "식약처 공공데이터 기반 영양제 성분, 기능성 원료, 첨가물과 제품 공개 정보를 검색해 확인하세요.";
 
 // searchParams makes this page dynamic — cache the expensive count separately
 const getCachedTotalCount = unstable_cache(
@@ -40,7 +31,6 @@ interface Supplement {
     name: string;
     manufacturer: string | null;
     image_url: string | null;
-    ai_summary: string | null;
     tags: string[] | null;
 }
 
@@ -68,12 +58,32 @@ const TAG_SLUG_MAP: Record<string, string> = {
 };
 
 interface WikiHomePageProps {
-    searchParams: { category?: string; page?: string };
+    searchParams: Promise<{ category?: string; page?: string }>;
+}
+
+export async function generateMetadata({ searchParams }: WikiHomePageProps): Promise<Metadata> {
+    const { category, page } = await searchParams;
+    const isFilteredState = Boolean(category || page);
+    return {
+        title: "영양제 정보",
+        description: WIKI_DESCRIPTION,
+        alternates: { canonical: "/wiki" },
+        robots: isFilteredState
+            ? { index: false, follow: true }
+            : { index: true, follow: true },
+        openGraph: {
+            title: "영양제 정보",
+            description: "건강기능식품 성분, 기능성 원료, 첨가물과 제품 공개 정보를 검색해 확인하세요.",
+            type: "website",
+        },
+    };
 }
 
 export default async function WikiHomePage({ searchParams }: WikiHomePageProps) {
-    const currentCategory = searchParams.category || "all";
-    const page = parseInt(searchParams.page || "1", 10);
+    const { category, page: pageParam } = await searchParams;
+    const currentCategory = category || "all";
+    if (!CATEGORIES.some(({ slug }) => slug === currentCategory)) notFound();
+    const page = getWikiPageNumber(pageParam);
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
     const db = getTursoClient();
@@ -87,7 +97,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
         const [countResult, dataResult] = await Promise.all([
             getCachedTotalCount(),
             db.execute(
-                `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`
+                `SELECT id, name, manufacturer, image_url, tags FROM supplements ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`
             ),
         ]);
         filteredCount = countResult;
@@ -104,7 +114,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                 args: filterArgs,
             }),
             db.execute({
-                sql: `SELECT id, name, manufacturer, image_url, ai_summary, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
+                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
                 args: filterArgs,
             }),
         ]);
@@ -117,18 +127,18 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
         name: r.name as string,
         manufacturer: r.manufacturer as string | null,
         image_url: r.image_url as string | null,
-        ai_summary: r.ai_summary as string | null,
         tags: parseJson(r.tags, null) as string[] | null,
     }));
 
     const count = filteredCount ?? 0;
     const totalPages = count ? Math.ceil(count / ITEMS_PER_PAGE) : 1;
+    if (page > totalPages) notFound();
 
   const collectionPageJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: "영양제 위키",
-    description: "식약처 공공데이터 기반 영양제 성분, 기능성 원료, 첨가물, 제품 비교 정보를 검색하고 객관적인 분석을 확인하세요.",
+    description: "식약처 공공데이터 기반 영양제 성분, 기능성 원료, 첨가물과 제품 공개 정보를 검색해 확인하세요.",
     url: "https://todaypharm.kr/wiki",
     breadcrumb: {
       "@type": "BreadcrumbList",
@@ -149,7 +159,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                 <div className="relative z-10 space-y-4">
                     <h1 className="text-4xl sm:text-6xl font-black tracking-tight mb-4">영양제 위키</h1>
                     <p className="text-brand-50 text-lg sm:text-xl font-medium max-w-2xl mx-auto opacity-90 leading-relaxed">
-                        식약처 공공데이터 기반 <span className="text-white font-bold underline decoration-brand-300 underline-offset-4">객관적 성분 분석</span>과 전문가 리포트를 통해 내 몸에 맞는 영양제를 찾아보세요.
+                        식약처 공공데이터 기반 <span className="text-white font-bold underline decoration-brand-300 underline-offset-4">성분·제품 정보</span>를 읽기 쉽게 확인하세요.
                     </p>
                 </div>
             </div>
@@ -243,9 +253,9 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                 </div>
                 <div className="p-8 bg-white border border-slate-50 rounded-[2.5rem] shadow-sm space-y-4">
                     <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl">🧪</div>
-                    <h3 className="text-xl font-black text-slate-900">전문가 AI 리포트</h3>
+                    <h3 className="text-xl font-black text-slate-900">데이터 해설 안내</h3>
                     <p className="text-slate-500 font-medium leading-relaxed">
-                        전문 지식을 갖춘 AI가 복잡한 원재료와 성분 함량을 분석하여 이해하기 쉬운 리포트를 생성합니다. 섭취 전 필수로 확인하세요.
+                        공개된 원재료와 성분 함량을 읽기 쉽게 정리한 참고 정보입니다. 섭취 전 제품 표시사항을 확인하고 필요한 경우 전문가와 상담하세요.
                     </p>
                 </div>
             </div>
@@ -272,10 +282,15 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
             </section>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonStringify(collectionPageJsonLd) }}
       />
         </div>
     );
+}
+
+function getWikiPageNumber(pageParam?: string) {
+    const value = Number.parseInt(pageParam || "1", 10);
+    return Number.isFinite(value) && value >= 1 ? value : 1;
 }
 
 function ProductCard({ product }: { product: Supplement }) {
@@ -310,14 +325,6 @@ function ProductCard({ product }: { product: Supplement }) {
                     </div>
                 </div>
             </div>
-
-            {product.ai_summary && (
-                <div className="bg-slate-50/50 rounded-2xl p-4 mb-6 flex-1 group-hover:bg-brand-50/30 transition-colors">
-                    <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed font-medium">
-                        {product.ai_summary}
-                    </p>
-                </div>
-            )}
 
             {product.tags && product.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 pt-2">

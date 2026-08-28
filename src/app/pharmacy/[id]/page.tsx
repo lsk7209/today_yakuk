@@ -37,16 +37,38 @@ import {
   findNearbyWithinKm,
   getPharmacyByHpid,
   getPharmaciesByRegion,
-  distanceKm,
 } from "@/lib/data/pharmacies";
+import { distanceKm } from "@/lib/geo-distance";
 import { buildAiLessDetailTemplate } from "@/lib/pharmacy-detail-template";
 import { getMapSearchAddress } from "@/lib/map";
-import { isIndexablePharmacy } from "@/lib/pharmacy-indexability";
+import { hasValidPhone, isIndexablePharmacy } from "@/lib/pharmacy-indexability";
 import { getPublishedContentByHpid } from "@/lib/data/content";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { highlightSafeText, type HighlightRule } from "@/lib/safe-highlight";
 
 type Params = { id: string };
 const siteUrl = getSiteUrl();
+
+const PHONE_RULE: HighlightRule = {
+  pattern: /\d{2,3}-\d{3,4}-\d{4}/g,
+  className: "text-brand-700 font-black",
+};
+const TIME_RULE: HighlightRule = {
+  pattern: /\d{2}:\d{2}/g,
+  className: "text-emerald-700 font-bold",
+};
+const LOCATION_RULE: HighlightRule = {
+  pattern: /서울특별시|강남구|세곡동/g,
+  className: "text-gray-900 font-bold",
+};
+const WEEKDAY_RULE: HighlightRule = {
+  pattern: /평일|토요일|일요일|공휴일/g,
+  className: "text-brand-700 font-bold",
+};
+const STATUS_RULE: HighlightRule = {
+  pattern: /영업 중|영업 종료|곧 종료/g,
+  className: "text-emerald-700 font-bold",
+};
 
 function naverDescription(input: string): string {
   const s = input.replace(/\s+/g, " ").trim();
@@ -110,8 +132,9 @@ const DAY_LABELS: [keyof NonNullable<Pharmacy["operating_hours"]>, string][] = [
   ["holiday", "공휴"],
 ];
 
-export async function generateMetadata({ params }: { params: Params }) {
-  const pharmacy = await getPharmacyByHpid(params.id);
+export async function generateMetadata({ params }: { params: Promise<Params> }) {
+  const { id } = await params;
+  const pharmacy = await getPharmacyByHpid(id);
   if (!pharmacy) return {};
   // (AI 생성 중단) 메타데이터는 알고리즘 기반으로 일관되게 생성합니다.
   const title = buildPharmacyMetaTitle(pharmacy);
@@ -148,9 +171,10 @@ export async function generateMetadata({ params }: { params: Params }) {
   };
 }
 
-export default function PharmacyDetailPage({ params }: { params: Params }) {
-  const pharmacyPromise = getPharmacyByHpid(params.id);
-  return <Content pharmacyPromise={pharmacyPromise} hpid={params.id} />;
+export default async function PharmacyDetailPage({ params }: { params: Promise<Params> }) {
+  const { id } = await params;
+  const pharmacyPromise = getPharmacyByHpid(id);
+  return <Content pharmacyPromise={pharmacyPromise} hpid={id} />;
 }
 
 async function Content({
@@ -174,6 +198,7 @@ async function Content({
   const nearby = findNearbyWithinKm(pharmacy, regionList);
 
   const status = getOperatingStatus(pharmacy.operating_hours);
+  const callablePhone = hasValidPhone(pharmacy.tel) ? pharmacy.tel : null;
   const now = getSeoulNow();
   const todayKey = DAY_KEYS[now.getDay()];
   const todaySlot = pharmacy.operating_hours?.[todayKey];
@@ -223,7 +248,12 @@ async function Content({
   ];
 
   return (
-    <article className="container py-8 sm:py-12 space-y-8 bg-white min-h-screen max-w-5xl">
+    <article
+      className="container py-8 sm:py-12 space-y-8 bg-white min-h-screen max-w-5xl"
+      data-pharmacy-id={pharmacy.hpid}
+      data-source-surface="pharmacy_detail"
+      data-opening-status={status.label}
+    >
       <Breadcrumb items={breadcrumbItems} />
 
       <header className="premium-card bg-gradient-to-br from-white to-emerald-50/30 p-6 sm:p-10 rounded-[2rem] border border-gray-100 space-y-3">
@@ -244,19 +274,19 @@ async function Content({
               </span>
               <CopyButton text={pharmacy.address} label="주소 복사" />
             </p>
-            {pharmacy.tel && (
+            {callablePhone && (
               <p className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-2 bg-brand-50 rounded-lg px-4 py-2 border border-brand-200">
                 <Phone className="h-5 w-5 text-brand-600 flex-shrink-0" />
                 <span className="flex-1">
                   <span className="text-gray-600 font-medium">전화:</span>{" "}
                   <a
-                    href={`tel:${pharmacy.tel}`}
+                    href={`tel:${callablePhone}`}
                     className="text-brand-700 font-black hover:text-brand-800 underline decoration-2"
                   >
-                    {pharmacy.tel}
+                    {callablePhone}
                   </a>
                 </span>
-                <CopyButton text={pharmacy.tel} label="전화번호 복사" />
+                <CopyButton text={callablePhone} label="전화번호 복사" />
               </p>
             )}
           </div>
@@ -290,10 +320,10 @@ async function Content({
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
             <p className="text-sm font-bold text-gray-600">빠른 행동</p>
             <div className="flex flex-wrap gap-3 mt-3">
-              {pharmacy.tel ? (
+              {callablePhone ? (
                 <a
                   className="inline-flex items-center gap-2 rounded-full bg-brand-700 text-white px-5 py-2 font-black hover:bg-brand-800 transition-colors shadow-md"
-                  href={`tel:${pharmacy.tel}`}
+                  href={`tel:${callablePhone}`}
                 >
                   <Phone className="h-4 w-4" />
                   전화 걸기
@@ -350,10 +380,10 @@ async function Content({
             <span>영업 상태:</span>
             <span className="text-emerald-700">{status.label}</span>
           </span>
-          {pharmacy.tel ? (
+          {callablePhone ? (
             <a
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-600 to-brand-700 text-white px-5 py-2 font-black hover:from-brand-700 hover:to-brand-800 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
-              href={`tel:${pharmacy.tel}`}
+              href={`tel:${callablePhone}`}
             >
               <Phone className="h-4 w-4" />
               <span>전화 걸기</span>
@@ -373,10 +403,7 @@ async function Content({
         <div className="space-y-4 text-base text-gray-800 leading-relaxed">
           {descriptions.map((line, idx) => {
             // 중요 정보(전화번호, 영업시간, 주소) 강조
-            const highlighted = line
-              .replace(/(\d{2,3}-\d{3,4}-\d{4})/g, '<strong class="text-brand-700 font-black">$1</strong>')
-              .replace(/(\d{2}:\d{2})/g, '<strong class="text-emerald-700 font-bold">$1</strong>')
-              .replace(/(서울특별시|강남구|세곡동)/g, '<strong class="text-gray-900 font-bold">$1</strong>');
+            const highlighted = highlightSafeText(line, [PHONE_RULE, TIME_RULE, LOCATION_RULE]);
             return (
               <div
                 key={idx}
@@ -412,10 +439,7 @@ async function Content({
             <ul className="space-y-3">
               {aiBullets.map((bullet, idx) => {
                 // 중요 정보 강조
-                const highlighted = bullet
-                  .replace(/(\d{2}:\d{2})/g, '<strong class="text-emerald-700 font-black">$1</strong>')
-                  .replace(/(평일|토요일|일요일|공휴일)/g, '<strong class="text-brand-700 font-bold">$1</strong>')
-                  .replace(/(서울특별시|강남구|세곡동)/g, '<strong class="text-gray-900 font-bold">$1</strong>');
+                const highlighted = highlightSafeText(bullet, [TIME_RULE, WEEKDAY_RULE, LOCATION_RULE]);
                 return (
                   <li key={idx} className="flex items-start gap-3 text-base text-gray-800 leading-relaxed">
                     <div className="rounded-full bg-emerald-100 p-1 mt-1 flex-shrink-0">
@@ -623,11 +647,12 @@ async function Content({
         <div className="space-y-3 mt-4">
           {faqList.map((faq, idx) => {
             // 답변에서 중요 정보 강조
-            const highlightedAnswer = faq.answer
-              .replace(/(\d{2,3}-\d{3,4}-\d{4})/g, '<strong class="text-brand-700 font-black">$1</strong>')
-              .replace(/(\d{2}:\d{2})/g, '<strong class="text-emerald-700 font-bold">$1</strong>')
-              .replace(/(영업 중|영업 종료|곧 종료)/g, '<strong class="text-emerald-700 font-bold">$1</strong>')
-              .replace(/(서울특별시|강남구|세곡동)/g, '<strong class="text-gray-900 font-bold">$1</strong>');
+            const highlightedAnswer = highlightSafeText(faq.answer, [
+              PHONE_RULE,
+              TIME_RULE,
+              STATUS_RULE,
+              LOCATION_RULE,
+            ]);
             return (
               <details
                 key={faq.question}
@@ -686,10 +711,11 @@ async function Content({
           <div className="space-y-4 mt-4">
             {extraSections.map((section, idx) => {
               // 중요 정보 강조
-              const highlighted = section.body
-                .replace(/(\d{2,3}-\d{3,4}-\d{4})/g, '<strong class="text-brand-700 font-black">$1</strong>')
-                .replace(/(\d{2}:\d{2})/g, '<strong class="text-emerald-700 font-bold">$1</strong>')
-                .replace(/(서울특별시|강남구|세곡동)/g, '<strong class="text-gray-900 font-bold">$1</strong>');
+              const highlighted = highlightSafeText(section.body, [
+                PHONE_RULE,
+                TIME_RULE,
+                LOCATION_RULE,
+              ]);
               return (
                 <div
                   key={`${section.title}-${idx}`}
@@ -777,9 +803,9 @@ async function Content({
             <span className="font-extrabold">N</span>
             길찾기
           </Link>
-          {pharmacy.tel ? (
+          {callablePhone ? (
             <a
-              href={`tel:${pharmacy.tel}`}
+              href={`tel:${callablePhone}`}
               className="inline-flex items-center gap-2 rounded-full bg-brand-700 text-white px-5 py-2 text-sm font-black hover:bg-brand-800"
             >
               <Phone className="h-4 w-4" />
@@ -794,7 +820,7 @@ async function Content({
       <JsonLd id="jsonld-faq" data={faqJsonLd} />
 
       {/* Sticky FAB (모바일 전용) */}
-      <StickyFab tel={pharmacy.tel} mapUrl={naverMapUrl} />
+      <StickyFab tel={callablePhone} mapUrl={naverMapUrl} />
     </article>
   );
 }

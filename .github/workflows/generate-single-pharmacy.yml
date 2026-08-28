@@ -26,9 +26,10 @@ jobs:
 
       - name: Generate pharmacy content and summary
         run: |
-          npm run generate:single ${{ github.event.inputs.hpid }} || true
-          npm run generate:summary ${{ github.event.inputs.hpid }} || true
+          npm run generate:single -- "$HPID"
+          npm run generate:summary -- "$HPID"
         env:
+          HPID: ${{ github.event.inputs.hpid }}
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

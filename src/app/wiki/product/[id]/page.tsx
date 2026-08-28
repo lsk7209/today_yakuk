@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound, permanentRedirect } from "next/navigation";
 import { NutrientDisplay } from "@/components/wiki/NutrientDisplay";
-import { linkIngredients } from "@/utils/text-linker";
 import { AdditiveSignal } from "@/components/wiki/AdditiveSignal";
 import { MapPin } from "lucide-react";
 import { getSupplementById, type Supplement } from "@/lib/data/pharmacies";
@@ -14,8 +13,9 @@ import {
   extractWikiEntityId,
 } from "@/lib/wiki-slug";
 import { Breadcrumb } from "@/components/breadcrumb";
-
-import { AlertTriangle, ShieldCheck } from "lucide-react";
+import { safeJsonStringify } from "@/components/seo/json-ld";
+import { isIndexableSupplement } from "@/lib/wiki-indexability";
+import { getVerifiedNutritionFacts } from "@/lib/wiki-nutrition";
 
 // ISR: Revalidate every hour (nutrition_facts 데이터 반영)
 export const revalidate = 3600;
@@ -24,26 +24,17 @@ interface NutritionFactItem {
   name: string;
   amount: number;
   unit: string;
-  percent_dv: number;
-}
-
-async function getAllIngredients(): Promise<{ name: string; slug: string }[]> {
-  try {
-    const { getTursoClient } = await import("@/lib/turso");
-    const db = getTursoClient();
-    const result = await db.execute("SELECT name, slug FROM ingredients");
-    return result.rows.map((r) => ({ name: r.name as string, slug: r.slug as string }));
-  } catch {
-    return [];
-  }
+  percent_dv: number | null;
+  source?: string;
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const supplement = await getSupplementById(extractWikiEntityId(params.id));
+  const { id } = await params;
+  const supplement = await getSupplementById(extractWikiEntityId(id));
 
   if (!supplement) {
     return {
@@ -55,26 +46,19 @@ export async function generateMetadata({
 
   const siteUrl = getSiteUrl();
   const canonicalUrl = `${siteUrl}${buildWikiProductPath(supplement)}`;
+  const factualDescription = buildFactualDescription(supplement);
 
-  const isTestName = supplement.name.trim().toLowerCase().startsWith("test");
-  const isThin =
-    isTestName ||
-    !supplement.ai_summary &&
-    (!supplement.nutrition_facts ||
-      (supplement.nutrition_facts as NutritionFactItem[]).length === 0) &&
-    (!supplement.tags || supplement.tags.length === 0);
+  const isThin = !isIndexableSupplement(supplement);
 
   return {
-    title: `${supplement.name} 효능/부작용 및 성분 분석`,
-    description: `${supplement.name} (${supplement.manufacturer || "제조사"})의 영양 성분, 첨가물 정보, 정밀 분석 리포트를 확인하세요. 약사가 검증한 안전한 영양제 정보.`,
+    title: `${supplement.name} 신고 정보·제조사·공개 필드`,
+    description: `${supplement.name} (${supplement.manufacturer || "제조사"})의 건강기능식품 신고번호, 제조사와 출처가 확인된 공개 필드를 확인하세요.`,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
       title: `${supplement.name} 영양제 위키`,
-      description:
-        supplement.ai_summary ||
-        `${supplement.name}의 상세 영양 정보를 확인하세요.`,
+      description: factualDescription,
       url: canonicalUrl,
       images: supplement.image_url
         ? [{ url: supplement.image_url }]
@@ -87,21 +71,23 @@ export async function generateMetadata({
 export default async function ProductDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const supplement = await getSupplementById(extractWikiEntityId(params.id));
+  const { id } = await params;
+  const supplement = await getSupplementById(extractWikiEntityId(id));
 
   if (!supplement) {
     notFound();
   }
 
-  if (params.id !== buildWikiProductSlug(supplement)) {
+  if (id !== buildWikiProductSlug(supplement)) {
     permanentRedirect(buildWikiProductPath(supplement));
   }
 
   // Transform nutrition_facts to match component interface
+  const verifiedNutritionFacts = getVerifiedNutritionFacts(supplement.nutrition_facts);
   const nutritionFacts =
-    (supplement.nutrition_facts as NutritionFactItem[])?.map(
+    verifiedNutritionFacts.map(
       (item: NutritionFactItem) => ({
         name: item.name,
         amount: item.amount,
@@ -112,30 +98,7 @@ export default async function ProductDetailPage({
 
   const siteUrl = getSiteUrl();
   const productUrl = `${siteUrl}${buildWikiProductPath(supplement)}`;
-
-  // AI Summary Parsing for FAQ Schema
-  const faqItems: { question: string; answer: string }[] = [];
-
-  // Parse ai_summary if it's JSON (new format)
-  try {
-    if (supplement.ai_summary?.trim().startsWith("{")) {
-      const parsed = JSON.parse(supplement.ai_summary);
-      if (parsed.effects) {
-        faqItems.push({
-          question: `${supplement.name}의 주요 효능은 무엇인가요?`,
-          answer: parsed.effects,
-        });
-      }
-      if (parsed.cautions) {
-        faqItems.push({
-          question: `${supplement.name} 섭취 시 주의할 점이 있나요?`,
-          answer: parsed.cautions,
-        });
-      }
-    }
-  } catch {
-    // Ignore parsing errors
-  }
+  const factualDescription = buildFactualDescription(supplement);
 
   // Structure Data (JSON-LD) for Google Rich Results
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -144,9 +107,7 @@ export default async function ProductDetailPage({
     "@type": "Product",
     name: supplement.name,
     image: supplement.image_url ? [supplement.image_url] : [],
-    description:
-      supplement.ai_summary?.substring(0, 160) ||
-      `${supplement.name} 상세 정보`,
+    description: factualDescription,
     brand: {
       "@type": "Brand",
       name: supplement.manufacturer || "Unknown",
@@ -157,22 +118,6 @@ export default async function ProductDetailPage({
     },
     url: productUrl,
   };
-
-  const faqLd =
-    faqItems.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqItems.map((item) => ({
-            "@type": "Question",
-            name: item.question,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: item.answer,
-            },
-          })),
-        }
-      : null;
 
   const breadcrumbLd = {
     "@context": "https://schema.org",
@@ -199,8 +144,6 @@ export default async function ProductDetailPage({
     ],
   };
 
-  const ingredients = await getAllIngredients();
-
   const breadcrumbItems = [
     { label: "영양제 위키", href: "/wiki" },
     { label: supplement.name },
@@ -212,7 +155,7 @@ export default async function ProductDetailPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([jsonLd, breadcrumbLd, faqLd].filter(Boolean)),
+          __html: safeJsonStringify([jsonLd, breadcrumbLd]),
         }}
       />
 
@@ -286,21 +229,24 @@ export default async function ProductDetailPage({
               <span className="p-2 bg-blue-50 rounded-xl text-blue-600 text-xl">
                 📝
               </span>
-              전문가 분석 리포트
+              공공데이터 신고 정보
             </h2>
             <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100">
               <div className="text-slate-800 text-lg leading-relaxed">
-                {supplement.ai_summary ? (
-                  <FormattedSummary
-                    text={supplement.ai_summary}
-                    ingredients={ingredients}
-                  />
-                ) : (
-                  <p className="text-slate-700 leading-relaxed">
-                    {generateTemplateContent(supplement)}
-                  </p>
-                )}
+                <p className="text-slate-700 leading-relaxed">
+                  {generateTemplateContent(supplement)}
+                </p>
               </div>
+            </div>
+            <div className="mt-5 rounded-2xl border border-sky-200 bg-sky-50 p-5 text-sm leading-relaxed text-sky-950">
+              구조화 영양성분이 비어 있어도 실제 제품에 해당 성분이 없다는 뜻은 아닙니다. 제품
+              포장과 공식 조회 결과를 함께 확인하세요.{" "}
+              <Link
+                href="/blog/supplement-label-reading-guide"
+                className="font-black underline decoration-sky-300 underline-offset-4"
+              >
+                영양제 라벨 읽는 순서 보기
+              </Link>
             </div>
           </section>
 
@@ -310,14 +256,15 @@ export default async function ProductDetailPage({
               <span className="p-2 bg-emerald-50 rounded-xl text-emerald-600 text-xl">
                 📊
               </span>
-              영양 성분 정보
+              출처가 확인된 영양 성분 필드
             </h2>
             <div className="overflow-hidden">
               {nutritionFacts.length > 0 ? (
                 <NutrientDisplay nutrients={nutritionFacts} />
               ) : (
                 <div className="text-center py-12 text-slate-400 font-medium">
-                  식약처 데이터베이스에 상세 영양소 함량 정보가 없습니다.
+                  현재 약국오늘이 수집한 공개 데이터에 구조화된 영양소 함량이 표시되지
+                  않습니다. 제품 포장과 공식 조회 결과로 다시 확인하세요.
                 </div>
               )}
             </div>
@@ -331,7 +278,7 @@ export default async function ProductDetailPage({
               <span className="p-2 bg-amber-50 rounded-xl text-amber-600 text-lg">
                 🔍
               </span>
-              첨가물 안심 체크
+              원재료 키워드 확인
             </h2>
             <AdditiveSignal additives={supplement.additives || {}} />
           </section>
@@ -341,18 +288,21 @@ export default async function ProductDetailPage({
             <div className="absolute top-0 left-0 w-full h-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             <MapPin className="w-12 h-12 mx-auto mb-4 text-brand-100" />
             <h3 className="text-xl font-black mb-3">
-              주변 약국에서 <br />
-              바로 구매하세요
+              주변 약국에 <br />
+              취급 여부를 확인하세요
             </h3>
             <p className="text-brand-100/80 text-sm mb-8 leading-relaxed">
-              가까운 단골 약국에 연락하여 <br />
-              재고 현황을 물어볼 수 있습니다.
+              판매·재고 여부는 약국마다 다릅니다. <br />
+              방문 전 전화로 확인하세요.
             </p>
             <Link
-              href="/"
+              href="/nearby"
+              data-analytics-event="content_to_nearby_click"
+              data-source-surface="wiki_product"
+              data-cta-placement="sidebar"
               className="w-full inline-flex items-center justify-center px-6 py-4 bg-white text-brand-700 font-black rounded-2xl hover:bg-brand-50 transition-all shadow-xl active:scale-95"
             >
-              근처 약국 찾기
+              가까운 약국 찾기
             </Link>
           </section>
         </div>
@@ -362,7 +312,7 @@ export default async function ProductDetailPage({
 }
 
 /**
- * ai_summary가 없는 제품에 대해 구조화된 설명 텍스트를 생성
+ * 공개 신고 필드만 사용해 제품 설명을 생성합니다.
  */
 function generateTemplateContent(supplement: Supplement): string {
   const parts: string[] = [];
@@ -370,41 +320,48 @@ function generateTemplateContent(supplement: Supplement): string {
 
   parts.push(
     `${supplement.name}은(는) ${mfr}에서 제조한 건강기능식품으로, ` +
-      `식품의약품안전처 신고번호 ${supplement.product_report_no}를 받은 제품입니다.`,
+      `공개 신고정보에서 품목제조신고번호 ${supplement.product_report_no}(으)로 확인됩니다.`,
   );
 
   if (supplement.tags && supplement.tags.length > 0) {
     parts.push(
-      `이 제품은 ${supplement.tags.join(", ")} 등의 건강 기능을 위한 성분을 함유하고 있으며, ` +
-        `관련 건강 관리에 관심 있는 분들께 도움이 될 수 있습니다.`,
+      `약국오늘의 분류 태그는 ${supplement.tags.join(", ")}입니다. ` +
+        `분류 태그는 실제 성분 함량이나 기능성을 보증하지 않으므로 제품 표시사항을 함께 확인하세요.`,
     );
   }
 
-  const nutrition = supplement.nutrition_facts as NutritionFactItem[] | null;
+  const nutrition = getVerifiedNutritionFacts(supplement.nutrition_facts);
   if (nutrition && nutrition.length > 0) {
     const top = nutrition
       .slice(0, 5)
       .map((n) => `${n.name} ${n.amount}${n.unit}`)
       .join(", ");
     parts.push(
-      `주요 영양 성분으로 ${top} 등 총 ${nutrition.length}가지 성분이 포함되어 있습니다. ` +
-        `각 성분의 1일 영양소 기준치 충족률은 아래 성분표를 통해 확인하실 수 있습니다.`,
+      `식품안전나라 C003 영양성분 필드에는 ${top} 등 총 ${nutrition.length}개 항목이 표시되어 있습니다. ` +
+        `이는 공식 응답에서 구조화해 옮긴 값이며, 실제 섭취 판단은 제품 포장 표시를 함께 확인하세요.`,
     );
   }
 
   const additives = supplement.additives;
   if (additives) {
+    const hasKnownClassification = [
+      additives.has_preservatives,
+      additives.has_coloring,
+      additives.has_artificial_sweeteners,
+    ].some((value) => typeof value === "boolean");
     const concerns: string[] = [];
     if (additives.has_preservatives) concerns.push("보존제");
     if (additives.has_coloring) concerns.push("착색료");
     if (additives.has_artificial_sweeteners) concerns.push("인공감미료");
     if (concerns.length > 0) {
       parts.push(
-        `이 제품에는 ${concerns.join(", ")}가 포함되어 있으므로 해당 성분에 민감하신 분은 섭취 전 주의가 필요합니다.`,
+        `공개 원재료명에서 ${concerns.join(", ")} 관련 지정 키워드가 확인됩니다. ` +
+          `실제 함량과 사용 목적은 제품 표시사항 또는 제조사 안내로 다시 확인하세요.`,
       );
-    } else {
+    } else if (hasKnownClassification) {
       parts.push(
-        `첨가물 분석 결과, 인공 보존제·착색료·인공감미료가 검출되지 않은 제품입니다.`,
+        `공개 원재료명에서 지정한 보존료·착색료·인공감미료 키워드는 확인되지 않았습니다. ` +
+          `이는 해당 성분의 부재나 제품 안전성을 보증하지 않습니다.`,
       );
     }
   }
@@ -417,127 +374,8 @@ function generateTemplateContent(supplement: Supplement): string {
   return parts.join(" ");
 }
 
-/**
- * AI 분석 리포트를 렌더링하는 컴포넌트 (텍스트/JSON 지원)
- */
-function FormattedSummary({
-  text,
-  ingredients,
-}: {
-  text: string;
-  ingredients: { name: string; slug: string }[];
-}) {
-  let parsedData: {
-    summary: string;
-    effects: string;
-    cautions: string;
-  } | null = null;
-  let isLegacy = false;
-
-  // Try parsing as JSON first
-  try {
-    if (text.trim().startsWith("{")) {
-      parsedData = JSON.parse(text);
-    } else {
-      isLegacy = true;
-    }
-  } catch {
-    isLegacy = true;
-  }
-
-  if (isLegacy || !parsedData) {
-    // 기존 텍스트 포맷 처리
-    const lines = text.split("\n").filter((line) => line.trim() !== "");
-    return (
-      <div className="space-y-8">
-        {lines.map((line, index) => {
-          const colonIndex = line.indexOf(":");
-          if (colonIndex > 0 && colonIndex < 50) {
-            const title = line.substring(0, colonIndex).trim();
-            const content = line.substring(colonIndex + 1).trim();
-            return (
-              <div key={index} className="group space-y-3">
-                <section className="space-y-2">
-                  <h3 className="font-black text-slate-800 text-lg flex items-center gap-2">
-                    <span className="text-brand-500">●</span>
-                    {linkIngredients(title, ingredients)}
-                  </h3>
-                  <div className="pl-5 text-slate-600 leading-relaxed font-medium">
-                    {formatContent(content)}
-                  </div>
-                </section>
-              </div>
-            );
-          }
-          return (
-            <div
-              key={index}
-              className="py-1 text-slate-700 leading-relaxed font-medium"
-            >
-              {formatContent(line)}
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // 신규 JSON 포맷 렌더링
-  return (
-    <div className="space-y-8">
-      {parsedData.summary && (
-        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-          <p className="font-bold text-slate-800 text-lg leading-relaxed">
-            {parsedData.summary}
-          </p>
-        </div>
-      )}
-
-      <div className="grid gap-6">
-        {parsedData.effects && (
-          <div className="space-y-3">
-            <h3 className="flex items-center gap-2 text-lg font-black text-blue-800">
-              <ShieldCheck className="w-5 h-5" /> 주요 효능
-            </h3>
-            <p className="text-slate-700 leading-relaxed pl-7">
-              {formatContent(parsedData.effects)}
-            </p>
-          </div>
-        )}
-
-        {parsedData.cautions && (
-          <div className="space-y-3">
-            <h3 className="flex items-center gap-2 text-lg font-black text-amber-600">
-              <AlertTriangle className="w-5 h-5" /> 섭취 시 주의사항
-            </h3>
-            <p className="text-slate-700 leading-relaxed pl-7">
-              {formatContent(parsedData.cautions)}
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/**
- * 내용 중 (1), (2) 등 숫자를 강조하거나 추가 줄바꿈을 시도하는 헬퍼
- */
-function formatContent(text: string) {
-  // (1), (2) 등을 찾아서 줄바꿈 느낌을 주거나 볼드로 처리
-  const parts = text.split(/(\(\d+\))/g);
-
-  return parts.map((part, i) => {
-    if (part.match(/\(\d+\)/)) {
-      return (
-        <span
-          key={i}
-          className="inline-flex items-center justify-center min-w-[1.75rem] h-7 mt-2 mb-1 mr-2 px-2 bg-brand-50 text-brand-700 text-[11px] font-black rounded-lg ring-1 ring-brand-100 shadow-sm align-middle"
-        >
-          {part}
-        </span>
-      );
-    }
-    return part;
-  });
+function buildFactualDescription(supplement: Supplement): string {
+  const manufacturer = supplement.manufacturer || "제조사 정보 미표시";
+  const reportNumber = supplement.product_report_no || "신고번호 미표시";
+  return `${supplement.name}의 건강기능식품 공개 신고정보입니다. 제조사 ${manufacturer}, 품목제조신고번호 ${reportNumber}와 출처가 확인된 공개 필드를 확인하세요.`;
 }

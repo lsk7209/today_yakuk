@@ -6,11 +6,12 @@ import { getPublishedContentBySlug } from "@/lib/data/content";
 import { sanitizeTrustedHtml } from "@/lib/sanitize-html";
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export default async function HubPage({ params }: Props) {
-  const slug = decodeURIComponent(params.slug);
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const content = await getPublishedContentBySlug(slug);
   if (!content) return notFound();
 

@@ -18,7 +18,7 @@ const siteUrl = getSiteUrl();
 export const metadata: Metadata = {
   title: "약국오늘 소개: 서비스 목적·데이터 출처·운영 원칙",
   description:
-    "약국오늘은 지금 문 연 약국을 빠르게 찾도록 돕는 실시간 약국 검색 서비스입니다. 공공데이터 기반으로 영업시간·전화·위치를 정리하고, 방문 전 확인 팁과 FAQ까지 한 번에 제공합니다.",
+    "약국오늘은 등록된 영업시간을 기준으로 지금 문 연 약국을 찾도록 돕는 서비스입니다. 공공데이터 기반 영업시간·전화·위치와 방문 전 확인 팁을 제공합니다.",
   alternates: { canonical: "/about" },
   robots: { index: true, follow: true },
   openGraph: {
@@ -38,7 +38,7 @@ export default function AboutPage() {
     "@type": "AboutPage",
     name: "약국오늘 소개",
     description:
-      "약국오늘은 지금 문 연 약국을 빠르게 찾도록 돕는 실시간 약국 검색 서비스입니다.",
+      "약국오늘은 등록된 영업시간을 기준으로 지금 문 연 약국을 빠르게 찾도록 돕는 서비스입니다.",
     url: `${siteUrl}/about`,
     inLanguage: "ko",
     isPartOf: { "@type": "WebSite", name: "약국오늘", url: siteUrl },
@@ -243,7 +243,7 @@ export default function AboutPage() {
 
             <ProcessCard
               icon={<Database className="h-10 w-10 text-brand-700" />}
-              title="실시간 데이터 수집"
+              title="공공데이터 정기 동기화"
               desc={
                 <>
                   공공데이터포털 기반으로
