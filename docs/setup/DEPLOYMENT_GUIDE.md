@@ -258,3 +258,4 @@ vercel --prod
 - [Supabase 문서](https://supabase.com/docs)
 - [Gemini API 문서](https://ai.google.dev/docs)
 
+> Legacy deployment notes. The current application uses Turso, not Supabase. Use `/README.md`; deployment requires separate authorization.

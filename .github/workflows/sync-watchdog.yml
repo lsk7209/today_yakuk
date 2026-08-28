@@ -1,0 +1,46 @@
+name: Public Data Sync Watchdog
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: public-data-sync-watchdog
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - name: Ensure metrics schema exists
+        run: node scripts/init-turso-schema.mjs
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+      - name: Detect stale sources
+        id: freshness
+        run: npm run check:sync-freshness
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+      - name: Dispatch catch-up sync
+        if: steps.freshness.outputs.stale_sources != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STALE_SOURCES: ${{ steps.freshness.outputs.stale_sources }}
+        run: gh workflow run daily-sync.yml -f sources="$STALE_SOURCES" -f hff_mode=all -f medicines_mode=all
+      - name: Report catch-up
+        if: steps.freshness.outputs.stale_sources != ''
+        run: |
+          echo "::warning title=Stale public data sync::Catch-up dispatched for ${{ steps.freshness.outputs.stale_sources }}"

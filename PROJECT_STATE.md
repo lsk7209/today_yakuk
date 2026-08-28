@@ -187,3 +187,49 @@ Today Yakuk 저장소의 보안·데이터 무결성·의존성·자동화·핵�
 - push 직전 `npm run test:unit` 25/25, lint, production dependency audit 0, 전체 workflow YAML parse를 다시 통과했다. 앞서 같은 source revision의 양쪽 typecheck, build 57, Playwright 32/32가 통과했다.
 - release는 `git add -A`가 아니라 정확한 122경로 allowlist를 stage하고 cached diff를 검증한 단일 commit으로 `origin/main`에 fast-forward push한다.
 - GitHub push 이후 실제 commit SHA는 `git ls-remote origin refs/heads/main`으로 검증해 최종 인계에 기록한다. Vercel, 운영 DB/API, workflow dispatch와 실제 콘텐츠 예약·발행은 이 release 범위가 아니다.
+## 2026-08-28 Completion follow-up
+
+### Outcome
+
+- Confirmed the prior GitHub release: local and remote `main` were `000375cd2cc19c4abe0b11331310869eb48c56b9` before this follow-up.
+- Database-writing public-data jobs now require Turso credentials; schema initialization exits nonzero on any non-ignored failure.
+- Queue publication uses a concurrency group and atomic pending-state claim; only claimed rows proceed to indexing.
+- Nearby preselection orders candidates before `LIMIT 400`; tag pages share supplement indexability rules.
+- Added standard test commands, GitHub CI, current README/status/docs map, blank admin-password example, and least-privilege indexing guidance.
+
+### Validation
+
+- lint, application typecheck, script typecheck: pass.
+- unit: 27/27 pass, including executable empty-env, double-claim, and in-memory SQL predicate checks.
+- build: pass, 57 generated pages.
+- Playwright: 32/32 desktop/mobile pass.
+- production dependency audit: vulnerabilities 0.
+- workflow YAML parse, schema syntax, and `git diff --check`: pass.
+
+### Public data follow-up
+
+- Read-only sitemap audit at `2026-08-28T01:03:12.062Z` using cutoff `2026-08-27T22:31:26.243Z` found pharmacy 0, supplement 0, and medicine 0 entries since cutoff.
+- One blog sitemap entry changed: `/blog/jangmachul-gompangi-jilhan-yebang-yakguk`. This is a content publication/update signal, not new public API data.
+- No new data-based article was generated because there was no pharmacy, supplement, or medicine delta.
+
+### Boundaries
+
+- This follow-up is local and uncommitted. No Git push, deployment, Vercel action, production DB write, workflow dispatch, queue publication, or live content publication was performed.
+- Production Turso rows, live post-release DB-backed routes, and analytics/search-console field data remain separate credentialed verification tasks.
+## 2026-08-28 Supabase retirement
+
+- Deleted GitHub Actions secrets `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`; verification list returned none.
+- Removed the unused `@supabase/supabase-js` dependency, legacy migration script, unused Supabase error helper, Supabase image-host allowlist, and stale runtime labels/comments.
+- Preserved historical docs with legacy warnings; current runtime and workflows use Turso.
+- Validation: lint, both typechecks, unit 27/27, and production build 57 passed; dependency audit remains 0.
+- Boundary: Vercel environment-variable names were not inspected because the local checkout is not linked; no Vercel setting was changed. Local code changes are uncommitted/unpushed.
+
+## 2026-08-28 automated ingestion reliability implementation
+
+- Added durable per-source sync history with before/after counts, duration, error, and public verification status.
+- Pharmacy collection rejects HTTP-200 error envelopes, malformed bodies, invalid totals, incomplete pagination, and records missing required identifiers.
+- A six-hour watchdog catches stale verified sources; freshness requires a successful public sitemap/detail sample match.
+- IndexNow notifications use a durable retry outbox. Publish claims return to pending if enqueue fails, and publishing initializes the schema first.
+- Supabase Actions secrets were deleted earlier. The unused runtime remnants, obsolete operator setup guides, and `supabase/` SQL were removed; Turso remains the runtime database.
+- Review: two Luna/max read-only lanes and one Sol/high reliability gate; BLOCKER 0 and all HIGH findings repaired.
+- Boundary: no production workflow dispatch, DB mutation job, publication, Vercel action, or deployment was performed. GitHub push and CI verification are the remaining authorized release steps.

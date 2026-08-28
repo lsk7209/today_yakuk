@@ -109,3 +109,4 @@ const [pharmacy, contentQueue] = await Promise.all([
 - ⏳ Vercel 배포 대기 중
 - ❓ `content_queue` 데이터 확인 필요
 
+> Historical snapshot. Current public-content rules allow only `published` rows. See `/PROJECT_STATE.md`.

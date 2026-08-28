@@ -1,4 +1,10 @@
 import { spawn } from "child_process";
+import { getRequiredTursoClient } from "../src/lib/turso";
+import {
+  finishSyncRun,
+  getSourceRowCount,
+  startSyncRun,
+} from "./lib/sync-run-metrics";
 
 type Source = "pharmacies" | "hff" | "medicines";
 
@@ -114,7 +120,7 @@ function validateEnv(jobs: SyncJob[]) {
   }
 }
 
-function runJob(job: SyncJob): Promise<void> {
+function runJob(job: SyncJob): Promise<number> {
   const command = process.platform === "win32" ? "npm.cmd" : "npm";
   const startedAt = Date.now();
 
@@ -134,7 +140,7 @@ function runJob(job: SyncJob): Promise<void> {
       const seconds = Math.round((Date.now() - startedAt) / 1000);
       if (code === 0) {
         console.info(`[public-data-sync] Completed ${job.source} in ${seconds}s`);
-        resolve();
+        resolve(seconds);
       } else {
         reject(new Error(`${job.source} sync failed with exit code ${code}`));
       }
@@ -162,9 +168,38 @@ async function main() {
   }
 
   validateEnv(jobs);
+  const db = getRequiredTursoClient();
 
   for (const job of jobs) {
-    await runJob(job);
+    const startedAt = new Date().toISOString();
+    const countBefore = await getSourceRowCount(db, job.source);
+    const mode = job.source === "hff" ? options.hffMode : job.source === "medicines" ? options.medicinesMode : "all";
+    const id = await startSyncRun(db, { source: job.source, mode, startedAt, countBefore });
+    try {
+      const durationSeconds = await runJob(job);
+      const countAfter = await getSourceRowCount(db, job.source);
+      await finishSyncRun(db, {
+        id,
+        status: "success",
+        finishedAt: new Date().toISOString(),
+        countBefore,
+        countAfter,
+        durationSeconds,
+      });
+      console.info(`[public-data-sync] Metrics ${job.source}: before=${countBefore}, after=${countAfter}, new=${Math.max(0, countAfter - countBefore)}`);
+    } catch (error) {
+      const countAfter = await getSourceRowCount(db, job.source).catch(() => countBefore);
+      await finishSyncRun(db, {
+        id,
+        status: "failed",
+        finishedAt: new Date().toISOString(),
+        countBefore,
+        countAfter,
+        durationSeconds: Math.max(0, Math.round((Date.now() - new Date(startedAt).getTime()) / 1000)),
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
   }
 
   console.info("\n[public-data-sync] All selected public-data sync jobs completed.");

@@ -55,11 +55,43 @@ Next Action: Review the local diff. Commit/push only on explicit request; do not
 
 ## 2026-08-28 GitHub publication
 
-Current State: REVIEWING
-Current Phase: Explicit allowlist staging and cached-diff verification
-Completed: User push approval; risk notice; branch `main`; local/remote base SHA match; independent 122-path scope audit with BLOCKER/HIGH/MEDIUM 0; high-confidence secret/runtime-artifact scan; fresh unit 25/25, lint, production dependency audit 0, all workflow YAML parse
-In Progress: Stage the 122 explicit paths and inspect cached diff
-Remaining: Commit, `git push origin main`, remote SHA verification, final state record
+Current State: DONE
+Current Phase: GitHub publication completed and remotely verified
+Completed: User push approval; explicit allowlist verification; commit `000375cd2cc19c4abe0b11331310869eb48c56b9`; `git push origin main`; remote SHA verification
+In Progress:
+Remaining: None for the GitHub publication phase
 Blocked:
 Last Verification: local HEAD and remote main both `82f4e4468bf8553e919fe653825381c1d65289e0`; scope reviewer reports 122 intended paths and no material finding; unit 25/25; lint; `npm audit --omit=dev` vulnerabilities 0; workflow YAML parse pass; no Vercel action
-Next Action: Stage only the explicit validated paths, inspect cached evidence, then commit and push fast-forward to GitHub main.
+Next Action: Treat later local follow-up changes as a separate release; push only on explicit request.
+
+## 2026-08-28 completion follow-up
+
+Current State: DONE
+Current Phase: Completion follow-up verified and reviewed
+Completed: Required Turso client for write jobs; schema failure propagation; atomic pending-state publication claim and workflow concurrency; ordered nearby candidate preselection; shared supplement indexability on tag pages; CI workflow; documentation repairs; public sitemap delta audit; lint; both typechecks; unit 27/27; build 57; Playwright 32/32; dependency audit 0; workflow YAML parse
+In Progress:
+Remaining: Optional durable search-notification outbox requires a separately approved schema/production task; GitHub CI activation requires explicit push approval
+Blocked:
+Last Verification: 2026-08-28 local Level 4 validation; no production DB write, publication, workflow dispatch, Git push, deployment, or Vercel operation
+Next Action: Review the local diff; commit/push only on explicit request. Do not deploy or mutate Vercel/production DB.
+## 2026-08-28 automated ingestion reliability goal
+
+Current State: IMPLEMENTING
+Current Phase: Cost-first multi-agent architecture and local implementation
+Completed: Explicit Goal created; Luna/max automation and indexing/CI read-only lanes started; current workflow/run baseline captured
+In Progress: Sync metrics, missed-run detection, post-sync verification, retry boundary, integration
+Remaining: Full validation, specialist review, allowlist commit/push, remote CI verification
+Blocked:
+Last Verification: GitHub workflows active; latest full sync success exists but expected recent daily run is missing; local changes remain unpushed
+Next Action: Integrate agent findings and implement the smallest durable operational controls.
+
+## 2026-08-28 automated ingestion reliability completion
+
+Current State: VERIFYING
+Current Phase: Final local verification and GitHub CI activation
+Completed: Sync metrics; fail-closed pharmacy parsing; public sitemap/detail proof; verified-run watchdog; IndexNow outbox; publisher recovery; Supabase retirement; Luna architecture lanes; Sol HIGH findings repaired
+In Progress: Final build/E2E, allowlisted commit/push, remote CI verification
+Remaining: Natural scheduled-run evidence; no production workflow is manually dispatched in this scope
+Blocked:
+Last Verification: lint; script typecheck; unit 31/31; focused retry/parser tests; diff check
+Next Action: Complete Level 4 validation, push main, and verify GitHub CI for the pushed SHA.

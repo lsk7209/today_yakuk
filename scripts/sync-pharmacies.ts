@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { getTursoClient } from "../src/lib/turso";
+import { assertExpectedRowsAffected, getRequiredTursoClient } from "../src/lib/turso";
 import { XMLParser } from "fast-xml-parser";
 
 const API_URL =
@@ -114,16 +114,44 @@ async function fetchPage(pageNo: number): Promise<ApiResponse> {
     trimValues: true,
   });
   const parsed = parser.parse(text);
-  const body = parsed?.response?.body;
-  const totalCount = Number(body?.totalCount ?? 0);
-  const items = normalizeArray<Record<string, string | undefined>>(body?.items?.item);
+  return parsePharmacyApiResponse(parsed);
+}
+
+export function parsePharmacyApiResponse(parsed: unknown): ApiResponse {
+  const response = (parsed as { response?: Record<string, unknown> } | null)?.response;
+  if (!response || typeof response !== "object") {
+    throw new Error("Pharmacy API returned a malformed response envelope");
+  }
+
+  const header = response.header as Record<string, unknown> | undefined;
+  const resultCode = String(header?.resultCode ?? "").trim();
+  const successCodes = new Set(["00", "0", "NORMAL_SERVICE"]);
+  if (!header || !successCodes.has(resultCode)) {
+    const message = String(header?.resultMsg ?? header?.resultMessage ?? "unknown API error");
+    throw new Error(`Pharmacy API error (${resultCode || "missing resultCode"}): ${message}`);
+  }
+
+  const body = response.body as Record<string, unknown> | undefined;
+  if (!body || body.totalCount === undefined || body.items === undefined) {
+    throw new Error("Pharmacy API response is missing body, totalCount, or items");
+  }
+  const totalCount = Number(body.totalCount);
+  if (!Number.isInteger(totalCount) || totalCount < 0) {
+    throw new Error(`Pharmacy API returned invalid totalCount: ${String(body.totalCount)}`);
+  }
+  const itemsNode = body.items as { item?: Record<string, string | undefined> | Record<string, string | undefined>[] };
+  const items = normalizeArray<Record<string, string | undefined>>(itemsNode.item);
+
+  if (items.length > totalCount) {
+    throw new Error(`Pharmacy API page contains ${items.length} items but totalCount is ${totalCount}`);
+  }
 
   return { totalCount, items };
 }
 
 async function upsertBatch(records: PharmacyRecord[]) {
   if (!records.length) return;
-  const db = getTursoClient();
+  const db = getRequiredTursoClient();
 
   const statements = records.map((r) => ({
     sql: `INSERT INTO pharmacies (hpid, name, address, tel, latitude, longitude, operating_hours, description_raw, province, city, updated_at)
@@ -141,7 +169,8 @@ async function upsertBatch(records: PharmacyRecord[]) {
     ],
   }));
 
-  await db.batch(statements, "write");
+  const results = await db.batch(statements, "write");
+  assertExpectedRowsAffected(results, statements.length, "sync-pharmacies batch");
 }
 
 async function main() {
@@ -161,9 +190,16 @@ async function main() {
     console.info(`페이지 ${page}/${totalPages} 수집 완료 (누적 ${allItems.length}건)`);
   }
 
+  if (allItems.length !== first.totalCount) {
+    throw new Error(`Pharmacy API collection incomplete: expected ${first.totalCount}, received ${allItems.length}`);
+  }
+
   const records = allItems
     .filter((item) => item.hpid && item.dutyName)
     .map(mapToRecord);
+  if (records.length !== first.totalCount) {
+    throw new Error(`Pharmacy API returned ${first.totalCount - records.length} records without required identifiers`);
+  }
 
   console.info(`총 ${records.length}건 Upsert 진행...`);
   for (let i = 0; i < records.length; i += UPSERT_BATCH_SIZE) {
@@ -175,7 +211,9 @@ async function main() {
   console.info("완료되었습니다.");
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

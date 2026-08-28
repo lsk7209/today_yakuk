@@ -9,9 +9,14 @@ on:
   workflow_dispatch: # 수동 실행도 가능
 
 jobs:
+  # A fixed group prevents overlapping scheduled/manual publishers from claiming the same rows.
+  # The SQL update also checks status='pending' as a second idempotency boundary.
   publish:
     name: Publish Content Queue
     runs-on: ubuntu-latest
+    concurrency:
+      group: publish-content-queue
+      cancel-in-progress: false
     
     steps:
       - name: Checkout code
@@ -25,6 +30,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Ensure database schema
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: npm run db:init
 
       - name: Publish content queue
         env:

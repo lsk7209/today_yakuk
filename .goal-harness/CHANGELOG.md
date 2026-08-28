@@ -50,3 +50,12 @@
 | `src/lib/scheduler.ts` | replaced minute-bump branching with strict comparison against 00/06/12 UTC candidates | avoid skipping an imminent slot at 05:59:59.999 or 23:59:59.999 and make next-slot evidence executable |
 | `tests/unit/remediation.test.ts`, `tests/e2e/data-update.spec.ts` | added scheduler boundary, AdditiveSignal three-state render, workflow, manifest, indexing, claim, source, schema and CTA regressions | prove local safety and conversion behavior on desktop/mobile |
 | `.goal-harness/*`, `PROJECT_STATE.md` | recorded exact evidence, limitations, tests and handoff state | make the follow-up resumable without overstating reservation/publication/release |
+## 2026-08-28 completion follow-up
+
+| File | Change | Reason |
+|---|---|---|
+| `src/lib/turso.ts`, public-data scripts | added required-client path | prevent false-green no-op writes |
+| schema and publication scripts/workflow | propagated failures and added conditional claims/concurrency | prevent partial success and duplicate publication |
+| nearby route and wiki indexability/tag page | ordered bounded candidates and shared public predicate | preserve nearest and indexable results |
+| package scripts, CI, unit tests | added standard commands, continuous checks, runtime claim/predicate tests | make proof repeatable |
+| README, STATUS, docs map/guides, `.env.example` | updated current setup and safety boundaries | remove stale or unsafe guidance |

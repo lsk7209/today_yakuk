@@ -2,7 +2,7 @@ import "dotenv/config";
 import path from "path";
 import dotenv from "dotenv";
 import fs from "fs";
-import { getTursoClient } from "../src/lib/turso";
+import { assertExpectedRowsAffected, getRequiredTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
@@ -353,7 +353,7 @@ async function collectExistingTitles(v3Slugs: Set<string>): Promise<ExistingTitl
   }
 
   try {
-    const db = getTursoClient();
+    const db = getRequiredTursoClient();
     const result = await db.execute("SELECT title, slug FROM content_queue WHERE status IN ('published', 'pending', 'review')");
     result.rows.forEach((row) => {
       if (!v3Slugs.has(String(row.slug))) existing.push({ title: String(row.title), slug: String(row.slug) });
@@ -522,7 +522,7 @@ async function getLastExternalPublishAt(v3Slugs: Set<string>) {
     });
   }
   try {
-    const db = getTursoClient();
+    const db = getRequiredTursoClient();
     const result = await db.execute({ sql: "SELECT slug, publish_at FROM content_queue WHERE status = 'pending'", args: [] });
     result.rows.forEach((row) => {
       if (v3Slugs.has(String(row.slug))) return;
@@ -633,7 +633,7 @@ async function buildCampaign() {
 }
 
 async function insertCampaign(items: ScoredQueueItem[]) {
-  const db = getTursoClient();
+  const db = getRequiredTursoClient();
   const slugs = items.map((item) => item.slug);
   const placeholders = slugs.map(() => "?").join(", ");
   const existingResult = await db.execute({ sql: `SELECT slug FROM content_queue WHERE slug IN (${placeholders})`, args: slugs });
@@ -661,7 +661,8 @@ async function insertCampaign(items: ScoredQueueItem[]) {
       item.publish_at,
     ],
   }));
-  await db.batch(statements, "write");
+  const results = await db.batch(statements, "write");
+  assertExpectedRowsAffected(results, freshItems.length, "prepare-blog-campaign-v3 insert");
   return { inserted: freshItems.length, skipped: items.length - freshItems.length };
 }
 
@@ -676,7 +677,7 @@ async function main() {
   console.info(`Last v3 publish_at: ${items.at(-1)?.publish_at ?? "none"}`);
   if (insert) {
     const result = await insertCampaign(items);
-    console.info(`Supabase insert result: inserted=${result.inserted}, skipped=${result.skipped}`);
+    console.info(`Turso insert result: inserted=${result.inserted}, skipped=${result.skipped}`);
   }
 }
 

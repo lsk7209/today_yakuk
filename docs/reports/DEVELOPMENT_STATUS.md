@@ -236,3 +236,4 @@
 
 **다음 검토 예정일**: 주요 변경사항 완료 후
 
+> Historical snapshot (2024). Do not use this file as current project status. See `/PROJECT_STATE.md` and `/.goal-harness/`.

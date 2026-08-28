@@ -2,7 +2,7 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 import "tsconfig-paths/register";
-import { getTursoClient, parseJson } from "../src/lib/turso";
+import { getRequiredTursoClient, parseJson } from "../src/lib/turso";
 import { generatePharmacyContent } from "../src/lib/gemini";
 import type { Pharmacy } from "../src/types/pharmacy";
 import {
@@ -94,7 +94,7 @@ function pickNearDuplicates(
 
 async function getRecentSummariesForDedupe(limit = 200): Promise<string[]> {
   try {
-    const db = getTursoClient();
+    const db = getRequiredTursoClient();
     const result = await db.execute({
       sql: `SELECT ai_summary FROM content_queue WHERE ai_summary IS NOT NULL ORDER BY published_at DESC LIMIT ?`,
       args: [limit],
@@ -119,7 +119,7 @@ async function generateAndQueueContent(
   recentSummaries: string[] = [],
   regionCache: Map<string, Pharmacy[]> = new Map(),
 ): Promise<void> {
-  const db = getTursoClient();
+  const db = getRequiredTursoClient();
   const now = new Date().toISOString();
 
   // 이미 큐에 있는지 확인
@@ -280,7 +280,7 @@ async function generateAndQueueContent(
   } catch (error) {
     console.error(`[ERROR] ${pharmacy.name} (${pharmacy.hpid}):`, error);
     if (existing) {
-      await getTursoClient().execute({
+      await getRequiredTursoClient().execute({
         sql: `UPDATE content_queue SET status='failed', updated_at=? WHERE id=?`,
         args: [now, existing.id as string],
       });
@@ -290,7 +290,7 @@ async function generateAndQueueContent(
 
 async function generateBatchContent(limit: number = 10): Promise<void> {
   ensureEnv();
-  const db = getTursoClient();
+  const db = getRequiredTursoClient();
 
   // 모든 약국 hpid 가져오기
   const pharmaciesResult = await db.execute({

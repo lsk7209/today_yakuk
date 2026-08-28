@@ -12,13 +12,13 @@
 import dotenv from "dotenv";
 import { parseNutritionFacts } from "./lib/nutrition-parser";
 import { detectAdditives } from "./lib/additive-keywords";
-import { getTursoClient } from "../src/lib/turso";
+import { getRequiredTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: ".env.local" });
 
 const FOOD_SAFETY_API_KEY = process.env.FOOD_SAFETY_API_KEY!;
 
-const db = getTursoClient();
+const db = getRequiredTursoClient();
 
 const TAG_MAP: Record<string, string[]> = {
     "vitamin-c": ["비타민C", "비타민 C", "Vitamin C", "Ascorbic Acid", "아스코르브산"],

@@ -2,10 +2,10 @@ import "dotenv/config";
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
-import { getTursoClient, parseJson } from "../src/lib/turso";
-import { requestIndexing, submitSitemapToGSC } from "../src/lib/google-indexing";
+import { getRequiredTursoClient, parseJson } from "../src/lib/turso";
+import { submitSitemapToGSC } from "../src/lib/google-indexing";
 import { getSiteUrl } from "../src/lib/site-url";
-import { submitToIndexNow } from "../src/lib/naver-indexnow";
+import type { Client } from "@libsql/client";
 
 type ContentQueueStatus = "pending" | "review" | "published" | "failed";
 
@@ -33,8 +33,15 @@ function ensureEnv() {
   if (!process.env.TURSO_AUTH_TOKEN) throw new Error("TURSO_AUTH_TOKEN이 필요합니다.");
 }
 
-async function publishPending(limit = 2) {
-  const db = getTursoClient();
+export async function claimPendingContent(db: Client, id: string, now: string) {
+  const result = await db.execute({
+    sql: `UPDATE content_queue SET status = 'published', published_at = ?, updated_at = ? WHERE id = ? AND status = 'pending'`,
+    args: [now, now, id],
+  });
+  return result.rowsAffected === 1;
+}
+
+export async function publishPending(limit = 2, db = getRequiredTursoClient()) {
   const now = new Date().toISOString();
 
   const result = await db.execute({
@@ -76,7 +83,7 @@ async function publishPending(limit = 2) {
     await Promise.all(
       failed.map((item) =>
         db.execute({
-          sql: `UPDATE content_queue SET status = 'failed', updated_at = ? WHERE id = ?`,
+          sql: `UPDATE content_queue SET status = 'failed', updated_at = ? WHERE id = ? AND status = 'pending'`,
           args: [now, item.id],
         })
       )
@@ -88,31 +95,52 @@ async function publishPending(limit = 2) {
     return;
   }
 
-  await Promise.all(
-    ready.map((item) =>
-      db.execute({
-        sql: `UPDATE content_queue SET status = 'published', published_at = ?, updated_at = ? WHERE id = ?`,
-        args: [now, now, item.id],
-      })
-    )
+  const publishResults = await Promise.all(
+    ready.map(async (item) => {
+      const claimed = await claimPendingContent(db, item.id, now);
+      return { item, claimed };
+    })
   );
 
-  console.info(`Published ${ready.length} items.`);
+  const published = publishResults.filter((result) => result.claimed).map((result) => result.item);
+
+  console.info(`Published ${published.length} items.`);
 
   const publishedUrls: string[] = [];
-  for (const item of ready) {
+  for (const item of published) {
     if (item.hpid) {
       const url = `${siteUrl}/pharmacy/${item.hpid}`;
-      await Promise.allSettled([requestIndexing(url, "URL_UPDATED"), submitToIndexNow([url])]);
       publishedUrls.push(url);
     } else if (item.slug) {
       const url = `${siteUrl}/blog/${item.slug}`;
-      await Promise.allSettled([requestIndexing(url, "URL_UPDATED"), submitToIndexNow([url])]);
       publishedUrls.push(url);
     }
   }
 
   if (publishedUrls.length > 0) {
+    try {
+      const outboxResults = await db.batch(
+        publishedUrls.map((url) => ({
+          sql: `INSERT INTO indexing_outbox (url, provider, event_type, status, next_attempt_at, updated_at)
+            VALUES (?, 'indexnow', 'URL_UPDATED', 'pending', datetime('now'), datetime('now'))
+            ON CONFLICT(url, provider, event_type) DO UPDATE SET
+              status = 'pending', attempts = 0, next_attempt_at = datetime('now'), last_error = NULL, updated_at = datetime('now')`,
+          args: [url],
+        })),
+        "write",
+      );
+      if (outboxResults.length !== publishedUrls.length) throw new Error("indexing outbox enqueue incomplete");
+    } catch (error) {
+      await db.batch(
+        published.map((item) => ({
+          sql: `UPDATE content_queue SET status = 'pending', published_at = NULL, updated_at = ?
+            WHERE id = ? AND status = 'published' AND published_at = ?`,
+          args: [new Date().toISOString(), item.id, now],
+        })),
+        "write",
+      );
+      throw error;
+    }
     await submitSitemapToGSC(siteUrl, `${siteUrl}/sitemap.xml`);
   }
 }
@@ -124,7 +152,9 @@ async function main() {
   await publishPending(limit);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

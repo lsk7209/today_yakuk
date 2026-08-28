@@ -189,3 +189,32 @@ Validation level: Level 4 for local behavior and point-in-time public/Actions ev
 | workflow syntax | PASS | all `.github/workflows/*.yml` parse successfully with `js-yaml` |
 | previously completed runtime proof | PASS | both TypeScript checks, Next.js build 57 routes and Playwright 32/32 desktop/mobile passed on the same source revision before documentation-only release updates |
 | deployment boundary | PASS | GitHub commit/push authorized; Vercel, DB writes, workflow dispatch and live content publication remain prohibited |
+## 2026-08-28 completion follow-up
+
+Validation level: Level 4 locally. Production DB state and post-release live behavior remain unverified.
+
+| Check | Result | Evidence |
+|---|---|---|
+| GitHub baseline | PASS | local HEAD and `origin/main` both `000375cd2cc19c4abe0b11331310869eb48c56b9` before this follow-up |
+| fail-closed DB jobs | PASS | public-data write jobs use `getRequiredTursoClient`; explicit empty-env smoke throws; schema script exits nonzero on recorded failures |
+| publication concurrency | PASS | job concurrency plus conditional pending-state claim; only `rowsAffected === 1` rows proceed |
+| nearby/indexability | PASS | candidate SQL orders before limit; tag count/list reuse supplement indexability predicate |
+| CI and docs | PASS | CI covers lint, typechecks, unit, build, E2E, production audit and diff check; current docs and safety examples updated |
+| public data delta | PASS WITH BOUNDARY | pharmacies 0, supplements 0, medicines 0; one blog sitemap update only |
+| local checks | PASS | lint; both typechecks; unit 27/27; build 57; Playwright 32/32; production vulnerabilities 0; workflow YAML parse; diff check |
+| mutation boundary | PASS | no production DB write, publication, workflow dispatch, commit, push, deployment, or Vercel operation |
+## 2026-08-28 Supabase retirement
+
+| Check | Result | Evidence |
+|---|---|---|
+| GitHub Supabase secrets | REMOVED | all three exact names deleted; post-delete list returned none |
+| runtime Supabase dependency/code | REMOVED | package uninstalled; migration/error helper deleted; stale host/labels removed |
+| validation | PASS | lint; both typechecks; unit 27/27; build 57; audit 0 |
+| Vercel boundary | UNVERIFIED/UNCHANGED | project exists, but checkout is not linked and no Vercel configuration was changed |
+## 2026-08-28 automated ingestion reliability
+
+- Cost-first lanes: Luna/max sync architecture and indexing/CI review; Sol/high final reliability review.
+- Review gate: BLOCKER 0; two HIGH findings repaired (HTTP-200 API error envelopes, false-positive post-sync verification).
+- Focused verification: script typecheck pass; lint pass; unit 31/31 pass; SQLite retry-time boundary and malformed pharmacy response tests pass.
+- Full pre-review baseline: application typecheck pass; build 57 routes; Playwright desktop/mobile 32/32; production dependency audit 0; workflow YAML parse pass; diff check pass.
+- External boundary: no production data workflow dispatch, publication, Vercel mutation, or deployment.

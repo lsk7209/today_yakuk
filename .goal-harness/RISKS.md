@@ -107,3 +107,18 @@
 - Safer Alternative: local commit만 만들고 push를 보류할 수 있으나 사용자가 이번 turn에 GitHub 반영을 직접 요청해 선택하지 않음.
 - Approval Needed: GitHub push는 현재 사용자 메시지로 승인됨. Vercel, 실제 DB 예약·발행, workflow dispatch는 승인되지 않았으므로 금지.
 - Secret Handling: `.env*`, credential, token, runtime artifact는 stage하지 않으며 cached content scan은 값 대신 의심 경로만 보고함.
+## 2026-08-28 completion follow-up residual risks
+
+| Risk | Impact | Likelihood | Mitigation | Status |
+|---|---|---|---|---|
+| Published status and search notification are not backed by a durable outbox | transient notification failure can require manual re-notification | medium | design an outbox/notification state and migration before changing production schema | accepted follow-up; no production migration authorized |
+| New CI has not run on GitHub | Linux/Actions behavior is not yet proven | medium | commit/push only on explicit request, then inspect both CI jobs at the pushed SHA | external boundary |
+| Production DB-backed routes remain unverified | local empty-DB proof cannot confirm live rows | medium | run separate credentialed SELECT-only verification | external boundary |
+## Risk Notice - automated ingestion reliability
+
+Task: Add collection run evidence, missed-run monitoring, site verification, and indexing retry controls; publish validated code to GitHub.
+Why Needed: Scheduled workflow success alone does not prove API fetch, DB write, or public-site reflection.
+Impact Scope: GitHub Actions schedules and future Turso schema initialization after the pushed workflow runs.
+Rollback: Revert the Git commit; new additive tables can remain unused or be removed only in a separately approved migration.
+Safer Alternative: Local-only logging without durable DB evidence, rejected because it cannot detect missed or partial runs.
+Approval Needed: User explicitly requested Goal Harness, multi-agent execution, improvements, and GitHub completion. No manual production DB write or Vercel mutation will be performed.

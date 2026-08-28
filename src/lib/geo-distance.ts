@@ -19,3 +19,7 @@ export function distanceKm(
       Math.sin(longitudeDelta / 2) ** 2;
   return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
+
+export function longitudeDegreeScale(latitude: number) {
+  return Math.cos((latitude * Math.PI) / 180);
+}

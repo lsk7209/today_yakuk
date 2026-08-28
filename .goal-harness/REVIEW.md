@@ -133,3 +133,17 @@ The local remediation is complete at validation Level 4. Clean install, lint, ap
 - [x] 비중복 noindex guide와 AdditiveSignal 세 상태가 claim/render/CTA 테스트를 통과했다.
 - [x] 독립 리뷰 잔여 BLOCKER/HIGH/MEDIUM 0이며 전체 로컬 검증이 통과했다.
 - [x] DB/API write, workflow dispatch, 예약·발행, commit, push, deployment, Vercel 작업은 없었다.
+## 2026-08-28 completion follow-up review
+
+- Scope: local reliability repairs, documentation alignment, public read-only delta check, and CI preparation.
+- Resolved review findings: DB-changing scripts now require credentials and validate batch effects; executable tests cover empty-env failure, duplicate claim rejection, supplement predicate filtering, and Korean-latitude longitude scaling.
+- Regression proof: lint, both typechecks, unit 27/27, build 57, and Playwright 32/32 pass.
+- Security/operations: no secrets printed; no production DB write, workflow dispatch, publication, push, deployment, or Vercel operation.
+- Residual boundary: search-engine notification retries need a durable outbox/schema design and production migration approval; the new CI is local until a separately authorized Git push and Actions run.
+- Final reliability re-review: prior fail-closed HIGH findings resolved; BLOCKER/HIGH 0.
+## 2026-08-28 automation reliability review
+
+- Reliability reviewer: BLOCKER 0, HIGH 2, MEDIUM 3.
+- Repaired HIGH: malformed pharmacy API responses now fail the sync; freshness requires a public sitemap/detail sample match recorded as `verification_status='passed'`.
+- Repaired MEDIUM: outbox due-time comparison normalizes timestamps; publisher restores claims if enqueue fails; obsolete Supabase operator guides and SQL were removed.
+- Remaining boundary: first production evidence will come from the natural schedule; no manual production dispatch was performed.

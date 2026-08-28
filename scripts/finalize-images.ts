@@ -1,11 +1,11 @@
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
-import { getTursoClient } from "../src/lib/turso";
+import { getRequiredTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: ".env.local" });
 
-const db = getTursoClient();
+const db = getRequiredTursoClient();
 
 const publicDir = path.join(process.cwd(), "public", "blog-images");
 

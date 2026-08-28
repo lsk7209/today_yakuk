@@ -8,6 +8,7 @@ import { Tag } from "lucide-react";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { buildWikiProductPath } from "@/lib/wiki-slug";
 import { safeJsonStringify } from "@/components/seo/json-ld";
+import { SUPPLEMENT_INDEXABLE_PREDICATE } from "@/lib/wiki-indexability";
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
@@ -85,11 +86,11 @@ export default async function TagPage({
     try {
         const [countResult, dataResult] = await Promise.all([
             db.execute({
-                sql: `SELECT COUNT(*) as cnt FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause}))`,
+                sql: `SELECT COUNT(*) as cnt FROM supplements WHERE (${SUPPLEMENT_INDEXABLE_PREDICATE}) AND tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause}))`,
                 args: searchTerms,
             }),
             db.execute({
-                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
+                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements WHERE (${SUPPLEMENT_INDEXABLE_PREDICATE}) AND tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) ORDER BY created_at DESC, id ASC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
                 args: searchTerms,
             }),
         ]);

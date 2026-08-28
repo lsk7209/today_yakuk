@@ -1,9 +1,9 @@
 import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
-import { getTursoClient } from "../src/lib/turso";
+import { assertExpectedRowsAffected, getRequiredTursoClient } from "../src/lib/turso";
 
-const db = getTursoClient();
+const db = getRequiredTursoClient();
 
 type OperatingHours = Record<string, { open: number | string | null; close: number | string | null }>;
 
@@ -78,7 +78,8 @@ async function syncFromJson(jsonFilePath: string) {
         ],
       }));
 
-      await db.batch(statements, "write");
+      const results = await db.batch(statements, "write");
+      assertExpectedRowsAffected(results, statements.length, "sync-pharmacies-from-json batch");
       successCount += batch.length;
       console.log(`✅ Upserted ${batch.length} records`);
     } catch (error) {

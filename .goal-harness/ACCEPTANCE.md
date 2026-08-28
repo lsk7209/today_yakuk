@@ -90,3 +90,15 @@
 | 신규 콘텐츠는 성분 부재·안전성·효능·개인 복용·재고를 단정하지 않고 noindex/unlisted 상태다 | pass | 직접 작성한 static draft, robots noindex/nofollow, blog registry/sitemap 제외, 공식 출처 3개와 E2E 경계 검증 |
 | 제품 상세에서 설명 가이드와 측정 가능한 nearby CTA로 이어진다 | pass | `AdditiveSignal` 내부 링크와 desktop/mobile analytics payload E2E |
 | 로컬 검증이 통과하고 외부 mutation이 없다 | pass | JSON/YAML; lint; both typechecks; unit 25/25; build 57; Playwright 32/32; reviewer BLOCKER/HIGH/MEDIUM 0; DB/workflow/publication/push/deploy 0 |
+## 2026-08-28 completion follow-up acceptance
+
+| Criteria | Status | Evidence |
+|---|---|---|
+| Operational DB jobs cannot report success without Turso credentials | pass | required-client helper and empty-env runtime smoke |
+| Schema initialization fails when any non-ignored statement fails | pass | accumulated failures and nonzero exit contract |
+| Overlapping publishers cannot publish/index the same pending row | pass | workflow concurrency, conditional update, executable double-claim test |
+| Nearby and tag discovery preserve ordering/indexability rules | pass | ordered candidate query and shared predicate with in-memory SQL fixture |
+| Current setup/status documentation is discoverable and unsafe examples are removed | pass | README, STATUS, docs map, blank admin password, least-privilege guide |
+| Local regression suite passes | pass | lint; both typechecks; unit 27/27; build 57; E2E 32/32; audit 0 |
+| New public API data is handled without unsupported content creation | pass | pharmacy/supplement/medicine delta 0; no new article generated |
+| External mutations stay within authorization | pass | local changes only; no push/deploy/DB write/publication |

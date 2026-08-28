@@ -2,7 +2,7 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 import "tsconfig-paths/register";
-import { getTursoClient } from "../src/lib/turso";
+import { getRequiredTursoClient } from "../src/lib/turso";
 import { generateBlogTopic, generateBlogPost } from "../src/lib/gemini-blog";
 import { getNextSlot } from "../src/lib/scheduler";
 
@@ -13,7 +13,7 @@ if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
 
 async function main() {
   console.info("===== 블로그 자동 생성 시작 =====");
-  const db = getTursoClient();
+  const db = getRequiredTursoClient();
 
   // 1. 주제 선정
   console.info("주제 선정 중...");
@@ -79,4 +79,7 @@ async function main() {
   console.info("✨ 블로그 포스트가 성공적으로 예약되었습니다.");
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

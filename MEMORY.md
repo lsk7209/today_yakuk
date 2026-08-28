@@ -17,7 +17,7 @@
 - **Framework**: Next.js 14.2.15
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
-- **Database/Auth**: Supabase
+- **Database**: Turso (libSQL)
 - **Icons**: Lucide React
 - **Validation**: Zod
 - **Scripts**: Custom Node.js scripts (Sync, Generate Content)

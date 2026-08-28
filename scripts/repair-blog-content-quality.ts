@@ -2,7 +2,7 @@ import "dotenv/config";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
-import { getTursoClient } from "../src/lib/turso";
+import { getRequiredTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
@@ -187,8 +187,8 @@ function qualityReport(filePath: string, items: QueueItem[]) {
   }
 }
 
-async function updateSupabase(items: QueueItem[]) {
-  const db = getTursoClient();
+async function updateTurso(items: QueueItem[]) {
+  const db = getRequiredTursoClient();
   const seenSlugs = new Set<string>();
   let updated = 0;
   for (const item of items) {
@@ -232,8 +232,8 @@ async function main() {
   }
 
   if (updateDb) {
-    const updated = await updateSupabase(repairedByPath.flatMap(({ items }) => items));
-    console.info(`Supabase rows updated=${updated}`);
+    const updated = await updateTurso(repairedByPath.flatMap(({ items }) => items));
+    console.info(`Turso rows updated=${updated}`);
   }
 
   if (!writeJson && !updateDb) {

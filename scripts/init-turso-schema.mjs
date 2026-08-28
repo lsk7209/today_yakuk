@@ -102,6 +102,37 @@ const STATEMENTS = [
     created_at TEXT DEFAULT (datetime('now'))
   )`,
 
+  `CREATE TABLE IF NOT EXISTS public_data_sync_runs (
+    id TEXT PRIMARY KEY DEFAULT (${UUID_DEFAULT}),
+    source TEXT NOT NULL,
+    mode TEXT NOT NULL,
+    status TEXT NOT NULL,
+    started_at TEXT NOT NULL,
+    finished_at TEXT,
+    db_count_before INTEGER,
+    db_count_after INTEGER,
+    inserted_count INTEGER,
+    duration_seconds INTEGER,
+    error_message TEXT,
+    verification_status TEXT,
+    verification_detail TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+
+  `CREATE TABLE IF NOT EXISTS indexing_outbox (
+    id TEXT PRIMARY KEY DEFAULT (${UUID_DEFAULT}),
+    url TEXT NOT NULL,
+    provider TEXT NOT NULL,
+    event_type TEXT NOT NULL DEFAULT 'URL_UPDATED',
+    status TEXT NOT NULL DEFAULT 'pending',
+    attempts INTEGER NOT NULL DEFAULT 0,
+    next_attempt_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_error TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(url, provider, event_type)
+  )`,
+
   // Indexes
   `CREATE INDEX IF NOT EXISTS idx_pharmacies_province ON pharmacies(province)`,
   `CREATE INDEX IF NOT EXISTS idx_pharmacies_province_city ON pharmacies(province, city)`,
@@ -114,9 +145,21 @@ const STATEMENTS = [
   `CREATE INDEX IF NOT EXISTS idx_content_queue_slug ON content_queue(slug)`,
   `CREATE INDEX IF NOT EXISTS idx_content_queue_hpid ON content_queue(hpid)`,
   `CREATE INDEX IF NOT EXISTS idx_analytics_logs_created_at ON analytics_logs(created_at)`,
+  `CREATE INDEX IF NOT EXISTS idx_public_data_sync_runs_source_finished ON public_data_sync_runs(source, finished_at DESC)`,
+  `CREATE INDEX IF NOT EXISTS idx_indexing_outbox_due ON indexing_outbox(status, next_attempt_at)`,
 ];
 
 const MIGRATIONS = [
+  {
+    name: "public_data_sync_runs.verification_status",
+    sql: `ALTER TABLE public_data_sync_runs ADD COLUMN verification_status TEXT`,
+    ignore: "duplicate column name",
+  },
+  {
+    name: "public_data_sync_runs.verification_detail",
+    sql: `ALTER TABLE public_data_sync_runs ADD COLUMN verification_detail TEXT`,
+    ignore: "duplicate column name",
+  },
   {
     name: "medicines.updated_at",
     sql: `ALTER TABLE medicines ADD COLUMN updated_at TEXT`,
@@ -129,6 +172,7 @@ const MIGRATIONS = [
 ];
 
 async function main() {
+  const failures = [];
   console.log("🚀 Turso 스키마 초기화 시작...");
   console.log(`  URL: ${TURSO_URL}\n`);
 
@@ -138,6 +182,7 @@ async function main() {
       await db.execute(sql);
       console.log(`✅ ${name}`);
     } catch (e) {
+      failures.push({ name, message: e instanceof Error ? e.message : String(e) });
       console.error(`❌ 실패: ${name}\n   ${e.message}`);
     }
   }
@@ -151,12 +196,17 @@ async function main() {
       if (migration.ignore && message.toLowerCase().includes(migration.ignore)) {
         console.log(`⏭️ migration skipped: ${migration.name}`);
       } else {
+        failures.push({ name: `migration ${migration.name}`, message });
         console.error(`❌ 실패: migration ${migration.name}\n   ${message}`);
       }
     }
   }
 
   // 테이블 목록 확인
+  if (failures.length > 0) {
+    throw new Error(`Schema initialization failed for ${failures.length} statement(s).`);
+  }
+
   const tables = await db.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name");
   console.log("\n📊 생성된 테이블:");
   for (const row of tables.rows) {
@@ -165,7 +215,11 @@ async function main() {
   }
 
   console.log("\n🎉 스키마 초기화 완료!");
-  db.close();
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  })
+  .finally(() => db.close());

@@ -36,8 +36,8 @@ export function isIndexableMedicine(input: {
   );
 }
 
-export const SUPPLEMENT_INDEXABLE_WHERE = `
-WHERE TRIM(name) != ''
+export const SUPPLEMENT_INDEXABLE_PREDICATE = `
+TRIM(name) != ''
   AND LOWER(TRIM(name)) NOT LIKE 'test%'
   AND (
     EXISTS (
@@ -62,6 +62,8 @@ WHERE TRIM(name) != ''
     ) > 0
   )
 `;
+
+export const SUPPLEMENT_INDEXABLE_WHERE = `WHERE ${SUPPLEMENT_INDEXABLE_PREDICATE}`;
 
 export const MEDICINE_INDEXABLE_WHERE = `
 WHERE TRIM(name) != ''

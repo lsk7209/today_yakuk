@@ -1,6 +1,6 @@
 import "dotenv/config";
 import "tsconfig-paths/register";
-import { getTursoClient } from "../src/lib/turso";
+import { getRequiredTursoClient } from "../src/lib/turso";
 import { generatePharmacyContent } from "../src/lib/gemini";
 import type { Pharmacy } from "../src/types/pharmacy";
 import * as dotenv from "dotenv";
@@ -13,7 +13,7 @@ const geminiApiKey = process.env.GEMINI_API_KEY;
 
 async function getPharmacyByHpid(hpid: string): Promise<Pharmacy | null> {
   try {
-    const db = getTursoClient();
+    const db = getRequiredTursoClient();
     const result = await db.execute({ sql: "SELECT * FROM pharmacies WHERE hpid = ? LIMIT 1", args: [hpid] });
     if (!result.rows[0]) return null;
     const row = result.rows[0];
@@ -36,7 +36,7 @@ async function generateAndSaveSummary(hpid: string): Promise<void> {
     throw new Error("GEMINI_API_KEY가 설정되지 않았습니다.");
   }
 
-  const db = getTursoClient();
+  const db = getRequiredTursoClient();
   console.info(`\n=== 약국 요약 생성 시작: ${hpid} ===`);
 
   const pharmacy = await getPharmacyByHpid(hpid);

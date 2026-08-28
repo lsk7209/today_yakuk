@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-import { distanceKm } from "@/lib/geo-distance";
+import { distanceKm, longitudeDegreeScale } from "@/lib/geo-distance";
 import { getTursoClient } from "@/lib/turso";
 import {
   getCoordinateBounds,
@@ -56,11 +56,16 @@ export async function GET(request: Request) {
 
   // Reduce rows with a latitude-aware bounding box, then calculate exact distance.
   const { minLat, maxLat, minLon, maxLon } = getCoordinateBounds(lat, lon, radiusKm);
+  const lonScale = longitudeDegreeScale(lat);
 
   try {
     const result = await db.execute({
-      sql: "SELECT * FROM pharmacies WHERE latitude BETWEEN ? AND ? AND longitude BETWEEN ? AND ? LIMIT 400",
-      args: [minLat, maxLat, minLon, maxLon],
+      sql: `SELECT * FROM pharmacies
+            WHERE latitude BETWEEN ? AND ? AND longitude BETWEEN ? AND ?
+            ORDER BY ((latitude - ?) * (latitude - ?))
+              + (((longitude - ?) * ?) * ((longitude - ?) * ?))
+            LIMIT 400`,
+      args: [minLat, maxLat, minLon, maxLon, lat, lat, lon, lonScale, lon, lonScale],
     });
 
     const within = (result.rows as any[])

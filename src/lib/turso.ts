@@ -26,6 +26,25 @@ export function getTursoClient(): Client {
   return _client;
 }
 
+export function getRequiredTursoClient(): Client {
+  if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
+    throw new Error("TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are required for database jobs.");
+  }
+
+  return getTursoClient();
+}
+
+export function assertExpectedRowsAffected(
+  results: Array<{ rowsAffected: number }>,
+  expected: number,
+  operation: string,
+) {
+  const actual = results.reduce((sum, result) => sum + result.rowsAffected, 0);
+  if (actual !== expected) {
+    throw new Error(`${operation} affected ${actual} row(s); expected ${expected}.`);
+  }
+}
+
 /** JSON 텍스트 필드를 파싱, 실패 시 fallback 반환 */
 export function parseJson<T>(value: unknown, fallback: T): T {
   if (value == null) return fallback;

@@ -277,3 +277,4 @@ import { z } from "zod";
 **검토자**: AI Code Reviewer  
 **다음 검토 예정일**: 주요 변경사항 발생 시
 
+> Historical snapshot. Next.js, database, security, and test findings here may be obsolete. See `/PROJECT_STATE.md` and `/.goal-harness/EVIDENCE.md`.

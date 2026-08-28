@@ -24,3 +24,4 @@
 ### 참고
 - Next.js `generateSitemaps`/다중 sitemap: https://github.com/vercel/next.js/blob/canary/docs/01-app/03-api-reference/04-functions/generate-sitemaps.mdx
 
+> Superseded plan. Current implementation and remaining work are tracked in `/PROJECT_STATE.md` and `/.goal-harness/PLAN.md`.

@@ -198,3 +198,4 @@ fetch('/api/generate-pharmacy', {
 2. **Supabase 테이블**: `pharmacies` 테이블에 `gemini_summary` 컬럼이 있어야 합니다.
 3. **API 키**: Gemini API 키가 유효해야 합니다.
 
+> Legacy Vercel notes. Routes, workflows, and configuration below may not exist. Vercel operations require separate explicit authorization.

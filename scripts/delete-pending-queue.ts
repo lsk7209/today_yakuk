@@ -2,9 +2,9 @@ import "dotenv/config";
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
-import { getTursoClient } from "../src/lib/turso";
+import { getRequiredTursoClient } from "../src/lib/turso";
 
-const db = getTursoClient();
+const db = getRequiredTursoClient();
 
 async function deletePending() {
     console.log("Checking for pending items...");

@@ -4,7 +4,7 @@ import path from "path";
 /**
  * 블로그 대표 이미지 URL 반환
  * 우선순위:
- * 1. DB에 저장된 image_url (Supabase Storage)
+ * 1. DB에 저장된 image_url
  * 2. 로컬 public/blog-images 폴더
  * 3. OG Image API (fallback)
  */
@@ -13,7 +13,7 @@ export function getBlogFeaturedImage(
     title: string,
     imageUrl?: string | null
 ): string {
-    // 1. DB에 저장된 Supabase Storage URL 우선 사용
+    // 1. DB에 저장된 image URL 우선 사용
     if (imageUrl) {
         return imageUrl;
     }

@@ -2,13 +2,13 @@ import dotenv from "dotenv";
 import path from "path";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config();
-import { getTursoClient } from "../src/lib/turso";
+import { assertExpectedRowsAffected, getRequiredTursoClient } from "../src/lib/turso";
 
 const API_KEY = process.env.MEDICINE_API_KEY || process.env.PUBLIC_DATA_API_KEY;
 const BASE_URL = "https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList";
 const BATCH_SIZE = 100;
 
-const db = getTursoClient();
+const db = getRequiredTursoClient();
 
 if (!API_KEY) {
     console.error("❌ Error: Missing MEDICINE_API_KEY or PUBLIC_DATA_API_KEY environment variable.");
@@ -117,7 +117,8 @@ async function processBatch(items: MedItem[]) {
         ],
     }));
 
-    await db.batch(statements, "write");
+    const results = await db.batch(statements, "write");
+    assertExpectedRowsAffected(results, statements.length, "fetch-medicines batch");
 }
 
 async function main() {

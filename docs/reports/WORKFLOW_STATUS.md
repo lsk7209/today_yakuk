@@ -133,3 +133,4 @@ on:
 - `publish-queue.ts` 스크립트는 "AI 재생성 중단: 이미 생성된 콘텐츠만 발행합니다"라고 명시되어 있음
 - 실제 콘텐츠 생성은 수동으로만 실행 가능
 
+> Historical snapshot. Workflow names and schedules below are not authoritative. Inspect `.github/workflows/` and `/PROJECT_STATE.md`.

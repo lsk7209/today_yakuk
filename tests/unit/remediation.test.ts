@@ -7,6 +7,7 @@ import { XMLParser } from "fast-xml-parser";
 import { NextRequest } from "next/server";
 import { contentItemUpdateSchema } from "@/lib/content-update";
 import { getCoordinateBounds, parseNearbyRadius } from "@/lib/geo-bounds";
+import { longitudeDegreeScale } from "@/lib/geo-distance";
 import { buildHffUpsertStatement } from "@/lib/hff-upsert";
 import { highlightSafeText } from "@/lib/safe-highlight";
 import { sanitizeTrustedHtml } from "@/lib/sanitize-html";
@@ -39,6 +40,16 @@ import {
 import { getVerifiedNutritionFacts } from "@/lib/wiki-nutrition";
 import { getNextSlot } from "@/lib/scheduler";
 import { AdditiveSignal } from "@/components/wiki/AdditiveSignal";
+import { createClient } from "@libsql/client";
+import { assertExpectedRowsAffected, getRequiredTursoClient } from "@/lib/turso";
+import { claimPendingContent } from "../../scripts/publish-queue";
+import { parsePharmacyApiResponse } from "../../scripts/sync-pharmacies";
+import {
+  finishSyncRun,
+  getSourceRowCount,
+  staleSources,
+  startSyncRun,
+} from "../../scripts/lib/sync-run-metrics";
 
 async function run(name: string, test: () => void | Promise<void>) {
   await test();
@@ -1068,6 +1079,166 @@ async function main() {
     assert.doesNotMatch(manifest, /favicon\.ico/);
     assert.match(sitemapRoute, /dynamic = "force-dynamic"/);
     assert.match(sitemapRoute, /availableIds\.includes\(id\)/);
+  });
+
+  await run("database jobs fail closed and publishing is idempotent", () => {
+    const root = process.cwd();
+    const turso = fs.readFileSync(path.join(root, "src/lib/turso.ts"), "utf8");
+    const schema = fs.readFileSync(path.join(root, "scripts/init-turso-schema.mjs"), "utf8");
+    const publisher = fs.readFileSync(path.join(root, "scripts/publish-queue.ts"), "utf8");
+    const workflow = fs.readFileSync(path.join(root, ".github/workflows/publish-content.yml"), "utf8");
+    const nearby = fs.readFileSync(path.join(root, "src/app/api/nearby/route.ts"), "utf8");
+    const tagPage = fs.readFileSync(path.join(root, "src/app/wiki/tag/[keyword]/page.tsx"), "utf8");
+
+    assert.match(turso, /export function getRequiredTursoClient/);
+    for (const file of [
+      "scripts/fetch-hff-data.ts",
+      "scripts/fetch-medicines.ts",
+      "scripts/sync-supplements.ts",
+      "scripts/auto-enrich-supplements.ts",
+    ]) {
+      assert.match(fs.readFileSync(path.join(root, file), "utf8"), /getRequiredTursoClient/);
+    }
+    const blogGenerator = fs.readFileSync(path.join(root, "scripts/generate-blog-post.ts"), "utf8");
+    assert.match(blogGenerator, /main\(\)\.catch[\s\S]*process\.exitCode = 1/);
+    assert.match(schema, /failures\.push/);
+    assert.match(schema, /Schema initialization failed/);
+    assert.match(schema, /process\.exitCode = 1/);
+    assert.match(publisher, /WHERE id = \? AND status = 'pending'/);
+    assert.match(publisher, /rowsAffected === 1/);
+    assert.match(workflow, /group: publish-content-queue/);
+    assert.match(nearby, /ORDER BY \(\(latitude - \?\)/);
+    assert.match(tagPage, /SUPPLEMENT_INDEXABLE_PREDICATE/);
+  });
+
+  await run("required Turso access, publish claims, and supplement predicates execute", async () => {
+    const previousUrl = process.env.TURSO_DATABASE_URL;
+    const previousToken = process.env.TURSO_AUTH_TOKEN;
+    process.env.TURSO_DATABASE_URL = "";
+    process.env.TURSO_AUTH_TOKEN = "";
+    assert.throws(() => getRequiredTursoClient(), /required for database jobs/);
+    assert.doesNotThrow(() => assertExpectedRowsAffected([{ rowsAffected: 1 }], 1, "test"));
+    assert.throws(
+      () => assertExpectedRowsAffected([{ rowsAffected: 0 }], 1, "test"),
+      /affected 0 row\(s\); expected 1/,
+    );
+    if (previousUrl === undefined) delete process.env.TURSO_DATABASE_URL;
+    else process.env.TURSO_DATABASE_URL = previousUrl;
+    if (previousToken === undefined) delete process.env.TURSO_AUTH_TOKEN;
+    else process.env.TURSO_AUTH_TOKEN = previousToken;
+
+    const db = createClient({ url: ":memory:" });
+    await db.execute(`CREATE TABLE content_queue (
+      id TEXT PRIMARY KEY, status TEXT, published_at TEXT, updated_at TEXT
+    )`);
+    await db.execute("INSERT INTO content_queue (id, status) VALUES ('one', 'pending')");
+    assert.equal(await claimPendingContent(db, "one", "2026-08-28T00:00:00.000Z"), true);
+    assert.equal(await claimPendingContent(db, "one", "2026-08-28T00:00:01.000Z"), false);
+
+    await db.execute(`CREATE TABLE supplements (
+      id TEXT PRIMARY KEY, name TEXT, nutrition_facts TEXT, tags TEXT
+    )`);
+    await db.batch([
+      { sql: "INSERT INTO supplements VALUES (?, ?, ?, ?)", args: ["good", "정상 제품", "[]", '["비타민"]'] },
+      { sql: "INSERT INTO supplements VALUES (?, ?, ?, ?)", args: ["test", "test fixture", "[]", '["비타민"]'] },
+      { sql: "INSERT INTO supplements VALUES (?, ?, ?, ?)", args: ["thin", "빈 제품", "[]", "[]"] },
+    ]);
+    const filtered = await db.execute(`SELECT id FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} ORDER BY id`);
+    assert.deepEqual(filtered.rows.map((row) => row.id), ["good"]);
+    db.close();
+  });
+
+  await run("nearby preselection scales longitude at Korean latitudes", () => {
+    const scale = longitudeDegreeScale(37.5);
+    const eastWestSquared = (0.045 * scale) ** 2;
+    const northSouthSquared = 0.038 ** 2;
+    assert.ok(eastWestSquared < northSouthSquared);
+  });
+
+  await run("sync metrics and freshness detection are executable", async () => {
+    const db = createClient({ url: ":memory:" });
+    await db.execute("CREATE TABLE pharmacies (id TEXT)");
+    await db.execute(`CREATE TABLE public_data_sync_runs (
+      id TEXT PRIMARY KEY, source TEXT, mode TEXT, status TEXT, started_at TEXT,
+      finished_at TEXT, db_count_before INTEGER, db_count_after INTEGER,
+      inserted_count INTEGER, duration_seconds INTEGER, error_message TEXT
+    )`);
+    await db.execute("INSERT INTO pharmacies VALUES ('one')");
+    const before = await getSourceRowCount(db, "pharmacies");
+    const id = await startSyncRun(db, {
+      source: "pharmacies",
+      mode: "all",
+      startedAt: "2026-08-28T00:00:00.000Z",
+      countBefore: before,
+    });
+    await db.execute("INSERT INTO pharmacies VALUES ('two')");
+    const after = await getSourceRowCount(db, "pharmacies");
+    await finishSyncRun(db, {
+      id,
+      status: "success",
+      finishedAt: "2026-08-28T00:00:10.000Z",
+      countBefore: before,
+      countAfter: after,
+      durationSeconds: 10,
+    });
+    const run = await db.execute({
+      sql: "SELECT status, inserted_count FROM public_data_sync_runs WHERE id = ?",
+      args: [id],
+    });
+    assert.equal(run.rows[0]?.status, "success");
+    assert.equal(Number(run.rows[0]?.inserted_count), 1);
+    assert.deepEqual(
+      staleSources(new Date("2026-08-28T12:00:00.000Z"), {
+        pharmacies: "2026-08-27T23:00:00.000Z",
+        hff: "2026-08-27T00:00:00.000Z",
+        medicines: "2026-08-01T00:00:00.000Z",
+      }),
+      ["medicines"],
+    );
+    db.close();
+  });
+
+  await run("pharmacy API errors fail closed and outbox retry timestamps stay due", async () => {
+    assert.throws(
+      () => parsePharmacyApiResponse({ response: { header: { resultCode: "30", resultMsg: "SERVICE KEY ERROR" } } }),
+      /Pharmacy API error/,
+    );
+    assert.throws(
+      () => parsePharmacyApiResponse({ response: { header: { resultCode: "00" } } }),
+      /missing body/,
+    );
+    assert.deepEqual(
+      parsePharmacyApiResponse({
+        response: {
+          header: { resultCode: "00", resultMsg: "NORMAL SERVICE" },
+          body: { totalCount: 1, items: { item: { hpid: "A", dutyName: "Pharmacy" } } },
+        },
+      }),
+      { totalCount: 1, items: [{ hpid: "A", dutyName: "Pharmacy" }] },
+    );
+
+    const db = createClient({ url: ":memory:" });
+    await db.execute("CREATE TABLE retry_times (next_attempt_at TEXT)");
+    await db.execute("INSERT INTO retry_times VALUES ('2026-08-28T01:10:00.000Z')");
+    const due = await db.execute(
+      "SELECT COUNT(*) AS count FROM retry_times WHERE datetime(next_attempt_at) <= datetime('2026-08-28 01:11:00')",
+    );
+    assert.equal(Number(due.rows[0]?.count), 1);
+    db.close();
+  });
+
+  await run("automation workflows include catch-up, verification, and indexing retries", () => {
+    const root = process.cwd();
+    const daily = fs.readFileSync(path.join(root, ".github/workflows/daily-sync.yml"), "utf8");
+    const watchdog = fs.readFileSync(path.join(root, ".github/workflows/sync-watchdog.yml"), "utf8");
+    const outbox = fs.readFileSync(path.join(root, ".github/workflows/indexing-outbox.yml"), "utf8");
+    const publisher = fs.readFileSync(path.join(root, "scripts/publish-queue.ts"), "utf8");
+    assert.match(daily, /verify:public-sync/);
+    assert.match(watchdog, /check:sync-freshness/);
+    assert.match(watchdog, /gh workflow run daily-sync\.yml/);
+    assert.match(outbox, /process:indexing-outbox/);
+    assert.match(publisher, /INSERT INTO indexing_outbox/);
+    assert.doesNotMatch(publisher, /requestIndexing/);
   });
 }
 

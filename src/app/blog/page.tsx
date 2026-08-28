@@ -310,7 +310,7 @@ export default async function BlogIndexPage({
 
       <AdSlotInFeed className="my-2" />
 
-      {/* Supabase 발행 포스트 */}
+      {/* DB 발행 포스트 */}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <p className="text-sm font-black text-gray-500 uppercase tracking-wide">

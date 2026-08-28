@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import path from "path";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config();
-import { getTursoClient } from "../src/lib/turso";
+import { assertExpectedRowsAffected, getRequiredTursoClient } from "../src/lib/turso";
 import { buildHffUpsertStatement } from "../src/lib/hff-upsert";
 
 const API_KEY = process.env.FOOD_SAFETY_API_KEY;
@@ -11,7 +11,7 @@ const BASE_URL = "https://openapi.foodsafetykorea.go.kr/api";
 const BATCH_SIZE = 1000;
 const DELAY_MS = 1000;
 
-const db = getTursoClient();
+const db = getRequiredTursoClient();
 
 if (!API_KEY) {
     console.error("❌ Error: Missing FOOD_SAFETY_API_KEY environment variable.");
@@ -72,7 +72,8 @@ async function processBatch(items: HffItem[]) {
 
     const statements = items.map(buildHffUpsertStatement);
 
-    await db.batch(statements, "write");
+    const results = await db.batch(statements, "write");
+    assertExpectedRowsAffected(results, statements.length, "fetch-hff-data batch");
 }
 
 async function main() {

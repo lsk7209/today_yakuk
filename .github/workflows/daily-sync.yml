@@ -107,3 +107,11 @@ jobs:
           PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
           FOOD_SAFETY_API_KEY: ${{ secrets.FOOD_SAFETY_API_KEY }}
           MEDICINE_API_KEY: ${{ secrets.MEDICINE_API_KEY }}
+
+      - name: Verify production DB is represented in the public sitemap
+        run: npm run verify:public-sync -- "$SYNC_SOURCES"
+        env:
+          SYNC_SOURCES: ${{ steps.plan.outputs.sources }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}

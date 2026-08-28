@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
-import { getTursoClient } from "../src/lib/turso";
+import { getRequiredTursoClient } from "../src/lib/turso";
 
 dotenv.config({ path: ".env.local" });
 
-const db = getTursoClient();
+const db = getRequiredTursoClient();
 
 const TAG_MAP: Record<string, string[]> = {
     "vitamin-c": ["비타민C", "비타민 C", "Vitamin C"],

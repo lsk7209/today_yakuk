@@ -2,9 +2,9 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 import "tsconfig-paths/register";
-import { getTursoClient } from "../src/lib/turso";
+import { getRequiredTursoClient } from "../src/lib/turso";
 
-const db = getTursoClient();
+const db = getRequiredTursoClient();
 
 async function main() {
     console.info("===== 최근 블로그 콘텐츠 분석 =====\n");

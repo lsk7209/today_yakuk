@@ -7,7 +7,7 @@ dotenv.config(); // .env도 로드
 
 // tsconfig-paths를 등록하여 @ 경로 별칭 해석
 import "tsconfig-paths/register";
-import { getTursoClient } from "../src/lib/turso";
+import { getRequiredTursoClient } from "../src/lib/turso";
 import { generatePharmacyContent } from "../src/lib/gemini";
 import type { Pharmacy } from "../src/types/pharmacy";
 import { getPharmacyByHpid, getPharmaciesByRegion } from "@/lib/data/pharmacies";
@@ -82,7 +82,7 @@ function jaccardSimilarity(a: string, b: string): number {
 
 async function getRecentSummariesForDedupe(limit = 200) {
   try {
-    const db = getTursoClient();
+    const db = getRequiredTursoClient();
     const result = await db.execute({
       sql: "SELECT ai_summary FROM content_queue WHERE ai_summary IS NOT NULL ORDER BY published_at DESC LIMIT ?",
       args: [limit],
@@ -131,7 +131,7 @@ function ensureEnv() {
  */
 async function generateSinglePharmacyContent(hpid: string): Promise<void> {
   ensureEnv();
-  const db = getTursoClient();
+  const db = getRequiredTursoClient();
 
   console.info(`\n=== 약국 컨텐츠 생성 시작: ${hpid} ===\n`);
 

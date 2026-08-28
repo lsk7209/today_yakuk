@@ -9,7 +9,7 @@
  */
 
 import dotenv from "dotenv";
-import { getTursoClient } from "../src/lib/turso";
+import { getRequiredTursoClient } from "../src/lib/turso";
 import { analyzeProduct } from "./lib/nutrition-parser";
 import { detectAdditives } from "./lib/additive-keywords";
 import {
@@ -37,7 +37,7 @@ async function autoEnrichSupplements() {
     process.exit(1);
   }
 
-  const db = getTursoClient();
+  const db = getRequiredTursoClient();
 
   const pendingResult = await db.execute(`SELECT COUNT(*) AS cnt FROM supplements
           WHERE (nutrition_facts IS NULL OR nutrition_facts = '[]' OR nutrition_facts = 'null')
