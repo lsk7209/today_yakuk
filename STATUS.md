@@ -5,9 +5,9 @@ Updated: 2026-08-30
 ## Current state
 
 - Local validation: passing for the Publish Content Queue repair and blog initial-HTML follow-up
-- GitHub baseline: local `HEAD` and fetched `origin/main` at released SHA `da8d44c732936562724ea249863ca3c958868c96`
-- Current follow-up: blog H1/description/curated links moved outside the DB wait; crawler pagination allowlist reconciled with robots.txt; stale deleted-script alias removed; awaiting an allowlisted commit/push
-- Deployment: first repair verified in Production deployment `6156978896`; current follow-up not yet released
+- GitHub baseline: local `HEAD` and fetched `origin/main` at released blog-shell SHA `e182e10be961774019ccaf710237071bf9b254cf`
+- Current follow-up: independent HIGH closed locally by exact category allowlisting, tag-pagination bot blocking, robots parity, and strict malformed-page normalization; awaiting commit/push
+- Deployment: `db:init` repair verified in Production `6156978896`; blog-shell follow-up verified in Production `6157245458`
 - Production DB writes, workflow dispatch, and content publication: not performed in this follow-up
 
 ## Current validation target

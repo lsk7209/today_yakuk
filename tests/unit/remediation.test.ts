@@ -1069,6 +1069,7 @@ async function main() {
     );
     assert.match(robots, /\/\*\?page=/);
     assert.match(robots, /\/wiki\?category=/);
+    assert.match(robots, /\/wiki\/tag\/\*\?page=/);
     assert.doesNotMatch(robots, /host:\s*siteUrl/);
     assert.match(wikiIndex, /isFilteredState[\s\S]*index: false, follow: true/);
     assert.match(tagPage, /if \(!count\) notFound\(\)/);
@@ -1084,7 +1085,6 @@ async function main() {
       "https://todaypharm.kr/blog?page=2",
       "https://todaypharm.kr/wiki?page=2",
       "https://todaypharm.kr/wiki?category=probiotics&page=2",
-      "https://todaypharm.kr/wiki/tag/fatigue?page=2",
     ]) {
       assert.equal(isSafeCrawlerQuery(new URL(url)), true, url);
     }
@@ -1094,9 +1094,12 @@ async function main() {
       "https://todaypharm.kr/blog?page=2&page=3",
       "https://todaypharm.kr/blog?page=0",
       "https://todaypharm.kr/blog?page=01",
+      "https://todaypharm.kr/blog?page=2abc",
       "https://todaypharm.kr/blog?page=10001",
       "https://todaypharm.kr/api/nearby?q=강남",
+      "https://todaypharm.kr/wiki?category=unknown-category",
       "https://todaypharm.kr/wiki?category=../../admin",
+      "https://todaypharm.kr/wiki/tag/fatigue?page=2",
     ]) {
       assert.equal(isSafeCrawlerQuery(new URL(url)), false, url);
     }

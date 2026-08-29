@@ -2,12 +2,12 @@
 
 Current State: VERIFYING
 Current Phase: 2026-08-30 blog HTML-shell and package-contract follow-up
-Completed: GitHub-first reproduction; isolated clone; `db:init` repair released as `da8d44c`; GitHub CI and Git-connected production verified; blog H1/static guides moved outside the DB/search-parameter wait; robots/proxy pagination contradiction repaired with bounded crawler allowlist; stale `generate:images` alias removed; package-script and raw-HTML regressions added
-In Progress: Allowlisted follow-up commit/push and exact-SHA remote CI/deployment verification
+Completed: GitHub-first reproduction; isolated clone; `db:init` repair released as `da8d44c`; blog-shell repair released as `e182e10` with CI and Production success; H1/static guides moved outside the DB/search-parameter wait; stale `generate:images` alias removed; package-script and raw-HTML regressions added; reviewer HIGH on arbitrary tag pagination repaired locally with exact wiki categories and tag-query blocking
+In Progress: Commit/push the reviewer closure and verify its exact-SHA CI/deployment
 Remaining: Verify the public raw `/blog` response after release and observe the next natural scheduled Publish Content Queue run; do not manually dispatch a production DB/content job
 Blocked: Production-credential execution is deliberately outside this repair verification boundary
-Last Verification: unit 31/31; lint; both typechecks; Next.js build 57; targeted Playwright 10/10; isolated-port full Playwright 32/32; diff check; local HEAD and `origin/main` both `da8d44c732936562724ea249863ca3c958868c96`
-Next Action: Commit and push the coherent HTML-shell/package-contract follow-up, verify GitHub CI and Git-connected production for the exact SHA, then verify public raw HTML without dispatching the publisher.
+Last Verification: reviewer closure unit 31/31; lint; both typechecks; Next.js build 57; targeted Playwright 10/10; isolated-port full Playwright 32/32; production-mode Browser/Googlebot raw-response matrix; diff check
+Next Action: Commit and push the reviewer closure, verify GitHub CI and Git-connected production for the exact SHA, then verify public raw HTML without dispatching the publisher.
 
 ## 2026-08-27 Data-to-content pass
 

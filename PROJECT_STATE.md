@@ -6,7 +6,8 @@
 - Scheduled Publish Content Queue run `33256826221` and multiple earlier runs failed before publication because the workflow called a missing `npm run db:init` command.
 - Added the missing package alias to the existing `scripts/init-turso-schema.mjs` implementation and a regression test that binds the workflow command to that alias.
 - The first repair was released as `da8d44c`; GitHub CI run `33259114351` and Git-connected Production deployment `6156978896` succeeded for that exact SHA.
-- The current follow-up moves the authored blog H1, description, and curated links outside the DB/search-parameter wait so they are literal initial HTML, reconciles robots.txt pagination allowances with a bounded crawler-query proxy policy, and removes the stale `generate:images` package alias to an intentionally deleted script.
+- The blog-shell follow-up was released as `e182e10`; GitHub CI `33260457513`, Hosting Cost Guard `33260457490`, and Git-connected Production deployment `6157245458` succeeded.
+- The current reviewer closure keeps the literal blog shell, narrows bot pagination to exact wiki categories, blocks arbitrary tag pagination consistently in proxy and robots.txt, strictly normalizes malformed page values, and preserves the stale-script cleanup.
 - Local validation passed: clean install/audit 0, unit 31/31, lint, both TypeScript checks, empty-credential fail-closed smoke, production build 57, targeted Playwright 10/10, isolated-port full Playwright 32/32, and diff check.
 - Current public-data evidence is healthy: Scheduled Public Data Sync `33227743842` added 17 pharmacy rows and verified a public detail sample.
 - No production DB/API write, workflow dispatch, content publication, Vercel CLI/API mutation, or manual deployment was performed. The current HTML-shell follow-up still needs an allowlisted commit/push, exact-SHA CI/deployment proof, and public raw-HTML verification; the publisher must be observed only on its next natural schedule.

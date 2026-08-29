@@ -69,10 +69,24 @@ test.describe("Blog Page", () => {
         expect(paginatedHtml).toContain('<link rel="canonical" href="https://todaypharm.kr/blog?page=2"');
         expect(paginatedHtml).toContain('<meta name="robots" content="noindex, follow"');
 
+        const malformedResponse = await request.get("/blog?page=2abc");
+        expect(malformedResponse.ok()).toBeTruthy();
+        const malformedHtml = await malformedResponse.text();
+        expect(malformedHtml).toContain('<link rel="canonical" href="https://todaypharm.kr/blog"');
+        expect(malformedHtml).toContain('<meta name="robots" content="index, follow"');
+
         const blockedSearchResponse = await request.get("/blog?q=감기약", {
             headers: googlebotHeaders,
         });
         expect(blockedSearchResponse.status()).toBe(403);
+        const blockedTagPagination = await request.get("/wiki/tag/fatigue?page=2", {
+            headers: googlebotHeaders,
+        });
+        expect(blockedTagPagination.status()).toBe(403);
+
+        const robotsResponse = await request.get("/robots.txt");
+        expect(robotsResponse.ok()).toBeTruthy();
+        expect(await robotsResponse.text()).toContain("Disallow: /wiki/tag/*?page=");
 
         await page.goto("/blog");
 

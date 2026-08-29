@@ -1,6 +1,6 @@
 # Current Handoff
 
-Updated: 2026-08-30 00:17 KST
+Updated: 2026-08-30 00:36 KST
 
 ## User goal
 
@@ -9,10 +9,11 @@ Audit and improve the managed SEO fleet, using the latest GitHub `main` as the s
 ## Exact current state
 
 - Isolated release clone: `D:\web\seo-worktrees\todaypharm-publish-pipeline-20260829`
-- Base branch/SHA: `main` at released commit `da8d44c732936562724ea249863ca3c958868c96`, equal to fetched `origin/main` before the current follow-up.
+- Base branch/SHA: `main` at released blog-shell commit `e182e10be961774019ccaf710237071bf9b254cf`, equal to `origin/main` before the reviewer closure.
 - Reproduced production automation defect: scheduled Publish Content Queue run `33256826221` failed before publication because `.github/workflows/publish-content.yml` called the missing `npm run db:init` script.
 - The original checkout `D:\web\todaypharm` is diverged and dirty; it has not been modified by this repair.
 - The first repair is live: GitHub CI run `33259114351` and Git-connected Production deployment `6156978896` both succeeded for `da8d44c`.
+- The blog-shell follow-up is live: CI `33260457513`, Hosting Cost Guard `33260457490`, and Production deployment `6157245458` succeeded for `e182e10`.
 - Current production `/blog` is 200 and has correct metadata, but its literal initial HTML has no H1 or static guide links; those elements are present only in the streamed RSC payload.
 - Current production also returns 403 to Googlebot for `/blog?page=2` even though robots.txt explicitly permits `/*?page=`; local production-mode reproduction confirmed the contradiction.
 
@@ -26,6 +27,7 @@ Audit and improve the managed SEO fleet, using the latest GitHub `main` as the s
 - Removed the stale `generate:images` package alias whose target was intentionally deleted, and added a unit contract that all package-referenced local scripts exist.
 - Added a raw-response Playwright regression for literal H1 and a representative curated internal link.
 - Reconciled crawler controls: bounded blog/wiki pagination and curated wiki-category states can pass, while search queries, unknown keys, APIs, duplicate parameters, malformed pages, and pages over 10,000 remain blocked for bot UAs.
+- Closed the independent HIGH finding: arbitrary tag pagination is now explicitly blocked for bots in both proxy and robots.txt; wiki categories use the exact eight-value UI allowlist; malformed values such as `page=2abc` normalize to page 1 for normal users and remain blocked for bots.
 
 ## Changed files
 
@@ -34,6 +36,7 @@ Audit and improve the managed SEO fleet, using the latest GitHub `main` as the s
 - `src/app/blog/page.tsx`
 - `tests/e2e/wiki.spec.ts`
 - `src/proxy.ts`
+- `src/app/robots.ts`
 - `.goal-harness/STATUS.md`
 - `.goal-harness/EVIDENCE.md`
 - `STATUS.md`
@@ -53,6 +56,7 @@ Audit and improve the managed SEO fleet, using the latest GitHub `main` as the s
 - Full Playwright on isolated port 3107: pass, 32/32 desktop/mobile. The initial port-3000 run was discarded because an unrelated local app answered as `아이템79` and then stopped.
 - After the crawler-policy repair, targeted Playwright passed 10/10 and the full isolated suite passed 32/32 again.
 - Isolated production-mode raw responses: Browser and Googlebot `/blog` and `/blog?page=2` returned 200 with one literal H1, curated link, correct canonical, and `index, follow`/`noindex, follow`; unsafe bot queries remained 403.
+- Reviewer closure repeated unit 31/31, lint, both typechecks, targeted Playwright 10/10, full Playwright 32/32, build 57, and production-mode raw checks including tag/query blocks and robots parity.
 - `git diff --check`: pass; only Windows line-ending notices.
 
 ## Side effects and rollback
@@ -70,4 +74,4 @@ Audit and improve the managed SEO fleet, using the latest GitHub `main` as the s
 
 ## Single next step
 
-Commit and push only the coherent blog HTML-shell/package-contract follow-up, verify exact-SHA GitHub CI and Git-connected production, then verify public raw HTML before observing the next natural Publish Content Queue result without manually dispatching it.
+Commit and push only the reviewer closure, verify exact-SHA GitHub CI and Git-connected production, then verify public raw HTML before observing the next natural Publish Content Queue result without manually dispatching it.

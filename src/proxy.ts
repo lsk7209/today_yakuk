@@ -8,7 +8,16 @@ import { verifyAdminToken } from "@/lib/jwt";
 const BOT_UA =
   /bot|crawl|spider|slurp|Googlebot|bingbot|Bytespider|GPTBot|ClaudeBot|PerplexityBot|OAI-SearchBot|YandexBot|Baiduspider|DuckDuckBot|Yeti|Daumoa/i;
 const MAX_CRAWLER_PAGE = 10_000;
-const SAFE_WIKI_CATEGORY = /^[a-z0-9-]{1,32}$/;
+const SAFE_WIKI_CATEGORIES = new Set([
+  "all",
+  "probiotics",
+  "vitamin-c",
+  "omega3",
+  "eye",
+  "fatigue",
+  "immune",
+  "bone",
+]);
 
 function isValidCrawlerPage(value: string | null) {
   if (!value || !/^[1-9]\d*$/.test(value)) return false;
@@ -33,11 +42,7 @@ export function isSafeCrawlerQuery(url: URL) {
   if (url.pathname === "/wiki") {
     if (!keys.every((key) => key === "category" || key === "page")) return false;
     const category = url.searchParams.get("category");
-    return category === null || SAFE_WIKI_CATEGORY.test(category);
-  }
-
-  if (/^\/wiki\/tag\/[^/]+$/.test(url.pathname)) {
-    return keys.length === 1 && keys[0] === "page";
+    return category === null || SAFE_WIKI_CATEGORIES.has(category);
   }
 
   return false;

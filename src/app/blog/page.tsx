@@ -185,8 +185,9 @@ export async function generateMetadata({
 }
 
 function getCurrentPage(pageParam?: string) {
-  const page = Number.parseInt(pageParam ?? "1", 10);
-  if (Number.isNaN(page) || page < 1) return 1;
+  if (!pageParam || !/^[1-9]\d*$/.test(pageParam)) return 1;
+  const page = Number(pageParam);
+  if (!Number.isSafeInteger(page)) return 1;
   return page;
 }
 
