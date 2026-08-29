@@ -1087,6 +1087,9 @@ async function main() {
     const schema = fs.readFileSync(path.join(root, "scripts/init-turso-schema.mjs"), "utf8");
     const publisher = fs.readFileSync(path.join(root, "scripts/publish-queue.ts"), "utf8");
     const workflow = fs.readFileSync(path.join(root, ".github/workflows/publish-content.yml"), "utf8");
+    const packageJson = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")) as {
+      scripts: Record<string, string>;
+    };
     const nearby = fs.readFileSync(path.join(root, "src/app/api/nearby/route.ts"), "utf8");
     const tagPage = fs.readFileSync(path.join(root, "src/app/wiki/tag/[keyword]/page.tsx"), "utf8");
 
@@ -1107,6 +1110,8 @@ async function main() {
     assert.match(publisher, /WHERE id = \? AND status = 'pending'/);
     assert.match(publisher, /rowsAffected === 1/);
     assert.match(workflow, /group: publish-content-queue/);
+    assert.match(workflow, /run: npm run db:init/);
+    assert.equal(packageJson.scripts["db:init"], "node scripts/init-turso-schema.mjs");
     assert.match(nearby, /ORDER BY \(\(latitude - \?\)/);
     assert.match(tagPage, /SUPPLEMENT_INDEXABLE_PREDICATE/);
   });

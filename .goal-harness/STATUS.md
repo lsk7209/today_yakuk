@@ -1,13 +1,13 @@
 # STATUS
 
-Current State: DONE
-Current Phase: Remediation Phase 3 - completed
-Completed: Security/data/workflow fixes; Next.js 16 migration; clean install; lint; app/script typechecks; 11 focused tests; build; Playwright 22/22; Terra and Sol reviews
-In Progress:
-Remaining: Optional MEDIUM follow-ups listed in RISKS.md and PROJECT_STATE.md
-Blocked:
-Last Verification: `npm ci`, lint, both typechecks, 11/11 unit, full audit 0, production build, workflow YAML parse, diff check, Playwright 22/22
-Next Action: Review the local diff; commit/push only on explicit request. Do not deploy or run production data jobs without separate authorization.
+Current State: VERIFYING
+Current Phase: 2026-08-29 Publish Content Queue contract repair
+Completed: GitHub-first reproduction; isolated clone; `db:init` package alias; workflow/package regression test; clean install; unit/lint/typechecks/build; empty-credential fail-closed smoke
+In Progress: Allowlisted commit/push and remote CI/deployment verification
+Remaining: Observe the next natural scheduled Publish Content Queue run; do not manually dispatch a production DB/content job
+Blocked: Production-credential execution is deliberately outside this repair verification boundary
+Last Verification: `npm ci` audit 0; unit 31/31; lint; both typechecks; `DB_INIT_EMPTY_ENV_FAIL_CLOSED=PASS`; Next.js build 57; diff check
+Next Action: Commit and push the coherent repair, verify GitHub CI and Git-connected production, then record the next natural scheduled run.
 
 ## 2026-08-27 Data-to-content pass
 

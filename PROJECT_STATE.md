@@ -1,5 +1,14 @@
 # PROJECT_STATE
 
+## 2026-08-29 Publish Content Queue repair
+
+- GitHub-first inspection used remote `main` SHA `8a9b8926b2950b1eb7f4c856151f651152c82a63`; the user's dirty, diverged `D:\web\todaypharm` checkout was not modified.
+- Scheduled Publish Content Queue run `33256826221` and multiple earlier runs failed before publication because the workflow called a missing `npm run db:init` command.
+- Added the missing package alias to the existing `scripts/init-turso-schema.mjs` implementation and a regression test that binds the workflow command to that alias.
+- Local validation passed: clean install/audit 0, unit 31/31, lint, both TypeScript checks, empty-credential fail-closed smoke, production build 57, and diff check.
+- Current public-data evidence is healthy: Scheduled Public Data Sync `33227743842` added 17 pharmacy rows and verified a public detail sample.
+- No production DB/API write, workflow dispatch, content publication, Vercel CLI/API mutation, or manual deployment was performed. Remote CI/deployment verification and the next natural scheduled publisher run remain.
+
 ## Purpose
 
 Today Yakuk 저장소의 보안·데이터 무결성·의존성·자동화·핵심 브라우저 흐름을 로컬에서 수리하고 재현 가능한 검증 상태를 유지한다.

@@ -1,5 +1,21 @@
 # EVIDENCE
 
+## 2026-08-29 Publish Content Queue contract repair
+
+| Check | Result | Evidence |
+|---|---|---|
+| GitHub-first baseline | PASS | isolated `main` and `origin/main` both `8a9b8926b2950b1eb7f4c856151f651152c82a63` |
+| production failure reproduction | PASS | scheduled run `33256826221` stopped at `npm run db:init` with `Missing script: "db:init"`; earlier scheduled runs failed the same way |
+| root cause | PASS | workflow added the command in `eaa4277`, while `package.json` never added the corresponding script; `scripts/init-turso-schema.mjs` exists and is used successfully by other workflows |
+| repair | PASS | `db:init` maps to `node scripts/init-turso-schema.mjs`; regression test asserts both sides of the contract |
+| public-data freshness | PASS | Scheduled Public Data Sync `33227743842` succeeded; pharmacies `26006 -> 26023`, 17 new rows, public detail sample verified |
+| dependency install/audit | PASS | `npm ci`; 513 packages audited, vulnerabilities 0 |
+| focused regressions | PASS | `npm run test:unit`; 31/31 |
+| static validation | PASS | lint, app typecheck, script typecheck, `git diff --check` |
+| fail-closed execution | PASS | empty-credential `npm run db:init` exited nonzero before network/DB access; `DB_INIT_EMPTY_ENV_FAIL_CLOSED=PASS` |
+| production build | PASS | Next.js 16.3.3; 57 generated pages |
+| mutation boundary | PASS | original dirty checkout untouched; no DB/API write, workflow dispatch, content publication, Vercel mutation, or manual deployment |
+
 ## 2026-08-27 repository review
 
 Validation level: Level 3 (production build passed). Level 4 not reached because 5 of 22 E2E tests failed.

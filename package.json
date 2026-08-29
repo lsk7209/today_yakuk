@@ -18,6 +18,7 @@
     "audit:content-duplicates": "ts-node --project tsconfig.sync.json scripts/audit-content-duplicates.ts",
     "sync:json": "ts-node --project tsconfig.sync.json scripts/sync-pharmacies-from-json.ts",
     "sync:supplements": "ts-node --project tsconfig.sync.json scripts/sync-supplements.ts",
+    "db:init": "node scripts/init-turso-schema.mjs",
     "publish:queue": "ts-node --project tsconfig.sync.json scripts/publish-queue.ts",
     "process:indexing-outbox": "ts-node --project tsconfig.sync.json scripts/process-indexing-outbox.ts",
     "prepare:blog-campaign": "ts-node --project tsconfig.sync.json scripts/prepare-blog-campaign.ts",
