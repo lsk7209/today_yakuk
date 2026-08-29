@@ -15,6 +15,26 @@
 | fail-closed execution | PASS | empty-credential `npm run db:init` exited nonzero before network/DB access; `DB_INIT_EMPTY_ENV_FAIL_CLOSED=PASS` |
 | production build | PASS | Next.js 16.3.3; 57 generated pages |
 | mutation boundary | PASS | original dirty checkout untouched; no DB/API write, workflow dispatch, content publication, Vercel mutation, or manual deployment |
+| release | PASS | commit `da8d44c732936562724ea249863ca3c958868c96` pushed to `main`; remote SHA matched |
+| GitHub CI | PASS | run `33259114351`; validate and browser jobs succeeded for the release SHA |
+| Git-connected production | PASS | Vercel deployment `6156978896` succeeded for the exact release SHA; no Vercel CLI/API mutation was used |
+| public smoke | PASS | home, representative blog article, sitemap index/child, and robots returned 200 |
+
+## 2026-08-30 Blog HTML-shell and package-contract follow-up
+
+| Check | Result | Evidence |
+|---|---|---|
+| GitHub drift gate | PASS | local `HEAD` and fetched `origin/main` both `da8d44c732936562724ea249863ca3c958868c96` before follow-up release |
+| production reproduction | PASS | current production `/blog` returned 200 but literal HTML contained no `<h1>` or static guide links; the authored heading existed only in the streamed RSC payload |
+| static-shell boundary | PASS | `BlogIndexPage` is synchronous; H1, description, and curated guide links render before Suspense; `searchParams`, DB queries, dynamic ItemList, count, cards, and pagination stay inside `BlogIndexContent` |
+| crawler policy parity | PASS | reproduced Googlebot 403 for `/blog?page=2`; proxy now permits only bounded, validated blog/wiki pagination and category states exposed by robots.txt while retaining 403 for search, extra keys, APIs, duplicates, and pages above 10,000 |
+| package-contract cleanup | PASS | removed the stale `generate:images` alias after its target script was intentionally deleted; unit regression now verifies every referenced local `scripts/*` file exists |
+| focused regressions | PASS | `npm run test:unit` 31/31; targeted `wiki.spec.ts` 10/10 after installing the repository-declared Chromium build |
+| static validation | PASS | lint, application typecheck, script typecheck, and `git diff --check` passed |
+| production build | PASS | Next.js 16.3.3 compiled; 57 pages generated; `/blog` remains correctly classified as dynamic |
+| full browser suite | PASS | `PORT=3107 npm run test:e2e`; 32/32 desktop/mobile tests passed; the first port-3000 run was invalidated by an unrelated local app response (`아이템79`) and connection loss |
+| production-mode raw HTML | PASS | isolated `next start`: Browser and Googlebot `/blog` and `/blog?page=2` all 200 with one literal H1, curated link, correct canonical, and page-specific robots; bot `q=test`, extra-key, and over-limit queries remained 403 |
+| mutation boundary | PASS | no production DB/API write, workflow dispatch, content publication, or Vercel CLI/API operation; original dirty checkout untouched |
 
 ## 2026-08-27 repository review
 

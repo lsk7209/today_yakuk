@@ -50,10 +50,35 @@ test.describe("Wiki Page", () => {
 });
 
 test.describe("Blog Page", () => {
-    test("should load blog list page", async ({ page }) => {
+    test("should expose the blog heading and curated links in the HTML shell", async ({ page, request }) => {
+        const response = await request.get("/blog");
+        expect(response.ok()).toBeTruthy();
+        const html = await response.text();
+        expect(html).toMatch(/<h1[^>]*>약국 이용 인사이트<\/h1>/);
+        expect(html).toContain('href="/blog/holiday-pharmacy-open-check"');
+
+        const googlebotHeaders = {
+            "user-agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        };
+        const paginatedResponse = await request.get("/blog?page=2", {
+            headers: googlebotHeaders,
+        });
+        expect(paginatedResponse.ok()).toBeTruthy();
+        const paginatedHtml = await paginatedResponse.text();
+        expect(paginatedHtml).toMatch(/<h1[^>]*>약국 이용 인사이트<\/h1>/);
+        expect(paginatedHtml).toContain('<link rel="canonical" href="https://todaypharm.kr/blog?page=2"');
+        expect(paginatedHtml).toContain('<meta name="robots" content="noindex, follow"');
+
+        const blockedSearchResponse = await request.get("/blog?q=감기약", {
+            headers: googlebotHeaders,
+        });
+        expect(blockedSearchResponse.status()).toBe(403);
+
         await page.goto("/blog");
 
-        // 블로그 페이지 로드 확인
         await expect(page).toHaveURL("/blog");
+        await expect(
+            page.getByRole("heading", { level: 1, name: "약국 이용 인사이트" }),
+        ).toBeVisible();
     });
 });

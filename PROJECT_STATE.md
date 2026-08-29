@@ -1,13 +1,15 @@
 # PROJECT_STATE
 
-## 2026-08-29 Publish Content Queue repair
+## 2026-08-30 Publish queue and blog HTML-shell repair
 
-- GitHub-first inspection used remote `main` SHA `8a9b8926b2950b1eb7f4c856151f651152c82a63`; the user's dirty, diverged `D:\web\todaypharm` checkout was not modified.
+- GitHub-first inspection used remote `main`; the user's dirty, diverged `D:\web\todaypharm` checkout was not modified. The isolated clone is now based on released SHA `da8d44c732936562724ea249863ca3c958868c96`, equal to fetched `origin/main` before the current follow-up.
 - Scheduled Publish Content Queue run `33256826221` and multiple earlier runs failed before publication because the workflow called a missing `npm run db:init` command.
 - Added the missing package alias to the existing `scripts/init-turso-schema.mjs` implementation and a regression test that binds the workflow command to that alias.
-- Local validation passed: clean install/audit 0, unit 31/31, lint, both TypeScript checks, empty-credential fail-closed smoke, production build 57, and diff check.
+- The first repair was released as `da8d44c`; GitHub CI run `33259114351` and Git-connected Production deployment `6156978896` succeeded for that exact SHA.
+- The current follow-up moves the authored blog H1, description, and curated links outside the DB/search-parameter wait so they are literal initial HTML, reconciles robots.txt pagination allowances with a bounded crawler-query proxy policy, and removes the stale `generate:images` package alias to an intentionally deleted script.
+- Local validation passed: clean install/audit 0, unit 31/31, lint, both TypeScript checks, empty-credential fail-closed smoke, production build 57, targeted Playwright 10/10, isolated-port full Playwright 32/32, and diff check.
 - Current public-data evidence is healthy: Scheduled Public Data Sync `33227743842` added 17 pharmacy rows and verified a public detail sample.
-- No production DB/API write, workflow dispatch, content publication, Vercel CLI/API mutation, or manual deployment was performed. Remote CI/deployment verification and the next natural scheduled publisher run remain.
+- No production DB/API write, workflow dispatch, content publication, Vercel CLI/API mutation, or manual deployment was performed. The current HTML-shell follow-up still needs an allowlisted commit/push, exact-SHA CI/deployment proof, and public raw-HTML verification; the publisher must be observed only on its next natural schedule.
 
 ## Purpose
 

@@ -1,13 +1,13 @@
 # Project Status
 
-Updated: 2026-08-29
+Updated: 2026-08-30
 
 ## Current state
 
-- Local validation: passing for the Publish Content Queue repair
-- GitHub baseline: `main` at `8a9b8926b2950b1eb7f4c856151f651152c82a63`
-- Current follow-up: `db:init` workflow/package contract repaired in an isolated clone and awaiting an allowlisted commit/push
-- Deployment: not yet performed for this repair
+- Local validation: passing for the Publish Content Queue repair and blog initial-HTML follow-up
+- GitHub baseline: local `HEAD` and fetched `origin/main` at released SHA `da8d44c732936562724ea249863ca3c958868c96`
+- Current follow-up: blog H1/description/curated links moved outside the DB wait; crawler pagination allowlist reconciled with robots.txt; stale deleted-script alias removed; awaiting an allowlisted commit/push
+- Deployment: first repair verified in Production deployment `6156978896`; current follow-up not yet released
 - Production DB writes, workflow dispatch, and content publication: not performed in this follow-up
 
 ## Current validation target
@@ -18,6 +18,7 @@ Updated: 2026-08-29
 - Next.js production build
 - package/workflow command contract
 - production dependency audit
+- raw response HTML regression and full desktop/mobile browser suite
 
 ## Remaining external verification
 

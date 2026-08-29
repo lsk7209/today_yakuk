@@ -5,6 +5,7 @@ import { getBlogFeaturedImage } from "@/lib/blog-image";
 import type { Metadata } from "next";
 import { AdSlotInFeed } from "@/components/ads/AdSlot";
 import { safeJsonStringify } from "@/components/seo/json-ld";
+import { Suspense } from "react";
 
 const STATIC_POSTS = [
   // 약국 찾기
@@ -193,7 +194,22 @@ function getBlogPageHref(page: number) {
   return page <= 1 ? "/blog" : `/blog?page=${page}`;
 }
 
-export default async function BlogIndexPage({
+export default function BlogIndexPage({
+  searchParams,
+}: BlogIndexPageProps) {
+  return (
+    <div className="container py-10 sm:py-14 space-y-8 bg-white min-h-screen">
+      <BlogHeader />
+      <StaticGuideSection />
+      <AdSlotInFeed className="my-2" />
+      <Suspense fallback={<LatestPostsFallback />}>
+        <BlogIndexContent searchParams={searchParams} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function BlogIndexContent({
   searchParams,
 }: BlogIndexPageProps) {
   const { page } = await searchParams;
@@ -254,69 +270,26 @@ export default async function BlogIndexPage({
       : null;
 
   return (
-    <div className="container py-10 sm:py-14 space-y-8 bg-white min-h-screen">
+    <>
       {itemListJsonLd && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonStringify(itemListJsonLd) }}
         />
       )}
-      <header className="space-y-3">
-        <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">
-          블로그
-        </p>
-        <h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">
-          약국 이용 인사이트
-        </h1>
-        <p className="text-base text-gray-600 leading-relaxed">
-          공휴일·야간에도 빠르게 문 연 약국을 찾기 위한 실전 팁과 영양제 선택 가이드를 공유합니다.
-        </p>
-        {totalPosts > 0 ? (
-          <p className="text-sm text-gray-500">
-            전체 {totalPosts.toLocaleString("ko-KR")}개 글 중 {currentPage}
-            페이지
-          </p>
-        ) : null}
-      </header>
-
-      {/* 큐레이션 정적 포스트 */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-black text-brand-700 uppercase tracking-wide">
-            전체 가이드
-          </p>
-          <span className="h-px flex-1 bg-gray-100" />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {STATIC_POSTS.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              className="group rounded-2xl border border-gray-200 bg-white p-5 hover:border-brand-300 hover:shadow-sm transition-all flex flex-col gap-2"
-            >
-              <span className="inline-flex w-fit items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold text-brand-700">
-                {post.tag}
-              </span>
-              <h2 className="text-base font-bold text-gray-900 group-hover:text-brand-700 leading-snug line-clamp-2">
-                {post.title}
-              </h2>
-              <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">
-                {post.summary}
-              </p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <AdSlotInFeed className="my-2" />
-
       {/* DB 발행 포스트 */}
       <section className="space-y-4">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <p className="text-sm font-black text-gray-500 uppercase tracking-wide">
             최신 글
           </p>
           <span className="h-px flex-1 bg-gray-100" />
+          {totalPosts > 0 ? (
+            <p className="text-sm text-gray-500">
+              전체 {totalPosts.toLocaleString("ko-KR")}개 글 중 {currentPage}
+              페이지
+            </p>
+          ) : null}
         </div>
         <div className="grid gap-6 sm:grid-cols-2">
           {!posts || posts.length === 0 ? (
@@ -391,7 +364,71 @@ export default async function BlogIndexPage({
           </PaginationLink>
         </nav>
       ) : null}
-    </div>
+    </>
+  );
+}
+
+function BlogHeader() {
+  return (
+    <header className="space-y-3">
+      <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">
+        블로그
+      </p>
+      <h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">
+        약국 이용 인사이트
+      </h1>
+      <p className="text-base text-gray-600 leading-relaxed">
+        공휴일·야간에도 빠르게 문 연 약국을 찾기 위한 실전 팁과 영양제 선택 가이드를 공유합니다.
+      </p>
+    </header>
+  );
+}
+
+function StaticGuideSection() {
+  return (
+    <section className="space-y-4">
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-black text-brand-700 uppercase tracking-wide">
+          전체 가이드
+        </p>
+        <span className="h-px flex-1 bg-gray-100" />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {STATIC_POSTS.map((post) => (
+          <Link
+            key={post.slug}
+            href={`/blog/${post.slug}`}
+            className="group rounded-2xl border border-gray-200 bg-white p-5 hover:border-brand-300 hover:shadow-sm transition-all flex flex-col gap-2"
+          >
+            <span className="inline-flex w-fit items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold text-brand-700">
+              {post.tag}
+            </span>
+            <h2 className="text-base font-bold text-gray-900 group-hover:text-brand-700 leading-snug line-clamp-2">
+              {post.title}
+            </h2>
+            <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">
+              {post.summary}
+            </p>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function LatestPostsFallback() {
+  return (
+    <section className="space-y-4" aria-busy="true" aria-live="polite">
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-black text-gray-500 uppercase tracking-wide">
+          최신 글
+        </p>
+        <span className="h-px flex-1 bg-gray-100" />
+      </div>
+      <div className="rounded-2xl bg-gray-50 px-5 py-10 text-center text-sm text-gray-500">
+        최신 글을 불러오는 중입니다.
+      </div>
+    </section>
   );
 }
 

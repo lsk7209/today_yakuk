@@ -50,6 +50,7 @@ import {
   staleSources,
   startSyncRun,
 } from "../../scripts/lib/sync-run-metrics";
+import { isSafeCrawlerQuery } from "@/proxy";
 
 async function run(name: string, test: () => void | Promise<void>) {
   await test();
@@ -1079,6 +1080,26 @@ async function main() {
     assert.doesNotMatch(manifest, /favicon\.ico/);
     assert.match(sitemapRoute, /dynamic = "force-dynamic"/);
     assert.match(sitemapRoute, /availableIds\.includes\(id\)/);
+    for (const url of [
+      "https://todaypharm.kr/blog?page=2",
+      "https://todaypharm.kr/wiki?page=2",
+      "https://todaypharm.kr/wiki?category=probiotics&page=2",
+      "https://todaypharm.kr/wiki/tag/fatigue?page=2",
+    ]) {
+      assert.equal(isSafeCrawlerQuery(new URL(url)), true, url);
+    }
+    for (const url of [
+      "https://todaypharm.kr/blog?q=감기약",
+      "https://todaypharm.kr/blog?page=2&sort=latest",
+      "https://todaypharm.kr/blog?page=2&page=3",
+      "https://todaypharm.kr/blog?page=0",
+      "https://todaypharm.kr/blog?page=01",
+      "https://todaypharm.kr/blog?page=10001",
+      "https://todaypharm.kr/api/nearby?q=강남",
+      "https://todaypharm.kr/wiki?category=../../admin",
+    ]) {
+      assert.equal(isSafeCrawlerQuery(new URL(url)), false, url);
+    }
   });
 
   await run("database jobs fail closed and publishing is idempotent", () => {
@@ -1112,6 +1133,15 @@ async function main() {
     assert.match(workflow, /group: publish-content-queue/);
     assert.match(workflow, /run: npm run db:init/);
     assert.equal(packageJson.scripts["db:init"], "node scripts/init-turso-schema.mjs");
+    for (const [scriptName, command] of Object.entries(packageJson.scripts)) {
+      for (const match of command.matchAll(/\bscripts\/[\w./-]+\.(?:ts|mjs|js)\b/g)) {
+        assert.equal(
+          fs.existsSync(path.join(root, match[0])),
+          true,
+          `${scriptName} references missing local file ${match[0]}`,
+        );
+      }
+    }
     assert.match(nearby, /ORDER BY \(\(latitude - \?\)/);
     assert.match(tagPage, /SUPPLEMENT_INDEXABLE_PREDICATE/);
   });

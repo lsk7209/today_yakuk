@@ -30,7 +30,6 @@
     "generate:single": "ts-node --project tsconfig.sync.json scripts/generate-single-pharmacy.ts",
     "generate:summary": "ts-node --project tsconfig.sync.json scripts/generate-gemini-summary.ts",
     "generate:blog": "ts-node --project tsconfig.sync.json scripts/generate-blog-post.ts",
-    "generate:images": "ts-node --project tsconfig.sync.json scripts/generate-images-storage.ts",
     "fetch:hff": "ts-node --project tsconfig.sync.json scripts/fetch-hff-data.ts",
     "fetch:hff:all": "ts-node --project tsconfig.sync.json scripts/fetch-hff-data.ts all",
     "fetch:meds": "ts-node --project tsconfig.sync.json scripts/fetch-medicines.ts",
