@@ -2,15 +2,15 @@
 
 ## 2026-08-30 Publish queue and blog HTML-shell repair
 
-- GitHub-first inspection used remote `main`; the user's dirty, diverged `D:\web\todaypharm` checkout was not modified. The isolated clone is now based on released SHA `da8d44c732936562724ea249863ca3c958868c96`, equal to fetched `origin/main` before the current follow-up.
+- GitHub-first inspection used remote `main`; the user's dirty, diverged `D:\web\todaypharm` checkout was not modified. The isolated clone released the runtime repair through `507e892f0675f6d8bbdf4b46fa70a4419327b65f`.
 - Scheduled Publish Content Queue run `33256826221` and multiple earlier runs failed before publication because the workflow called a missing `npm run db:init` command.
 - Added the missing package alias to the existing `scripts/init-turso-schema.mjs` implementation and a regression test that binds the workflow command to that alias.
 - The first repair was released as `da8d44c`; GitHub CI run `33259114351` and Git-connected Production deployment `6156978896` succeeded for that exact SHA.
 - The blog-shell follow-up was released as `e182e10`; GitHub CI `33260457513`, Hosting Cost Guard `33260457490`, and Git-connected Production deployment `6157245458` succeeded.
-- The current reviewer closure keeps the literal blog shell, narrows bot pagination to exact wiki categories, blocks arbitrary tag pagination consistently in proxy and robots.txt, strictly normalizes malformed page values, and preserves the stale-script cleanup.
+- The reviewer closure was released as `507e892`; GitHub CI `33260795865`, Hosting Cost Guard `33260795870`, and Git-connected Production deployment `6157310775` succeeded for that exact SHA. It keeps the literal blog shell, narrows bot pagination to exact wiki categories, blocks arbitrary tag pagination consistently in proxy and robots.txt, strictly normalizes malformed page values, and preserves the stale-script cleanup.
 - Local validation passed: clean install/audit 0, unit 31/31, lint, both TypeScript checks, empty-credential fail-closed smoke, production build 57, targeted Playwright 10/10, isolated-port full Playwright 32/32, and diff check.
 - Current public-data evidence is healthy: Scheduled Public Data Sync `33227743842` added 17 pharmacy rows and verified a public detail sample.
-- No production DB/API write, workflow dispatch, content publication, Vercel CLI/API mutation, or manual deployment was performed. The current HTML-shell follow-up still needs an allowlisted commit/push, exact-SHA CI/deployment proof, and public raw-HTML verification; the publisher must be observed only on its next natural schedule.
+- Public raw-response verification passed on the canonical domain for Browser and Googlebot blog/page-2 requests, malformed-page normalization, and all intended bot blocks. No manual production DB/API write, workflow dispatch, content publication, Vercel CLI/API mutation, or manual deployment was performed. Push-triggered Indexing Notification Outbox run `33260869070` completed naturally with `selected=0 succeeded=0 failed=0`. The publisher must be observed only on its next natural schedule.
 
 ## Purpose
 

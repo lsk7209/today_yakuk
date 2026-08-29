@@ -1,13 +1,13 @@
 # STATUS
 
-Current State: VERIFYING
+Current State: DONE
 Current Phase: 2026-08-30 blog HTML-shell and package-contract follow-up
-Completed: GitHub-first reproduction; isolated clone; `db:init` repair released as `da8d44c`; blog-shell repair released as `e182e10` with CI and Production success; H1/static guides moved outside the DB/search-parameter wait; stale `generate:images` alias removed; package-script and raw-HTML regressions added; reviewer HIGH on arbitrary tag pagination repaired locally with exact wiki categories and tag-query blocking
-In Progress: Commit/push the reviewer closure and verify its exact-SHA CI/deployment
-Remaining: Verify the public raw `/blog` response after release and observe the next natural scheduled Publish Content Queue run; do not manually dispatch a production DB/content job
-Blocked: Production-credential execution is deliberately outside this repair verification boundary
-Last Verification: reviewer closure unit 31/31; lint; both typechecks; Next.js build 57; targeted Playwright 10/10; isolated-port full Playwright 32/32; production-mode Browser/Googlebot raw-response matrix; diff check
-Next Action: Commit and push the reviewer closure, verify GitHub CI and Git-connected production for the exact SHA, then verify public raw HTML without dispatching the publisher.
+Completed: GitHub-first reproduction; isolated clone; `db:init` repair released as `da8d44c`; blog-shell repair released as `e182e10`; reviewer closure released as `507e892`; H1/static guides moved outside the DB/search-parameter wait; stale `generate:images` alias removed; exact wiki-category pagination and tag-query blocking aligned across proxy and robots; local suites, exact-SHA GitHub checks, Git-connected Production, and public raw responses all verified
+In Progress:
+Remaining: Observe the next naturally scheduled Publish Content Queue run; do not manually dispatch a production DB/content job. GA4/GSC/Naver/PageSpeed field measurement remains a separate evidence lane.
+Blocked:
+Last Verification: unit 31/31; lint; both typechecks; Next.js build 57; targeted Playwright 10/10; isolated-port full Playwright 32/32; CI `33260795865`; Hosting Cost Guard `33260795870`; Production `6157310775`; public Browser/Googlebot raw-response matrix; push-triggered outbox `33260869070` selected 0
+Next Action: Return to the fleet SEO queue. Observe the next natural Publish Content Queue run when it occurs without manually dispatching it.
 
 ## 2026-08-27 Data-to-content pass
 

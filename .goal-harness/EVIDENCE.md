@@ -34,10 +34,13 @@
 | production build | PASS | Next.js 16.3.3 compiled; 57 pages generated; `/blog` remains correctly classified as dynamic |
 | full browser suite | PASS | `PORT=3107 npm run test:e2e`; 32/32 desktop/mobile tests passed; the first port-3000 run was invalidated by an unrelated local app response (`아이템79`) and connection loss |
 | production-mode raw HTML | PASS | isolated `next start`: Browser and Googlebot `/blog` and `/blog?page=2` all 200 with one literal H1, curated link, correct canonical, and page-specific robots; bot `q=test`, extra-key, and over-limit queries remained 403 |
-| mutation boundary | PASS | no production DB/API write, workflow dispatch, content publication, or Vercel CLI/API operation; original dirty checkout untouched |
+| manual mutation boundary | PASS | no manual production DB/API write, workflow dispatch, content publication, or Vercel CLI/API operation; original dirty checkout untouched |
 | first follow-up release | PASS | commit `e182e10be961774019ccaf710237071bf9b254cf`; CI `33260457513`, Hosting Cost Guard `33260457490`, and Production deployment `6157245458` all succeeded |
 | independent technical review | REPAIRED | BLOCKER 0; HIGH arbitrary `/wiki/tag/*?page=N` DB amplification closed by blocking bot tag pagination in both proxy and robots.txt, exact wiki-category allowlist, strict page parsing, and expanded unit/raw E2E matrices |
 | reviewer-closure validation | PASS | unit 31/31; lint; both typechecks; targeted Playwright 10/10; isolated full Playwright 32/32; build 57; production-mode Browser/Googlebot matrix and explicit blocked-query checks |
+| reviewer-closure release | PASS | commit `507e892f0675f6d8bbdf4b46fa70a4419327b65f`; CI `33260795865`, Hosting Cost Guard `33260795870`, and Git-connected Production deployment `6157310775` all succeeded for the exact SHA |
+| public raw-response matrix | PASS | Browser and Googlebot `/blog` and `/blog?page=2` returned 200 with literal H1/static link and correct canonical/robots; malformed Browser `page=2abc` normalized to canonical `/blog`; bot search, tag pagination, extra-key, and page 10001 requests returned 403; robots.txt explicitly blocks tag pagination |
+| automatic post-push outbox | PASS | push-triggered run `33260869070` completed without manual dispatch; schema initialization succeeded and `process:indexing-outbox` reported `selected=0 succeeded=0 failed=0`, so no indexing notification or content publication was sent |
 
 ## 2026-08-27 repository review
 
