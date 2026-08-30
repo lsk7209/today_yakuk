@@ -1,9 +1,9 @@
 import { getSitemapEntries } from "@/lib/sitemap-content";
 import { parseSitemapId } from "@/lib/sitemap-id";
 import { getSitemapIds } from "@/lib/sitemap";
+import { cacheDbRead } from "@/lib/db-read-cache";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 3600;
 
 export async function GET(
   _request: Request,
@@ -18,11 +18,14 @@ export async function GET(
   }
 
   if (id !== "static") {
-    const availableIds = await getSitemapIds();
+    const availableIds = await cacheDbRead(["sitemap-ids"], getSitemapIds);
     if (!availableIds.includes(id)) return new Response("Not found", { status: 404 });
   }
 
-  const entries = await getSitemapEntries(id);
+  const entries = await cacheDbRead(
+    ["sitemap-entries", id],
+    () => getSitemapEntries(id),
+  );
   if (id !== "static" && entries.length === 0) {
     return new Response("Not found", { status: 404 });
   }
@@ -46,7 +49,6 @@ export async function GET(
       status: 200,
       headers: {
         "Content-Type": "application/xml; charset=utf-8",
-        "Cache-Control": "s-maxage=3600, stale-while-revalidate=600",
       },
     },
   );

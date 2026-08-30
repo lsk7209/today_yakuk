@@ -1090,9 +1090,13 @@ async function main() {
     assert.doesNotMatch(manifest, /favicon\.ico/);
     assert.match(sitemapRoute, /dynamic = "force-dynamic"/);
     assert.match(sitemapRoute, /availableIds\.includes\(id\)/);
-    for (const cachedRoute of [sitemapRoute, sitemapIndexRoute, rssRoute, recentBlogRoute]) {
+    for (const cachedRoute of [rssRoute, recentBlogRoute]) {
       assert.match(cachedRoute, /revalidate = 3600/);
       assert.match(cachedRoute, /s-maxage=3600/);
+    }
+    for (const cachedSitemapRoute of [sitemapRoute, sitemapIndexRoute]) {
+      assert.match(cachedSitemapRoute, /cacheDbRead/);
+      assert.doesNotMatch(cachedSitemapRoute, /s-maxage=3600/);
     }
     assert.doesNotMatch(rssRoute, /<lastBuildDate>\$\{new Date\(\)\.toUTCString\(\)\}/);
     for (const url of [
