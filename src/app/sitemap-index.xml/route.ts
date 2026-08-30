@@ -3,7 +3,7 @@ import { getSitemapIds } from "@/lib/sitemap";
 
 const siteUrl = getSiteUrl();
 
-export const revalidate = 600;
+export const revalidate = 3600;
 export const dynamic = "force-dynamic";
 
 export async function GET() {
@@ -25,7 +25,7 @@ export async function GET() {
     status: 200,
     headers: {
       "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "s-maxage=600, stale-while-revalidate=300",
+      "Cache-Control": "s-maxage=3600, stale-while-revalidate=600",
     },
   });
 }

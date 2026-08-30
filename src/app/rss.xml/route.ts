@@ -36,10 +36,16 @@ function stripHtml(html: string) {
 }
 
 // Ensure recently published posts reach feed readers quickly.
-export const revalidate = 600;
+export const revalidate = 3600;
 
 export async function GET() {
   const items = await listPublishedContent(30);
+  const latestPublishedAt = items[0]?.published_at || items[0]?.publish_at;
+  const latestStaticDate = STATIC_FEED_ITEMS.reduce(
+    (latest, item) => item.date > latest ? item.date : latest,
+    "1970-01-01",
+  );
+  const lastBuildDate = new Date(latestPublishedAt || latestStaticDate).toUTCString();
 
   const staticItems = STATIC_FEED_ITEMS.map((item) => {
     const link = `${SITE_URL}/blog/${item.slug}`;
@@ -85,7 +91,7 @@ export async function GET() {
     <link>${SITE_URL}</link>
     <description><![CDATA[${FEED_DESCRIPTION}]]></description>
     <language>ko</language>
-    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <lastBuildDate>${lastBuildDate}</lastBuildDate>
     ${feedItems}
   </channel>
 </rss>`;
@@ -94,7 +100,7 @@ export async function GET() {
     status: 200,
     headers: {
       "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "s-maxage=600, stale-while-revalidate=300",
+      "Cache-Control": "s-maxage=3600, stale-while-revalidate=600",
     },
   });
 }

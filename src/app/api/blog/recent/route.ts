@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getTursoClient, parseJson } from "@/lib/turso";
 
-export const revalidate = 600;
+export const revalidate = 3600;
 
 export async function GET() {
   try {
@@ -23,11 +23,11 @@ export async function GET() {
     }));
 
     return NextResponse.json(posts, {
-      headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=3600" },
+      headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=3600" },
     });
   } catch {
     return NextResponse.json([], {
-      headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=3600" },
+      headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=3600" },
     });
   }
 }

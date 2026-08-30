@@ -1067,6 +1067,15 @@ async function main() {
       path.join(root, "src/app/sitemap/[id]/route.ts"),
       "utf8",
     );
+    const sitemapIndexRoute = fs.readFileSync(
+      path.join(root, "src/app/sitemap-index.xml/route.ts"),
+      "utf8",
+    );
+    const rssRoute = fs.readFileSync(path.join(root, "src/app/rss.xml/route.ts"), "utf8");
+    const recentBlogRoute = fs.readFileSync(
+      path.join(root, "src/app/api/blog/recent/route.ts"),
+      "utf8",
+    );
     assert.match(robots, /\/\*\?page=/);
     assert.match(robots, /\/wiki\?category=/);
     assert.match(robots, /\/wiki\/tag\/\*\?page=/);
@@ -1081,6 +1090,11 @@ async function main() {
     assert.doesNotMatch(manifest, /favicon\.ico/);
     assert.match(sitemapRoute, /dynamic = "force-dynamic"/);
     assert.match(sitemapRoute, /availableIds\.includes\(id\)/);
+    for (const cachedRoute of [sitemapRoute, sitemapIndexRoute, rssRoute, recentBlogRoute]) {
+      assert.match(cachedRoute, /revalidate = 3600/);
+      assert.match(cachedRoute, /s-maxage=3600/);
+    }
+    assert.doesNotMatch(rssRoute, /<lastBuildDate>\$\{new Date\(\)\.toUTCString\(\)\}/);
     for (const url of [
       "https://todaypharm.kr/blog?page=2",
       "https://todaypharm.kr/wiki?page=2",
