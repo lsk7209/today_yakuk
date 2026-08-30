@@ -1088,7 +1088,7 @@ async function main() {
     assert.doesNotMatch(regionList, /@\/lib\/data\/pharmacies/);
     assert.match(manifest, /src: "\/icon"/);
     assert.doesNotMatch(manifest, /favicon\.ico/);
-    assert.match(sitemapRoute, /dynamic = "force-dynamic"/);
+    assert.match(sitemapRoute, /dynamic = "force-static"/);
     assert.match(sitemapRoute, /availableIds\.includes\(id\)/);
     for (const cachedRoute of [rssRoute, recentBlogRoute]) {
       assert.match(cachedRoute, /revalidate = 3600/);
@@ -1096,7 +1096,8 @@ async function main() {
     }
     for (const cachedSitemapRoute of [sitemapRoute, sitemapIndexRoute]) {
       assert.match(cachedSitemapRoute, /cacheDbRead/);
-      assert.doesNotMatch(cachedSitemapRoute, /s-maxage=3600/);
+      assert.match(cachedSitemapRoute, /revalidate = 3600/);
+      assert.match(cachedSitemapRoute, /s-maxage=3600/);
     }
     assert.doesNotMatch(rssRoute, /<lastBuildDate>\$\{new Date\(\)\.toUTCString\(\)\}/);
     for (const url of [

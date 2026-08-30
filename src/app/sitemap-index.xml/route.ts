@@ -4,7 +4,8 @@ import { cacheDbRead } from "@/lib/db-read-cache";
 
 const siteUrl = getSiteUrl();
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
+export const revalidate = 3600;
 
 export async function GET() {
   const ids = await cacheDbRead(["sitemap-ids"], getSitemapIds);
@@ -25,6 +26,7 @@ export async function GET() {
     status: 200,
     headers: {
       "Content-Type": "application/xml; charset=utf-8",
+      "Cache-Control": "s-maxage=3600, stale-while-revalidate=600",
     },
   });
 }
