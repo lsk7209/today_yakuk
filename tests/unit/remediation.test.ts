@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import vm from "node:vm";
+import ts from "typescript";
 import { createElement } from "react";
+import * as jsxRuntime from "react/jsx-runtime";
 import { renderToStaticMarkup } from "react-dom/server";
 import { XMLParser } from "fast-xml-parser";
 import { NextRequest } from "next/server";
@@ -1282,6 +1285,43 @@ async function main() {
     );
     assert.equal(Number(due.rows[0]?.count), 1);
     db.close();
+  });
+
+  await run("holiday pharmacy guidance renders sourced instructions and matching FAQ data", () => {
+    const source = fs.readFileSync(path.join(process.cwd(), "src/app/blog/holiday-pharmacy-open-check/page.tsx"), "utf8");
+    const compiled = ts.transpileModule(source, {
+      reportDiagnostics: true,
+      compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, esModuleInterop: true },
+    });
+    assert.equal(compiled.diagnostics?.filter(d => d.category === ts.DiagnosticCategory.Error).length, 0);
+    const pageExports = { default: () => createElement("div"), metadata: { alternates: { canonical: "" } } };
+    vm.runInNewContext(compiled.outputText, { exports: pageExports, require(id: string) {
+      if (id === "react/jsx-runtime") return jsxRuntime;
+      if (id === "next/link") return { __esModule: true, default: "a" };
+      if (id.endsWith("/StaticTOC")) return { __esModule: true, default: () => null };
+      if (id.endsWith("/AdSlot")) return { AdSlotTop: () => null, AdSlotBottom: () => null };
+      throw new Error(`Unexpected holiday article dependency: ${id}`);
+    } });
+    const html = renderToStaticMarkup(createElement(pageExports.default));
+    const schemas = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+      .map(match => JSON.parse(match[1]));
+    const faq = schemas.find(schema => schema["@type"] === "FAQPage");
+    assert.equal(faq.mainEntity.length, 3);
+    for (const question of faq.mainEntity) {
+      assert.ok(html.includes(question.name));
+      assert.ok(html.includes(question.acceptedAnswer.text));
+    }
+    const howTo = schemas.find(schema => schema["@type"] === "HowTo");
+    assert.equal(howTo.step.length, 4);
+    assert.match(howTo.step[0].text, /날짜·시간/);
+    assert.match(howTo.step[3].text, /전화가 연결되지 않으면/);
+    for (const phrase of ["e-약은요", "10~20%", "40~60%", "90%", "최소 1개", "최소 1곳", "30초", "2024 추석"]) {
+      assert.ok(!html.includes(phrase), `Unsupported assertion returned: ${phrase}`);
+    }
+    assert.ok(html.includes("https://www.e-gen.or.kr/egen/holiday_medical.do"));
+    assert.ok(html.includes("https://www.pharm114.or.kr/"));
+    assert.equal((html.match(/<h1\b/g) || []).length, 1);
+    assert.equal(pageExports.metadata.alternates.canonical, "/blog/holiday-pharmacy-open-check");
   });
 
   await run("automation workflows include catch-up, verification, and indexing retries", () => {

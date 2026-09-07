@@ -1,4 +1,15 @@
-# Current Handoff
+# Current Handoff - 2026-09-07 AdSense factual correction
+
+- Goal: Improve publisher-quality evidence for the selected Todaypharm article as part of the ten-site AdSense readiness task. Approval is not guaranteed and no review submission is authorized.
+- Source: This PRE-EXISTING independent release clone was documented in the prior handoff below. It was clean at 5387c5e, fetched and fast-forwarded to current origin/main 2d0486f. No new work directory, clone, linked checkout or policy exception was created. The older dirty E:/web/todaypharm remains preserved with a matching local article patch.
+- Changes: src/app/blog/holiday-pharmacy-open-check/page.tsx corrects unsupported numerical/legal/history claims, wrong lookup attribution and unsupported freshness guarantees; preserves route, ad slots and related links. Official E-GEN and Pharm114 lookup plus phone/date/time safeguards replace those claims. tests/unit/remediation.test.ts adds executable rendered-content/schema regression.
+- Fresh verification: npm ci --ignore-scripts; ESLint; typecheck via Next16.3.3 production build; 58 generated pages. Unit suite 32 checks passed. Actual local production browser at390px and1280px: one H1, no horizontal overflow, old attribution absent, FAQ/schema text equality. Screenshots under output/playwright. Final whitespace repair rebuilt successfully. DB credentials were empty for release-clone build/runtime; dynamic DB functionality is not proven by this build.
+- Side effects: First local browser load issued analytics403 and an external ad403 before network routing was applied; no ad click or account mutation. Subsequent external requests blocked. Owned browser and port3227 server stopped; zero listeners verified. These checks do not validate live ad serving.
+- Release: Commit/push and exact-SHA Git-connected production proof pending at this checkpoint. Only the article, regression test and this handoff belong in the release commit. No Vercel CLI/API mutation, DB content job, indexing submission or AdSense review submission.
+- Remaining: Global error-page loader observed but actual ad fill/Auto Ads settings unverified; no speculative slot-only repair. Broader ten-site work remains active. Next step: explicit-file commit/push, exact-SHA CI/deployment check and live corrected-article check.
+- Rollback: Revert only the resulting scoped correction commit; baseline is 2d0486f. Preserve older checkout user changes and this established release clone.
+
+# Previous Handoff
 
 Updated: 2026-08-30 00:43 KST
 

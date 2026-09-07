@@ -6,7 +6,7 @@ import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 const SLUG = "/blog/holiday-pharmacy-open-check";
 const metaTitle = "공휴일에 약국이 열려 있나요? 빠른 확인 방법";
 const metaDescription =
-  "공휴일 약국 영업 여부와 휴일지킴이약국을 30초 안에 확인하는 4가지 방법을 정리했습니다. e-약은요·콜센터·지역 약사회·약국오늘 서비스 활용법 포함.";
+  "공휴일 문 여는 약국을 E-GEN·휴일지킴이약국에서 찾고, 방문 날짜와 영업시간을 전화로 확인하는 방법을 안내합니다. 검색 결과가 다를 때의 확인 순서도 정리했습니다.";
 
 export const metadata: Metadata = {
   title: metaTitle,
@@ -50,7 +50,7 @@ const articleJsonLd = {
     logo: { "@type": "ImageObject", url: "https://todaypharm.kr/og-image.svg" },
   },
   datePublished: "2026-05-16T00:00:00+09:00",
-  dateModified: "2026-05-16T00:00:00+09:00",
+  dateModified: "2026-09-07T00:00:00+09:00",
   mainEntityOfPage: {
     "@type": "WebPage",
     "@id": "https://todaypharm.kr/blog/holiday-pharmacy-open-check",
@@ -85,7 +85,7 @@ const faqJsonLd = {
       name: "공휴일에도 약국이 꼭 열려 있나요?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "모든 약국이 공휴일에 영업할 의무는 없습니다. 보건복지부 지침에 따라 지역별로 휴일지킴이약국(당번 약국)이 최소 1개 이상 운영됩니다. 건강보험심사평가원 e-약은요 앱에서 '공휴일 운영' 필터로 확인할 수 있습니다.",
+        text: "공휴일 운영 여부는 약국과 날짜에 따라 다릅니다. E-GEN 또는 대한약사회 휴일지킴이약국에서 방문할 지역과 시간을 확인하고, 출발 전 해당 약국에 전화하세요.",
       },
     },
     {
@@ -93,7 +93,7 @@ const faqJsonLd = {
       name: "명절 연휴에 약국을 찾으려면 어떻게 해야 하나요?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "명절 연휴에는 일반 약국의 약 10~20%만 문을 엽니다. 보건복지부 콜센터(129), e-약은요 앱, 지역 약사회 홈페이지에서 당번 약국을 연휴 전날 미리 확인하는 것이 안전합니다.",
+        text: "연휴 전체를 같은 일정으로 보지 말고 방문할 날짜와 시간을 정해 검색하세요. 후보 약국의 전화번호를 저장한 뒤 당일 영업 여부와 도착 예정 시각에 이용 가능한지 확인하세요.",
       },
     },
     {
@@ -101,7 +101,7 @@ const faqJsonLd = {
       name: "공휴일 약국 정보가 앱에서 잘못 표시되는 경우가 있나요?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "공공데이터포털 기반 서비스는 당일 기준으로 동기화되지만, 조기 마감이나 임시 휴업은 반영되지 않을 수 있습니다. 방문 전 전화로 영업 여부를 한 번 더 확인하는 것이 안전합니다.",
+        text: "네. 검색 정보와 실제 운영은 다를 수 있습니다. 영업 중 표시는 방문 가능성을 보장하지 않으므로, 조기 마감이나 임시 휴업 여부를 약국에 전화로 확인하세요.",
       },
     },
   ],
@@ -110,62 +110,64 @@ const faqJsonLd = {
 const steps = [
   {
     num: "1",
-    title: "e-약은요 앱·웹에서 '공휴일 운영' 필터 사용",
+    title: "E-GEN에서 방문 날짜와 시간으로 약국 검색",
+    text: "방문할 지역·날짜·시간을 기준으로 찾아보고, 결과의 주소와 전화번호를 확인한 뒤 실제 운영 여부는 해당 약국에 전화로 확인하세요.",
     body: (
       <>
-        건강보험심사평가원(HIRA)이 운영하는{" "}
+        중앙응급의료센터의 응급의료포털{" "}
         <a
-          href="https://www.hira.or.kr/"
+          href="https://www.e-gen.or.kr/egen/holiday_medical.do"
           target="_blank"
           rel="noreferrer noopener"
           style={{ color: "#2563eb", textDecoration: "underline" }}
         >
-          e-약은요
+          E-GEN 병원·약국 검색
         </a>
-        에는 전국 2만 3천여 개 약국의 영업시간이 등록되어 있습니다(건강보험심사평가원, 2024).
-        앱 또는 웹에서 지역을 입력한 뒤 <strong>&apos;공휴일 운영&apos;</strong> 필터를 체크하면 해당 날짜에 문을 여는 약국 목록이 바로 나옵니다.
-        약국 이름을 눌러 전화번호를 확인하고, 방문 전 영업 여부를 한 번 더 확인하면 헛걸음을 줄일 수 있습니다.
+        에서 약국을 선택하고 방문할 지역·날짜·시간을 기준으로 찾아보세요.
+        오늘 영업하는 곳과 연휴 중 다른 날 영업하는 곳을 구분하는 것이 중요합니다.
+        결과의 주소와 전화번호를 확인한 뒤 실제 운영 여부는 해당 약국에 전화로 확인하세요.
       </>
     ),
   },
   {
     num: "2",
-    title: "약국오늘 /nearby — 현재 위치 기준 반경 검색",
+    title: "약국오늘에서 가까운 후보 약국 확인",
+    text: "위치 권한과 검색 조건을 확인하고 후보 약국의 주소를 살펴보세요. 표시된 운영시간만으로 공휴일 방문 가능 여부를 확정하지 마세요.",
     body: (
       <>
-        공공데이터포털(data.go.kr) 약국 영업 API를 기반으로 하는{" "}
+        가까운 약국을 찾을 때는 약국오늘의{" "}
         <Link href="/nearby" style={{ color: "#2563eb", textDecoration: "underline" }}>
           /nearby 페이지
         </Link>
-        에서 위치 권한을 허용하면 현재 위치 반경 2km 이내 공휴일 운영 약국이 즉시 표시됩니다.
-        공공데이터포털에 등록된 전국 약 24,000개 약국 중 공휴일 영업 정보가 있는 약국을 당일 기준으로 동기화합니다(공공데이터포털, 2024).
-        종료 임박 여부도 함께 표시되므로, 마감 시각이 얼마 남지 않은 약국을 우선 파악하는 데 유용합니다.
+        를 이용할 수 있습니다. 위치 권한과 검색 조건을 확인하고 후보 약국의 주소를 살펴보세요.
+        표시된 운영시간만으로 공휴일 방문 가능 여부를 확정하지 마세요.
+        이 글은 개별 약국 정보의 당일 갱신이나 실시간 영업을 보장하지 않습니다.
       </>
     ),
   },
   {
     num: "3",
-    title: "보건복지부 콜센터 129 전화 문의",
+    title: "대한약사회 휴일지킴이약국에서 다시 확인",
+    text: "다른 검색 서비스와 결과가 다르면 같은 날짜와 시간으로 조회했는지 먼저 비교하세요. 실제 운영 여부는 약국에 직접 확인하세요.",
     body: (
       <>
-        스마트폰 사용이 불편하거나 앱 검색 결과를 신뢰하기 어려울 때는{" "}
-        <strong>보건복지부 콜센터 129</strong>로 전화하면 됩니다.
-        상담사가 지역 내 공휴일 운영 약국을 안내해 줍니다.{" "}
-        보건복지부는 명절 연휴마다 당번 약국 운영 지침을 지역 약사회와 협약해 배포하며,
-        특히 설·추석 연휴에는 콜센터 문의가 집중됩니다(보건복지부, 2024).
-        연휴 당일에는 대기 시간이 길어질 수 있으므로 연휴 전날 미리 확인하는 편이 낫습니다.
+        <a href="https://www.pharm114.or.kr/" target="_blank" rel="noreferrer noopener"
+          style={{ color: "#2563eb", textDecoration: "underline" }}>대한약사회 휴일지킴이약국</a>
+        에서도 후보를 찾아볼 수 있습니다. 다른 검색 서비스와 결과가 다르면
+        같은 날짜와 시간으로 조회했는지 먼저 비교하세요.
+        두 화면의 정보가 일치하더라도 실제 운영 여부는 약국에 직접 확인하는 것이 좋습니다.
       </>
     ),
   },
   {
     num: "4",
-    title: "지역 약사회 홈페이지에서 당번 약국 사전 확인",
+    title: "출발 전 전화로 도착 시각과 이용 가능 여부 확인",
+    text: "오늘 몇 시까지 운영하는지, 도착 예정 시각에도 이용할 수 있는지 물어보세요. 전화가 연결되지 않으면 영업 중이라고 단정하지 말고 다른 후보를 확인하세요.",
     body: (
       <>
-        각 시·군·구 약사회 홈페이지에는 공휴일·명절 당번 약국 목록이 사전 공지됩니다.
-        검색엔진에서 <strong>&apos;[시/구 이름] 약사회&apos;</strong>를 검색해 공지사항을 확인하면 됩니다.
-        보건복지부 지침에 따라 지역별 휴일지킴이약국은 최소 1개 이상 의무 운영되며,
-        운영 시각과 위치를 연휴 전에 저장해 두면 급할 때 바로 활용할 수 있습니다.
+        <strong>오늘 몇 시까지 운영하는지, 도착 예정 시각에도 이용할 수 있는지</strong> 물어보세요.
+        필요한 의약품이 있다면 제품명·성분명 등 확인할 정보를 준비해 재고와 상담 가능 여부를 문의하세요.
+        전화가 연결되지 않으면 영업 중이라고 단정하지 말고 다른 후보를 확인하세요.
       </>
     ),
   },
@@ -174,15 +176,15 @@ const steps = [
 const faqs = [
   {
     q: "공휴일에도 약국이 꼭 열려 있나요?",
-    a: "모든 약국이 공휴일에 영업할 의무는 없습니다. 보건복지부 지침에 따라 지역별로 휴일지킴이약국(당번 약국)이 최소 1개 이상 운영됩니다. e-약은요 앱에서 '공휴일 운영' 필터로 확인할 수 있습니다.",
+    a: "공휴일 운영 여부는 약국과 날짜에 따라 다릅니다. E-GEN 또는 대한약사회 휴일지킴이약국에서 방문할 지역과 시간을 확인하고, 출발 전 해당 약국에 전화하세요.",
   },
   {
     q: "명절 연휴에 약국을 찾으려면 어떻게 해야 하나요?",
-    a: "명절 연휴에는 일반 약국의 약 10~20%만 문을 엽니다. 보건복지부 콜센터 129, e-약은요 앱, 지역 약사회 홈페이지에서 당번 약국을 연휴 전날 미리 확인하는 것이 안전합니다.",
+    a: "연휴 전체를 같은 일정으로 보지 말고 방문할 날짜와 시간을 정해 검색하세요. 후보 약국의 전화번호를 저장한 뒤 당일 영업 여부와 도착 예정 시각에 이용 가능한지 확인하세요.",
   },
   {
     q: "공휴일 약국 정보가 앱에서 잘못 표시되는 경우가 있나요?",
-    a: "공공데이터포털 기반 서비스는 당일 기준으로 동기화되지만, 조기 마감이나 임시 휴업은 반영되지 않을 수 있습니다. 방문 전 전화로 한 번 더 확인하는 것이 안전합니다.",
+    a: "네. 검색 정보와 실제 운영은 다를 수 있습니다. 영업 중 표시는 방문 가능성을 보장하지 않으므로, 조기 마감이나 임시 휴업 여부를 약국에 전화로 확인하세요.",
   },
 ];
 
@@ -192,11 +194,11 @@ export default function BlogHolidayPharmacyOpenCheck() {
     "@type": "HowTo",
     name: "공휴일 약국 영업 확인 단계별 방법",
     description: metaDescription,
-    step: steps.map((item: string | { title?: string; q?: string; step?: string; text?: string; desc?: string; detail?: string }, i: number) => ({
+    step: steps.map((item, i) => ({
       "@type": "HowToStep",
       position: i + 1,
-      name: typeof item === "string" ? item : (item.title || item.step || item.q || String(i + 1)),
-      text: typeof item === "string" ? item : (item.desc || item.detail || item.text || item.title || String(i + 1)),
+      name: item.title,
+      text: item.text,
     })),
   };
   return (
@@ -243,9 +245,10 @@ export default function BlogHolidayPharmacyOpenCheck() {
           color: "#0f172a",
         }}
       >
-        공휴일에 문을 여는 약국이 있는지 알고 싶다면, 어느 앱을 먼저 열어야 할까?
-        대부분의 약국은 공휴일에 문을 닫지만, 보건복지부 지침에 따라 지역마다 휴일지킴이약국(당번 약국)이 최소 1곳 이상 운영된다.{" "}
-        <strong>건강보험심사평가원 e-약은요 앱에서 &apos;공휴일 운영&apos; 필터를 선택하면 30초 안에 근처 운영 약국을 확인할 수 있다.</strong>
+        공휴일에는 평소 이용하던 약국도 운영시간이 다를 수 있다.{" "}
+        <strong>E-GEN 또는 대한약사회 휴일지킴이약국에서 방문할 날짜와 시간으로 검색한 뒤,
+        출발 전 약국에 전화해 실제 영업 여부를 확인하자.</strong>{" "}
+        검색 결과는 후보를 찾는 데 쓰고, 방문 가능 여부는 별도로 확인하는 것이 핵심이다.
       </p>
 
       {/* ── 근거 박스 (statistic) ── */}
@@ -261,20 +264,17 @@ export default function BlogHolidayPharmacyOpenCheck() {
         }}
       >
         <div style={{ fontWeight: 700, color: "#166534", marginBottom: "10px", fontSize: "0.95rem" }}>
-          핵심 수치
+          검색 전에 정할 세 가지
         </div>
         <ul style={{ margin: 0, paddingLeft: "18px", lineHeight: 1.8 }}>
           <li>
-            <strong>평일</strong> 약국 영업률 약 90% 이상 —{" "}
-            공휴일(일반)에는 <strong>40~60%</strong>, 명절 연휴 당일에는 <strong>10~20%</strong>로 급감
-            (출처: 건강보험심사평가원, 2024)
+            <strong>방문 날짜와 도착 예정 시각:</strong> 연휴 중 하루만 운영하는 약국과 혼동하지 않는다.
           </li>
           <li>
-            전국 약 <strong>2만 3천여 개</strong> 약국의 영업시간이 e-약은요에 등록 (출처: 건강보험심사평가원, 2024)
+            <strong>이동 가능한 지역:</strong> 가까운 후보가 없으면 검색 지역을 넓혀 다시 확인한다.
           </li>
           <li>
-            공공데이터포털 등록 약국 약 <strong>24,000개</strong> 중 공휴일 영업 정보 등록 비율 약 40~50%
-            (출처: 공공데이터포털, 2024)
+            <strong>전화로 물어볼 내용:</strong> 영업시간, 도착 시 이용 가능 여부, 필요한 의약품의 재고를 확인한다.
           </li>
         </ul>
       </aside>
@@ -304,11 +304,9 @@ export default function BlogHolidayPharmacyOpenCheck() {
         공휴일 약국 운영, 왜 들쭉날쭉한가
       </h2>
       <p style={{ lineHeight: 1.85, marginBottom: "14px", color: "#1e293b" }}>
-        공휴일 약국 영업은 법적 의무가 아니라 약사법 시행규칙상 지자체·지역 약사회의 자율 협약으로 운영된다.
-        보건복지부는 지역 약사회와 협약을 맺어 <strong>휴일지킴이약국</strong> 제도를 운용하며,
-        이를 통해 공휴일에도 최소 한 곳 이상의 약국이 당번을 서도록 권고한다.{" "}
-        다만 당번 약국 수와 운영 시각은 지역마다 다르고, 개별 약국이 자율로 영업을 결정하는 경우도 많아
-        사전 확인이 필수다.
+        공휴일 운영 여부를 평일 시간표나 이전 방문 경험만으로 판단하면 헛걸음할 수 있다.
+        확인해야 할 것은 전국 평균 영업률이 아니라 <strong>방문할 약국의 해당 날짜 운영시간</strong>이다.
+        검색 화면의 날짜가 오늘인지, 도착 예정 시각이 운영시간 안에 들어가는지부터 확인하자.
       </p>
 
       {/* ── 정의 박스 ── */}
@@ -329,16 +327,16 @@ export default function BlogHolidayPharmacyOpenCheck() {
         <dl style={{ margin: 0 }}>
           <dt style={{ fontWeight: 700, marginTop: "4px" }}>휴일지킴이약국</dt>
           <dd style={{ margin: "4px 0 0 0", color: "#1e293b", lineHeight: 1.75 }}>
-            보건복지부와 지역 약사회가 협약해 공휴일·야간에 당번제로 운영하는 약국.
-            지역 내 주민이 응급 의약품을 구입할 수 있도록 최소 1개소가 의무 운영된다
-            (출처:{" "}
+            대한약사회가 제공하는 약국 검색 서비스로, 휴일에 이용할 약국을 찾을 때 참고할 수 있다.
+            검색 결과가 실제 방문 가능 여부를 보장하는 것은 아니다.
+            (공식 서비스:{" "}
             <a
-              href="https://www.mohw.go.kr/"
+              href="https://www.pharm114.or.kr/"
               target="_blank"
               rel="noreferrer noopener"
               style={{ color: "#2563eb", textDecoration: "underline" }}
             >
-              보건복지부
+              휴일지킴이약국
             </a>
             ).
           </dd>
@@ -424,9 +422,9 @@ export default function BlogHolidayPharmacyOpenCheck() {
         예외와 주의사항 — 명절 연휴는 다르다
       </h2>
       <p style={{ lineHeight: 1.85, marginBottom: "14px", color: "#1e293b" }}>
-        설·추석 같은 명절 연휴에는 일반 공휴일보다 상황이 더 어렵다.
-        건강보험심사평가원 자료에 따르면 명절 연휴 당일에 문을 여는 약국은 전체의 약 10~20%에 불과하다.
-        이 시기에는 당번 약국 1~3곳에 수요가 집중되므로, 연휴가 시작되기 전날 미리 확인해 두는 것이 좋다.
+        설·추석 연휴에는 방문할 날짜를 하루씩 구분해 확인하자.
+        전날 검색해 둔 약국이라도 출발하는 날 다시 확인하고 전화번호를 함께 저장해 두는 편이 좋다.
+        하나의 후보만 정해 두기보다 이동 가능한 다른 약국도 확인해 두면 일정이 바뀌었을 때 대응하기 쉽다.
       </p>
 
       {/* ── 사례 박스 (L5 case) ── */}
@@ -442,19 +440,18 @@ export default function BlogHolidayPharmacyOpenCheck() {
         }}
       >
         <div style={{ fontWeight: 700, color: "#92400e", marginBottom: "8px", fontSize: "0.95rem" }}>
-          실제 사례 — 2024 추석 연휴
+          검색 결과가 다를 때의 확인 순서
         </div>
         <p style={{ lineHeight: 1.8, color: "#1c1917", margin: 0, fontSize: "0.95rem" }}>
-          2024년 추석 연휴(9월 16~18일) 기간, 서울시는 25개 자치구 각각에 당번 약국을 1~3개 지정해 사전 공지했다.
-          보건복지부 129 콜센터에는 연휴 당일 문의가 집중됐으며, 대기 시간이 30분을 넘기도 했다.
-          연휴 전날 e-약은요 앱이나 지역 약사회 홈페이지에서 미리 확인해 저장해 두었던 이용자는
-          당일 지연 없이 약국을 찾을 수 있었다 (출처: 보건복지부, 2024).
+          한 화면에는 영업 중, 다른 화면에는 휴무로 보인다면 먼저 날짜·시간과 약국 주소가 같은지 비교한다.
+          같은 이름의 다른 지점인지도 확인한다. 조건을 맞춰도 결과가 다르면 전화로 확인하고,
+          연결되지 않으면 어느 화면이 맞다고 추측해 출발하지 말고 다른 후보를 찾아본다.
         </p>
       </aside>
 
       <p style={{ lineHeight: 1.85, marginBottom: "14px", color: "#1e293b" }}>
         또한 앱에 &apos;영업 중&apos;으로 표시되더라도 조기 마감이나 임시 휴업이 발생할 수 있다.
-        공공데이터포털 기반 서비스는 당일 기준으로 동기화되지만, 실시간 변경 사항은 반영되지 않는다.
+        데이터 갱신과 현장 변경 사이에는 차이가 생길 수 있으며, 이 글에서는 당일 동기화를 보장하지 않는다.
         방문 전 전화로 영업 여부와 필요한 약 재고를 확인하면 불필요한 이동을 줄일 수 있다.
       </p>
 
@@ -464,30 +461,30 @@ export default function BlogHolidayPharmacyOpenCheck() {
           <thead>
             <tr style={{ background: "#f8fafc" }}>
               <th style={{ border: "1px solid #e2e8f0", padding: "10px 12px", textAlign: "left", fontWeight: 700, color: "#0f172a" }}>시기</th>
-              <th style={{ border: "1px solid #e2e8f0", padding: "10px 12px", textAlign: "left", fontWeight: 700, color: "#0f172a" }}>약국 영업률(추정)</th>
+              <th style={{ border: "1px solid #e2e8f0", padding: "10px 12px", textAlign: "left", fontWeight: 700, color: "#0f172a" }}>확인할 내용</th>
               <th style={{ border: "1px solid #e2e8f0", padding: "10px 12px", textAlign: "left", fontWeight: 700, color: "#0f172a" }}>권장 확인 방법</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>평일</td>
-              <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>약 90% 이상</td>
+              <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>도착 시각과 마감 시각</td>
               <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>지도 앱 / 약국오늘</td>
             </tr>
             <tr style={{ background: "#fafafa" }}>
               <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>일반 공휴일</td>
-              <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>약 40~60%</td>
-              <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>e-약은요 공휴일 필터</td>
+              <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>해당 날짜 운영 여부</td>
+              <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>E-GEN / 휴일지킴이약국 검색 후 전화</td>
             </tr>
             <tr>
               <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>명절 연휴 당일</td>
-              <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>약 10~20%</td>
-              <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>129 콜센터 또는 약사회 사전 확인</td>
+              <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>연휴 날짜별 운영시간</td>
+              <td style={{ border: "1px solid #e2e8f0", padding: "10px 12px" }}>날짜를 지정해 검색하고 당일 전화 확인</td>
             </tr>
           </tbody>
         </table>
         <p style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "6px" }}>
-          출처: 건강보험심사평가원(2024), 공공데이터포털(2024) 기반 추정치
+          위 표는 방문 전 확인 순서이며 전국 약국의 영업률이나 운영 보장 수치를 뜻하지 않는다.
         </p>
       </div>
 
@@ -542,10 +539,10 @@ export default function BlogHolidayPharmacyOpenCheck() {
             <Link href="/nearby" style={{ color: "#2563eb", textDecoration: "underline", fontWeight: 600 }}>
               약국오늘 /nearby
             </Link>
-            에서 위치 권한을 허용해 반경 2km 내 운영 약국을 확인한다.
+            에서 위치 권한과 검색 조건을 확인하고 가까운 후보 약국을 찾는다.
           </li>
           <li>
-            e-약은요 앱을 설치하고 &apos;공휴일 운영&apos; 필터를 저장해 둔다.
+            E-GEN 또는 휴일지킴이약국에서 방문할 날짜와 시간을 확인한다.
           </li>
           <li>
             다가오는 공휴일·명절 전날,{" "}
@@ -556,7 +553,7 @@ export default function BlogHolidayPharmacyOpenCheck() {
           </li>
         </ol>
         <p style={{ marginTop: "12px", color: "#334155", lineHeight: 1.75 }}>
-          이 세 가지를 준비해 두면, 공휴일에 약이 필요한 상황에서도 불필요한 이동 없이 빠르게 약국을 찾을 수 있다.
+          출발 전에는 약국에 전화해 도착 예정 시각에도 이용할 수 있는지 확인한다.
         </p>
       </div>
 
@@ -573,7 +570,8 @@ export default function BlogHolidayPharmacyOpenCheck() {
           lineHeight: 1.65,
         }}
       >
-        이 글은 AI 도구를 활용해 공개된 의료·정책 자료를 정리·요약한 결과입니다. 사실 확인은 출처 링크의 원문을 우선합니다.
+        확인·수정일: 2026년 9월 7일. 이 글은 AI 도구를 활용해 공식 검색 서비스의 이용 안내를 정리했습니다.
+        E-GEN과 대한약사회 휴일지킴이약국 링크를 참고하세요. 개별 약국의 실시간 운영 현황을 검증한 글은 아닙니다.
       </footer>
 
       <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
