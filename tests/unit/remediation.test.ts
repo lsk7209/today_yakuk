@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import ts from "typescript";
-import { createElement } from "react";
+import { createElement, useEffect, useMemo, useState } from "react";
 import * as jsxRuntime from "react/jsx-runtime";
 import { renderToStaticMarkup } from "react-dom/server";
 import { XMLParser } from "fast-xml-parser";
@@ -16,11 +16,13 @@ import { highlightSafeText } from "@/lib/safe-highlight";
 import { sanitizeTrustedHtml } from "@/lib/sanitize-html";
 import { safeJsonStringify } from "@/components/seo/json-ld";
 import { buildArticleJsonLd } from "@/lib/seo";
+import { getOperatingStatus } from "@/lib/hours";
 import {
   bucketResultCount,
   buildAnalyticsPayload,
   normalizeAnalyticsPage,
   normalizeAnalyticsReferrer,
+  trackAnalyticsEvent,
 } from "@/lib/client-analytics";
 import { hasValidPhone, isIndexablePharmacy } from "@/lib/pharmacy-indexability";
 import {
@@ -1322,6 +1324,63 @@ async function main() {
     assert.ok(html.includes("https://www.pharm114.or.kr/"));
     assert.equal((html.match(/<h1\b/g) || []).length, 1);
     assert.equal(pageExports.metadata.alternates.canonical, "/blog/holiday-pharmacy-open-check");
+  });
+
+  await run("night-weekend guide matches rendered nearby controls and visible structured data", () => {
+    function renderSource(relativePath: string) {
+      const source = fs.readFileSync(path.join(process.cwd(), relativePath), "utf8");
+      const compiled = ts.transpileModule(source, {
+        reportDiagnostics: true,
+        compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, esModuleInterop: true },
+      });
+      assert.equal(compiled.diagnostics?.filter(d => d.category === ts.DiagnosticCategory.Error).length, 0);
+      const pageExports = { default: () => createElement("div"), metadata: { alternates: { canonical: "" } } };
+      vm.runInNewContext(compiled.outputText, { exports: pageExports, require(id: string) {
+        if (id === "react") return { useEffect, useMemo, useState };
+        if (id === "react/jsx-runtime") return jsxRuntime;
+        if (id === "next/link") return { __esModule: true, default: "a" };
+        if (id === "lucide-react") return { LocateFixed: () => null, MapPin: () => null, ShieldCheck: () => null };
+        if (id === "@/lib/seo") return { buildArticleJsonLd };
+        if (id === "@/lib/hours") return { getOperatingStatus };
+        if (id === "@/lib/client-analytics") return { bucketResultCount, trackAnalyticsEvent };
+        if (id === "@/components/pharmacy-card") return { PharmacyCard: () => null };
+        throw new Error(`Unexpected guide/nearby dependency: ${id}`);
+      } });
+      return { html: renderToStaticMarkup(createElement(pageExports.default)), metadata: pageExports.metadata };
+    }
+    const nearby = renderSource("src/app/nearby/NearbyClient.tsx").html;
+    const guide = renderSource("src/app/guide/night-weekend/page.tsx");
+    const visible = guide.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "");
+    for (const radius of [3, 5, 10]) {
+      assert.ok(nearby.includes(`반경 ${radius}km`), `Actual nearby control missing: ${radius}km`);
+      assert.ok(visible.includes(`${radius}km`), `Guide omits offered radius: ${radius}km`);
+    }
+    for (const label of ["거리순", "종료 임박순"]) {
+      assert.ok(nearby.includes(label));
+      assert.ok(visible.includes(label));
+    }
+    for (const unsupported of ["2km", "영업중/심야/공휴일", "공휴일 필터", "거리 vs. 평가"]) {
+      assert.ok(!guide.html.includes(unsupported), `Nonexistent guide feature returned: ${unsupported}`);
+    }
+    assert.ok(visible.includes("기본 3km"));
+    assert.ok(visible.includes("TOP 3"));
+    assert.ok(visible.includes("방문 전 전화"));
+    const schemas = [...guide.html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+      .map(match => JSON.parse(match[1]));
+    const faq = schemas.find(schema => schema["@type"] === "FAQPage");
+    assert.equal(faq.mainEntity.length, 3);
+    for (const question of faq.mainEntity) {
+      assert.ok(visible.includes(question.name));
+      assert.ok(visible.includes(question.acceptedAnswer.text));
+    }
+    const howTo = schemas.find(schema => schema["@type"] === "HowTo");
+    assert.equal(howTo.step.length, 3);
+    for (const step of howTo.step) {
+      assert.ok(visible.includes(step.name));
+      for (const instruction of step.text.split(" / ")) assert.ok(visible.includes(instruction));
+    }
+    assert.equal((visible.match(/<h1\b/g) || []).length, 1);
+    assert.equal(guide.metadata.alternates.canonical, "/guide/night-weekend");
   });
 
   await run("automation workflows include catch-up, verification, and indexing retries", () => {

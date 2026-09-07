@@ -12,6 +12,7 @@
 /test-results/
 /.playwright-cli/
 /output/playwright/
+/.seo-cache/
 
 # next.js
 /.next/
