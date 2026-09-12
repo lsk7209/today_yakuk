@@ -117,14 +117,6 @@ export default function RootLayout({
             <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
           </>
         ) : null}
-        {adsenseId ? (
-          <script
-            id="google-adsense"
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
-            crossOrigin="anonymous"
-          />
-        ) : null}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}

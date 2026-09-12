@@ -12,7 +12,6 @@ import { SITEMAP_CHUNK_SIZE } from "@/lib/sitemap";
 import { buildWikiMedicinePath, buildWikiProductPath } from "@/lib/wiki-slug";
 
 const siteUrl = getSiteUrl();
-export const SEO_TEMPLATE_REVISION = new Date("2026-08-28T00:00:00+09:00");
 
 const REGION_PAGES = [
   "서울",
@@ -63,15 +62,15 @@ export async function getSitemapEntries(id: string): Promise<MetadataRoute.Sitem
   if (id === "static") {
     const cityPages = await getRegionSitemapEntries();
     return [
-      { url: `${siteUrl}/`, lastModified: SEO_TEMPLATE_REVISION, changeFrequency: "daily", priority: 1 },
-      { url: `${siteUrl}/about`, lastModified: SEO_TEMPLATE_REVISION, changeFrequency: "monthly", priority: 0.7 },
-      { url: `${siteUrl}/contact`, lastModified: SEO_TEMPLATE_REVISION, changeFrequency: "monthly", priority: 0.6 },
-      { url: `${siteUrl}/privacy`, lastModified: SEO_TEMPLATE_REVISION, changeFrequency: "yearly", priority: 0.4 },
-      { url: `${siteUrl}/terms`, lastModified: SEO_TEMPLATE_REVISION, changeFrequency: "yearly", priority: 0.4 },
-      { url: `${siteUrl}/nearby`, lastModified: SEO_TEMPLATE_REVISION, changeFrequency: "daily", priority: 0.8 },
-      { url: `${siteUrl}/wiki`, lastModified: SEO_TEMPLATE_REVISION, changeFrequency: "daily", priority: 0.8 },
-      { url: `${siteUrl}/guide`, lastModified: SEO_TEMPLATE_REVISION, changeFrequency: "monthly", priority: 0.7 },
-      { url: `${siteUrl}/blog`, lastModified: SEO_TEMPLATE_REVISION, changeFrequency: "daily", priority: 0.9 },
+      { url: `${siteUrl}/`, changeFrequency: "daily", priority: 1 },
+      { url: `${siteUrl}/about`, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/contact`, changeFrequency: "monthly", priority: 0.6 },
+      { url: `${siteUrl}/privacy`, changeFrequency: "yearly", priority: 0.4 },
+      { url: `${siteUrl}/terms`, changeFrequency: "yearly", priority: 0.4 },
+      { url: `${siteUrl}/nearby`, changeFrequency: "daily", priority: 0.8 },
+      { url: `${siteUrl}/wiki`, changeFrequency: "daily", priority: 0.8 },
+      { url: `${siteUrl}/guide`, changeFrequency: "monthly", priority: 0.7 },
+      { url: `${siteUrl}/blog`, changeFrequency: "daily", priority: 0.9 },
       ...[
         "night-weekend",
         "holiday-checklist",
@@ -81,19 +80,16 @@ export async function getSitemapEntries(id: string): Promise<MetadataRoute.Sitem
         "summer-emergency-kit",
       ].map((slug) => ({
         url: `${siteUrl}/guide/${slug}`,
-        lastModified: SEO_TEMPLATE_REVISION,
         changeFrequency: "monthly" as const,
         priority: 0.8,
       })),
       ...STATIC_BLOG_SLUGS.map((slug) => ({
         url: `${siteUrl}/blog/${slug}`,
-        lastModified: SEO_TEMPLATE_REVISION,
         changeFrequency: "monthly" as const,
         priority: 0.8,
       })),
       ...REGION_PAGES.map((region) => ({
         url: `${siteUrl}/${encodeURIComponent(region)}/${encodeURIComponent("전체")}`,
-        lastModified: SEO_TEMPLATE_REVISION,
         changeFrequency: "daily" as const,
         priority: region === "서울" || region === "경기" ? 0.9 : 0.8,
       })),
@@ -149,9 +145,9 @@ export async function getSitemapEntries(id: string): Promise<MetadataRoute.Sitem
   }));
 }
 
-function latestSignificantDate(value?: string | null): Date {
-  if (!value) return SEO_TEMPLATE_REVISION;
+function latestSignificantDate(value?: string | null): Date | undefined {
+  if (!value) return undefined;
   const candidate = new Date(value);
-  if (Number.isNaN(candidate.getTime())) return SEO_TEMPLATE_REVISION;
-  return candidate > SEO_TEMPLATE_REVISION ? candidate : SEO_TEMPLATE_REVISION;
+  if (Number.isNaN(candidate.getTime())) return undefined;
+  return candidate;
 }

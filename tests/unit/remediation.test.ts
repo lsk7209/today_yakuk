@@ -311,8 +311,9 @@ async function main() {
     );
     const layout = fs.readFileSync(path.join(process.cwd(), "src/app/layout.tsx"), "utf8");
     assert.doesNotMatch(sitemapIndex, /<lastmod>/);
-    assert.match(sitemap, /SEO_TEMPLATE_REVISION/);
+    assert.doesNotMatch(sitemap, /SEO_TEMPLATE_REVISION/);
     assert.doesNotMatch(sitemap, /lastModified:\s*new Date\(\)/);
+    assert.match(sitemap, /if \(!value\) return undefined/);
     for (const province of ["서울", "경기", "세종", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주"]) {
       assert.match(sitemap, new RegExp(`"${province}"`));
     }
@@ -1395,6 +1396,36 @@ async function main() {
     assert.match(outbox, /process:indexing-outbox/);
     assert.match(publisher, /INSERT INTO indexing_outbox/);
     assert.doesNotMatch(publisher, /requestIndexing/);
+  });
+
+  await run("ads fail closed unless a page is explicitly eligible", async () => {
+    const {
+      canRequestAds,
+      isAdExcludedPath,
+      isTruthyFlag,
+    } = await import("../../src/lib/ad-policy");
+
+    assert.equal(isTruthyFlag("true"), true);
+    assert.equal(isTruthyFlag(undefined), false);
+    for (const route of ["/", "/about", "/blog/unreviewed", "/missing-page"]) {
+      assert.equal(canRequestAds(route), false, route);
+    }
+    assert.equal(canRequestAds("/blog/reviewed", true), true);
+    for (const route of ["/admin", "/api/test", "/privacy", "/nearby", "/wiki/product/1", "/pharmacy/1"]) {
+      assert.equal(isAdExcludedPath(route), true, route);
+      assert.equal(canRequestAds(route, true), false, route);
+    }
+
+    const layout = fs.readFileSync(path.join(process.cwd(), "src/app/layout.tsx"), "utf8");
+    const notFound = fs.readFileSync(path.join(process.cwd(), "src/app/not-found.tsx"), "utf8");
+    const adSlot = fs.readFileSync(path.join(process.cwd(), "src/components/ads/AdSlot.tsx"), "utf8");
+    const affiliate = fs.readFileSync(path.join(process.cwd(), "src/components/affiliate/CoupangAffiliateBanner.tsx"), "utf8");
+    assert.doesNotMatch(layout, /<script[\s\S]*?pagead2\.googlesyndication\.com/);
+    assert.match(notFound, /canonical:\s*null/);
+    assert.match(adSlot, /pageEligible = false/);
+    assert.match(adSlot, /isAdsenseServingEnabled\(\)/);
+    assert.match(affiliate, /isAffiliateAdsEnabled\(\)/);
+    assert.match(affiliate, /canRequestAds\(pathname\)/);
   });
 }
 

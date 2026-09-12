@@ -20,7 +20,8 @@ export async function generateMetadata({
         return {
             title: "성분을 찾을 수 없습니다",
             description: "요청하신 성분 정보를 찾을 수 없습니다.",
-            robots: { index: false, follow: false },
+            alternates: { canonical: null },
+            robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
         };
     }
 
