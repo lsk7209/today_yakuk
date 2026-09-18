@@ -7,5 +7,15 @@ export function cacheDbRead<T>(
   query: () => Promise<T>,
   revalidate = DB_READ_REVALIDATE_SECONDS,
 ): Promise<T> {
-  return unstable_cache(query, ["db-read", ...keyParts], { revalidate })();
+  try {
+    return unstable_cache(query, ["db-read", ...keyParts], { revalidate })();
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.includes("incrementalCache missing")
+    ) {
+      return query();
+    }
+    throw error;
+  }
 }

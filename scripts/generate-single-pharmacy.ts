@@ -129,7 +129,7 @@ function ensureEnv() {
 /**
  * 특정 약국에 대해 Gemini API로 컨텐츠를 생성하고 content_queue에 저장합니다.
  */
-async function generateSinglePharmacyContent(hpid: string): Promise<void> {
+export async function generateSinglePharmacyContent(hpid: string, isDryRun = false): Promise<void> {
   ensureEnv();
   const db = getRequiredTursoClient();
 
@@ -258,6 +258,20 @@ async function generateSinglePharmacyContent(hpid: string): Promise<void> {
       publish_at: publishAt,
     };
 
+    if (isDryRun) {
+      console.info(`\n🔍 [DRY-RUN 모드] DB 쓰기를 건너뜁니다.`);
+      console.info(`- 제목 (Title): ${queueItem.title}`);
+      console.info(`- 슬러그 (Slug): ${queueItem.slug}`);
+      console.info(`- 지역 (Region): ${queueItem.region}`);
+      console.info(`- 요약 (Summary): ${queueItem.ai_summary}`);
+      console.info(`- 핵심 안내 (Bullets):`, JSON.stringify(queueItem.ai_bullets, null, 2));
+      console.info(`- 자주 묻는 질문 (FAQ):`, JSON.stringify(queueItem.ai_faq, null, 2));
+      console.info(`- CTA: ${queueItem.ai_cta}`);
+      console.info(`- 추가 섹션 (Extra Sections):`, JSON.stringify(queueItem.extra_sections, null, 2));
+      console.info(`\n=== DRY-RUN 완료 ===\n`);
+      return;
+    }
+
     // content_queue 테이블에 저장
     if (existing) {
       await db.execute({
@@ -318,18 +332,21 @@ async function generateSinglePharmacyContent(hpid: string): Promise<void> {
 }
 
 async function main() {
-  const hpid = process.argv[2];
+  const isDryRun = process.argv.includes("--dry-run");
+  const hpid = process.argv.slice(2).find((arg) => !arg.startsWith("--"));
   if (!hpid) {
-    console.error("사용법: npm run generate:single <hpid>");
-    console.error("예시: npm run generate:single C1109587");
+    console.error("사용법: npm run generate:single <hpid> [--dry-run]");
+    console.error("예시: npm run generate:single C1109587 --dry-run");
     process.exit(1);
   }
 
-  await generateSinglePharmacyContent(hpid);
+  await generateSinglePharmacyContent(hpid, isDryRun);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
 

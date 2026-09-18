@@ -57,10 +57,6 @@ const TIME_RULE: HighlightRule = {
   pattern: /\d{2}:\d{2}/g,
   className: "text-emerald-700 font-bold",
 };
-const LOCATION_RULE: HighlightRule = {
-  pattern: /서울특별시|강남구|세곡동/g,
-  className: "text-gray-900 font-bold",
-};
 const WEEKDAY_RULE: HighlightRule = {
   pattern: /평일|토요일|일요일|공휴일/g,
   className: "text-brand-700 font-bold",
@@ -403,7 +399,7 @@ async function Content({
         <div className="space-y-4 text-base text-gray-800 leading-relaxed">
           {descriptions.map((line, idx) => {
             // 중요 정보(전화번호, 영업시간, 주소) 강조
-            const highlighted = highlightSafeText(line, [PHONE_RULE, TIME_RULE, LOCATION_RULE]);
+            const highlighted = highlightSafeText(line, [PHONE_RULE, TIME_RULE]);
             return (
               <div
                 key={idx}
@@ -439,7 +435,7 @@ async function Content({
             <ul className="space-y-3">
               {aiBullets.map((bullet, idx) => {
                 // 중요 정보 강조
-                const highlighted = highlightSafeText(bullet, [TIME_RULE, WEEKDAY_RULE, LOCATION_RULE]);
+                const highlighted = highlightSafeText(bullet, [TIME_RULE, WEEKDAY_RULE]);
                 return (
                   <li key={idx} className="flex items-start gap-3 text-base text-gray-800 leading-relaxed">
                     <div className="rounded-full bg-emerald-100 p-1 mt-1 flex-shrink-0">
@@ -651,7 +647,6 @@ async function Content({
               PHONE_RULE,
               TIME_RULE,
               STATUS_RULE,
-              LOCATION_RULE,
             ]);
             return (
               <details
@@ -714,7 +709,6 @@ async function Content({
               const highlighted = highlightSafeText(section.body, [
                 PHONE_RULE,
                 TIME_RULE,
-                LOCATION_RULE,
               ]);
               return (
                 <div

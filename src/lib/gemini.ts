@@ -67,6 +67,50 @@ export type GeneratePharmacyContentOptions = {
 };
 
 /**
+ * 공공데이터 기반으로 과장이나 왜곡 없는 사실 중심의 표준 콘텐츠를 생성합니다.
+ * Gemini API 실패 또는 미설정 시 안전한 Fallback으로 사용됩니다.
+ */
+export function buildDeterministicPharmacyContent(pharmacy: Pharmacy): GeminiContentResponse {
+  const hoursPattern = analyzeHoursPattern(pharmacy.operating_hours);
+  const nightText = analyzeNightHours(pharmacy.operating_hours);
+  const weekendText = analyzeWeekendHours(pharmacy.operating_hours);
+  const formattedHours = formatOperatingHours(pharmacy.operating_hours);
+
+  return {
+    summary: `${pharmacy.name}은(는) ${pharmacy.address || `${pharmacy.province ?? ""} ${pharmacy.city ?? ""}`.trim()}에 위치한 약국입니다. 등록된 운영 일정은 ${hoursPattern}입니다.`,
+    bullets: [
+      `주소: ${pharmacy.address || "등록된 주소 정보 없음"}`,
+      `전화: ${pharmacy.tel || "등록된 전화번호 없음"}`,
+      `운영 안내: ${hoursPattern}`,
+      `야간 운영: ${nightText}`,
+      `주말 운영: ${weekendText}`,
+    ],
+    faq: [
+      {
+        question: `${pharmacy.name}의 운영시간은 어떻게 되나요?`,
+        answer: `${pharmacy.name}의 등록된 요일별 운영시간은 다음과 같습니다:\n${formattedHours}\n현장 사정에 따라 실제 운영시간이 다를 수 있으므로 방문 전 전화로 확인하는 것이 안전합니다.`,
+      },
+      {
+        question: `${pharmacy.name}은 주말이나 야간에도 운영하나요?`,
+        answer: `${weekendText} ${nightText}`,
+      },
+      {
+        question: "방문 전 무엇을 확인해야 하나요?",
+        answer: `처방전 조제 가능 여부 및 필요 의약품의 재고는 약국마다 다를 수 있습니다. 출발 전 ${pharmacy.tel ? `전화(${pharmacy.tel})로 ` : "유선으로 "}운영 여부와 재고를 미리 확인하시는 것을 권장합니다.`,
+      },
+    ],
+    cta: `약국 방문 전 ${pharmacy.tel ? `전화(${pharmacy.tel})로 ` : ""}현재 영업 여부와 원하시는 의약품 재고를 직접 확인하시면 헛걸음을 예방할 수 있습니다.`,
+    detailed_description: `${pharmacy.name}에 대한 공공데이터 기반 운영 정보 안내입니다. ${hoursPattern} ${weekendText} 현장 상황이나 공휴일 일정에 따라 달라질 수 있으므로 방문 전 유선 확인을 권장합니다.`,
+    extra_sections: [
+      {
+        title: "방문 전 권장 확인사항",
+        body: "공공데이터에 등록된 시간과 실제 현장 운영시간은 차이가 발생할 수 있습니다. 특히 이른 아침, 심야, 공휴일 및 연휴 기간에는 반드시 사전 전화 확인 후 방문하시기 바랍니다.",
+      },
+    ],
+  };
+}
+
+/**
  * 약국 정보를 기반으로 Gemini API를 호출하여 고유한 컨텐츠를 생성합니다.
  */
 export async function generatePharmacyContent(
@@ -75,8 +119,8 @@ export async function generatePharmacyContent(
   options?: GeneratePharmacyContentOptions,
 ): Promise<GeminiContentResponse | null> {
   if (!geminiApiKey) {
-    console.warn("GEMINI_API_KEY가 설정되지 않았습니다.");
-    return null;
+    console.warn("GEMINI_API_KEY가 설정되지 않아 공공데이터 기반 정규 템플릿으로 생성합니다.");
+    return buildDeterministicPharmacyContent(pharmacy);
   }
 
   try {
@@ -126,8 +170,8 @@ export async function generatePharmacyContent(
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`Gemini API error: ${response.status}`, errorText);
-      return null;
+      console.warn(`[Gemini] API 오류(${response.status})로 공공데이터 기반 표준 콘텐츠로 대체합니다:`, errorText);
+      return buildDeterministicPharmacyContent(pharmacy);
     }
 
     const data = (await response.json()) as {
@@ -229,8 +273,8 @@ export async function generatePharmacyContent(
       return null;
     }
   } catch (error) {
-    console.error("Gemini API 호출 중 오류:", error);
-    return null;
+    console.warn("[Gemini] API 호출 중 오류 발생으로 공공데이터 기반 표준 콘텐츠로 대체합니다:", error);
+    return buildDeterministicPharmacyContent(pharmacy);
   }
 }
 
