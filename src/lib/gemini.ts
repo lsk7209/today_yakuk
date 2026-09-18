@@ -180,7 +180,7 @@ export async function generatePharmacyContent(
         content?: { parts?: Array<{ text?: string }> };
       }>;
     };
-    
+
     // finishReason 확인 (응답이 완전한지 확인)
     const finishReason = data?.candidates?.[0]?.finishReason;
     if (finishReason && finishReason !== "STOP") {
@@ -189,7 +189,7 @@ export async function generatePharmacyContent(
         console.warn("응답이 토큰 제한으로 인해 잘렸습니다. maxOutputTokens를 늘려주세요.");
       }
     }
-    
+
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!text) {
@@ -206,7 +206,7 @@ export async function generatePharmacyContent(
 
     // JSON 추출 (마크다운 코드 블록 제거)
     let jsonText = text.trim();
-    
+
     // 마크다운 코드 블록 제거 (```json ... ``` 또는 ``` ... ```)
     const codeBlockRegex = /^```(?:json)?\s*\n([\s\S]*?)\n```$/;
     const match = jsonText.match(codeBlockRegex);
@@ -229,18 +229,18 @@ export async function generatePharmacyContent(
         }
       }
     }
-    
+
     // JSON 객체 찾기
     const jsonStart = jsonText.indexOf("{");
     let jsonEnd = jsonText.lastIndexOf("}");
-    
+
     // JSON이 잘린 경우, 중괄호 매칭으로 올바른 끝 찾기
     if (jsonStart === -1) {
       console.error("Gemini response parse error: JSON not found");
       console.error("Response text:", text.substring(0, 500));
       return null;
     }
-    
+
     // 중괄호 매칭으로 올바른 JSON 끝 찾기
     if (jsonEnd === -1 || jsonEnd <= jsonStart) {
       let braceCount = 0;
@@ -256,7 +256,7 @@ export async function generatePharmacyContent(
         }
       }
     }
-    
+
     if (jsonEnd === -1 || jsonEnd <= jsonStart) {
       console.error("Gemini response parse error: Invalid JSON structure");
       console.error("Response text:", text.substring(0, 500));
@@ -493,18 +493,18 @@ function analyzeHoursPattern(
   if (!hours) return "영업시간 정보가 없어 패턴 분석이 불가능합니다.";
 
   const patterns: string[] = [];
-  
+
   // 평일 패턴
   const weekdays = ["mon", "tue", "wed", "thu", "fri"];
   const weekdayHours = weekdays
     .map(day => hours[day])
     .filter(h => h?.open && h?.close);
-  
+
   if (weekdayHours.length > 0) {
     const firstOpen = weekdayHours[0]?.open;
     const firstClose = weekdayHours[0]?.close;
     const allSame = weekdayHours.every(h => h?.open === firstOpen && h?.close === firstClose);
-    
+
     if (allSame && firstOpen && firstClose) {
       patterns.push(`평일(월-금) ${formatHHMM(firstOpen)}-${formatHHMM(firstClose)}`);
     } else {
@@ -515,13 +515,13 @@ function analyzeHoursPattern(
   // 주말 패턴
   const satHours = hours.sat;
   const sunHours = hours.sun;
-  
+
   if (satHours?.open && satHours?.close) {
     patterns.push(`토요일 ${formatHHMM(satHours.open)}-${formatHHMM(satHours.close)}`);
   } else {
     patterns.push("토요일 휴무");
   }
-  
+
   if (sunHours?.open && sunHours?.close) {
     patterns.push(`일요일 ${formatHHMM(sunHours.open)}-${formatHHMM(sunHours.close)}`);
   } else {
@@ -534,7 +534,7 @@ function analyzeHoursPattern(
     const closeHour = parseInt(h.close.substring(0, 2));
     return closeHour >= 22;
   });
-  
+
   if (hasLateNight) {
     patterns.push("평일 심야 영업 가능 (오후 10시 이후)");
   }
@@ -561,7 +561,7 @@ function analyzeNightHours(
   const weekdayHours = weekdays
     .map(day => hours[day])
     .filter(h => h?.open && h?.close);
-  
+
   const hasLateNight = weekdayHours.some(h => {
     if (!h?.close || typeof h.close !== "string") return false;
     const closeHour = parseInt(h.close.substring(0, 2));
@@ -582,7 +582,7 @@ function analyzeNightHours(
     .filter(Boolean)
     .sort()
     .reverse()[0];
-  
+
   if (latestClose && typeof latestClose === "string") {
     const closeHour = parseInt(latestClose.substring(0, 2));
     if (closeHour < 22) {
@@ -603,7 +603,7 @@ function analyzeWeekendHours(
 
   const satHours = hours.sat;
   const sunHours = hours.sun;
-  
+
   const satOpen = satHours?.open && satHours?.close;
   const sunOpen = sunHours?.open && sunHours?.close;
 
