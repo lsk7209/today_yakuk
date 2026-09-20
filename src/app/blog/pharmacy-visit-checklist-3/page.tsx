@@ -7,7 +7,7 @@ import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 // ─── 메타데이터 ───────────────────────────────────────────────
 const metaTitle = "약국 방문 전 꼭 확인해야 할 것들: 영업·재고·처방 3가지";
 const metaDescription =
-  "약국에 헛걸음하지 않으려면 영업 여부만이 아니라 재고 확인과 처방전 유효기간까지 세 가지를 미리 점검해야 합니다. 보건복지부·심평원 기준으로 정리했습니다.";
+  "약국에 헛걸음하지 않으려면 영업 여부만이 아니라 재고 확인과 처방전 유효기간까지 세 가지를 미리 점검해야 합니다. 방문 전 확인할 항목을 정리했습니다.";
 const slug = "/blog/pharmacy-visit-checklist-3";
 const datePublished = "2026-05-16";
 
@@ -35,7 +35,7 @@ const faqs = [
   {
     question: "처방전 유효기간이 지나면 어떻게 되나요?",
     answer:
-      "처방전은 발행일 포함 3일(당일+2일) 이내에만 조제받을 수 있습니다. 기간이 지나면 해당 의원·병원에서 재발급을 받아야 합니다. 건강보험심사평가원 규정 기준입니다.",
+      "처방전 사용기간은 처방전에 기재된 기간을 확인하세요. 기간이 보이지 않거나 판단이 어려우면 처방전을 발급한 의료기관에 문의하세요. 기재된 기간이 지났다면 필요한 절차를 발급 의료기관에 확인하세요.",
   },
   {
     question: "약국에서 재고 확인을 전화로 할 때 뭐라고 물어보면 되나요?",
@@ -77,7 +77,7 @@ export default function PharmacyVisitChecklist3() {
       description: metaDescription,
       url: `https://todaypharm.kr${slug}`,
       datePublished,
-      dateModified: datePublished,
+      dateModified: "2026-09-20",
       authorName: "약국오늘 큐레이션 데스크",
       publisherName: "약국오늘",
     }),
@@ -114,7 +114,7 @@ export default function PharmacyVisitChecklist3() {
     step: [
       { "@type": "HowToStep", position: 1, name: "영업시간 확인", text: "약국오늘에서 등록 영업시간 기준 운영 상태를 확인하세요. 실제 현장 운영은 달라질 수 있으므로 전화 확인이 필요합니다." },
       { "@type": "HowToStep", position: 2, name: "재고 확인", text: "방문 전 전화로 필요한 약 재고가 있는지 확인하세요. 처방전에 적힌 약 이름을 말하고 조제 가능 여부를 물어보면 됩니다." },
-      { "@type": "HowToStep", position: 3, name: "처방전 유효기간 확인", text: "처방전은 발행일 포함 3일(당일+2일) 이내에만 유효합니다. 기간이 지났다면 발급 병원에서 재발급을 받아야 합니다." },
+      { "@type": "HowToStep", position: 3, name: "처방전 유효기간 확인", text: "처방전 사용기간은 처방전에 기재된 기간을 확인하세요. 기간이 보이지 않거나 판단이 어려우면 처방전을 발급한 의료기관에 문의하세요." },
     ],
   };
   return (
@@ -140,7 +140,7 @@ export default function PharmacyVisitChecklist3() {
           <p className="text-base text-gray-800 leading-relaxed">
             답은 세 가지다. <strong>① 현재 영업 여부</strong>,{" "}
             <strong>② 필요한 의약품의 재고</strong>,{" "}
-            <strong>③ 처방전 유효기간(발행 후 3일 이내)</strong>. 영업시간만
+            <strong>③ 처방전에 기재된 사용기간</strong>. 영업시간만
             확인하고 갔다가 재고가 없거나 처방전이 만료되어 돌아오는 사례가
             빈번하다. 세 가지를 순서대로 점검하면 대부분의 헛걸음을 방지할 수
             있다.
@@ -176,6 +176,13 @@ export default function PharmacyVisitChecklist3() {
       />
 
       <AdSlotTop />
+
+      <aside className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
+        <p>사용기간 안내 수정: <time dateTime="2026-09-20">2026년 9월 20일</time>. 모든 처방전에 같은 일수가 적용된다는 기존 안내를 바로잡았습니다.</p>
+        <p>의료법 시행규칙 제12조 제1항 제6호는 처방전에 발급일과 사용기간을 기재하도록 정합니다. 실제 처방전에 적힌 기간을 확인하고, 불명확하면 발급 의료기관에 문의하세요.</p>
+        <a className="underline" href="https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1019641101" target="_blank" rel="noopener noreferrer">근거: 의료법 시행규칙 제12조</a>
+      </aside>
+
 
       {/* ── L6 통념 vs 실제 contrast 박스 ── */}
       <section
@@ -327,7 +334,7 @@ export default function PharmacyVisitChecklist3() {
       {/* ── H2 3. 처방전 준비 ── */}
       <section className="space-y-4">
         <h2 id="h2-prescription" className="text-xl font-bold text-gray-900">
-          3. 처방전 준비: 유효기간 3일 규정 확인
+          3. 처방전 준비: 기재된 사용기간 확인
         </h2>
 
         {/* definition 박스 */}
@@ -345,18 +352,16 @@ export default function PharmacyVisitChecklist3() {
             처방전 유효기간이란?
           </p>
           <p style={{ fontSize: "0.95rem", color: "#1e40af", lineHeight: "1.7" }}>
-            처방전은 발행일 포함 <strong>3일(당일+2일)</strong> 이내에만
-            약국에서 조제를 받을 수 있다(건강보험심사평가원 규정). 3일이
-            지나면 약국에서 조제가 거부되며, 해당 의료기관에서 재발급받아야
-            한다.
+            처방전의 <strong>사용기간 기재란</strong>을 확인하세요.
+            의료법 시행규칙 제12조는 발급일과 사용기간을 처방전에 적도록 정합니다.
+            모든 처방전에 같은 기한을 계산하지 말고, 불명확하면 발급 의료기관에 문의하세요.
           </p>
         </div>
 
         <p className="text-gray-700 leading-relaxed">
-          처방전을 발급받은 날로부터 2일이 지나면 유효기간이 만료된다. 진료
-          당일 조제하지 못했거나 처방전을 잃어버렸다면 반드시 유효기간을
-          먼저 확인해야 한다. 처방전 원본을 분실했을 경우에는 발급 의료기관에
-          재발급을 요청해야 하며, 약국에서는 임의로 재처리할 수 없다.
+          처방전에 적힌 사용기간을 확인한 뒤 약국 방문 일정을 정하세요.
+          기간이 지났거나 처방전을 잃어버렸다면 발급 의료기관에 필요한 절차를 문의하세요.
+          재발급 가능 여부나 비용을 일률적으로 판단하지 마세요.
         </p>
         <p className="text-gray-700 leading-relaxed">
           처방전을 가져갈 때는 <strong>신분증(또는 건강보험증·모바일 앱)</strong>을
@@ -366,7 +371,7 @@ export default function PharmacyVisitChecklist3() {
         <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 space-y-2">
           <p className="text-sm font-semibold text-gray-800">처방전 방문 전 체크리스트</p>
           <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
-            <li>처방전 발행일 확인 → 오늘 포함 3일 이내인지 점검</li>
+            <li>처방전 발급일과 사용기간 기재란 확인 → 불명확하면 발급 의료기관에 문의</li>
             <li>처방전 원본 또는 공식 사본 지참</li>
             <li>신분증·건강보험증(또는 스마트폰 앱) 준비</li>
             <li>복용 중인 타 약물 리스트 메모(중복 처방 방지)</li>
@@ -399,7 +404,7 @@ export default function PharmacyVisitChecklist3() {
         <div className="space-y-3">
           <h2 id="h2-action" className="text-xl font-bold text-brand-900">지금 바로 할 수 있는 3단계</h2>
           <ol className="list-decimal list-inside space-y-2 text-brand-800 font-medium">
-            <li>처방전 발행일 확인 — 유효기간 3일 이내인지 먼저 점검</li>
+            <li>처방전에 기재된 사용기간 확인 — 불명확하면 발급 의료기관에 문의</li>
             <li>약국오늘에서 내 주변 영업 중인 약국 검색 후 전화로 재고 확인</li>
             <li>신분증·처방전 챙겨서 출발 — 도착 시각은 길찾기로 미리 검증</li>
           </ol>
@@ -429,7 +434,7 @@ export default function PharmacyVisitChecklist3() {
         <div className="grid sm:grid-cols-2 gap-3">
           {[
             { href: "/blog/pharmacy-faq-top10", label: "약국 자주 묻는 질문 TOP10", desc: "영업시간·재고·처방전 관련 질문 모음" },
-            { href: "/blog/prescription-holiday-guide", label: "처방전 약 연휴에 못 받을 때", desc: "유효기간 규정과 비상 약국 조회법" },
+            { href: "/blog/prescription-holiday-guide", label: "처방전 약 연휴에 못 받을 때", desc: "사용기간 확인과 비상 약국 조회법" },
             { href: "/nearby", label: "내 주변 약국 바로 찾기 →", desc: "위치 기반 현재 영업 중인 약국 검색" },
           ].map((item) => (
             <Link

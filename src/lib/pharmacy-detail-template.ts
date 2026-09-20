@@ -1,5 +1,5 @@
 import type { Pharmacy } from "@/types/pharmacy";
-import { DAY_KEYS, formatHHMM, getOperatingStatus, getSeoulNow } from "@/lib/hours";
+import { formatHourRange, hhmmToMinutes } from "@/lib/hours";
 import { getMapSearchAddress } from "@/lib/map";
 
 export type DetailFaq = { question: string; answer: string };
@@ -20,29 +20,14 @@ function extractDong(address?: string | null): string | null {
   return found ?? null;
 }
 
-function weekdayLabel(dayKey: string) {
-  const map: Record<string, string> = {
-    mon: "월",
-    tue: "화",
-    wed: "수",
-    thu: "목",
-    fri: "금",
-    sat: "토",
-    sun: "일",
-    holiday: "공휴",
-  };
-  return map[dayKey] ?? dayKey;
-}
-
 function slotText(slot?: { open: string | null; close: string | null } | null) {
-  const open = formatHHMM(slot?.open ?? "");
-  const close = formatHHMM(slot?.close ?? "");
-  if (!open || !close) return "정보 없음";
-  return `${open}~${close}`;
+  return formatHourRange(slot ?? undefined);
 }
 
 function hasHours(slot?: { open: string | null; close: string | null } | null) {
-  return !!slot?.open && !!slot?.close;
+  const open = hhmmToMinutes(slot?.open);
+  const close = hhmmToMinutes(slot?.close, true);
+  return open !== null && close !== null && open !== close;
 }
 
 function analyzePattern(pharmacy: Pharmacy) {
@@ -73,7 +58,7 @@ function analyzePattern(pharmacy: Pharmacy) {
           // 대표적으로 월~금 중 첫 번째를 보여주되, “대부분 동일” 여부를 함께 표기
           const first = knownWeekday[0]!;
           const firstText = slotText(first);
-          const allSame = knownWeekday.every((s) => slotText(s) === firstText);
+          const allSame = knownWeekday.length === 5 && knownWeekday.every((s) => slotText(s) === firstText);
           return allSame ? `평일(월~금) ${firstText}` : `평일은 요일별로 다를 수 있음(예: ${firstText})`;
         })();
 
@@ -92,29 +77,21 @@ function analyzePattern(pharmacy: Pharmacy) {
 }
 
 export function buildAiLessDetailTemplate(pharmacy: Pharmacy): DetailTemplate {
-  const now = getSeoulNow();
-  const todayKey = DAY_KEYS[now.getDay()];
-  const todaySlot = pharmacy.operating_hours?.[todayKey];
-  const status = getOperatingStatus(pharmacy.operating_hours);
-
   const mapAddress = getMapSearchAddress(pharmacy.address);
   const dong = extractDong(pharmacy.address);
   const region = [pharmacy.province, pharmacy.city, dong].filter(Boolean).join(" ");
-  const todayLabel = weekdayLabel(todayKey);
-  const todayHours = slotText(todaySlot);
-
   const pattern = analyzePattern(pharmacy);
 
-  // 1) summary: “고유 토큰(지역/도로명) + 상태 + 오늘 운영시간” 중심
+  // Cached descriptions and FAQ must not freeze a transient "current" status.
   const summary = [
     `${pharmacy.name}${region ? `(${region})` : ""}은(는) ${mapAddress || "해당 지역"}에 위치한 약국입니다.`,
-    `현재 상태는 '${status.label}'이며, ${todayLabel} 기준 영업시간은 ${todayHours}로 표시됩니다.`,
+    `등록된 운영 일정은 ${pattern.weekday}입니다.`,
     `운영시간은 변동될 수 있어 방문 전 전화로 확인하면 헛걸음을 줄일 수 있습니다.`,
   ].join(" ");
 
   // 2) bullets: 값 기반(약국마다 달라지는 요소를 넣어 중복도를 낮춤)
   const bullets = [
-    `오늘(${todayLabel}) 영업시간: ${todayHours}`,
+    `요일별 영업시간과 시간표 기준 상태는 이 페이지의 운영 안내에서 확인하세요.`,
     `운영 패턴 요약: ${pattern.weekday} · ${pattern.weekend} · ${pattern.holiday}`,
     `길찾기 검색어 팁: 주소는 '${mapAddress || "정보 없음"}'처럼 콤마(,) 뒤 상세 호수를 제외하면 더 잘 잡힙니다.`,
     `전화 문의 포인트: 운영 여부, 점심시간/휴게시간, 주말·공휴일 운영은 변동 가능성이 있어 확인이 필요합니다.`,
@@ -122,7 +99,7 @@ export function buildAiLessDetailTemplate(pharmacy: Pharmacy): DetailTemplate {
 
   // 3) usage guide: 상태 기반 체크리스트
   const usageGuide = [
-    `이용 안내: ${pharmacy.name} 방문 전에는 (1) 현재 상태('${status.label}') 확인, (2) ${todayLabel} 영업시간(${todayHours}) 확인, (3) 필요 시 전화 문의 순서로 점검해 주세요.`,
+    `이용 안내: ${pharmacy.name} 방문 전에는 요일별 시간표를 확인하고, 공휴일·임시휴무·휴게시간과 실제 운영 여부를 전화로 확인해 주세요.`,
     pharmacy.tel ? `문의 전화: ${pharmacy.tel}` : "전화번호 정보가 없으면 지도에서 사업자 정보를 확인해 주세요.",
   ].join(" ");
 
@@ -147,7 +124,7 @@ export function buildAiLessDetailTemplate(pharmacy: Pharmacy): DetailTemplate {
   const faq: DetailFaq[] = [
     {
       question: `${pharmacy.name}은 지금 영업 중인가요?`,
-      answer: `현재 상태는 '${status.label}'입니다. ${todayLabel} 영업시간은 ${todayHours}로 표시됩니다. 운영시간은 변동될 수 있어 방문 전 확인이 필요할 수 있습니다.`,
+      answer: `이 페이지의 영업 상태는 등록된 요일 시간표와 한국 시각으로 계산합니다. 실제 운영 확인 정보가 아니므로 공휴일·임시휴무·휴게시간을 포함한 운영 여부는 방문 전 전화로 확인해 주세요.`,
     },
     {
       question: `${pharmacy.name} 주소는 어디인가요?`,

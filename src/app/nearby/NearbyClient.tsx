@@ -5,7 +5,8 @@ import Link from "next/link";
 import { LocateFixed, MapPin, ShieldCheck } from "lucide-react";
 import { PharmacyCard } from "@/components/pharmacy-card";
 
-import { getOperatingStatus } from "@/lib/hours";
+import { getOperatingStatusAt } from "@/lib/hours";
+import { useEvaluationTime } from "@/components/use-evaluation-time";
 import type { PharmacyCardProps } from "@/components/pharmacy-card";
 import { bucketResultCount, trackAnalyticsEvent } from "@/lib/client-analytics";
 
@@ -19,6 +20,7 @@ type NearbyResponse = {
 
 
 export default function NearbyPage() {
+  const time = useEvaluationTime();
   const [items, setItems] = useState<NearbyPharmacy[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
   const [message, setMessage] = useState<string | null>(null);
@@ -93,11 +95,11 @@ export default function NearbyPage() {
       if (sortMode === "distance") {
         return (a.distanceKm ?? Number.POSITIVE_INFINITY) - (b.distanceKm ?? Number.POSITIVE_INFINITY);
       }
-      const aClose = closingMinutes(a);
-      const bClose = closingMinutes(b);
+      const aClose = closingMinutes(a, time);
+      const bClose = closingMinutes(b, time);
       return aClose - bClose;
     });
-  }, [items, sortMode]);
+  }, [items, sortMode, time]);
 
   const topThree = sorted.slice(0, 3);
   const rest = sorted.slice(3);
@@ -272,28 +274,7 @@ export default function NearbyPage() {
   );
 }
 
-function hhmmToMinutes(value?: string | null) {
-  if (!value) return null;
-  const str = String(value).padStart(4, "0");
-  const h = Number(str.slice(0, 2));
-  const m = Number(str.slice(2));
-  if (Number.isNaN(h) || Number.isNaN(m)) return null;
-  return h * 60 + m;
-}
-
-function closingMinutes(pharmacy: PharmacyCardProps["pharmacy"]) {
-  const status = getOperatingStatus(pharmacy.operating_hours);
-  if (status.closesAt) {
-    const mins = hhmmToMinutes(status.closesAt);
-    if (mins !== null) return mins;
-  }
-  const hours = pharmacy.operating_hours;
-  if (!hours) return Number.POSITIVE_INFINITY;
-  const today = new Date();
-  const key = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][today.getDay()] as keyof NonNullable<
-    PharmacyCardProps["pharmacy"]["operating_hours"]
-  >;
-  const slot = hours[key];
-  const close = hhmmToMinutes(slot?.close);
-  return close ?? Number.POSITIVE_INFINITY;
+function closingMinutes(pharmacy: PharmacyCardProps["pharmacy"], time: number | null) {
+  if (time === null) return Number.POSITIVE_INFINITY;
+  return getOperatingStatusAt(pharmacy.operating_hours, new Date(time)).minutesUntilClose ?? Number.POSITIVE_INFINITY;
 }

@@ -156,6 +156,7 @@ export default async function ProvinceCityPage({
       <Pagination currentPage={currentPage} totalPages={totalPages} province={canonicalProvince} city={city} />
 
       <PharmacyListInfinite
+        initialIso={new Date().toISOString()}
         province={canonicalProvince}
         city={city === "전체" ? undefined : city}
         initialItems={items}

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { distanceKm, longitudeDegreeScale } from "@/lib/geo-distance";
-import { getTursoClient } from "@/lib/turso";
+import { getTursoClient, parseJson } from "@/lib/turso";
 import {
   getCoordinateBounds,
   isValidLatitude,
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
         args: [`%${q}%`, `%${q}%`, limit],
       });
       return NextResponse.json({
-        items: result.rows.map((p) => ({ ...p, distanceKm: undefined })),
+        items: result.rows.map((p) => ({ ...p, operating_hours: parseJson(p.operating_hours, null), distanceKm: undefined })),
         total: result.rows.length,
       });
     } catch {
@@ -81,6 +81,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       items: within.map((w) => ({
         ...w.pharmacy,
+        operating_hours: parseJson(w.pharmacy.operating_hours, null),
         distanceKm: w.distance,
       })),
       total: within.length,

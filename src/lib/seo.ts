@@ -40,19 +40,9 @@ export function dynamicTitle(pharmacy: Pharmacy) {
 }
 
 export function dynamicDescription(pharmacy: Pharmacy) {
-  const now = getSeoulNow();
-  const todayKey = DAY_KEYS[now.getDay()];
-  const open = formatHHMM(pharmacy.operating_hours?.[todayKey]?.open ?? "");
-  const close = formatHHMM(pharmacy.operating_hours?.[todayKey]?.close ?? "");
-  const special = pharmacy.description_raw
-    ? ` ${pharmacy.description_raw}`
-    : "";
-
   return `${pharmacy.name}은 ${
     pharmacy.address || `${pharmacy.province ?? ""} ${pharmacy.city ?? ""}`
-  }에 위치해 있습니다. 오늘 영업시간은 ${
-    open || "미등록"
-  }부터 ${close || "미등록"}까지입니다.${special}`;
+  }에 위치해 있습니다. 등록된 요일별 영업시간을 확인하고, 공휴일·임시휴무·실제 운영 여부는 방문 전 전화로 확인하세요.`;
 }
 
 export function generateDescription(pharmacy: Pharmacy) {
@@ -120,7 +110,7 @@ export function buildArticleJsonLd(params: {
   description: string;
   slug: string;
   type?: "Article" | "BlogPosting";
-  datePublished?: string;
+  datePublished?: string | null;
   dateModified?: string;
 }) {
   const { title, description, slug, type = "BlogPosting", datePublished, dateModified } = params;

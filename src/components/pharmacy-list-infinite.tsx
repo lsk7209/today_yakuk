@@ -2,7 +2,8 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { Pharmacy } from "@/types/pharmacy";
-import { getOperatingStatus } from "@/lib/hours";
+import { getOperatingStatusAt, isOperating, isNightShiftAt, hhmmToMinutes } from "@/lib/hours";
+import { useEvaluationTime } from "./use-evaluation-time";
 import { PharmacyCard } from "./pharmacy-card";
 import { distanceKm } from "@/lib/geo-distance";
 
@@ -23,6 +24,7 @@ type Props = {
   total: number;
   pageSize?: number;
   initialOffset?: number;
+  initialIso: string;
 };
 
 type RenderPharmacy = Pharmacy & { distanceKm?: number };
@@ -34,8 +36,10 @@ export function PharmacyListInfinite({
   total,
   pageSize = 20,
   initialOffset = 0,
+  initialIso,
 }: Props) {
   const [items, setItems] = useState<Pharmacy[]>(initialItems);
+  const time = useEvaluationTime(initialIso);
   const [filter, setFilter] = useState<FilterKey>("all");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,8 +66,8 @@ export function PharmacyListInfinite({
   const filtered = useMemo(() => {
     const base = itemsWithDistance.filter((item) => {
       if (filter === "all") return true;
-      if (filter === "open") return getOperatingStatus(item.operating_hours).label === "영업 중";
-      if (filter === "night") return isNightShift(item);
+      if (filter === "open") return time !== null && isOperating(getOperatingStatusAt(item.operating_hours, new Date(time)));
+      if (filter === "night") return time !== null && isNightShiftAt(item.operating_hours, new Date(time));
       if (filter === "holiday") return isHolidayOpen(item);
       return true;
     });
@@ -73,7 +77,7 @@ export function PharmacyListInfinite({
       });
     }
     return base;
-  }, [itemsWithDistance, filter, sortMode, userLocation]);
+  }, [itemsWithDistance, filter, sortMode, userLocation, time]);
 
 
 
@@ -185,6 +189,7 @@ export function PharmacyListInfinite({
                 distanceKm={item.distanceKm}
                 sourceSurface="region_list"
                 resultRank={initialOffset + index + 1}
+                initialIso={initialIso}
               />
             </div>
           ))}
@@ -214,33 +219,12 @@ export function PharmacyListInfinite({
   );
 }
 
-function hhmmToMinutes(value?: string | null) {
-  if (!value) return null;
-  const str = String(value).padStart(4, "0");
-  const h = Number(str.slice(0, 2));
-  const m = Number(str.slice(2));
-  if (Number.isNaN(h) || Number.isNaN(m)) return null;
-  return h * 60 + m;
-}
-
-function isNightShift(pharmacy: Pharmacy) {
-  const hours = pharmacy.operating_hours;
-  if (!hours) return false;
-  const today = new Date();
-  const key = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][today.getDay()] as keyof NonNullable<
-    Pharmacy["operating_hours"]
-  >;
-  const slot = hours[key];
-  const close = hhmmToMinutes(slot?.close);
-  return close !== null && close >= 22 * 60;
-}
-
 function isHolidayOpen(pharmacy: Pharmacy) {
   const hours = pharmacy.operating_hours;
   if (!hours) return false;
   const slot = hours.holiday;
   const open = hhmmToMinutes(slot?.open);
-  const close = hhmmToMinutes(slot?.close);
-  return open !== null && close !== null;
+  const close = hhmmToMinutes(slot?.close, true);
+  return open !== null && close !== null && open !== close;
 }
 

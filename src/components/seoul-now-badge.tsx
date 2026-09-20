@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEvaluationTime } from "./use-evaluation-time";
 
 function formatSeoulHHMM(date: Date) {
   return new Intl.DateTimeFormat("ko-KR", {
@@ -21,19 +21,8 @@ type Props = {
 };
 
 export function SeoulNowBadge({ initialIso, className }: Props) {
-  const [now, setNow] = React.useState<Date | null>(() => {
-    if (!initialIso) return null;
-    const d = new Date(initialIso);
-    return Number.isNaN(d.getTime()) ? null : d;
-  });
-
-  React.useEffect(() => {
-    setNow(new Date());
-    const id = window.setInterval(() => setNow(new Date()), 60_000);
-    return () => window.clearInterval(id);
-  }, []);
-
-  const text = now ? formatSeoulHHMM(now) : "—";
+  const time = useEvaluationTime(initialIso);
+  const text = time !== null ? formatSeoulHHMM(new Date(time)) : "—";
 
   return (
     <span

@@ -15,20 +15,13 @@ import {
   ExternalLink,
   Timer,
 } from "lucide-react";
-import {
-  formatHourRange,
-  formatHHMM,
-  DAY_KEYS,
-  getBadgeClass,
-  getOperatingStatus,
-  getSeoulNow,
-} from "@/lib/hours";
 import { Pharmacy } from "@/types/pharmacy";
 
 import { StickyFab } from "@/components/sticky-fab";
 import { JsonLd } from "@/components/seo/json-ld";
 import { CopyButton } from "@/components/copy-button";
 import { SeoulNowBadge } from "@/components/seoul-now-badge";
+import { PharmacyStatus, PharmacyTodayHours, PharmacyWeeklyHours, NearbyOpenPharmacies } from "@/components/pharmacy-hours";
 import {
   buildPharmacyJsonLd,
 } from "@/lib/seo";
@@ -98,16 +91,12 @@ function buildPharmacyMetaTitle(pharmacy: Pharmacy): string {
 }
 
 function buildPharmacyMetaDescription(pharmacy: Pharmacy, fallback: string): string {
-  const now = getSeoulNow();
-  const todayKey = DAY_KEYS[now.getDay()];
-  const open = formatHHMM(pharmacy.operating_hours?.[todayKey]?.open ?? "");
-  const close = formatHHMM(pharmacy.operating_hours?.[todayKey]?.close ?? "");
   const city = pharmacy.city ?? "";
   const dong = extractDong(pharmacy.address) ?? "";
   const region = [city, dong].filter(Boolean).join(" ");
 
   // 첫 문장은 80자 이내로 핵심만(네이버 노출 대응)
-  const first = `${pharmacy.name}${region ? `(${region})` : ""} 오늘 영업시간 ${open || "미등록"}~${close || "미등록"}.`;
+  const first = `${pharmacy.name}${region ? `(${region})` : ""} 등록된 요일별 영업시간과 방문 전 확인 정보를 안내합니다.`;
   const second =
     ` 주소·전화·길찾기·주말/공휴일 운영·FAQ·근처 대체 약국 정보를 한 번에 확인하세요.`;
   const composed = `${first}${second}`.trim();
@@ -116,17 +105,6 @@ function buildPharmacyMetaDescription(pharmacy: Pharmacy, fallback: string): str
   const merged = composed.length >= 120 ? composed : `${composed} ${fallback}`.trim();
   return naverDescription(merged);
 }
-
-const DAY_LABELS: [keyof NonNullable<Pharmacy["operating_hours"]>, string][] = [
-  ["mon", "월"],
-  ["tue", "화"],
-  ["wed", "수"],
-  ["thu", "목"],
-  ["fri", "금"],
-  ["sat", "토"],
-  ["sun", "일"],
-  ["holiday", "공휴"],
-];
 
 export async function generateMetadata({ params }: { params: Promise<Params> }) {
   const { id } = await params;
@@ -193,15 +171,8 @@ async function Content({
       : [];
   const nearby = findNearbyWithinKm(pharmacy, regionList);
 
-  const status = getOperatingStatus(pharmacy.operating_hours);
   const callablePhone = hasValidPhone(pharmacy.tel) ? pharmacy.tel : null;
-  const now = getSeoulNow();
-  const todayKey = DAY_KEYS[now.getDay()];
-  const todaySlot = pharmacy.operating_hours?.[todayKey];
-  const todayOpen = formatHHMM(todaySlot?.open ?? "");
-  const todayClose = formatHHMM(todaySlot?.close ?? "");
-  const todayHoursText =
-    todayOpen && todayClose ? `${todayOpen} ~ ${todayClose}` : "정보 없음";
+  const initialIso = new Date().toISOString();
 
   const mapAddress = getMapSearchAddress(pharmacy.address);
   const mapQuery = encodeURIComponent((mapAddress || pharmacy.name).trim());
@@ -248,30 +219,27 @@ async function Content({
       className="container py-8 sm:py-12 space-y-8 bg-white min-h-screen max-w-5xl"
       data-pharmacy-id={pharmacy.hpid}
       data-source-surface="pharmacy_detail"
-      data-opening-status={status.label}
+      data-opening-status="client-evaluated"
     >
       <Breadcrumb items={breadcrumbItems} />
 
       <header className="premium-card bg-gradient-to-br from-white to-emerald-50/30 p-6 sm:p-10 rounded-[2rem] border border-gray-100 space-y-3">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex-1 min-w-0">
-            <span className={getBadgeClass(status)}>
-              {status.emoji && <span aria-hidden>{status.emoji}</span>}
-              {status.label}
-            </span>
+            <PharmacyStatus hours={pharmacy.operating_hours} initialIso={initialIso} badge />
             <h1 className="text-3xl sm:text-4xl font-black text-gray-900 leading-tight mt-2">
               {pharmacy.name}
             </h1>
-            <p className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-3 bg-gray-50 rounded-lg px-4 py-2 border border-gray-200">
+            <div className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-3 bg-gray-50 rounded-lg px-4 py-2 border border-gray-200">
               <MapPin className="h-5 w-5 text-brand-600 flex-shrink-0" />
               <span className="flex-1">
                 <span className="text-gray-500 font-medium">주소:</span>{" "}
                 <span className="text-gray-900 font-bold">{pharmacy.address}</span>
               </span>
               <CopyButton text={pharmacy.address} label="주소 복사" />
-            </p>
+            </div>
             {callablePhone && (
-              <p className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-2 bg-brand-50 rounded-lg px-4 py-2 border border-brand-200">
+              <div className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-2 bg-brand-50 rounded-lg px-4 py-2 border border-brand-200">
                 <Phone className="h-5 w-5 text-brand-600 flex-shrink-0" />
                 <span className="flex-1">
                   <span className="text-gray-600 font-medium">전화:</span>{" "}
@@ -283,7 +251,7 @@ async function Content({
                   </a>
                 </span>
                 <CopyButton text={callablePhone} label="전화번호 복사" />
-              </p>
+              </div>
             )}
           </div>
         </div>
@@ -301,17 +269,14 @@ async function Content({
           <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-black text-emerald-800 border border-emerald-200">
             <Clock className="h-4 w-4" />
             <span>영업 상태</span>
-            <span className="text-emerald-700">{status.label}</span>
+            <PharmacyStatus hours={pharmacy.operating_hours} initialIso={initialIso} />
           </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
             <p className="text-sm font-bold text-gray-600">오늘 영업시간</p>
-            <p className="text-xl font-black text-gray-900 mt-1">{todayHoursText}</p>
-            <p className="text-xs text-gray-500 mt-2">
-              영업시간은 변동될 수 있습니다. 방문 전 전화로 운영 여부를 확인해 주세요.
-            </p>
+            <PharmacyTodayHours hours={pharmacy.operating_hours} initialIso={initialIso} />
           </div>
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
             <p className="text-sm font-bold text-gray-600">빠른 행동</p>
@@ -374,7 +339,7 @@ async function Content({
           <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-4 py-2 text-gray-800 font-bold shadow-sm border border-emerald-200">
             <Clock className="h-4 w-4 text-emerald-700" />
             <span>영업 상태:</span>
-            <span className="text-emerald-700">{status.label}</span>
+            <PharmacyStatus hours={pharmacy.operating_hours} initialIso={initialIso} />
           </span>
           {callablePhone ? (
             <a
@@ -460,56 +425,13 @@ async function Content({
             <h2 className="text-2xl font-black text-gray-900">요일별 영업시간</h2>
           </div>
           <div className="flex items-center gap-2">
-            <SeoulNowBadge initialIso={now.toISOString()} />
+            <SeoulNowBadge initialIso={initialIso} />
             <span className="text-sm font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">
               KST 기준
             </span>
           </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {DAY_LABELS.map(([key, label]) => {
-            const todayKey = DAY_KEYS[getSeoulNow().getDay()];
-            const isToday = key === todayKey;
-            const hours = formatHourRange(pharmacy.operating_hours?.[key]);
-            const dayEmojis: Record<string, string> = {
-              mon: "월",
-              tue: "화",
-              wed: "수",
-              thu: "목",
-              fri: "금",
-              sat: "토",
-              sun: "일",
-              holiday: "공휴",
-            };
-            return (
-              <div
-                key={key}
-                className={`rounded-xl border-2 px-4 py-4 transition-all ${isToday
-                  ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 shadow-lg scale-105"
-                  : "border-gray-200 bg-gray-50 hover:border-gray-300 hover:shadow-md"
-                  }`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <p className={`text-base font-black ${isToday ? "text-emerald-800" : "text-gray-800"}`}>
-                    {dayEmojis[key] || label}
-                  </p>
-                  {isToday && (
-                    <span className="text-xs font-black text-emerald-700 bg-emerald-200 px-2 py-0.5 rounded-full">
-                      오늘
-                    </span>
-                  )}
-                </div>
-                <p className={`text-sm font-bold ${isToday ? "text-emerald-900" : "text-gray-700"}`}>
-                  {hours === "정보 없음" ? (
-                    <span className="text-gray-400">—</span>
-                  ) : (
-                    <span className={isToday ? "text-emerald-800" : ""}>{hours}</span>
-                  )}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+        <PharmacyWeeklyHours hours={pharmacy.operating_hours} initialIso={initialIso} />
       </section>
 
 
@@ -574,63 +496,10 @@ async function Content({
             <span>반경 2km 내 영업 중인 약국을 바로 확인하세요. 혼잡 시 빠른 대안 방문을 돕습니다.</span>
           </p>
         </div>
-        {nearby.length ? (
-          <div className="space-y-3">
-            {(() => {
-              const nearbyOpen = nearby.filter(
-                (p) => getOperatingStatus(p.operating_hours).label === "영업 중",
-              );
-              if (!nearbyOpen.length) {
-                return (
-                  <p className="text-base text-gray-600">
-                    현재 영업 중인 대체 약국 정보를 찾지 못했습니다.
-                  </p>
-                );
-              }
-              return nearbyOpen.slice(0, 3).map((p) => {
-                const dist = distanceKm(
-                  pharmacy.latitude,
-                  pharmacy.longitude,
-                  p.latitude,
-                  p.longitude,
-                ).toFixed(1);
-                return (
-                  <Link
-                    key={p.hpid}
-                    href={`/pharmacy/${p.hpid}`}
-                    className="block rounded-xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-5 shadow-md hover:border-emerald-400 hover:shadow-xl transition-all transform hover:scale-[1.02]"
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
-                          <p className="text-lg font-black text-gray-900">{p.name}</p>
-                          <span className="text-xs font-black text-emerald-700 bg-emerald-200 px-2 py-0.5 rounded-full">
-                            영업 중
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-700 font-medium flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5 text-gray-500" />
-                          <span>{p.address}</span>
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-end">
-                        <span className="text-lg font-black text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-full border-2 border-emerald-300">
-                          {dist} km
-                        </span>
-                        <span className="text-xs text-gray-500 mt-1">거리</span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              });
-            })()}
-          </div>
-        ) : (
-          <p className="text-base text-gray-600">
-            현재 영업 중인 대체 약국 정보를 찾지 못했습니다.
-          </p>
-        )}
+        <NearbyOpenPharmacies initialIso={initialIso} items={nearby.map((item) => ({
+          ...item,
+          distanceKm: distanceKm(pharmacy.latitude, pharmacy.longitude, item.latitude, item.longitude),
+        }))} />
       </section>
 
       <section className="space-y-4 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">

@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { Pharmacy } from "@/types/pharmacy";
-import { getOperatingStatus } from "@/lib/hours";
+import { getOperatingStatusAt, isOperating, isNightShiftAt, hhmmToMinutes } from "@/lib/hours";
+import { useEvaluationTime } from "./use-evaluation-time";
 import { PharmacyCard } from "./pharmacy-card";
 
 
@@ -15,24 +16,25 @@ const FILTERS: { key: FilterKey; label: string }[] = [
   { key: "holiday", label: "공휴일" },
 ];
 
-export function PharmacyListView({ list }: { list: Pharmacy[] }) {
+export function PharmacyListView({ list, initialIso }: { list: Pharmacy[]; initialIso?: string }) {
+  const time = useEvaluationTime(initialIso);
   const [filter, setFilter] = useState<FilterKey>("all");
 
   const filtered = useMemo(() => {
     return list.filter((item) => {
       if (filter === "all") return true;
       if (filter === "open") {
-        return getOperatingStatus(item.operating_hours).label === "영업 중";
+        return time !== null && isOperating(getOperatingStatusAt(item.operating_hours, new Date(time)));
       }
       if (filter === "night") {
-        return isNightShift(item);
+        return time !== null && isNightShiftAt(item.operating_hours, new Date(time));
       }
       if (filter === "holiday") {
         return isHolidayOpen(item);
       }
       return true;
     });
-  }, [list, filter]);
+  }, [list, filter, time]);
 
 
 
@@ -66,7 +68,7 @@ export function PharmacyListView({ list }: { list: Pharmacy[] }) {
         <div className="space-y-4">
           {filtered.map((item, index) => (
             <div key={item.hpid} className="hover:shadow-lg transition-shadow rounded-2xl">
-              <PharmacyCard pharmacy={item} sourceSurface="pharmacy_list" resultRank={index + 1} />
+              <PharmacyCard pharmacy={item} sourceSurface="pharmacy_list" resultRank={index + 1} initialIso={initialIso} />
             </div>
           ))}
         </div>
@@ -75,33 +77,12 @@ export function PharmacyListView({ list }: { list: Pharmacy[] }) {
   );
 }
 
-function hhmmToMinutes(value?: string | null) {
-  if (!value) return null;
-  const str = value.padStart(4, "0");
-  const h = Number(str.slice(0, 2));
-  const m = Number(str.slice(2));
-  if (Number.isNaN(h) || Number.isNaN(m)) return null;
-  return h * 60 + m;
-}
-
-function isNightShift(pharmacy: Pharmacy) {
-  const hours = pharmacy.operating_hours;
-  if (!hours) return false;
-  const today = new Date();
-  const key = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][today.getDay()] as keyof NonNullable<
-    Pharmacy["operating_hours"]
-  >;
-  const slot = hours[key];
-  const close = hhmmToMinutes(slot?.close);
-  return close !== null && close >= 22 * 60;
-}
-
 function isHolidayOpen(pharmacy: Pharmacy) {
   const hours = pharmacy.operating_hours;
   if (!hours) return false;
   const slot = hours.holiday;
   const open = hhmmToMinutes(slot?.open);
-  const close = hhmmToMinutes(slot?.close);
-  return open !== null && close !== null;
+  const close = hhmmToMinutes(slot?.close, true);
+  return open !== null && close !== null && open !== close;
 }
 

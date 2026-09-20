@@ -1,14 +1,18 @@
+"use client";
+
 import Link from "next/link";
 import { Phone, MapPin, Clock } from "lucide-react";
 import { Pharmacy } from "@/types/pharmacy";
-import { formatHourRange, getBadgeClass, getOperatingStatus } from "@/lib/hours";
+import { formatHourRange, formatHHMM, getBadgeClass, getOperatingStatusAt, getSeoulDayKey } from "@/lib/hours";
 import { hasValidPhone } from "@/lib/pharmacy-indexability";
+import { useEvaluationTime } from "./use-evaluation-time";
 
 export type PharmacyCardProps = {
   pharmacy: Pharmacy;
   distanceKm?: number;
   sourceSurface?: "nearby_results" | "region_list" | "pharmacy_list";
   resultRank?: number;
+  initialIso?: string;
 };
 
 export function PharmacyCard({
@@ -16,23 +20,20 @@ export function PharmacyCard({
   distanceKm,
   sourceSurface = "pharmacy_list",
   resultRank,
+  initialIso,
 }: PharmacyCardProps) {
-  const status = getOperatingStatus(pharmacy.operating_hours);
+  const time = useEvaluationTime(initialIso);
+  const instant = time === null ? null : new Date(time);
+  const status = instant ? getOperatingStatusAt(pharmacy.operating_hours, instant) : null;
   const callablePhone = hasValidPhone(pharmacy.tel) ? pharmacy.tel : null;
-  const todayIntl = new Date().toLocaleString("en-US", {
-    weekday: "short",
-    timeZone: "Asia/Seoul",
-  });
-  const todaySlot = pharmacy.operating_hours
-    ? pharmacy.operating_hours[dayKeyFromIntl(todayIntl)]
-    : undefined;
+  const todaySlot = instant ? pharmacy.operating_hours?.[getSeoulDayKey(instant)] : undefined;
 
   return (
     <article
       className="rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm flex gap-4 transition hover:shadow-lg hover:-translate-y-0.5"
       data-pharmacy-id={pharmacy.hpid}
       data-source-surface={sourceSurface}
-      data-opening-status={status.label}
+      data-opening-status={status?.label ?? "시간 확인 중"}
       data-result-rank={resultRank}
     >
       <div className="flex-1 space-y-2">
@@ -44,11 +45,11 @@ export function PharmacyCard({
               {pharmacy.address}
             </p>
           </div>
-          <span className={getBadgeClass(status)}>
-            {status.emoji && <span aria-hidden>{status.emoji}</span>}
-            {status.label}
-            {status.closesAt ? (
-              <span className="text-[10px] text-slate-600">({status.closesAt} 종료)</span>
+          <span data-pharmacy-status title="등록된 요일 시간표 기준입니다. 공휴일·임시휴무·휴게시간은 전화로 확인하세요." className={status ? getBadgeClass(status) : "text-xs text-slate-600"}>
+            {status?.emoji && <span aria-hidden>{status.emoji}</span>}
+            {status?.label ?? "시간 확인 중"}
+            {status?.closesAt ? (
+              <span className="text-[10px] text-slate-600">({formatHHMM(status.closesAt)} 종료)</span>
             ) : null}
           </span>
         </div>
@@ -60,7 +61,7 @@ export function PharmacyCard({
         <div className="flex flex-wrap gap-2 text-xs text-[var(--muted)]">
           <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1">
             <Clock className="h-3 w-3" />
-            {todaySlot ? formatHourRange(todaySlot) : "오늘 영업 정보 없음"}
+            {instant ? `오늘 ${formatHourRange(todaySlot)}` : "시간 확인 중"}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-emerald-700 font-semibold">
             지역: {pharmacy.city ?? pharmacy.province ?? "정보 없음"}
@@ -93,16 +94,5 @@ export function PharmacyCard({
       </div>
     </article>
   );
-}
-
-function dayKeyFromIntl(intlKey: string): string {
-  const lower = intlKey.toLowerCase();
-  if (lower.startsWith("sun")) return "sun";
-  if (lower.startsWith("mon")) return "mon";
-  if (lower.startsWith("tue")) return "tue";
-  if (lower.startsWith("wed")) return "wed";
-  if (lower.startsWith("thu")) return "thu";
-  if (lower.startsWith("fri")) return "fri";
-  return "sat";
 }
 

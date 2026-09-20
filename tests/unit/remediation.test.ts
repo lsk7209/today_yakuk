@@ -1342,9 +1342,10 @@ async function main() {
         if (id === "next/link") return { __esModule: true, default: "a" };
         if (id === "lucide-react") return { LocateFixed: () => null, MapPin: () => null, ShieldCheck: () => null };
         if (id === "@/lib/seo") return { buildArticleJsonLd };
-        if (id === "@/lib/hours") return { getOperatingStatus };
+        if (id === "@/lib/hours") return { getOperatingStatus, getOperatingStatusAt: getOperatingStatus };
         if (id === "@/lib/client-analytics") return { bucketResultCount, trackAnalyticsEvent };
         if (id === "@/components/pharmacy-card") return { PharmacyCard: () => null };
+        if (id === "@/components/use-evaluation-time") return { useEvaluationTime: () => Date.now() };
         throw new Error(`Unexpected guide/nearby dependency: ${id}`);
       } });
       return { html: renderToStaticMarkup(createElement(pageExports.default)), metadata: pageExports.metadata };

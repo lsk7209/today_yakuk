@@ -18,7 +18,8 @@ import { JsonLd, buildFAQSchema } from "@/components/seo/json-ld";
 import { HomeTrustSections, HOME_FAQ_ITEMS } from "@/components/home/home-trust-sections";
 import RecentBlogPosts from "@/components/home/recent-blog-posts";
 import DesktopSidebar from "@/components/home/desktop-sidebar";
-import { getOperatingStatus } from "@/lib/hours";
+import { getOperatingStatusAt } from "@/lib/hours";
+import { useEvaluationTime } from "@/components/use-evaluation-time";
 import { bucketResultCount, trackAnalyticsEvent } from "@/lib/client-analytics";
 import { hasValidPhone } from "@/lib/pharmacy-indexability";
 
@@ -47,6 +48,7 @@ type NearbyResponse = { items: NearbyPharmacy[]; total: number };
 const homeFaqSchema = buildFAQSchema(HOME_FAQ_ITEMS);
 
 export default function Home() {
+  const time = useEvaluationTime();
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<NearbyPharmacy[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
@@ -148,11 +150,11 @@ export default function Home() {
       if (sortMode === "distance") {
         return (a.distanceKm ?? Number.POSITIVE_INFINITY) - (b.distanceKm ?? Number.POSITIVE_INFINITY);
       }
-      const aClose = closingMinutes(a);
-      const bClose = closingMinutes(b);
+      const aClose = closingMinutes(a, time);
+      const bClose = closingMinutes(b, time);
       return aClose - bClose;
     });
-  }, [items, sortMode]);
+  }, [items, sortMode, time]);
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -370,7 +372,7 @@ export default function Home() {
           {sorted.length > 0 ? (
             <div className="space-y-3">
               {sorted.slice(0, 8).map((p, index) => {
-                const s = getOperatingStatus(p.operating_hours);
+                const s = getOperatingStatusAt(p.operating_hours, new Date(time ?? Number.NaN));
                 const callablePhone = hasValidPhone(p.tel) ? p.tel : null;
                 return (
                   <div
@@ -392,7 +394,7 @@ export default function Home() {
                                 : "bg-slate-100 text-slate-700 ring-slate-200"
                               }`}
                           >
-                            {s.label}
+                            {s.label} · 시간표 기준
                           </span>
                           <Link
                             href={`/pharmacy/${p.hpid}`}
@@ -481,28 +483,7 @@ export default function Home() {
   );
 }
 
-function hhmmToMinutes(value?: string | null) {
-  if (!value) return null;
-  const str = String(value).padStart(4, "0");
-  const h = Number(str.slice(0, 2));
-  const m = Number(str.slice(2));
-  if (Number.isNaN(h) || Number.isNaN(m)) return null;
-  return h * 60 + m;
-}
-
-function closingMinutes(pharmacy: PharmacyCardProps["pharmacy"]) {
-  const status = getOperatingStatus(pharmacy.operating_hours);
-  if (status.closesAt) {
-    const mins = hhmmToMinutes(status.closesAt);
-    if (mins !== null) return mins;
-  }
-  const hours = pharmacy.operating_hours;
-  if (!hours) return Number.POSITIVE_INFINITY;
-  const today = new Date();
-  const key = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][today.getDay()] as keyof NonNullable<
-    PharmacyCardProps["pharmacy"]["operating_hours"]
-  >;
-  const slot = hours[key];
-  const close = hhmmToMinutes(slot?.close);
-  return close ?? Number.POSITIVE_INFINITY;
+function closingMinutes(pharmacy: PharmacyCardProps["pharmacy"], time: number | null) {
+  if (time === null) return Number.POSITIVE_INFINITY;
+  return getOperatingStatusAt(pharmacy.operating_hours, new Date(time)).minutesUntilClose ?? Number.POSITIVE_INFINITY;
 }

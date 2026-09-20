@@ -45,7 +45,7 @@ const faqs = [
   },
   {
     q: "처방전 유효기간은 얼마나 되나요?",
-    a: "일반 처방전의 유효기간은 발급일로부터 3일(발급 당일 포함)입니다. 공휴일이 끼어 있을 경우에도 달력 기준 3일이 적용되므로, 연휴 직전에 처방전을 받았다면 당일 또는 다음 날 바로 약을 받는 것이 안전합니다. 향정신성의약품 등 일부 특수 처방전은 별도 유효기간이 적용될 수 있으니 병원에 확인하세요.",
+    a: "처방전 사용기간은 처방전에 기재된 기간을 확인하세요. 기간이 보이지 않거나 판단이 어려우면 처방전을 발급한 의료기관에 문의하세요.",
   },
   {
     q: "반복 조제(리필)가 가능한 처방전이 있나요?",
@@ -59,6 +59,8 @@ const faqs = [
 
 export default function BlogPrescriptionPrepTips() {
   const articleJsonLd = buildArticleJsonLd({
+    dateModified: "2026-09-20",
+    datePublished: null,
     title: metaTitle,
     description: metaDescription,
     slug: "/blog/prescription-prep-tips",
@@ -118,15 +120,22 @@ export default function BlogPrescriptionPrepTips() {
 
       <AdSlotTop />
 
+      <aside className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
+        <p>사용기간 안내 수정: <time dateTime="2026-09-20">2026년 9월 20일</time>. 모든 처방전에 같은 일수가 적용된다는 기존 안내를 바로잡았습니다.</p>
+        <p>의료법 시행규칙 제12조 제1항 제6호는 처방전에 발급일과 사용기간을 기재하도록 정합니다. 실제 처방전에 적힌 기간을 확인하고, 불명확하면 발급 의료기관에 문의하세요.</p>
+        <a className="underline" href="https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1019641101" target="_blank" rel="noopener noreferrer">근거: 의료법 시행규칙 제12조</a>
+      </aside>
+
+
       <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
         <h2 className="text-xl font-bold text-gray-900">이 체크리스트가 필요한 순간</h2>
         <p className="text-base text-gray-700 leading-relaxed">
-          처방전을 손에 쥐고 약국 문 앞에 섰을 때 &ldquo;오늘 영업을 안 하네&rdquo; 혹은 &ldquo;이 약 재고가 없어요&rdquo;라는 말을 들어본 적이 있다면, 사전 준비가 얼마나 중요한지 실감하셨을 것입니다. 특히 공휴일·야간처럼 대체 약국 선택지가 좁아지는 상황에서는 30분의 준비가 몇 시간의 이동을 줄여줍니다. 처방전 유효기간(발급일 포함 3일)은 생각보다 짧아, 연휴 첫날 처방전을 받았다면 당일 조제가 최선인 경우도 많습니다. 아래 7가지 체크리스트를 따라가면 예상치 못한 상황에서도 당황하지 않고 약을 받을 수 있습니다.
+          처방전을 손에 쥐고 약국 문 앞에 섰을 때 &ldquo;오늘 영업을 안 하네&rdquo; 혹은 &ldquo;이 약 재고가 없어요&rdquo;라는 말을 들어본 적이 있다면, 사전 준비가 얼마나 중요한지 실감하셨을 것입니다. 특히 공휴일·야간처럼 대체 약국 선택지가 좁아지는 상황에서는 30분의 준비가 몇 시간의 이동을 줄여줍니다. 처방전에 기재된 사용기간과 방문할 약국의 운영 일정을 함께 확인하세요. 아래 7가지 체크리스트를 따라가면 예상치 못한 상황에서도 당황하지 않고 약을 받을 수 있습니다.
         </p>
         <ul className="mt-4 space-y-2">
           <li className="flex items-start gap-2 text-sm text-gray-700 leading-relaxed">
             <span className="text-brand-600 font-bold mt-0.5 shrink-0">✓</span>
-            처방전 유효기간(3일)을 확인하고, 연휴·출장 전에는 반드시 당일 수령을 목표로 움직이세요.
+            처방전에 기재된 사용기간을 확인하고, 연휴·출장 일정과 겹친다면 발급 의료기관에 문의하세요.
           </li>
           <li className="flex items-start gap-2 text-sm text-gray-700 leading-relaxed">
             <span className="text-brand-600 font-bold mt-0.5 shrink-0">✓</span>
@@ -182,9 +191,9 @@ export default function BlogPrescriptionPrepTips() {
         <h2 className="text-xl font-bold text-gray-900">처방전 유효기간과 사전 준비 전략</h2>
         <div className="space-y-3">
           <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
-            <h3 className="text-lg font-semibold">처방전 유효기간 3일의 함정</h3>
+            <h3 className="text-lg font-semibold">처방전에 기재된 사용기간 확인</h3>
             <p className="text-[var(--muted)] leading-relaxed">
-              처방전은 발급일 포함 3일 이내에 사용해야 합니다. 금요일 오후에 처방전을 받았다면 주말을 포함해 일요일까지만 유효하며, 월요일에는 이미 만료된 처방전이 됩니다. 3일 연휴가 시작되기 직전에 처방전을 받는 경우라면 당일 조제가 사실상 유일한 선택지가 될 수 있습니다. 연휴 일정이 예정되어 있다면 처방전 수령 즉시 영업 약국을 확인하고 이동하는 습관을 들이는 것이 중요합니다.
+              처방전 사용기간은 처방전에 기재된 기간을 확인하세요. 기간이 보이지 않거나 판단이 어려우면 처방전을 발급한 의료기관에 문의하세요. 발급일만으로 모든 처방전에 같은 기한을 계산하지 말고, 방문할 약국의 운영 일정도 함께 확인하세요.
             </p>
           </div>
           <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
@@ -211,7 +220,7 @@ export default function BlogPrescriptionPrepTips() {
               <h3 className="text-base font-bold text-gray-900">추석 연휴 첫날, 처방전 유효기간 마지막 날</h3>
             </div>
             <p className="text-sm text-gray-600 leading-relaxed">
-              금요일에 병원에서 처방전을 받았는데 추석 연휴가 토·일·월 3일간 이어지는 상황입니다. 처방전 유효기간이 오늘까지라면, 공휴일 당번 약국을 즉시 검색해 영업 시간 종료 전에 도착하는 것이 최우선입니다. 약국오늘에서 &lsquo;지금 영업 중&rsquo; 필터로 가장 가까운 당번 약국을 찾고, 전화로 재고 여부를 확인한 뒤 이동하면 헛걸음을 막을 수 있습니다.
+              금요일에 병원에서 처방전을 받았는데 추석 연휴가 토·일·월 3일간 이어지는 상황입니다. 처방전에 기재된 사용기간이 오늘까지라면, 공휴일 당번 약국을 즉시 검색해 영업 시간 종료 전에 도착하는 것이 최우선입니다. 약국오늘에서 &lsquo;지금 영업 중&rsquo; 필터로 가장 가까운 당번 약국을 찾고, 전화로 재고 여부를 확인한 뒤 이동하면 헛걸음을 막을 수 있습니다.
             </p>
           </div>
           <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
@@ -293,7 +302,7 @@ export default function BlogPrescriptionPrepTips() {
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
-            { href: "/blog/prescription-holiday-guide", label: "처방전 약 연휴에 못 받을 때", desc: "유효기간 규정과 비상 약국 조회법" },
+            { href: "/blog/prescription-holiday-guide", label: "처방전 약 연휴에 못 받을 때", desc: "사용기간 확인과 비상 약국 조회법" },
             { href: "/blog/pharmacy-visit-checklist-3", label: "약국 방문 전 체크리스트", desc: "헛걸음 없는 약국 방문 3가지 확인 사항" },
             { href: "/nearby", label: "내 주변 약국 바로 찾기 →", desc: "위치 기반 현재 영업 중인 약국 검색" },
           ].map((item) => (

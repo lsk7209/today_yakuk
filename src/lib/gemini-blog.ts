@@ -220,7 +220,7 @@ export async function generateBlogPost(topic: string): Promise<BlogPost | null> 
       1. **Tone**: Empathetic, Authoritative, yet Accessible (Grade 8 reading level).
       2. **Short Paragraphs**: No chunk of text should exceed 3 lines, but ensure DEPTH through multiple paragraphs per subsection.
       3. **SEO Keywords**: Naturally include "주말 약국", "야간 약국", "근처 약국", "영양제 추천" where relevant.
-      4. **E-E-A-T**: Include phrases like "약사 추천", "전문가 조언", "임상 연구에 따르면".
+      4. **Sources**: Do not invent pharmacist review, expert endorsements, clinical evidence, or a universal prescription validity period. For prescription use periods, direct readers to the period printed on their prescription and the issuing medical institution if unclear. Cite an exact primary source for factual rules; omit claims that cannot be supported. Medical Service Act Enforcement Rule Article 12 requires the issue date and use period to be written: https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1019641101 .
       5. **Internal Links**: Mention "약국오늘에서 근처 약국 찾기" (will be auto-linked).
       6. **Conclusion**: End with <div class="tip-box"> containing pharmacist's final note.
 

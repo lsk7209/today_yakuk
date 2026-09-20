@@ -10,7 +10,7 @@ import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 const metaTitle =
   "처방전 약 연휴에 못 받을 때 대처법 — 유효기간·비상약국·응급 절차 총정리";
 const metaDescription =
-  "국내 만성질환자 1,500만 명 이상이 연휴마다 처방약 수령 문제에 직면합니다. 처방전 유효기간 3일 규정부터 비상약국 조회, 응급실 대체 방법까지 보건복지부·심평원 자료 기준으로 정리했습니다.";
+  "연휴에 약국을 방문하기 전 처방전에 기재된 사용기간을 확인하세요. 기간이 불명확할 때 문의할 곳과 운영 약국을 찾는 순서를 안내합니다.";
 
 export const metadata: Metadata = {
   title: metaTitle,
@@ -34,11 +34,11 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "연휴 중 처방전 유효기간이 지났으면 어떻게 하나요?",
-    a: "유효기간(발행일 포함 3일)이 초과된 처방전으로는 조제가 불가합니다. 연휴 운영 의원 또는 응급실을 방문해 새 처방전을 발급받아야 합니다. 건강보험심사평가원 e-gen.or.kr에서 연휴 운영 의료기관을 조회할 수 있습니다.",
+    a: "처방전 사용기간은 처방전에 기재된 기간을 확인하세요. 기간이 보이지 않거나 판단이 어려우면 처방전을 발급한 의료기관에 문의하세요. 기재된 기간이 지났다면 필요한 절차를 발급 의료기관에 확인하세요.",
   },
   {
     q: "처방약 1~2일치가 부족할 때 약국에서 일부만 받을 수 있나요?",
-    a: "처방전 유효기간 내라면 약사 판단에 따라 부분 조제가 가능합니다. 방문 전 해당 약국에 전화로 확인하고, 나머지 분량은 유효기간 내 다시 수령하면 됩니다.",
+    a: "일부 수량을 먼저 받을 수 있는지는 이 안내만으로 판단할 수 없습니다. 처방전에 기재된 사용기간을 확인하고, 필요한 수량과 상황을 약국 및 발급 의료기관에 설명해 가능한 절차를 문의하세요.",
   },
   {
     q: "처방전 없이 기존 만성질환약을 구입할 수 없나요?",
@@ -77,6 +77,8 @@ const faqJsonLd = {
 
 export default function Page() {
   const articleJsonLd = buildArticleJsonLd({
+    dateModified: "2026-09-20",
+    datePublished: null,
     title: metaTitle,
     description: metaDescription,
     slug: "/blog/prescription-holiday-guide",
@@ -91,8 +93,8 @@ export default function Page() {
     step: [
       { "@type": "HowToStep", position: 1, name: "연휴 시작 3~7일 전 처방 요청", text: "연휴가 시작되기 최소 3~7일 전에 담당 의사에게 연장 처방을 요청하세요. 만성질환 약이라면 연휴 기간만큼 여유분을 받아두는 것이 안전합니다." },
       { "@type": "HowToStep", position: 2, name: "연휴 운영 약국 사전 조회", text: "건강보험심사평가원 또는 약국오늘에서 연휴 기간 영업하는 인근 약국을 미리 확인해 두세요." },
-      { "@type": "HowToStep", position: 3, name: "연휴 첫날 이전 조제 완료", text: "처방전 유효기간은 발행일 포함 3일입니다. 연휴 전에 반드시 조제를 완료해 두세요." },
-      { "@type": "HowToStep", position: 4, name: "연휴 중 당번·야간약국 활용", text: "약을 미처 못 준비했다면 당번약국 또는 야간약국 후보를 확인하세요. 등록 영업시간과 실제 운영은 다를 수 있으므로 출발 전 전화 확인이 필요합니다." },
+      { "@type": "HowToStep", position: 3, name: "연휴 첫날 이전 조제 완료", text: "처방전 사용기간은 처방전에 기재된 기간을 확인하세요. 기간이 보이지 않거나 판단이 어려우면 처방전을 발급한 의료기관에 문의하세요." },
+      { "@type": "HowToStep", position: 4, name: "연휴 중 당번·야간약국 활용", text: "약을 미처 못 준비했다면 등록된 시간표로 운영 약국 후보를 확인하고, 출발 전 전화로 실제 운영과 재고를 문의하세요." },
       { "@type": "HowToStep", position: 5, name: "응급 상황 시 응급실 방문", text: "약 부족으로 건강이 위험한 경우 응급실을 방문하면 응급 처방 및 조제가 가능합니다." },
     ],
   };
@@ -105,7 +107,7 @@ export default function Page() {
           블로그 · 처방전·연휴 대처
         </p>
         <h1 className="text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">
-          처방전 약 연휴에 못 받을 때 대처법 — 약국 유효기간·비상약국·응급 절차
+          처방전 약 연휴에 못 받을 때 대처법 — 처방전 사용기간·비상약국·응급 절차
         </h1>
 
         {/* Hook=H2 statistic — 첫 단락에 출처 있는 수치 1개 이상 */}
@@ -148,6 +150,13 @@ export default function Page() {
 
       <AdSlotTop />
 
+      <aside className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
+        <p>사용기간 안내 수정: <time dateTime="2026-09-20">2026년 9월 20일</time>. 모든 처방전에 같은 일수가 적용된다는 기존 안내를 바로잡았습니다.</p>
+        <p>의료법 시행규칙 제12조 제1항 제6호는 처방전에 발급일과 사용기간을 기재하도록 정합니다. 실제 처방전에 적힌 기간을 확인하고, 불명확하면 발급 의료기관에 문의하세요.</p>
+        <a className="underline" href="https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1019641101" target="_blank" rel="noopener noreferrer">근거: 의료법 시행규칙 제12조</a>
+      </aside>
+
+
       {/* ── 핵심 수치 박스 1 (statistic box — macro=C 필수 ≥2) ── */}
       <section
         aria-label="핵심 수치"
@@ -158,8 +167,8 @@ export default function Page() {
         </h2>
         <ul className="space-y-3 text-sm text-green-900">
           <li>
-            <strong>처방전 유효기간 3일</strong> — 발행일 포함 공휴일 관계없이
-            3일 이내 조제 완료 필요 (보건복지부)
+            <strong>처방전에 기재된 사용기간 확인</strong> — 모든 처방전에 같은
+            일수를 적용하지 말고, 불명확하면 발급 의료기관에 문의하세요.
           </li>
           <li>
             <strong>만성질환자 1,500만 명 이상</strong> — 전체 외래 진료의 약
@@ -186,14 +195,12 @@ export default function Page() {
           처방전 유효기간이란?
         </h2>
         <p className="text-sm text-blue-900 leading-relaxed">
-          처방전 유효기간은 의약품 관련 규정에 따라{" "}
-          <strong>발행일 포함 3일(공휴일 포함)</strong>이다. 유효기간이 지난
-          처방전으로는 약국이 조제를 거부할 수 있으며, 이 경우 의료기관을 재방문해
-          새 처방전을 발급받아야 한다. 단, 의사가 처방전에 별도 유효기간을 기재한
-          경우 해당 기간 내 유효하다.
+          처방전 사용기간은 <strong>실제 처방전에 기재된 기간</strong>을 확인해야 합니다.
+          의료법 시행규칙은 발급일과 사용기간을 처방전에 적도록 정하고 있습니다.
+          기간이 보이지 않거나 연휴 중 사용 가능한지 판단하기 어렵다면 발급 의료기관에 문의하세요.
           <br />
           <span className="text-blue-600 text-xs">
-            출처: 보건복지부 (mohw.go.kr)
+            출처: <a href="https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1019641101" className="underline">의료법 시행규칙 제12조 제1항 제6호</a>
           </span>
         </p>
       </section>
@@ -204,20 +211,15 @@ export default function Page() {
           처방전 유효기간과 연휴 — 왜 문제가 생기나
         </h2>
         <p className="text-base leading-relaxed text-gray-700">
-          처방전 유효기간이 3일인 구조에서 3~5일짜리 연휴가 시작되면,
-          연휴 첫날 또는 둘째 날에 처방전을 받았다면 유효기간 내 약을 수령할 수
-          있지만, 연휴가 시작된 이후 처방전이 발행되면 운영 약국을 찾기가
-          어려워진다. <strong>이로 인해</strong> 만성질환자들은 처방약 복용을
-          중단하거나 응급실을 찾는 상황에 놓이게 된다.
+          연휴에는 처방전에 기재된 사용기간과 의료기관·약국의 운영 일정을 함께 확인하세요.
+          발급일만 보고 공통 기한을 계산하거나, 공휴일이 포함되면 사용기간이 자동으로 늘어난다고 가정하지 마세요.
+          일정이 맞지 않거나 기간이 불명확하다면 발급 의료기관에 문의하세요.
         </p>
         <p className="text-base leading-relaxed text-gray-700">
-          보건복지부 자료에 따르면 이 문제의 근본 원인은 두 가지다. 첫째,
-          단기 유효기간(3일) 규정이 연휴 기간과 맞물리는 경우다. 둘째,
-          연휴 기간 운영 약국 정보를 사전에 확인하지 않은 채 이동하거나
-          귀향했을 때 주변에 개업 약국이 없는 경우다. 그 결과,
-          처방약을 임의로 중단하면 혈압·혈당 등의 수치가 급격히 변동할 수
-          있으며, 이는 심각한 건강 문제로 이어질 수 있다는 점이
-          의료기관 안내를 통해 반복적으로 강조된다.
+          예를 들어 서울대학교어린이병원은 해당 기관의 원외 처방전 유효기간을
+          발행일부터 14일로 안내합니다. 이는 그 기관의 안내이며 다른 의료기관의 처방전에
+          그대로 적용하는 기준이 아닙니다. <a className="underline" href="https://child.snuh.org/content/C004006005.do">서울대학교어린이병원 처방전 안내</a>와
+          별개로, 본인이 받은 처방전의 사용기간을 직접 확인하세요.
         </p>
 
         {/* 원인→결과 도식 (lens L3 시각화) */}
@@ -230,7 +232,7 @@ export default function Page() {
               <span className="rounded-full bg-amber-200 px-3 py-1 font-semibold whitespace-nowrap">
                 원인
               </span>
-              <span>처방전 유효기간 내 약국 미방문 또는 연휴 중 처방전 만료</span>
+              <span>처방전에 기재된 사용기간 내 약국 미방문 또는 연휴 중 사용기간 경과</span>
             </div>
             <div className="pl-6 text-amber-600">↓</div>
             <div className="flex items-center gap-2">
@@ -287,7 +289,7 @@ export default function Page() {
               3단계 — 연휴 첫날 이전 조제 완료
             </p>
             <p className="text-sm text-gray-600 leading-relaxed">
-              처방전 유효기간 내에 조제를 완료하는 것이 원칙이다. 연휴 직전
+              처방전에 기재된 사용기간 안에 조제를 완료해야 한다. 연휴 직전
               약국은 대기가 길어질 수 있으므로 최소 하루 전 방문을 권장한다.
               일부 약국은 연휴 직전 조기 마감할 수 있으므로 영업 시간을 사전에
               확인하는 것이 안전하다.

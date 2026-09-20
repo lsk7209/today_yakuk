@@ -43,7 +43,7 @@ const STATIC_POSTS = [
   {
     slug: "prescription-holiday-guide",
     title: "처방전 약 연휴에 못 받을 때 대처법",
-    summary: "처방전 유효기간 3일 규정·비상약국 조회·응급 대처까지 총정리",
+    summary: "처방전에 기재된 사용기간 확인·운영 약국 조회·방문 전 문의 안내",
     tag: "처방전",
   },
   {

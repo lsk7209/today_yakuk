@@ -26,7 +26,7 @@ const STATIC_FEED_ITEMS = [
   { slug: "holiday-open-pharmacy-tips", title: "공휴일 문 연 약국 찾는 팁", summary: "공휴일 당번 약국 조회 방법과 사전 준비 체크리스트", date: "2026-05-16" },
   { slug: "kids-fever-medicine-comparison", title: "소아 발열 약 비교 가이드", summary: "아세트아미노펜 vs 이부프로펜, 연령별 용량 기준 정리", date: "2026-05-16" },
   { slug: "night-pharmacy-3steps", title: "야간 약국 찾기 3단계", summary: "심야에 약국을 빠르게 찾는 단계별 실전 방법", date: "2026-05-16" },
-  { slug: "prescription-holiday-guide", title: "처방전 약 연휴에 못 받을 때 대처법", summary: "처방전 유효기간 3일 규정·비상약국 조회·응급 대처까지 총정리", date: "2026-05-16" },
+  { slug: "prescription-holiday-guide", title: "처방전 약 연휴에 못 받을 때 대처법", summary: "처방전에 기재된 사용기간 확인·운영 약국 조회·방문 전 문의 안내", date: "2026-05-16" },
   { slug: "pharmacy-visit-checklist-3", title: "약국 방문 전 꼭 확인해야 할 것들", summary: "헛걸음을 막는 3가지 필수 확인 사항 — 영업, 재고, 처방전 유효기간", date: "2026-05-16" },
   { slug: "holiday-pharmacy-open-check", title: "공휴일에 약국이 열려 있나요? 빠른 확인 방법", summary: "공휴일 약국 영업 여부와 휴일지킴이약국을 30초 안에 확인하는 4가지 방법", date: "2026-05-16" },
 ];
