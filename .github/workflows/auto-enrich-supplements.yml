@@ -2,8 +2,8 @@ name: Auto Enrich Supplements
 
 on:
   schedule:
-    # 매일 3시간 간격으로 실행 (하루 8번, 예약 실행 기본값 기준 최대 120개 처리)
-    - cron: "0 */3 * * *"
+    # Economy mode: low-frequency optional work; workflow_dispatch remains available.
+    - cron: "23 18 * * *"
   workflow_dispatch:
     inputs:
       limit:
