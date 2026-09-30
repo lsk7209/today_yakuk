@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { assertExpectedRowsAffected, getRequiredTursoClient } from "../src/lib/turso";
+import { PROVINCE_MAP } from "../src/lib/data/pharmacies";
 import { XMLParser } from "fast-xml-parser";
 
 const API_URL =
@@ -28,7 +29,7 @@ type PharmacyRecord = {
 
 type ApiResponse = {
   totalCount: number;
-  items: Record<string, string | undefined>[];
+  items: Record<string, string | number | undefined>[];
 };
 
 const apiKey = process.env.PUBLIC_DATA_API_KEY;
@@ -44,14 +45,30 @@ function normalizeArray<T>(value: T | T[] | undefined): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
-function parseNumber(value: string | number | undefined): number | null {
-  if (value === undefined) return null;
+export function parseNumber(value: string | number | undefined): number | null {
+  // XMLParser (parseTagValue: true) can hand back either a string or an
+  // already-coerced number for the same field across rows. An empty/blank
+  // string means "no coordinate provided" and must not collapse to 0.
+  if (value === undefined || value === null) return null;
+  if (typeof value === "string" && value.trim() === "") return null;
   const num = Number(value);
   return Number.isFinite(num) ? num : null;
 }
 
-function buildOperatingHours(
-  item: Record<string, string | undefined>,
+export function normalizeTimeField(value: string | number | undefined): string | undefined {
+  // Time fields are declared as strings, but parseTagValue:true can emit a
+  // JS number for purely numeric tag text (e.g. "0000" -> 0, "0030" -> 30).
+  // Re-pad to the HHmm string shape expected by hhmmToMinutes/formatHHMM.
+  if (value === undefined || value === null) return undefined;
+  if (typeof value === "number") {
+    if (!Number.isInteger(value) || value < 0) return undefined;
+    return String(value).padStart(4, "0");
+  }
+  return value;
+}
+
+export function buildOperatingHours(
+  item: Record<string, string | number | undefined>,
 ): OperatingHours | null {
   const dayKeyMap: Record<number, string> = {
     1: "mon", 2: "tue", 3: "wed", 4: "thu",
@@ -61,9 +78,11 @@ function buildOperatingHours(
   const result: OperatingHours = {};
   Object.entries(dayKeyMap).forEach(([numStr, key]) => {
     const num = Number(numStr);
-    const open = item[`dutyTime${num}s`];
-    const close = item[`dutyTime${num}c`];
-    if (open || close) {
+    const open = normalizeTimeField(item[`dutyTime${num}s`]);
+    const close = normalizeTimeField(item[`dutyTime${num}c`]);
+    // Use presence (not truthiness) so a literal 0/"0000" open or close time
+    // is not dropped by a falsy check.
+    if (open !== undefined || close !== undefined) {
       result[key] = { open: open ?? null, close: close ?? null };
     }
   });
@@ -71,27 +90,38 @@ function buildOperatingHours(
   return Object.keys(result).length > 0 ? result : null;
 }
 
-function extractRegion(address?: string): { province?: string | null; city?: string | null } {
+export function extractRegion(address?: string): { province?: string | null; city?: string | null } {
   if (!address) return { province: null, city: null };
   const tokens = address.trim().split(/\s+/);
   const provinceRaw = tokens[0] ?? null;
   const cityRaw = tokens[1] ?? null;
-  const province =
-    provinceRaw === "경기도" ? "경기" : provinceRaw === "경기" ? "경기" : provinceRaw ?? null;
+  // Store the same canonical province value that the read path (PROVINCE_MAP /
+  // normalizeProvince in src/lib/data/pharmacies.ts) expects for `WHERE province = ?`.
+  // Without this, aliases like "전북특별자치도" or "강원특별자치도" from the source
+  // address are stored verbatim and never match a "/전북/전체" or "/강원/전체" query.
+  const province = provinceRaw ? PROVINCE_MAP[provinceRaw] ?? provinceRaw : null;
   return { province, city: cityRaw ?? null };
 }
 
-function mapToRecord(item: Record<string, string | undefined>): PharmacyRecord {
-  const region = extractRegion(item.dutyAddr);
+function toStringField(value: string | number | undefined): string | undefined {
+  // hpid/tel/address text can be purely numeric (e.g. a phone number), and
+  // parseTagValue:true would otherwise hand back a number that drops
+  // significant leading zeros when later coerced to a string.
+  if (value === undefined || value === null) return undefined;
+  return String(value);
+}
+
+function mapToRecord(item: Record<string, string | number | undefined>): PharmacyRecord {
+  const region = extractRegion(toStringField(item.dutyAddr));
   return {
-    hpid: item.hpid ?? "",
-    name: item.dutyName ?? "",
-    address: item.dutyAddr,
-    tel: item.dutyTel1,
+    hpid: toStringField(item.hpid) ?? "",
+    name: toStringField(item.dutyName) ?? "",
+    address: toStringField(item.dutyAddr),
+    tel: toStringField(item.dutyTel1),
     latitude: parseNumber(item.wgs84Lat),
     longitude: parseNumber(item.wgs84Lon),
     operating_hours: buildOperatingHours(item),
-    description_raw: item.dutyInf,
+    description_raw: toStringField(item.dutyInf),
     province: region.province,
     city: region.city,
     updated_at: new Date().toISOString(),
@@ -139,8 +169,8 @@ export function parsePharmacyApiResponse(parsed: unknown): ApiResponse {
   if (!Number.isInteger(totalCount) || totalCount < 0) {
     throw new Error(`Pharmacy API returned invalid totalCount: ${String(body.totalCount)}`);
   }
-  const itemsNode = body.items as { item?: Record<string, string | undefined> | Record<string, string | undefined>[] };
-  const items = normalizeArray<Record<string, string | undefined>>(itemsNode.item);
+  const itemsNode = body.items as { item?: Record<string, string | number | undefined> | Record<string, string | number | undefined>[] };
+  const items = normalizeArray<Record<string, string | number | undefined>>(itemsNode.item);
 
   if (items.length > totalCount) {
     throw new Error(`Pharmacy API page contains ${items.length} items but totalCount is ${totalCount}`);
@@ -176,7 +206,7 @@ async function upsertBatch(records: PharmacyRecord[]) {
 async function main() {
   ensureEnv();
 
-  const allItems: Record<string, string | undefined>[] = [];
+  const allItems: Record<string, string | number | undefined>[] = [];
   console.info("첫 페이지 수집 중...");
   const first = await fetchPage(1);
   allItems.push(...first.items);

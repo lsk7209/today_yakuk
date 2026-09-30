@@ -8,6 +8,7 @@ import {
   isValidLongitude,
   parseNearbyRadius,
 } from "@/lib/geo-bounds";
+import { getOperatingStatusAt, isOperating } from "@/lib/hours";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,6 +21,8 @@ export async function GET(request: Request) {
   const limit = Number.isFinite(requestedLimit)
     ? Math.min(Math.max(Math.trunc(requestedLimit), 1), 50)
     : 40;
+  // Optional, backward-compatible filter: when omitted, behavior is unchanged.
+  const openOnly = searchParams.get("open") === "true";
 
   const db = getTursoClient();
 
@@ -74,17 +77,32 @@ export async function GET(request: Request) {
         pharmacy: p,
         distance: distanceKm(lat, lon, p.latitude as number, p.longitude as number),
       }))
-      .filter((item) => item.distance <= radiusKm)
-      .sort((a, b) => a.distance - b.distance)
-      .slice(0, limit);
+      .filter((item) => item.distance <= radiusKm);
+
+    // Apply the open-now filter across all in-radius candidates (bounded by
+    // the 400-row candidate query above) before truncating to `limit`, so a
+    // closer-but-closed pharmacy does not push a farther-but-open one out of
+    // the response.
+    const filtered = openOnly
+      ? within.filter((item) => {
+          const hours = parseJson(item.pharmacy.operating_hours, null);
+          return isOperating(getOperatingStatusAt(hours, new Date()));
+        })
+      : within;
+
+    const page = filtered.sort((a, b) => a.distance - b.distance).slice(0, limit);
 
     return NextResponse.json({
-      items: within.map((w) => ({
+      items: page.map((w) => ({
         ...w.pharmacy,
         operating_hours: parseJson(w.pharmacy.operating_hours, null),
         distanceKm: w.distance,
       })),
-      total: within.length,
+      total: page.length,
+      // True when the 400-row candidate cap may have excluded further
+      // in-radius pharmacies from consideration (open-filter accuracy is
+      // bounded by the same candidate window as the unfiltered search).
+      coverageLimited: result.rows.length >= 400,
     });
   } catch {
     return NextResponse.json({ message: "데이터를 불러오지 못했습니다." }, { status: 500 });

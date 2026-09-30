@@ -38,6 +38,7 @@ export const PROVINCE_MAP: Record<string, string> = {
   전남: "전라남도",
   전라남도: "전라남도",
   전북: "전라북도",
+  전북특별자치도: "전라북도",
   전라북도: "전라북도",
   경남: "경상남도",
   경상남도: "경상남도",
@@ -105,18 +106,18 @@ export async function getPharmacyByHpid(hpid: string): Promise<Pharmacy | null> 
 }
 
 async function getPharmacyByHpidUncached(hpid: string): Promise<Pharmacy | null> {
-  try {
-    const db = getTursoClient();
-    const result = await db.execute({
-      sql: "SELECT * FROM pharmacies WHERE hpid = ? LIMIT 1",
-      args: [hpid],
-    });
-    if (!result.rows.length) return null;
-    return rowToPharmacy(result.rows[0]);
-  } catch (e) {
-    console.error("pharmacy fetch exception", e);
-    return null;
-  }
+  const db = getTursoClient();
+  const result = await db.execute({
+    sql: "SELECT * FROM pharmacies WHERE hpid = ? LIMIT 1",
+    args: [hpid],
+  });
+  // Absence of a row is the only case that should resolve to null (-> 404).
+  // Any thrown error (missing DB env, network failure, query error) must
+  // propagate so it is never cached as "not found" by cacheDbRead's
+  // unstable_cache wrapper, and so the route's error boundary (not notFound())
+  // handles the dependency failure.
+  if (!result.rows.length) return null;
+  return rowToPharmacy(result.rows[0]);
 }
 
 export async function getPharmaciesByRegion(

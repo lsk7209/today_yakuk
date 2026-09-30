@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { LocateFixed, MapPin, ShieldCheck } from "lucide-react";
 import { PharmacyCard } from "@/components/pharmacy-card";
@@ -28,6 +28,9 @@ export default function NearbyPage() {
   const [hasRequestedLocation, setHasRequestedLocation] = useState(false);
   const [radiusKm, setRadiusKm] = useState(3);
   const [sortMode, setSortMode] = useState<"distance" | "closing">("distance");
+  // Guards against response inversion when the radius is switched quickly
+  // (e.g. 3km -> 10km -> 5km): only the latest request may update state.
+  const requestSeqRef = useRef(0);
 
   async function fetchNearby(targetRadiusKm = radiusKm) {
     setHasRequestedLocation(true);
@@ -43,10 +46,12 @@ export default function NearbyPage() {
       return;
     }
 
+    const requestId = ++requestSeqRef.current;
     setStatus("loading");
     setMessage("현재 위치를 확인하고 있습니다...");
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
+        if (requestId !== requestSeqRef.current) return;
         try {
           const qs = new URLSearchParams({
             lat: String(pos.coords.latitude),
@@ -55,8 +60,10 @@ export default function NearbyPage() {
             limit: "40",
           });
           const res = await fetch(`/api/nearby?${qs.toString()}`);
+          if (requestId !== requestSeqRef.current) return;
           if (!res.ok) throw new Error("위치 기반 약국 정보를 불러오지 못했습니다.");
           const data: NearbyResponse = await res.json();
+          if (requestId !== requestSeqRef.current) return;
           setItems(data.items ?? []);
           setStatus("success");
           setMessage(
@@ -69,11 +76,13 @@ export default function NearbyPage() {
             radius_km: targetRadiusKm,
           });
         } catch {
+          if (requestId !== requestSeqRef.current) return;
           setStatus("error");
           setMessage("데이터를 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.");
         }
       },
       (err) => {
+        if (requestId !== requestSeqRef.current) return;
         setStatus("error");
         if (err.code === err.PERMISSION_DENIED) {
           setMessage("권한이 거부되었습니다. 지역별 찾기를 이용해 주세요.");

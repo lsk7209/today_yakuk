@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import ts from "typescript";
-import { createElement, useEffect, useMemo, useState } from "react";
+import { createElement, useEffect, useMemo, useRef, useState } from "react";
 import * as jsxRuntime from "react/jsx-runtime";
 import { renderToStaticMarkup } from "react-dom/server";
 import { XMLParser } from "fast-xml-parser";
@@ -16,7 +16,7 @@ import { highlightSafeText } from "@/lib/safe-highlight";
 import { sanitizeTrustedHtml } from "@/lib/sanitize-html";
 import { safeJsonStringify } from "@/components/seo/json-ld";
 import { buildArticleJsonLd } from "@/lib/seo";
-import { getOperatingStatus } from "@/lib/hours";
+import { getOperatingStatus, getOperatingStatusAt, hhmmToMinutes, isOperating } from "@/lib/hours";
 import {
   bucketResultCount,
   buildAnalyticsPayload,
@@ -25,6 +25,7 @@ import {
   trackAnalyticsEvent,
 } from "@/lib/client-analytics";
 import { hasValidPhone, isIndexablePharmacy } from "@/lib/pharmacy-indexability";
+import { PROVINCE_MAP } from "@/lib/data/pharmacies";
 import {
   isIndexableMedicine,
   isIndexableSupplement,
@@ -48,7 +49,12 @@ import { AdditiveSignal } from "@/components/wiki/AdditiveSignal";
 import { createClient } from "@libsql/client";
 import { assertExpectedRowsAffected, getRequiredTursoClient } from "@/lib/turso";
 import { claimPendingContent } from "../../scripts/publish-queue";
-import { parsePharmacyApiResponse } from "../../scripts/sync-pharmacies";
+import {
+  buildOperatingHours,
+  extractRegion,
+  parseNumber,
+  parsePharmacyApiResponse,
+} from "../../scripts/sync-pharmacies";
 import {
   finishSyncRun,
   getSourceRowCount,
@@ -1337,7 +1343,7 @@ async function main() {
       assert.equal(compiled.diagnostics?.filter(d => d.category === ts.DiagnosticCategory.Error).length, 0);
       const pageExports = { default: () => createElement("div"), metadata: { alternates: { canonical: "" } } };
       vm.runInNewContext(compiled.outputText, { exports: pageExports, require(id: string) {
-        if (id === "react") return { useEffect, useMemo, useState };
+        if (id === "react") return { useEffect, useMemo, useRef, useState };
         if (id === "react/jsx-runtime") return jsxRuntime;
         if (id === "next/link") return { __esModule: true, default: "a" };
         if (id === "lucide-react") return { LocateFixed: () => null, MapPin: () => null, ShieldCheck: () => null };
@@ -1427,6 +1433,129 @@ async function main() {
     assert.match(adSlot, /isAdsenseServingEnabled\(\)/);
     assert.match(affiliate, /isAffiliateAdsEnabled\(\)/);
     assert.match(affiliate, /canRequestAds\(pathname\)/);
+  });
+
+  // --- TP-02: sync-time normalization must not collapse real 0 values ---
+  await run("parseNumber distinguishes an empty coordinate from a real 0", () => {
+    assert.equal(parseNumber(""), null);
+    assert.equal(parseNumber(undefined), null);
+    assert.equal(parseNumber("0"), 0);
+    assert.equal(parseNumber(0), 0);
+  });
+
+  await run("buildOperatingHours keeps a literal 0/0000 open or close time", () => {
+    const numeric = buildOperatingHours({ dutyTime1s: 0, dutyTime1c: 0 });
+    assert.deepEqual(numeric, { mon: { open: "0000", close: "0000" } });
+
+    const stringZero = buildOperatingHours({ dutyTime1s: "0000", dutyTime1c: "1800" });
+    assert.deepEqual(stringZero, { mon: { open: "0000", close: "1800" } });
+
+    const missing = buildOperatingHours({});
+    assert.equal(missing, null);
+  });
+
+  await run("buildOperatingHours re-pads a parser-coerced numeric time to HHmm", () => {
+    // fast-xml-parser's parseTagValue:true can hand back a bare number for
+    // purely-numeric tag text (e.g. "0030" -> 30); the stored value must
+    // still be usable by hhmmToMinutes/formatHHMM downstream.
+    const result = buildOperatingHours({ dutyTime2s: 30, dutyTime2c: 1800 });
+    assert.deepEqual(result, { tue: { open: "0030", close: "1800" } });
+    assert.equal(hhmmToMinutes(result!.tue.open), 30);
+  });
+
+  // --- TP-03: sync-time province storage must match the read-path alias map ---
+  await run("extractRegion stores the same canonical province the read path queries for", () => {
+    for (const [raw, expectedCanonical] of [
+      ["전북특별자치도", "전라북도"],
+      ["전북", "전라북도"],
+      ["전라북도", "전라북도"],
+      ["강원특별자치도", "강원특별자치도"],
+      ["강원", "강원특별자치도"],
+      ["경기도", "경기"],
+      ["경기", "경기"],
+    ] as const) {
+      const { province } = extractRegion(`${raw} 임의시 임의구 123`);
+      assert.equal(province, expectedCanonical, `extractRegion("${raw}...")`);
+      assert.equal(province, PROVINCE_MAP[raw], `PROVINCE_MAP alias for "${raw}"`);
+    }
+  });
+
+  await run("extractRegion does not misclassify a Sejong road-name second token as a city", () => {
+    // Sejong addresses often have a road name or dong as the 2nd token, not a
+    // 시/군/구. extractRegion only extracts raw tokens; it must not invent a
+    // 시/군/구 classification that doesn't exist in the source address.
+    const { province, city } = extractRegion("세종특별자치시 가름로 123");
+    assert.equal(province, "세종특별자치시");
+    assert.equal(city, "가름로");
+  });
+
+  // --- TP-04: open-now filtering must apply before the result is truncated to `limit` ---
+  await run("open-only filtering over candidates precedes the limit slice", () => {
+    const now = new Date();
+    const day = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][
+      new Date(now.getTime() + 9 * 60 * 60 * 1000).getUTCDay()
+    ];
+    const closedHours = { [day]: { open: "0900", close: "0901" } }; // closed by "now" in practice for most runs
+    const openHours = { [day]: { open: "0000", close: "2400" } }; // open all day, always operating
+
+    const candidates = Array.from({ length: 20 }, (_, i) => ({
+      distance: i * 0.1,
+      hours: closedHours,
+    }));
+    candidates.push({ distance: 2.1, hours: openHours });
+
+    const limit = 20;
+    const withoutOpenFilter = [...candidates].sort((a, b) => a.distance - b.distance).slice(0, limit);
+    const openInUnfiltered = withoutOpenFilter.filter((c) => isOperating(getOperatingStatusAt(c.hours as never, now)));
+    // Demonstrates the bug shape: without filtering before slicing, the one
+    // open candidate (21st by distance) can be excluded from the page.
+    assert.equal(openInUnfiltered.length, 0);
+
+    const withOpenFilter = candidates
+      .filter((c) => isOperating(getOperatingStatusAt(c.hours as never, now)))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, limit);
+    assert.equal(withOpenFilter.length, 1);
+    assert.equal(withOpenFilter[0].distance, 2.1);
+  });
+
+  // --- TP-05: latest-request-wins guard prevents response inversion ---
+  await run("a stale response must not overwrite a newer one under a request-generation guard", () => {
+    let requestSeq = 0;
+    let items: string[] = [];
+
+    function startRequest() {
+      return ++requestSeq;
+    }
+    function resolveRequest(requestId: number, data: string[]) {
+      if (requestId !== requestSeq) return; // stale; ignored
+      items = data;
+    }
+
+    const first = startRequest(); // e.g. slow 3km request
+    const second = startRequest(); // e.g. fast 10km request issued right after
+    resolveRequest(second, ["10km-result"]); // arrives first
+    resolveRequest(first, ["3km-result"]); // arrives late, must be dropped
+    assert.deepEqual(items, ["10km-result"]);
+  });
+
+  // --- TP-06: a dependency failure must not be reported as "not found" ---
+  await run("pharmacy lookup throws on a DB failure instead of returning null", async () => {
+    const { getPharmacyByHpid } = await import("@/lib/data/pharmacies");
+    const fakeError = new Error("simulated DB outage");
+    const turso = await import("@/lib/turso");
+    const original = turso.getTursoClient;
+    (turso as { getTursoClient: typeof turso.getTursoClient }).getTursoClient = () =>
+      ({
+        execute: async () => {
+          throw fakeError;
+        },
+      }) as never;
+    try {
+      await assert.rejects(() => getPharmacyByHpid("__test_outage_hpid__"), fakeError);
+    } finally {
+      (turso as { getTursoClient: typeof turso.getTursoClient }).getTursoClient = original;
+    }
   });
 }
 

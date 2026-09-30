@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   LocateFixed,
   MapPin,
@@ -56,6 +56,9 @@ export default function Home() {
   const [geoAvailable, setGeoAvailable] = useState(true);
   const [radiusKm] = useState(3);
   const [sortMode, setSortMode] = useState<"distance" | "closing">("distance");
+  // Guards against response inversion: only the most recently issued request
+  // is allowed to update `items`/`status`/`message` when its response arrives.
+  const requestSeqRef = useRef(0);
 
   async function fetchNearby() {
     trackAnalyticsEvent("pharmacy_search_submitted", {
@@ -69,10 +72,15 @@ export default function Home() {
       return;
     }
 
+    const requestId = ++requestSeqRef.current;
     setStatus("loading");
     setMessage("현재 위치를 확인하고 있습니다...");
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
+        // The geolocation callback can resolve after a newer search has
+        // already started; abandon this stale request instead of clobbering
+        // the latest state.
+        if (requestId !== requestSeqRef.current) return;
         try {
           const qs = new URLSearchParams({
             lat: String(pos.coords.latitude),
@@ -81,8 +89,10 @@ export default function Home() {
             limit: "20",
           });
           const res = await fetch(`/api/nearby?${qs.toString()}`);
+          if (requestId !== requestSeqRef.current) return;
           if (!res.ok) throw new Error("nearby fetch failed");
           const data: NearbyResponse = await res.json();
+          if (requestId !== requestSeqRef.current) return;
           const list = data.items ?? [];
           setItems(list);
           setStatus("success");
@@ -94,11 +104,13 @@ export default function Home() {
             radius_km: radiusKm,
           });
         } catch {
+          if (requestId !== requestSeqRef.current) return;
           setStatus("error");
           setMessage("데이터를 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.");
         }
       },
       (err) => {
+        if (requestId !== requestSeqRef.current) return;
         setStatus("error");
         if (err.code === err.PERMISSION_DENIED) {
           setMessage("위치 권한이 거부되었습니다. 지역별 찾기를 이용해 주세요.");
@@ -115,6 +127,7 @@ export default function Home() {
       search_mode: "keyword",
       source_surface: "home",
     });
+    const requestId = ++requestSeqRef.current;
     setStatus("loading");
     setMessage("검색어로 약국을 찾고 있습니다...");
     try {
@@ -123,8 +136,10 @@ export default function Home() {
         limit: "20",
       });
       const res = await fetch(`/api/nearby?${qs.toString()}`);
+      if (requestId !== requestSeqRef.current) return;
       if (!res.ok) throw new Error("keyword fetch failed");
       const data: NearbyResponse = await res.json();
+      if (requestId !== requestSeqRef.current) return;
       const list = data.items ?? [];
       setItems(list);
       setStatus("success");
@@ -135,6 +150,7 @@ export default function Home() {
         result_count_bucket: bucketResultCount(list.length),
       });
     } catch {
+      if (requestId !== requestSeqRef.current) return;
       setStatus("error");
       setMessage("검색 중 오류가 발생했습니다. 현재 위치로 다시 시도해 주세요.");
     }
@@ -161,6 +177,13 @@ export default function Home() {
     const term = query.trim();
     if (term.length >= 2) {
       void searchByKeyword(term);
+      return;
+    }
+    if (term.length === 1) {
+      // Do not fall back to an unrequested GPS/location prompt for a
+      // too-short query; ask the user to type more instead.
+      setStatus("error");
+      setMessage("검색어는 2글자 이상 입력해주세요.");
       return;
     }
     void fetchNearby();
