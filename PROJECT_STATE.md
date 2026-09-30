@@ -1,5 +1,31 @@
 # PROJECT_STATE
 
+## 2026-09-30 Nearby/pharmacy sync remediation (validated, uncommitted)
+
+### Outcome
+
+- Fixed six related defects in the pharmacy public-data sync and nearby search path, all still local and uncommitted on top of `origin/main` `cf635d7`:
+  - `scripts/sync-pharmacies.ts`: `parseNumber` no longer collapses an empty coordinate string to `0`; `buildOperatingHours`/`normalizeTimeField` re-pad `fast-xml-parser`-coerced numeric time fields (e.g. `30` → `"0030"`) and keep a literal `0`/`"0000"` open/close time instead of treating it as absent; `extractRegion` now maps the raw source province (e.g. `전북특별자치도`) through `PROVINCE_MAP` so the stored value matches what the read path queries with `WHERE province = ?`; added `toStringField` so numeric-looking text fields (hpid/tel/address) do not lose significant leading zeros.
+  - `src/app/api/nearby/route.ts`: added an optional backward-compatible `open=true` filter that is applied to all in-radius candidates *before* the `limit` slice (previously any post-limit filtering could drop farther-but-open pharmacies in favor of closer-but-closed ones); response now reports `coverageLimited` when the 400-row candidate cap may have excluded further in-radius rows.
+  - `src/app/nearby/NearbyClient.tsx` and `src/app/page.tsx`: added a request-generation guard (`requestSeqRef`) so a slow, superseded geolocation/fetch response cannot overwrite state set by a newer request (response inversion when radius/search is changed quickly).
+  - `src/app/page.tsx`: a 1-character search term now shows a validation message instead of silently falling back to an unrequested GPS prompt.
+  - `src/lib/data/pharmacies.ts`: `getPharmacyByHpidUncached` no longer swallows DB/network errors into a `null` (404); failures now propagate so `cacheDbRead`'s `unstable_cache` never caches an outage as "not found" and the route's error boundary (not `notFound()`) handles it.
+- Added five new regression tests (TP-02 through TP-06) to `tests/unit/remediation.test.ts` covering: `parseNumber` empty-vs-zero, `buildOperatingHours` literal-zero and numeric-repad cases, `extractRegion` canonical province mapping (including the Sejong road-name non-city case), open-only filter-before-slice ordering, the request-generation staleness guard, and DB-failure propagation from `getPharmacyByHpid`.
+
+### Validation
+
+- `npm run lint`: pass.
+- `npx tsc --noEmit`: pass.
+- `npx tsc --noEmit --project tsconfig.sync.json`: pass.
+- `npm run test:unit`: 42/42 pass, including all five new TP-02–TP-06 cases.
+- `npm run build`: pass, Next.js 16.3.3, 58 routes generated; TypeScript check inside the build passed with no errors. The local Turso-env-missing warning is the expected dummy-client fail-safe, not a regression.
+
+### Boundaries and next actions
+
+- All six files remain modified and uncommitted; local HEAD and `origin/main` are both `cf635d7` (`Reduce optional scheduled work and preserve cost monitoring`).
+- No commit, push, deployment, Vercel action, or production DB/API write was performed in this session.
+- Next: confirm with the user whether to commit and push this validated diff (see Next Actions in this file), and re-run `npx playwright test --reporter=line` if a fuller pre-push gate is wanted before pushing.
+
 ## 2026-08-30 Publish queue and blog HTML-shell repair
 
 - GitHub-first inspection used remote `main`; the user's dirty, diverged `D:\web\todaypharm` checkout was not modified. The isolated clone released the runtime repair through `507e892f0675f6d8bbdf4b46fa70a4419327b65f`.
