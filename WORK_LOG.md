@@ -6,13 +6,16 @@
 - [PROJECT_STATE.md] 2026-09-30 섹션을 최상단에 추가하여 6개 수정 파일의 버그 내용과 검증 결과를 기록.
 - [STATUS.md] 현재 상태를 nearby/pharmacy 수정 검증 완료 상태로 갱신(스냅샷 덮어쓰기).
 - [WORK_LOG.md] 신규 생성.
+- 커밋 진행: `ae12bfd`(6개 코드 파일: sync-pharmacies 파싱 버그, nearby open-filter 순서 버그, 홈/nearby 페이지 stale-response 가드, pharmacies 조회 DB 실패 전파 수정 + TP-02~TP-06 테스트) / `1b14037`(PROJECT_STATE.md/STATUS.md/WORK_LOG.md 문서 갱신).
+- `git push -u origin main`으로 GitHub 반영 완료. `origin/main`이 `cf635d7` → `1b14037`로 갱신됨(fetch로 재확인).
 
 ### 설정 변경
 - 없음.
 
 ### 미결 사항
-- 로컬 HEAD/`origin/main`은 `cf635d7`이며, 검증 완료된 6개 파일 diff는 여전히 미커밋 상태.
-- 사용자에게 커밋/푸시 여부 확인 필요 (푸시 전 원하면 `npx playwright test --reporter=line` 추가 실행 가능).
-- 승인 시: 6개 파일만 명시적으로 stage하여 커밋 후 `origin/main`에 push (Vercel 배포는 별도 승인 없이 금지).
+- Vercel 실제 배포는 미수행(범위 밖, 별도 명시적 승인 필요). GitHub 연동 자동배포 여부는 Vercel 대시보드에서 사용자가 직접 확인 필요.
+- GitHub이 보고한 기존 dependency 취약점 5건(moderate 4, low 1)은 이번 작업과 무관하며 미확인 상태로 남음 — 다음 세션에서 필요 시 점검.
+- 운영 Turso DB/API 실측 검증은 자격증명 필요로 여전히 미수행.
 
 ---
+
