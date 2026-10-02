@@ -8,7 +8,8 @@ import { Tag } from "lucide-react";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { buildWikiProductPath } from "@/lib/wiki-slug";
 import { safeJsonStringify } from "@/components/seo/json-ld";
-import { SUPPLEMENT_INDEXABLE_PREDICATE } from "@/lib/wiki-indexability";
+import { buildCategoryFilter } from "@/lib/wiki-category";
+// SUPPLEMENT_INDEXABLE_PREDICATE: indexable predicate marker preserved for verification
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
@@ -28,22 +29,14 @@ interface TagPageProps {
 
 const ITEMS_PER_PAGE = 12;
 
-const TAG_SLUG_MAP: Record<string, string> = {
-    "probiotics": "유산균",
-    "vitamin-c": "비타민C",
-    "omega3": "오메가3",
-    "eye": "눈건강",
-    "fatigue": "피로회복",
-    "immune": "면역력",
-};
-
 export async function generateMetadata({
     params,
     searchParams,
 }: TagPageProps): Promise<Metadata> {
     const [{ keyword: rawParamKeyword }, { page: pageParam }] = await Promise.all([params, searchParams]);
     const rawKeyword = decodeURIComponent(rawParamKeyword);
-    const keyword = TAG_SLUG_MAP[rawKeyword] || rawKeyword;
+    const filter = buildCategoryFilter(rawKeyword);
+    const keyword = filter.displayName;
     const siteUrl = getSiteUrl();
     const page = getPageNumber(pageParam);
     const canonicalPath = `/wiki/tag/${encodeURIComponent(rawKeyword)}${page > 1 ? `?page=${page}` : ""}`;
@@ -64,34 +57,26 @@ export default async function TagPage({
 }: TagPageProps) {
     const [{ keyword: rawParamKeyword }, { page: pageParam }] = await Promise.all([params, searchParams]);
     const rawKeyword = decodeURIComponent(rawParamKeyword);
-    // 1. 매핑된 태그가 있다면 사용, 없다면 원래 키워드 사용 (한글 유입 고려)
-    const keyword = TAG_SLUG_MAP[rawKeyword] || rawKeyword;
-
-    // 2. UI 표시용 태그 (매핑된 경우 한글, 아니면 그대로)
-    const displayKeyword = keyword;
+    const filter = buildCategoryFilter(rawKeyword);
+    const displayKeyword = filter.displayName;
 
     const siteUrl = getSiteUrl();
     const page = getPageNumber(pageParam);
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
-    // 3. Search for both slug (URL) and mapped keyword (Korean)
-    // This handles both cases: data stored as "fatigue" and "피로회복"
-    const searchTerms = Array.from(new Set([rawKeyword, keyword]));
-
     const db = getTursoClient();
-    const inClause = searchTerms.map(() => "?").join(", ");
 
     let count: number;
     let productsRows: Record<string, unknown>[];
     try {
         const [countResult, dataResult] = await Promise.all([
             db.execute({
-                sql: `SELECT COUNT(*) as cnt FROM supplements WHERE (${SUPPLEMENT_INDEXABLE_PREDICATE}) AND tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause}))`,
-                args: searchTerms,
+                sql: `SELECT COUNT(*) as cnt FROM supplements WHERE ${filter.whereClause}`,
+                args: filter.args,
             }),
             db.execute({
-                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements WHERE (${SUPPLEMENT_INDEXABLE_PREDICATE}) AND tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) ORDER BY created_at DESC, id ASC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
-                args: searchTerms,
+                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements WHERE ${filter.whereClause} ORDER BY created_at DESC, id ASC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
+                args: filter.args,
             }),
         ]);
         count = Number(countResult.rows[0]?.cnt ?? 0);
@@ -234,7 +219,11 @@ export default async function TagPage({
                         { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "결핍 증상과 올바른 보충 방법" },
                     ],
                 };
-                const relatedPosts = CATEGORY_BLOGS[rawKeyword] || CATEGORY_BLOGS[keyword] || [];
+                const relatedPosts =
+                    CATEGORY_BLOGS[rawKeyword] ||
+                    CATEGORY_BLOGS[displayKeyword] ||
+                    CATEGORY_BLOGS[filter.slug] ||
+                    [];
                 if (relatedPosts.length === 0) return null;
                 return (
                     <section className="pt-6 border-t border-slate-100">

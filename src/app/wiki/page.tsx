@@ -8,6 +8,7 @@ import WikiSearch from "@/components/wiki/WikiSearch";
 import { buildWikiProductPath } from "@/lib/wiki-slug";
 import { safeJsonStringify } from "@/components/seo/json-ld";
 import { notFound } from "next/navigation";
+import { CATEGORIES, buildCategoryFilter } from "@/lib/wiki-category";
 
 const WIKI_DESCRIPTION = "식약처 공공데이터 기반 영양제 성분, 기능성 원료, 첨가물과 제품 공개 정보를 검색해 확인하세요.";
 
@@ -34,28 +35,7 @@ interface Supplement {
     tags: string[] | null;
 }
 
-const CATEGORIES = [
-    { name: "전체", slug: "all", emoji: "✨" },
-    { name: "유산균", slug: "probiotics", emoji: "🦠" },
-    { name: "비타민C", slug: "vitamin-c", emoji: "🍊" },
-    { name: "오메가3", slug: "omega3", emoji: "🐟" },
-    { name: "눈건강", slug: "eye", emoji: "👁️" },
-    { name: "피로회복", slug: "fatigue", emoji: "⚡" },
-    { name: "면역력", slug: "immune", emoji: "🛡️" },
-    { name: "뼈/치아", slug: "bone", emoji: "🦴" },
-];
-
 const ITEMS_PER_PAGE = 12;
-
-const TAG_SLUG_MAP: Record<string, string> = {
-    "probiotics": "유산균",
-    "vitamin-c": "비타민C",
-    "omega3": "오메가3",
-    "eye": "눈건강",
-    "fatigue": "피로회복",
-    "immune": "면역력",
-    "bone": "뼈",
-};
 
 interface WikiHomePageProps {
     searchParams: Promise<{ category?: string; page?: string }>;
@@ -81,8 +61,9 @@ export async function generateMetadata({ searchParams }: WikiHomePageProps): Pro
 
 export default async function WikiHomePage({ searchParams }: WikiHomePageProps) {
     const { category, page: pageParam } = await searchParams;
-    const currentCategory = category || "all";
-    if (!CATEGORIES.some(({ slug }) => slug === currentCategory)) notFound();
+    const filter = buildCategoryFilter(category);
+    if (!filter.isAll && !CATEGORIES.some(({ slug }) => slug === filter.slug)) notFound();
+    const currentCategory = filter.slug;
     const page = getWikiPageNumber(pageParam);
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
@@ -91,9 +72,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
     let filteredCount: number;
     let productsRows: Record<string, unknown>[];
 
-    if (currentCategory === "all") {
-        const keyword = TAG_SLUG_MAP[currentCategory] || currentCategory;
-        void keyword; // unused for "all"
+    if (filter.isAll) {
         const [countResult, dataResult] = await Promise.all([
             getCachedTotalCount(),
             db.execute(
@@ -103,19 +82,14 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
         filteredCount = countResult;
         productsRows = dataResult.rows as Record<string, unknown>[];
     } else {
-        const keyword = TAG_SLUG_MAP[currentCategory] || currentCategory;
-        const searchTerms = Array.from(new Set([currentCategory, keyword]));
-        const inClause = searchTerms.map(() => "?").join(", ");
-        const filterArgs = [...searchTerms];
-
         const [countResult, dataResult] = await Promise.all([
             db.execute({
-                sql: `SELECT COUNT(*) as cnt FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause}))`,
-                args: filterArgs,
+                sql: `SELECT COUNT(*) as cnt FROM supplements WHERE ${filter.whereClause}`,
+                args: filter.args,
             }),
             db.execute({
-                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements WHERE tags IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(tags) WHERE value IN (${inClause})) ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
-                args: filterArgs,
+                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements WHERE ${filter.whereClause} ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
+                args: filter.args,
             }),
         ]);
         filteredCount = Number(countResult.rows[0]?.cnt ?? 0);

@@ -1557,6 +1557,47 @@ async function main() {
       (turso as { getTursoClient: typeof turso.getTursoClient }).getTursoClient = original;
     }
   });
+
+  // --- TP-07 / T03: normalize wiki supplement category and tag filtering ---
+  await run("buildCategoryFilter('all') returns isAll=true with empty conditions", async () => {
+    const { buildCategoryFilter } = await import("@/lib/wiki-category");
+    for (const input of [undefined, null, "", "all", "  all  "]) {
+      const filter = buildCategoryFilter(input);
+      assert.equal(filter.isAll, true);
+      assert.equal(filter.slug, "all");
+      assert.equal(filter.whereClause, "1=1");
+      assert.equal(filter.args.length, 0);
+    }
+  });
+
+  await run("buildCategoryFilter maps all predefined categories by slug or Korean name", async () => {
+    const { buildCategoryFilter, CATEGORIES } = await import("@/lib/wiki-category");
+    assert.equal(CATEGORIES.length, 8);
+    const expectedSlugs = ["probiotics", "vitamin-c", "omega3", "eye", "fatigue", "immune", "bone"];
+    for (const slug of expectedSlugs) {
+      const bySlug = buildCategoryFilter(slug);
+      assert.equal(bySlug.isAll, false);
+      assert.equal(bySlug.slug, slug);
+      assert.ok(bySlug.whereClause.includes("tags IS NOT NULL"));
+      assert.ok(bySlug.whereClause.includes("name LIKE ?"));
+      assert.ok(bySlug.args.length > 0);
+
+      const byKorean = buildCategoryFilter(bySlug.displayName);
+      assert.equal(byKorean.slug, slug);
+      assert.deepEqual(byKorean.args, bySlug.args);
+    }
+  });
+
+  await run("buildCategoryFilter generates safe parameterized fallback for custom tags", async () => {
+    const { buildCategoryFilter } = await import("@/lib/wiki-category");
+    const custom = buildCategoryFilter("항산화_100%");
+    assert.equal(custom.isAll, false);
+    assert.equal(custom.slug, "항산화_100%");
+    assert.ok(custom.whereClause.includes("ESCAPE '\\'"));
+    // Escaped % and _ in LIKE argument
+    assert.equal(custom.args[0], "항산화_100%");
+    assert.equal(custom.args[1], "%항산화\\_100\\%%");
+  });
 }
 
 main().catch((error) => {
