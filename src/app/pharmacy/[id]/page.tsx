@@ -39,6 +39,8 @@ import { getPublishedContentByHpid } from "@/lib/data/content";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { highlightSafeText, type HighlightRule } from "@/lib/safe-highlight";
 
+export const revalidate = 86400;
+
 type Params = { id: string };
 const siteUrl = getSiteUrl();
 

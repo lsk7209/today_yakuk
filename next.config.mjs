@@ -2,6 +2,7 @@
 const nextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 2678400,
   },
   compress: true,
   poweredByHeader: false,
@@ -25,6 +26,24 @@ const nextConfig = {
           {
             key: "Cache-Control",
             value: "public, s-maxage=600, stale-while-revalidate=3600",
+          },
+        ],
+      },
+      {
+        source: "/(pharmacy|hub)/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/(sitemap-index.xml|sitemap.xml|rss.xml)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=86400, stale-while-revalidate=604800",
           },
         ],
       },
