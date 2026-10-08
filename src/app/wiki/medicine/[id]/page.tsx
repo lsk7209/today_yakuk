@@ -183,6 +183,15 @@ export default async function MedicineDetailPage({
                         <p className="text-xs text-[var(--muted)] mt-4">
                             품목기준코드: <span className="font-mono">{medicine.item_seq}</span>
                         </p>
+                        <p className="text-xs text-slate-500 mt-2">
+                            의약품안전나라 공개 허가정보 요약이며, 빈 항목이 주의사항이나 이상반응의 부재를 뜻하지 않습니다.{" "}
+                            <Link
+                                href="/blog/medicine-permit-label-reading-guide"
+                                className="font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-800"
+                            >
+                                허가정보 읽는 순서 보기
+                            </Link>
+                        </p>
                     </div>
                 </div>
             </div>

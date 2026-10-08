@@ -76,30 +76,33 @@ function analyzePattern(pharmacy: Pharmacy) {
   return { weekday, weekend, holiday };
 }
 
+import { withJosa } from "@/lib/korean-josa";
+
 export function buildAiLessDetailTemplate(pharmacy: Pharmacy): DetailTemplate {
   const mapAddress = getMapSearchAddress(pharmacy.address);
   const dong = extractDong(pharmacy.address);
   const region = [pharmacy.province, pharmacy.city, dong].filter(Boolean).join(" ");
   const pattern = analyzePattern(pharmacy);
+  const nameWithRegion = `${pharmacy.name}${region ? `(${region})` : ""}`;
 
   // Cached descriptions and FAQ must not freeze a transient "current" status.
   const summary = [
-    `${pharmacy.name}${region ? `(${region})` : ""}은(는) ${mapAddress || "해당 지역"}에 위치한 약국입니다.`,
-    `등록된 운영 일정은 ${pattern.weekday}입니다.`,
-    `운영시간은 변동될 수 있어 방문 전 전화로 확인하면 헛걸음을 줄일 수 있습니다.`,
+    `${withJosa(nameWithRegion, "은/는")} ${mapAddress || "해당 지역"}에 위치한 약국입니다.`,
+    `등록된 정규 운영 일정은 ${pattern.weekday}입니다.`,
+    `방문 전 유선으로 당일 휴게시간이나 조제 마감 시각을 확인하면 더욱 편리하게 이용할 수 있습니다.`,
   ].join(" ");
 
   // 2) bullets: 값 기반(약국마다 달라지는 요소를 넣어 중복도를 낮춤)
   const bullets = [
-    `요일별 영업시간과 시간표 기준 상태는 이 페이지의 운영 안내에서 확인하세요.`,
+    `요일별 정규 운영시간과 시간표 기준 상태는 이 페이지의 운영 안내에서 확인할 수 있습니다.`,
     `운영 패턴 요약: ${pattern.weekday} · ${pattern.weekend} · ${pattern.holiday}`,
-    `길찾기 검색어 팁: 주소는 '${mapAddress || "정보 없음"}'처럼 콤마(,) 뒤 상세 호수를 제외하면 더 잘 잡힙니다.`,
-    `전화 문의 포인트: 운영 여부, 점심시간/휴게시간, 주말·공휴일 운영은 변동 가능성이 있어 확인이 필요합니다.`,
+    `길찾기 검색어 팁: 주소는 '${mapAddress || "정보 없음"}'처럼 콤마(,) 뒤 상세 호수를 제외하면 더 정확하게 검색됩니다.`,
+    `전화 문의 포인트: 조제약 재고 여부, 점심 휴게시간, 주말·공휴일 단축 운영 여부는 방문 전 전화로 확인하는 것이 안전합니다.`,
   ];
 
   // 3) usage guide: 상태 기반 체크리스트
   const usageGuide = [
-    `이용 안내: ${pharmacy.name} 방문 전에는 요일별 시간표를 확인하고, 공휴일·임시휴무·휴게시간과 실제 운영 여부를 전화로 확인해 주세요.`,
+    `이용 안내: ${pharmacy.name} 방문 전에는 요일별 정규 시간표를 확인하고, 공휴일·휴게시간 및 처방약 재고 여부를 유선으로 확인해 주세요.`,
     pharmacy.tel ? `문의 전화: ${pharmacy.tel}` : "전화번호 정보가 없으면 지도에서 사업자 정보를 확인해 주세요.",
   ].join(" ");
 
@@ -110,37 +113,37 @@ export function buildAiLessDetailTemplate(pharmacy: Pharmacy): DetailTemplate {
       body:
         `- 운영시간 변동 여부(특히 주말/공휴일)\n` +
         `- 점심시간/휴게시간 존재 여부\n` +
-        `- 주차/접근성(데이터만으로 확정 불가 → 확인 필요)`,
+        `- 처방 조제약 재고 및 대중교통·주차 동선 확인`,
     },
     {
       title: "길찾기/도착 시간 팁",
       body:
-        `- 길찾기 버튼은 주소를 기준으로 검색합니다.\n` +
-        `- 도착 예상 시간이 마감 직전이면 '곧 종료' 가능성이 있어 전화 확인이 안전합니다.`,
+        `- 길찾기 버튼은 도로명 주소를 기준으로 검색합니다.\n` +
+        `- 도착 예상 시간이 마감 직전이면 조제 접수가 마감될 수 있어 전화 확인이 안전합니다.`,
     },
   ];
 
-  // 5) FAQ: 템플릿이지만 “값(지역/시간/전화/상태)”이 매번 달라짐
+  // 5) FAQ: 한국어 받침 유무에 따른 은/는, 이/가, 을/를, 으로/로 조사 자동 처리
   const faq: DetailFaq[] = [
     {
-      question: `${pharmacy.name}은 지금 영업 중인가요?`,
-      answer: `이 페이지의 영업 상태는 등록된 요일 시간표와 한국 시각으로 계산합니다. 실제 운영 확인 정보가 아니므로 공휴일·임시휴무·휴게시간을 포함한 운영 여부는 방문 전 전화로 확인해 주세요.`,
+      question: `${withJosa(pharmacy.name, "은/는")} 평일과 주말 정규 운영시간이 어떻게 되나요?`,
+      answer: `${withJosa(pharmacy.name, "이/가")} 등록한 정규 일정은 ${pattern.weekday}, ${pattern.weekend}, ${pattern.holiday}입니다. 공휴일이나 점심 휴게시간 등 세부 일정은 방문 전 전화로 확인해 주세요.`,
     },
     {
-      question: `${pharmacy.name} 주소는 어디인가요?`,
+      question: `${withJosa(pharmacy.name, "이/가")} 위치한 정확한 주소는 어디인가요?`,
       answer: pharmacy.address ? `${pharmacy.address}에 위치해 있습니다.` : "주소 정보가 등록되어 있지 않습니다.",
     },
     {
-      question: `${pharmacy.name} 전화번호가 있나요?`,
+      question: `${withJosa(pharmacy.name, "으로/로")} 바로 연결되는 전화번호가 있나요?`,
       answer: pharmacy.tel ? `${pharmacy.tel}로 전화 문의가 가능합니다.` : "전화번호가 등록되어 있지 않습니다.",
     },
     {
-      question: `주말/공휴일에도 운영하나요?`,
-      answer: `${pattern.weekend}. ${pattern.holiday}. 제공된 데이터로 확정할 수 없는 부분은 전화로 확인해 주세요.`,
+      question: `${withJosa(pharmacy.name, "은/는")} 주말이나 공휴일에도 문을 여나요?`,
+      answer: `${pattern.weekend}. ${pattern.holiday}. 주말 및 공휴일 단축 운영 여부는 방문 전 유선으로 확인해 주세요.`,
     },
     {
-      question: `길찾기 검색이 잘 안 될 때는 어떻게 하나요?`,
-      answer: `주소에서 콤마(,) 뒤의 건물/층/호수 정보를 제외한 뒤 검색하면 더 안정적으로 매칭될 수 있습니다. (예: '${mapAddress || "주소 정보 없음"}')`,
+      question: `${withJosa(pharmacy.name, "을/를")} 내비게이션에서 검색할 때 팁이 있나요?`,
+      answer: `주소에서 콤마(,) 뒤의 건물/층/호수 정보를 제외한 뒤 검색하면 더 안정적으로 매칭됩니다. (권장 검색어: '${mapAddress || "주소 정보 없음"}')`,
     },
   ];
 

@@ -1,10 +1,29 @@
 # PROJECT_STATE
 
-## 2026-09-30 Nearby/pharmacy sync remediation (validated, uncommitted)
+## 2026-10-08 Security dependency maintenance and API data-to-content follow-up
 
 ### Outcome
 
-- Fixed six related defects in the pharmacy public-data sync and nearby search path, all still local and uncommitted on top of `origin/main` `cf635d7`:
+- Upgraded `next` (`^16.3.8`, resolved `16.4.0`), `eslint-config-next` (`^16.3.8`), `sanitize-html` (`^2.18.0`), and transitive dependencies (`sharp`, `qs`, `source-map-js`, `brace-expansion`) in `package.json` and `package-lock.json` to resolve all production security vulnerabilities (`npm audit --omit=dev`: 0 vulnerabilities).
+- Audited public sitemaps since the prior `2026-08-28T01:03:12.062Z` baseline (`content/data-audits/2026-10-08.json`): confirmed 50 new medicine detail routes (including 25 added on `2026-10-04`), 1 supplement route, and 118 published blog routes.
+- Refreshed local API content work plan (`docs/site-quality/API_CONTENT_WORK_PLAN.md`, `API_CONTENT_WORK_PLAN.csv`): 193 total candidates, 83 `ready_for_review` (including 9 P1 new pharmacies), and 110 `source_fields_required`.
+- Updated `/blog/data-update-2026-08` with the 2026-10-08 cumulative public-data delta summary and created `/blog/medicine-permit-label-reading-guide` (`noindex,nofollow` local draft) explaining how to read medicine permit labels (`item_seq`, dosage forms, precautions, interactions, and blank-field boundaries) using 6 sample medicines from the `2026-10-04` sync batch.
+- Linked the medicine detail template (`src/app/wiki/medicine/[id]/page.tsx`) to `/blog/medicine-permit-label-reading-guide` and added regression assertions in `tests/unit/remediation.test.ts`.
+- Synchronized `STATUS.md`, `PROJECT_STATE.md`, `MEMORY.md`, and `WORK_LOG.md` with the committed Git state (`ee65d59`) and current Next.js 16 stack.
+
+### Validation
+
+- `npm run lint`: pass.
+- `npx tsc --noEmit` and `npx tsc --noEmit --project tsconfig.sync.json`: pass.
+- `npm run test`: 42/42 unit tests and `test:api-content` pass.
+- `npm audit --omit=dev`: 0 vulnerabilities.
+- `npm run build`: pass (59 routes generated including `/blog/medicine-permit-label-reading-guide`).
+
+## 2026-09-30 Nearby/pharmacy sync remediation (committed and pushed)
+
+### Outcome
+
+- Fixed six related defects in the pharmacy public-data sync and nearby search path, committed as `ae12bfd` (with documentation in `1b14037` and `ee65d59`) on `origin/main`:
   - `scripts/sync-pharmacies.ts`: `parseNumber` no longer collapses an empty coordinate string to `0`; `buildOperatingHours`/`normalizeTimeField` re-pad `fast-xml-parser`-coerced numeric time fields (e.g. `30` → `"0030"`) and keep a literal `0`/`"0000"` open/close time instead of treating it as absent; `extractRegion` now maps the raw source province (e.g. `전북특별자치도`) through `PROVINCE_MAP` so the stored value matches what the read path queries with `WHERE province = ?`; added `toStringField` so numeric-looking text fields (hpid/tel/address) do not lose significant leading zeros.
   - `src/app/api/nearby/route.ts`: added an optional backward-compatible `open=true` filter that is applied to all in-radius candidates *before* the `limit` slice (previously any post-limit filtering could drop farther-but-open pharmacies in favor of closer-but-closed ones); response now reports `coverageLimited` when the 400-row candidate cap may have excluded further in-radius rows.
   - `src/app/nearby/NearbyClient.tsx` and `src/app/page.tsx`: added a request-generation guard (`requestSeqRef`) so a slow, superseded geolocation/fetch response cannot overwrite state set by a newer request (response inversion when radius/search is changed quickly).
@@ -22,9 +41,8 @@
 
 ### Boundaries and next actions
 
-- All six files remain modified and uncommitted; local HEAD and `origin/main` are both `cf635d7` (`Reduce optional scheduled work and preserve cost monitoring`).
-- No commit, push, deployment, Vercel action, or production DB/API write was performed in this session.
-- Next: confirm with the user whether to commit and push this validated diff (see Next Actions in this file), and re-run `npx playwright test --reporter=line` if a fuller pre-push gate is wanted before pushing.
+- Code committed (`ae12bfd`) and pushed (`ee65d59`) to `origin/main`.
+- No manual deployment, Vercel action, or production DB/API write was performed.
 
 ## 2026-08-30 Publish queue and blog HTML-shell repair
 

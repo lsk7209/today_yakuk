@@ -6,6 +6,7 @@ import {
 } from "@/components/seo/json-ld";
 import audit from "../../../../content/data-audits/2026-08-27.json";
 import followUpAudit from "../../../../content/data-audits/2026-08-28.json";
+import octoberAudit from "../../../../content/data-audits/2026-10-08.json";
 
 const slug = "/blog/data-update-2026-08";
 const supplementCount = audit.publicSitemap.datasets.supplements.entriesSinceCutoff;
@@ -22,6 +23,17 @@ const followUpEnrichment = followUpAudit.githubActions.autoEnrichment;
 const followUpPublicDelta = Object.values(followUpAudit.publicDelta.datasets).reduce(
   (sum, dataset) => sum + dataset.entriesSinceBaseline,
   0,
+);
+const octoberObservedAt = octoberAudit.observedAtKst;
+const octoberMedicinesTotal = octoberAudit.publicDelta.datasets.medicines.entriesSinceBaseline;
+const octoberMedicinesRecentBatch =
+  octoberAudit.publicDelta.datasets.medicines.recentBatchCountSince20260930;
+const octoberSupplementsTotal = octoberAudit.publicDelta.datasets.supplements.entriesSinceBaseline;
+const octoberMedicineSamples = octoberAudit.publicDelta.datasets.medicines.candidates.map(
+  (item) => ({
+    name: item.name,
+    href: new URL(item.loc).pathname,
+  }),
 );
 const supplementSamples = audit.publicSitemap.datasets.supplements.candidates.map((item) => ({
   name: item.name,
@@ -133,6 +145,45 @@ export default function DataUpdatePage() {
             영양제 라벨 읽는 순서
           </Link>
           를 별도 미발행 초안으로 준비했습니다.
+        </p>
+      </section>
+
+      <section className="space-y-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 sm:p-8">
+        <div>
+          <p className="text-xs font-black uppercase tracking-wide text-emerald-800">10월 8일 누적 후속 확인</p>
+          <h2 className="mt-2 text-xl font-black text-slate-950">
+            의약품 {octoberMedicinesTotal}개(10월 4일 {octoberMedicinesRecentBatch}개) 신규 경로 반영
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-slate-700">
+            <time dateTime={octoberObservedAt}>2026년 10월 8일 14:16 KST</time>에 8월 28일 기준선
+            이후 공개 sitemap 증분을 다시 점검했습니다. 의약품 상세 경로는 9월 6일과 10월 4일 두 차례
+            동기화를 통해 총 {octoberMedicinesTotal}개(10월 4일 반영분 {octoberMedicinesRecentBatch}개)가
+            추가됐고, 건강기능식품 상세 경로는 {octoberSupplementsTotal}개 추가됐습니다.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3" aria-label="10월 8일 데이터 점검 요약">
+          {[
+            [`+${octoberMedicinesTotal}개`, "의약품 신규 상세 경로", `8월 28일 이후 누적 (10월 4일 +${octoberMedicinesRecentBatch}개)`],
+            [`+${octoberSupplementsTotal}개`, "건강기능식품 신규 상세 경로", "8월 28일 이후 누적"],
+            [`${octoberMedicineSamples.length}개`, "10월 4일 표본 경로", "정제·연고·크림·시럽 등 제형별 확인"],
+          ].map(([value, label, note]) => (
+            <div key={label} className="rounded-xl bg-white p-4 shadow-sm">
+              <p className="text-2xl font-black text-emerald-800">{value}</p>
+              <h3 className="mt-1 text-sm font-bold text-slate-950">{label}</h3>
+              <p className="mt-1 text-xs leading-relaxed text-slate-500">{note}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-sm leading-relaxed text-slate-700">
+          새로 반영된 의약품 상세 정보를 읽을 때 품목기준코드와 제형별 용법·주의사항을 먼저 대조할 수
+          있도록{" "}
+          <Link
+            href="/blog/medicine-permit-label-reading-guide"
+            className="font-black text-emerald-950 underline underline-offset-4"
+          >
+            의약품 허가정보 읽는 순서
+          </Link>{" "}
+          가이드를 별도 미발행 초안으로 추가했습니다.
         </p>
       </section>
 

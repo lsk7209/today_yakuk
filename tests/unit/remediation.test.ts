@@ -966,6 +966,61 @@ async function main() {
     assert.match(additiveSignal, /href="\/blog\/supplement-additives-label-guide"/);
     assert.doesNotMatch(blogIndex, /supplement-additives-label-guide/);
     assert.doesNotMatch(sitemap, /supplement-additives-label-guide/);
+    const medicineGuide = fs.readFileSync(
+      path.join(root, "src/app/blog/medicine-permit-label-reading-guide/page.tsx"),
+      "utf8",
+    );
+    const octoberManifest = JSON.parse(
+      fs.readFileSync(path.join(root, "content/data-audits/2026-10-08.json"), "utf8"),
+    ) as {
+      publicDelta: {
+        datasets: {
+          medicines: {
+            entriesSinceBaseline: number;
+            recentBatchCountSince20260930: number;
+            candidates: Array<{ name: string; loc: string }>;
+          };
+          supplements: { entriesSinceBaseline: number };
+        };
+      };
+      duplicateCoverage: {
+        localStatic: { slugMatchesExcludingTarget: number; titleMatchesExcludingTarget: number };
+        localCampaigns: { slugMatches: number; titleMatches: number };
+        publishedPublicCoverage: { slugMatches: number; titleMatchPages: number[] };
+      };
+      contentArtifacts: Array<{
+        route: string;
+        status: string;
+        publishedAt: string | null;
+        indexing: string;
+        listingAndSitemap: string;
+      }>;
+    };
+    assert.equal(octoberManifest.publicDelta.datasets.medicines.entriesSinceBaseline, 50);
+    assert.equal(octoberManifest.publicDelta.datasets.medicines.recentBatchCountSince20260930, 25);
+    assert.equal(octoberManifest.publicDelta.datasets.supplements.entriesSinceBaseline, 1);
+    assert.equal(octoberManifest.duplicateCoverage.localStatic.slugMatchesExcludingTarget, 0);
+    assert.equal(octoberManifest.duplicateCoverage.localStatic.titleMatchesExcludingTarget, 0);
+    assert.equal(octoberManifest.duplicateCoverage.localCampaigns.slugMatches, 0);
+    assert.equal(octoberManifest.duplicateCoverage.localCampaigns.titleMatches, 0);
+    assert.equal(octoberManifest.duplicateCoverage.publishedPublicCoverage.slugMatches, 0);
+    assert.deepEqual(octoberManifest.duplicateCoverage.publishedPublicCoverage.titleMatchPages, []);
+    for (const artifact of octoberManifest.contentArtifacts) {
+      assert.equal(artifact.status, "draft");
+      assert.equal(artifact.publishedAt, null);
+      assert.equal(artifact.indexing, "noindex,nofollow");
+      assert.equal(artifact.listingAndSitemap, "excluded");
+    }
+    assert.match(updatePage, /content\/data-audits\/2026-10-08\.json/);
+    assert.match(updatePage, /medicine-permit-label-reading-guide/);
+    assert.match(medicinePage, /href="\/blog\/medicine-permit-label-reading-guide"/);
+    assert.match(medicineGuide, /의약품 허가정보 읽는 순서/);
+    assert.match(medicineGuide, /빈 칸은[\s\S]*주의사항 없음[\s\S]*뜻하지 않습니다/);
+    assert.match(medicineGuide, /nedrug\.mfds\.go\.kr/);
+    assert.match(medicineGuide, /content_to_nearby_click/);
+    assert.doesNotMatch(medicineGuide, /build(?:Article|Faq|HowTo)Schema/);
+    assert.doesNotMatch(blogIndex, /medicine-permit-label-reading-guide/);
+    assert.doesNotMatch(sitemap, /medicine-permit-label-reading-guide/);
     assert.match(autoEnrichment, /persistSupplementEnrichment/);
     assert.match(autoEnrichment, /getEnrichmentOffset/);
     assert.match(autoEnrichment, /ORDER BY id/);

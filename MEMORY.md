@@ -14,7 +14,7 @@
   - 프로젝트 구조 분석 예정.
 
 ## 기술 스택
-- **Framework**: Next.js 14.2.15
+- **Framework**: Next.js 16.3.x (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **Database**: Turso (libSQL)

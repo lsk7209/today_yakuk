@@ -40,8 +40,8 @@ export function isIndexablePharmacy(pharmacy: {
   return useful;
 }
 
-export const PHARMACY_INDEXABLE_WHERE = `
-WHERE address IS NOT NULL
+export const PHARMACY_INDEXABLE_PREDICATE = `
+  address IS NOT NULL
   AND LENGTH(TRIM(address)) >= 8
   AND (
     (
@@ -63,5 +63,10 @@ WHERE address IS NOT NULL
     )
   )
 `;
+
+export const PHARMACY_INDEXABLE_WHERE = `
+WHERE ${PHARMACY_INDEXABLE_PREDICATE}
+`;
+
 
 

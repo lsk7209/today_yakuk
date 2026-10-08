@@ -2,6 +2,10 @@
  * Turso 스키마 초기화 스크립트
  * 실행: node scripts/init-turso-schema.mjs
  */
+import path from "node:path";
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+dotenv.config();
 import { createClient } from "@libsql/client";
 
 // 보안: 자격증명 하드코딩 금지 — 환경변수로만 주입 (노출 시 외부 무단 read/write 위험)
@@ -30,6 +34,9 @@ const STATEMENTS = [
     gemini_summary TEXT,
     province TEXT,
     city TEXT,
+    intelligence_report TEXT,
+    enriched_at TEXT,
+    skipped_at TEXT,
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
 
@@ -168,6 +175,25 @@ const MIGRATIONS = [
   {
     name: "medicines.updated_at backfill",
     sql: `UPDATE medicines SET updated_at = COALESCE(created_at, datetime('now')) WHERE updated_at IS NULL`,
+  },
+  {
+    name: "pharmacies.intelligence_report",
+    sql: `ALTER TABLE pharmacies ADD COLUMN intelligence_report TEXT`,
+    ignore: "duplicate column name",
+  },
+  {
+    name: "pharmacies.enriched_at",
+    sql: `ALTER TABLE pharmacies ADD COLUMN enriched_at TEXT`,
+    ignore: "duplicate column name",
+  },
+  {
+    name: "pharmacies.skipped_at",
+    sql: `ALTER TABLE pharmacies ADD COLUMN skipped_at TEXT`,
+    ignore: "duplicate column name",
+  },
+  {
+    name: "idx_pharmacies_enrichment_status",
+    sql: `CREATE INDEX IF NOT EXISTS idx_pharmacies_enrichment_status ON pharmacies(province, enriched_at, skipped_at)`,
   },
 ];
 

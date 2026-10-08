@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-08T05:16:09.086Z",
+  "observedAtKst": "2026-10-08T14:16:09.086+09:00",
+  "readOnly": true,
+  "baseline": {
+    "manifest": "content/data-audits/2026-08-28.json",
+    "cutoff": "2026-08-28T01:03:12.062Z",
+    "meaning": "Only public sitemap entries created after the 2026-08-28 observation are treated as follow-up candidates."
+  },
+  "publicDelta": {
+    "command": "npm run audit:data-content -- --since=2026-08-28T01:03:12.062Z --types=pharmacies,supplements,medicines,blog --candidate-limit=30 --json",
+    "sitemapIndexUrl": "https://todaypharm.kr/sitemap-index.xml",
+    "datasets": {
+      "pharmacies": {
+        "chunksFetched": 26,
+        "entriesSinceBaseline": 25556,
+        "latestLastModified": "2026-10-07T23:27:14.238Z",
+        "interpretation": "Pharmacy lastmod is a sync-touch timestamp, so this is not a count of newly opened pharmacies."
+      },
+      "supplements": {
+        "chunksFetched": 1,
+        "entriesSinceBaseline": 1,
+        "latestLastModified": "2026-08-28T18:46:14.000Z",
+        "candidates": [
+          {
+            "name": "애터미 퓨어 스피루리나 100 (러시아, 타지키스탄)",
+            "loc": "https://todaypharm.kr/wiki/product/%EC%95%A0%ED%84%B0%EB%AF%B8-%ED%93%A8%EC%96%B4-%EC%8A%A4%ED%94%BC%EB%A3%A8%EB%A6%AC%EB%82%98-100-%EB%9F%AC%EC%8B%9C%EC%95%84-%ED%83%80%EC%A7%80%ED%82%A4%EC%8A%A4%ED%83%84-5eafb8c5-11c7-4272-8979-c29f1cd27049",
+            "lastModified": "2026-08-28T18:46:14.000Z"
+          }
+        ]
+      },
+      "medicines": {
+        "chunksFetched": 1,
+        "entriesSinceBaseline": 50,
+        "latestLastModified": "2026-10-04T22:28:02.000Z",
+        "recentBatchCountSince20260930": 25,
+        "candidates": [
+          {
+            "name": "바로세티정(세티리진염산염)",
+            "loc": "https://todaypharm.kr/wiki/medicine/%EB%B0%94%EB%A1%9C%EC%84%B8%ED%8B%B0%EC%A0%95-%EC%84%B8%ED%8B%B0%EB%A6%AC%EC%A7%84%EC%97%BC%EC%82%B0%EC%97%BC-a150f67a-4ad4-4ebc-9e3c-baa9ad14ddd6",
+            "lastModified": "2026-10-04T22:28:02.000Z"
+          },
+          {
+            "name": "동구아시클로버크림",
+            "loc": "https://todaypharm.kr/wiki/medicine/%EB%8F%99%EA%B5%AC%EC%95%84%EC%8B%9C%ED%81%B4%EB%A1%9C%EB%B2%84%ED%81%AC%EB%A6%BC-139405e6-8ce0-4e6b-b4b5-07fd545c86f7",
+            "lastModified": "2026-10-04T22:28:00.000Z"
+          },
+          {
+            "name": "이지판테놀연고(덱스판테놀)",
+            "loc": "https://todaypharm.kr/wiki/medicine/%EC%9D%B4%EC%A7%80%ED%8C%90%ED%85%8C%EB%86%80%EC%97%B0%EA%B3%A0-d-%ED%8C%90%ED%85%8C%EB%86%80-90005861-49e8-48aa-8b2a-31d3f6422bba",
+            "lastModified": "2026-10-04T22:28:00.000Z"
+          },
+          {
+            "name": "아세레놀산500밀리그램(아세트아미노펜)",
+            "loc": "https://todaypharm.kr/wiki/medicine/%EC%95%84%EC%84%B8%EB%A0%88%EB%86%80%EC%82%B0500%EB%B0%80%EB%A6%AC%EA%B7%B8%EB%9E%A8-%EC%95%84%EC%84%B8%ED%8A%B8%EC%95%84%EB%AF%B8%EB%85%B8%ED%8E%9C-24b087f5-d4b0-4160-8541-7fbd1b93a6ee",
+            "lastModified": "2026-10-04T22:28:00.000Z"
+          },
+          {
+            "name": "시어스나프록센정(나프록센나트륨)",
+            "loc": "https://todaypharm.kr/wiki/medicine/%EC%8B%9C%EC%96%B4%EC%8A%A4%EB%82%98%ED%94%84%EB%A1%9D%EC%84%BC%EC%A0%95-%EB%82%98%ED%94%84%EB%A1%9D%EC%84%BC%EB%82%98%ED%8A%B8%EB%A5%A8-cac49316-df1b-40fb-b204-f28a2a7da56e",
+            "lastModified": "2026-10-04T22:28:00.000Z"
+          },
+          {
+            "name": "타치온정100밀리그램(글루타티온(환원형))",
+            "loc": "https://todaypharm.kr/wiki/medicine/%ED%83%80%EC%B9%98%EC%98%A8%EC%A0%95100%EB%B0%80%EB%A6%AC%EA%B7%B8%EB%9E%A8-%EA%B8%80%EB%A3%A8%ED%83%80%ED%8B%B0%EC%98%A8-%ED%99%98%EC%9B%90%ED%98%95-04841518-6bab-4cc0-8c48-57dcb7c825ea",
+            "lastModified": "2026-10-04T22:26:49.000Z"
+          }
+        ]
+      },
+      "blog": {
+        "chunksFetched": 1,
+        "entriesSinceBaseline": 118,
+        "latestLastModified": "2026-09-21T23:48:55.027Z"
+      }
+    }
+  },
+  "duplicateCoverage": {
+    "observedAt": "2026-10-08T05:17:14.607Z",
+    "command": "npm run audit:content-duplicates -- --slug=medicine-permit-label-reading-guide --title=의약품 허가정보 읽는 순서: 효능·용법·주의사항 확인법 --delay-ms=50",
+    "target": {
+      "slug": "medicine-permit-label-reading-guide",
+      "title": "의약품 허가정보 읽는 순서: 효능·용법·주의사항 확인법",
+      "route": "/blog/medicine-permit-label-reading-guide"
+    },
+    "localStatic": {
+      "comparedRouteFiles": 25,
+      "comparedRegistry": "src/app/blog/page.tsx",
+      "slugMatchesExcludingTarget": 0,
+      "titleMatchesExcludingTarget": 0
+    },
+    "localCampaigns": {
+      "files": 4,
+      "entries": 306,
+      "slugMatches": 0,
+      "titleMatches": 0
+    },
+    "publishedPublicCoverage": {
+      "sitemapEntries": 831,
+      "renderedPublishedEntries": 831,
+      "listingPagesFetched": 70,
+      "slugMatches": 0,
+      "titleMatchPages": []
+    }
+  },
+  "decision": {
+    "followUp": "add the 2026-10-08 public sitemap delta summary (50 medicine records including 25 on 2026-10-04, 1 supplement record) to the data-update draft",
+    "evergreenDraft": "create one noindex medicine-permit reading guide referencing the newly collected medicine records and linking from the medicine detail template",
+    "claimBoundary": "Sitemap lastmod counts site record creation, not new regulatory approval or product launch; blank fields do not prove absence of warnings or interactions."
+  },
+  "contentArtifacts": [
+    {
+      "route": "/blog/data-update-2026-08",
+      "status": "draft",
+      "publishedAt": null,
+      "indexing": "noindex,nofollow",
+      "listingAndSitemap": "excluded"
+    },
+    {
+      "route": "/blog/medicine-permit-label-reading-guide",
+      "title": "의약품 허가정보 읽는 순서: 효능·용법·주의사항 확인법",
+      "status": "draft",
+      "publishedAt": null,
+      "indexing": "noindex,nofollow",
+      "listingAndSitemap": "excluded"
+    }
+  ],
+  "officialSources": [
+    {
+      "name": "의약품안전나라 의약품통합정보시스템",
+      "url": "https://nedrug.mfds.go.kr/",
+      "use": "item_seq, permit details, efficacy, dosage, precautions, and adverse-event lookup"
+    },
+    {
+      "name": "약학정보원 의약품 검색",
+      "url": "https://www.health.kr/",
+      "use": "pill identification, ingredient, and patient medication guidance lookup"
+    },
+    {
+      "name": "응급의료포털 E-Gen 약국 찾기",
+      "url": "https://www.e-gen.or.kr/",
+      "use": "holiday and night-time operating pharmacy verification"
+    }
+  ],
+  "method": {
+    "publicData": "Fetched same-origin public sitemap XML sequentially and counted lastmod values after 2026-08-28T01:03:12.062Z and 2026-09-30T00:00:00.000Z.",
+    "writing": "All Korean body copy was written directly in the active session without an external writing API.",
+    "writes": "No production database write, API write, publication, or deployment was performed."
+  }
+}

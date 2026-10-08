@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS pharmacies (
   gemini_summary TEXT,
   province TEXT,
   city TEXT,
+  intelligence_report TEXT,      -- JSON intelligence report
+  enriched_at TEXT,              -- ISO timestamp when enriched
+  skipped_at TEXT,               -- ISO timestamp when skipped due to no match
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
