@@ -24,7 +24,7 @@ export async function GET(
   }
 
   const entries = await cacheDbRead(
-    ["sitemap-entries", id],
+    ["sitemap-entries-hpid-v2", id],
     () => getSitemapEntries(id),
   );
   if (id !== "static" && entries.length === 0) {

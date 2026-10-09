@@ -289,3 +289,6 @@ Today Yakuk 저장소의 보안·데이터 무결성·의존성·자동화·핵�
 - Supabase Actions secrets were deleted earlier. The unused runtime remnants, obsolete operator setup guides, and `supabase/` SQL were removed; Turso remains the runtime database.
 - Review: two Luna/max read-only lanes and one Sol/high reliability gate; BLOCKER 0 and all HIGH findings repaired.
 - Boundary: no production workflow dispatch, DB mutation job, publication, Vercel action, or deployment was performed. GitHub push and CI verification are the remaining authorized release steps.
+
+## 2026-10-09 Turso read cost, local verified
+Pharmacy sitemap projection reduced to hpid/updated_at, stableuniquehpidORDER; eligibility/publication/lastmod/URLs/TTL unchanged. Data/routeentrycachekeys versionedhpid-v2 to avoidoldorderingresults. Existingdaily/weeklysync/5dailyblogpublish workflows untouched; no globalcacheextension. Newactualfunctionprojection/pagination/cachetest wiredinto test:unit; realeligibilitySQLiteproof at D:/web/multi-dashboard/reports/turso-usage-20261009/secondary-local-sql-proof.json. Existingtests/newtest/lint/TSmain+sync/mockbuild PASS. Independentreadonlyreview HIGH0. No deploy/productionindex/env/token/mutation. Actual billedread savings unknown; complexeligibilityscan persists. Preserve other-sessioncontent. Rootharness turso-usage-20261009/secondaryreport holds remainingoperationalverification.

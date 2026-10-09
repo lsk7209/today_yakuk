@@ -306,8 +306,8 @@ async function getPharmacyHpidsChunkUncached(
 export async function getPharmacySitemapChunk(
   offset: number,
   limit: number,
-): Promise<{ hpid: string; updated_at: string | null; address: string | null; tel: string | null; operating_hours: Pharmacy["operating_hours"] }[]> {
-  return cacheDbRead(["pharmacy", "sitemap", String(offset), String(limit)], () =>
+): Promise<{ hpid: string; updated_at: string | null }[]> {
+  return cacheDbRead(["pharmacy", "sitemap-hpid-v2", String(offset), String(limit)], () =>
     getPharmacySitemapChunkUncached(offset, limit),
   );
 }
@@ -315,23 +315,20 @@ export async function getPharmacySitemapChunk(
 async function getPharmacySitemapChunkUncached(
   offset: number,
   limit: number,
-): Promise<{ hpid: string; updated_at: string | null; address: string | null; tel: string | null; operating_hours: Pharmacy["operating_hours"] }[]> {
+): Promise<{ hpid: string; updated_at: string | null }[]> {
   try {
     const db = getTursoClient();
     const result = await db.execute({
-      sql: `SELECT hpid, updated_at, address, tel, operating_hours
+      sql: `SELECT hpid, updated_at
             FROM pharmacies
             ${PHARMACY_INDEXABLE_WHERE}
-            ORDER BY updated_at DESC, hpid ASC
+            ORDER BY hpid ASC
             LIMIT ? OFFSET ?`,
       args: [limit, offset],
     });
     return result.rows.map((r: Record<string, unknown>) => ({
       hpid: r.hpid as string,
       updated_at: r.updated_at as string | null,
-      address: r.address as string | null,
-      tel: r.tel as string | null,
-      operating_hours: parseJson(r.operating_hours, null),
     }));
   } catch (e) {
     console.error("pharmacy sitemap chunk fetch exception", e);

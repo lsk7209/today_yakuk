@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint src tests",
     "test": "npm run test:unit && npm run test:api-content",
-    "test:unit": "ts-node --project tsconfig.sync.json tests/unit/remediation.test.ts && ts-node --project tsconfig.sync.json tests/unit/pharmacy-intelligence.test.ts",
+    "test:unit": "ts-node --project tsconfig.sync.json tests/unit/remediation.test.ts && ts-node --project tsconfig.sync.json tests/unit/pharmacy-intelligence.test.ts && ts-node --project tsconfig.sync.json tests/unit/pharmacy-sitemap-read.test.ts",
     "test:api-content": "ts-node --project tsconfig.sync.json tests/unit/api-data-delta.test.ts && ts-node --project tsconfig.sync.json tests/unit/api-content-work-plan.test.ts",
     "test:e2e": "playwright test --reporter=line",
     "enrich:pharmacies": "ts-node --project tsconfig.sync.json scripts/enrich-pharmacies.ts",
