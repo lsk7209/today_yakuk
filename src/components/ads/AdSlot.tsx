@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { canRequestAds, isAdsenseServingEnabled } from "@/lib/ad-policy";
+import { useMigrationStaging } from "@/components/staging/StagingProvider";
 
 declare global {
   interface Window {
@@ -33,11 +34,12 @@ export default function AdSlot({
   const adRef = useRef<HTMLModElement>(null);
   const initialized = useRef(false);
   const pathname = usePathname() ?? "/";
+  const staging = useMigrationStaging();
 
   const pubId = process.env.NEXT_PUBLIC_ADSENSE_PUB_ID ||
     process.env.NEXT_PUBLIC_ADSENSE_ID ||
     "ca-pub-3050601904412736";
-  const servingAllowed = isAdsenseServingEnabled() && canRequestAds(pathname, pageEligible);
+  const servingAllowed = !staging && isAdsenseServingEnabled() && canRequestAds(pathname, pageEligible);
 
   useEffect(() => {
     if (initialized.current) return;

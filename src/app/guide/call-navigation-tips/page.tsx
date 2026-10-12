@@ -110,9 +110,10 @@ export default function GuideCallNavigationTipsPage() {
   };
 
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">가이드 · 헛걸음 방지</p>
+        <p className="city-eyebrow">FIELD GUIDE / PHARMACY</p>
         <h1 className="text-3xl font-bold leading-tight">전화·길찾기 활용 팁: 헛걸음 줄이기</h1>
         <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -131,7 +132,7 @@ export default function GuideCallNavigationTipsPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+      <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
         <h2 className="text-xl font-bold text-gray-900">이 가이드가 필요한 순간</h2>
         <p className="text-base text-gray-700 leading-relaxed">
           약국 문 앞까지 갔다가 영업이 끝나 발길을 돌리는 경험은 누구나 한 번쯤 겪어봤을 만큼 흔한 상황입니다.
@@ -163,7 +164,7 @@ export default function GuideCallNavigationTipsPage() {
         {tips.map((tip) => (
           <div
             key={tip.title}
-            className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2"
+            className="city-card border border-[var(--border)] bg-white p-6 space-y-2"
           >
             <h2 className="text-xl font-semibold">{tip.title}</h2>
             <p className="text-[var(--muted)] leading-relaxed">{tip.detail}</p>
@@ -171,7 +172,7 @@ export default function GuideCallNavigationTipsPage() {
         ))}
       </section>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
+      <section className="city-card border bg-emerald-50 p-6 space-y-3">
         <h2 className="text-xl font-semibold text-brand-800">바로 실행 체크리스트</h2>
         <ul className="list-disc list-inside space-y-1 text-emerald-900">
           <li>전화로 영업/재고 확인 → 헛걸음 방지</li>
@@ -184,7 +185,7 @@ export default function GuideCallNavigationTipsPage() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
               <h3 className="text-base font-bold text-gray-900">공휴일 저녁, 갑작스러운 두통약 필요</h3>
@@ -193,7 +194,7 @@ export default function GuideCallNavigationTipsPage() {
               오후 8시, 휴일이라 가까운 약국들이 모두 문을 닫은 상황입니다. 약국오늘에서 &lsquo;현재 영업 중&rsquo; 필터를 켜고 반경 3km 내 약국 목록을 확인한 뒤, 상위에 표시된 2곳에 바로 전화를 걸어 일반의약품 재고를 확인했습니다. 재고가 있는 약국에 길찾기를 실행하니 도착 예정 시각이 영업 종료 35분 전으로 충분히 여유가 있어 안심하고 이동할 수 있었습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
               <h3 className="text-base font-bold text-gray-900">처방전 수령 후 가까운 약국에 재고 없음</h3>
@@ -202,7 +203,7 @@ export default function GuideCallNavigationTipsPage() {
               병원에서 처방전을 받아 1km 이내 약국에 전화했더니 해당 약이 품절이라는 안내를 받았습니다. 전화로 &lsquo;근처에 재고 있는 곳을 아시냐&rsquo;고 물으니 500m 거리의 약국을 소개해 주었고, 해당 약국에 재확인 전화 후 바로 길찾기를 실행했습니다. 미리 전화를 돌린 덕분에 처방전 유효 기간 내에 빠르게 조제를 마칠 수 있었습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
               <h3 className="text-base font-bold text-gray-900">퇴근길 교통 정체, 영업 종료 20분 전 도착 가능</h3>
@@ -220,7 +221,7 @@ export default function GuideCallNavigationTipsPage() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="city-card border border-[var(--border)] bg-white p-4"
             >
               <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
               <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
@@ -229,7 +230,7 @@ export default function GuideCallNavigationTipsPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
+      <section className="city-card border border-[var(--border)] bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">다음 단계</h2>
@@ -254,14 +255,14 @@ export default function GuideCallNavigationTipsPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+      <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/blog/pharmacy-visit-checklist-3" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/pharmacy-visit-checklist-3" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 확인 3가지</p>
             <p className="text-xs text-gray-500 mt-1">영업·재고·처방전 유효기간 점검</p>
           </Link>
-          <Link href="/blog/night-pharmacy-3steps" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/night-pharmacy-3steps" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">야간 약국 찾기 3단계</p>
             <p className="text-xs text-gray-500 mt-1">단계별로 바로 찾는 방법</p>
           </Link>

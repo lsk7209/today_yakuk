@@ -101,9 +101,10 @@ export default function BlogHolidayOpenPharmacyTips() {
     })),
   };
   return (
-    <div className="container py-10 sm:py-14 space-y-10 bg-white min-h-screen">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10 bg-white min-h-screen">
       <header className="space-y-3">
         <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">블로그 · 공휴일 팁</p>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">공휴일에도 열려 있는 약국을 빨리 찾는 5가지 방법</h1>
         <p className="text-base text-gray-600 leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -128,7 +129,7 @@ export default function BlogHolidayOpenPharmacyTips() {
         {tips.map((tip) => (
           <div
             key={tip.title}
-            className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-2 hover:shadow-md transition-shadow"
+            className="city-card border bg-white p-6 space-y-2 transition-shadow"
           >
             <h2 className="text-xl font-bold text-gray-900">{tip.title}</h2>
             <p className="text-gray-600 leading-relaxed">{tip.detail}</p>
@@ -136,7 +137,7 @@ export default function BlogHolidayOpenPharmacyTips() {
         ))}
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm space-y-3">
+      <section className="city-card border bg-gray-50 p-6 space-y-3">
         <h2 className="text-xl font-bold text-gray-900">바로 실행 체크리스트</h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
           <li>위치 권한 허용 → 반경 2km로 검색 시작</li>
@@ -152,7 +153,7 @@ export default function BlogHolidayOpenPharmacyTips() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
+              className="city-card border bg-white p-4 transition-shadow"
             >
               <h3 className="font-bold text-gray-900 mb-2">{faq.q}</h3>
               <p className="text-sm text-gray-700 leading-relaxed">{faq.a}</p>
@@ -161,7 +162,7 @@ export default function BlogHolidayOpenPharmacyTips() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <section className="city-card border bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900">다음 단계</h2>
@@ -186,7 +187,7 @@ export default function BlogHolidayOpenPharmacyTips() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-5 shadow-sm">
+      <section className="city-card border border-dashed bg-gray-50 p-5">
         <h2 className="text-lg font-bold text-gray-900 mb-2">참고 링크</h2>
         <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
           <li>
@@ -209,7 +210,7 @@ export default function BlogHolidayOpenPharmacyTips() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -220,7 +221,7 @@ export default function BlogHolidayOpenPharmacyTips() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

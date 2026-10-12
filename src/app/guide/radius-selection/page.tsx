@@ -91,9 +91,10 @@ export default function GuideRadiusSelectionPage() {
   };
 
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">가이드 · 반경/거리</p>
+        <p className="city-eyebrow">FIELD GUIDE / PHARMACY</p>
         <h1 className="text-3xl font-bold leading-tight">반경 2/3/5/10km 선택 기준과 활용법</h1>
         <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -112,7 +113,7 @@ export default function GuideRadiusSelectionPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+      <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
         <h2 className="text-xl font-bold text-gray-900">이 가이드가 필요한 순간</h2>
         <p className="text-[var(--muted)] leading-relaxed">
           심야에 갑자기 약이 필요해졌을 때 반경을 너무 좁게 설정하면 &ldquo;결과 없음&rdquo;만 확인하다 시간을 낭비하게 됩니다.
@@ -140,7 +141,7 @@ export default function GuideRadiusSelectionPage() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
+      <section className="city-card border bg-emerald-50 p-6 space-y-3">
         <h2 className="text-xl font-semibold text-brand-800">빠른 체크리스트</h2>
         <ul className="list-disc list-inside space-y-1 text-emerald-900">
           {tips.map((item) => (
@@ -154,7 +155,7 @@ export default function GuideRadiusSelectionPage() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">반경 선택 기준</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">2~3km: 기본 탐색</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               일반적인 심야·주말 상황에서는 2~3km로 시작해 가장 가까운 약국을 확인하세요.
@@ -163,7 +164,7 @@ export default function GuideRadiusSelectionPage() {
               주택가·아파트 밀집 지역일수록 2km 안에 당번 약국이 포함될 확률이 높으므로 첫 번째 선택지로 권장합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">5km: 결과 부족 시 확장</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               2~3km에서 결과가 없거나 공휴일·심야처럼 영업 약국이 평소보다 훨씬 적을 때 5km까지 넓혀 대체 약국을 확보하세요.
@@ -172,7 +173,7 @@ export default function GuideRadiusSelectionPage() {
               명절 연휴에는 지자체별로 당번 약국이 1~2곳만 지정되는 경우도 있어, 5km 안에서 가장 영업 시간이 많이 남은 곳을 목표로 잡는 것이 안전합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">10km: 비상 상황 확장</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               5km에서도 영업 중인 약국이 없다면 10km까지 확장해 최후 옵션을 탐색합니다.
@@ -181,7 +182,7 @@ export default function GuideRadiusSelectionPage() {
               방문 전 반드시 전화로 영업 여부와 재고를 확인해 이동 중 문 닫히는 상황을 방지하는 것이 중요합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">거리순 + 종료 임박</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               거리순 정렬을 켜고 종료 예정 시간을 함께 확인하면, 가까우면서 아직 영업 시간이 충분히 남은 약국을 우선 방문할 수 있습니다.
@@ -196,7 +197,7 @@ export default function GuideRadiusSelectionPage() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
               <h3 className="text-base font-bold text-gray-900">밤 11시, 해열제가 떨어졌을 때</h3>
@@ -205,7 +206,7 @@ export default function GuideRadiusSelectionPage() {
               아이 열이 갑자기 오르는 상황에서 약국 앱을 열고 반경 2km로 검색했더니 1곳이 표시됐습니다. 거리순 정렬로 확인하니 직선 900m, 종료까지 40분 남아 있었습니다. 전화로 해열제 재고를 확인한 뒤 길찾기로 도보 12분 경로를 확인하고 출발해 여유 있게 방문할 수 있었습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
               <h3 className="text-base font-bold text-gray-900">추석 연휴 낮, 당번 약국 찾기</h3>
@@ -214,7 +215,7 @@ export default function GuideRadiusSelectionPage() {
               연휴 3일차 낮 2시, 2km 반경에서 결과가 0건이었습니다. 5km로 넓히자 당번 약국 2곳이 나타났고, 더 먼 쪽이 영업 종료까지 3시간 남아 있었습니다. 차량으로 이동하기 전 전화로 영업 중임을 확인하고 출발해 예상한 시간 안에 도착했습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
               <h3 className="text-base font-bold text-gray-900">새벽 2시, 지방 소도시에서 긴급 약 구매</h3>
@@ -232,7 +233,7 @@ export default function GuideRadiusSelectionPage() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="city-card border border-[var(--border)] bg-white p-4"
             >
               <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
               <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
@@ -241,7 +242,7 @@ export default function GuideRadiusSelectionPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
+      <section className="city-card border border-[var(--border)] bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">다음 단계</h2>
@@ -266,22 +267,22 @@ export default function GuideRadiusSelectionPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+      <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/blog/night-radius-tips" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/night-radius-tips" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">심야 약국 거리·반경 활용법</p>
             <p className="text-xs text-gray-500 mt-1">심야 헛걸음을 줄이는 반경 설정 실전</p>
           </Link>
-          <Link href="/blog/night-pharmacy-3steps" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/night-pharmacy-3steps" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">야간 약국 찾기 3단계</p>
             <p className="text-xs text-gray-500 mt-1">단계별로 바로 찾는 방법</p>
           </Link>
-          <Link href="/guide/night-weekend" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/guide/night-weekend" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">야간·주말 약국 완전 가이드</p>
             <p className="text-xs text-gray-500 mt-1">심야·주말 운영 시간 패턴과 준비 요령</p>
           </Link>
-          <Link href="/guide/holiday-checklist" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/guide/holiday-checklist" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">공휴일 약국 체크리스트</p>
             <p className="text-xs text-gray-500 mt-1">연휴 전 미리 확인해야 할 사항 정리</p>
           </Link>

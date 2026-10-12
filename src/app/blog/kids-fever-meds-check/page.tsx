@@ -82,9 +82,10 @@ export default function BlogKidsFeverMedsCheck() {
     ],
   };
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">블로그 · 어린이 해열제</p>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl font-bold leading-tight">어린이 해열제 구비 체크포인트</h1>
         <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -108,7 +109,7 @@ export default function BlogKidsFeverMedsCheck() {
 
       <AdSlotTop />
 
-      <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+      <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
         <h2 className="text-xl font-bold text-gray-900">약국 방문 전 꼭 알아야 하는 이유</h2>
         <p className="text-[var(--muted)] leading-relaxed">
           아이에게 갑자기 열이 오를 때 서랍을 열어보니 해열제 재고가 없거나 유효기간이 지난 것을 발견하는 일은 생각보다 흔합니다. 야간이나 공휴일에는 문을 여는 약국이 제한적이어서, 준비 없이 나섰다가 여러 곳을 헛걸음하는 경우도 많습니다. 방문 전 전화 한 통으로 재고를 확인하는 습관과 올바른 제품 선택 기준을 알아두면 위급한 순간에 시간과 체력을 크게 아낄 수 있습니다. 아이 체중에 맞는 용량 계산법과 성분 구분 기초 지식만 갖춰도 약국에서의 상담이 훨씬 수월해집니다.
@@ -133,7 +134,7 @@ export default function BlogKidsFeverMedsCheck() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
+      <section className="city-card border bg-emerald-50 p-6 space-y-3">
         <h2 className="text-xl font-semibold text-brand-800">빠른 체크리스트</h2>
         <ul className="list-disc list-inside space-y-1 text-emerald-900">
           {checklist.map((item) => (
@@ -147,19 +148,19 @@ export default function BlogKidsFeverMedsCheck() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">확인해야 할 포인트</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">용량과 간격</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               체중·연령에 맞는 제품 표시사항의 용량과 간격을 확인하세요. 과량 복용을 피하기 위해 중복 성분을 확인합니다. 예를 들어 아세트아미노펜 계열 해열제를 복용 중이라면 같은 성분이 포함된 종합감기약을 함께 먹이지 않도록 주의해야 합니다. 방문 전 아이의 최근 체중과 복용 중인 약을 확인해 두면 의사·약사 상담에 도움이 됩니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">계량 기구와 보관</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               동봉된 계량 스푼/컵을 사용하고, 실온 보관·유효기간을 반드시 확인하세요. 변질 우려가 있으면 즉시 폐기하세요. 일반 숟가락은 규격이 제각각이어서 계량 도구 없이 투여하면 과소 또는 과용 위험이 생깁니다. 개봉한 시럽 형태 해열제는 냉장 보관이 필요한 제품도 있으니 포장 뒷면의 보관 조건을 반드시 확인하세요. 보통 개봉 후 6개월이 경과한 제품은 성분이 변질될 수 있으므로 새 제품으로 교체하는 것이 안전합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">부작용 대응</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               구토, 두드러기, 호흡 곤란 등 이상 반응이 있으면 즉시 복용을 중단하고 의료기관을 방문하세요. 이부프로펜 계열은 공복 복용 시 위장 자극이 생길 수 있어 소량의 음식이나 물과 함께 먹이는 것이 좋습니다. 아세트아미노펜은 간에 부담을 줄 수 있으므로 권장 용량을 절대 초과하지 않는 것이 중요하며, 간 기능이 좋지 않은 아이에게는 복용 전 소아과 상담이 필요합니다. 처음 복용한 뒤 30분~1시간 안에 열이 내리지 않는다고 해서 추가 복용하면 위험할 수 있으므로 반드시 다음 복용 시간을 지키세요.
@@ -171,7 +172,7 @@ export default function BlogKidsFeverMedsCheck() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
               <h3 className="text-base font-bold text-gray-900">밤 11시, 아이가 갑자기 39도 열</h3>
@@ -180,7 +181,7 @@ export default function BlogKidsFeverMedsCheck() {
               늦은 밤 갑자기 아이 이마가 뜨거워 체온을 재니 39도가 넘었는데 가정에 해열제가 없어 급하게 근처 약국을 찾아야 하는 상황입니다. 이럴 때는 무작정 나서기보다 약국오늘에서 현재 영업 중인 야간 당번 약국을 먼저 검색하고, 전화로 소아용 해열제 재고를 확인한 뒤 방문하면 한 번에 해결할 수 있습니다. 전화할 때는 아이 나이와 체중을 미리 알려주면 약사가 적합한 제품과 용량을 바로 안내해 줄 수 있습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
               <h3 className="text-base font-bold text-gray-900">집에 있는 해열제, 유효기간이 지났을 때</h3>
@@ -189,7 +190,7 @@ export default function BlogKidsFeverMedsCheck() {
               아이가 열이 나서 서랍에서 해열제를 꺼내 보니 유효기간이 반년 전에 이미 지나 있었습니다. 변질된 약을 먹이면 효과가 없을 뿐 아니라 부작용 위험도 있어 즉시 폐기해야 합니다. 이런 상황을 예방하려면 분기마다 한 번씩 가정 상비약 유효기간을 점검하고, 남은 기간이 6개월 이내인 제품은 여유 있을 때 미리 교체해 두는 습관이 필요합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
               <h3 className="text-base font-bold text-gray-900">해열제 복용 후에도 열이 내리지 않을 때</h3>
@@ -207,7 +208,7 @@ export default function BlogKidsFeverMedsCheck() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="city-card border border-[var(--border)] bg-white p-4"
             >
               <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
               <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
@@ -216,7 +217,7 @@ export default function BlogKidsFeverMedsCheck() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
+      <section className="city-card border border-[var(--border)] bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">다음 단계</h2>
@@ -244,21 +245,21 @@ export default function BlogKidsFeverMedsCheck() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+      <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/blog/kids-fever-medicine-comparison" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/kids-fever-medicine-comparison" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">소아 발열 약 비교 가이드</p>
             <p className="text-xs text-gray-500 mt-1">아이 해열제 종류 비교</p>
           </Link>
-          <Link href="/blog/pharmacy-visit-checklist-3" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/pharmacy-visit-checklist-3" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 확인 3가지</p>
             <p className="text-xs text-gray-500 mt-1">방문 전 체크리스트</p>
           </Link>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -269,7 +270,7 @@ export default function BlogKidsFeverMedsCheck() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

@@ -107,9 +107,10 @@ export default function BlogNightPharmacyChecklist() {
     })),
   };
   return (
-    <article className="container py-10 sm:py-14 space-y-10 bg-white min-h-screen">
+    <article className="city-page city-route-article py-10 sm:py-14 space-y-10 bg-white min-h-screen">
       <header className="space-y-4" aria-label="글 머리말">
         <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">블로그 · 심야 체크리스트</p>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">심야 약국 찾기 체크리스트: 헛걸음 방지</h1>
         <p className="text-base text-gray-600 leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -130,7 +131,7 @@ export default function BlogNightPharmacyChecklist() {
 
       <AdSlotTop />
 
-      <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+      <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
         <h2 className="text-xl font-bold text-gray-900">이 체크리스트가 필요한 순간</h2>
         <p className="text-gray-700 leading-relaxed">
           심야에 갑작스럽게 두통약·해열제·소화제가 필요할 때, 가장 먼저 드는 걱정은 &ldquo;지금 열려 있는 약국이 있을까?&rdquo;입니다. 무작정 가까운 곳으로 향했다가 문이 닫혀 헛걸음하는 상황은 생각보다 자주 발생합니다. 영업 중 여부를 확인하지 않거나 도착 예상 시간을 계산하지 않으면 종료 직전에 약국 앞에서 발길을 돌려야 하는 경우도 있습니다. 이 체크리스트는 심야 탐색에서 반복되는 실수를 줄이고, 가장 짧은 동선으로 원하는 약을 구할 수 있도록 순서를 정리한 것입니다.
@@ -155,7 +156,7 @@ export default function BlogNightPharmacyChecklist() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-xl font-bold text-gray-900">빠른 체크리스트</h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
           {checklist.map((item) => (
@@ -169,19 +170,19 @@ export default function BlogNightPharmacyChecklist() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">심야 탐색 팁</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-2 hover:shadow-md transition-shadow">
+          <div className="city-card border bg-white p-6 space-y-2 transition-shadow">
             <h3 className="text-lg font-bold text-gray-900">종료 임박 약국부터 방문</h3>
             <p className="text-gray-600 leading-relaxed">
               종료 시간이 가까운 순으로 방문 계획을 세우고, 대체 약국 1~2곳을 함께 확보하세요. 예를 들어 자정 마감 약국이 있고 새벽 2시 마감 약국이 있다면, 자정 약국을 먼저 노리고 거리를 계산한 뒤 최소 20~30분의 여유를 두고 출발하는 것이 중요합니다. 도착 직전에 문이 닫히는 상황을 막으려면 지도 앱에서 실시간 교통 상황을 반영한 예상 소요 시간을 반드시 확인하세요. 목적지 약국이 종료된 경우를 대비해 두 번째 후보 약국의 위치와 종료 시간도 미리 메모해 두면 빠르게 대응할 수 있습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-2 hover:shadow-md transition-shadow">
+          <div className="city-card border bg-white p-6 space-y-2 transition-shadow">
             <h3 className="text-lg font-bold text-gray-900">전화 → 길찾기 두 단계</h3>
             <p className="text-gray-600 leading-relaxed">
               전화로 영업/재고를 확인한 뒤, 길찾기로 도착 시각을 검증하면 헛걸음을 크게 줄일 수 있습니다. 전화 시에는 &ldquo;지금 영업 중인가요?&rdquo;, &ldquo;○○ 약(제품명 또는 성분명)이 있나요?&rdquo;를 명확하게 물어보세요. 전화 연결이 되지 않을 때는 영업 중 가능성이 낮으니 다음 후보로 넘어가는 것이 시간을 아끼는 방법입니다. 길찾기 단계에서는 도보·버스·택시 옵션을 비교해 종료 시간 전에 도착 가능한 수단을 선택하면 상황에 따라 이동 방법도 달라질 수 있습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-2 hover:shadow-md transition-shadow">
+          <div className="city-card border bg-white p-6 space-y-2 transition-shadow">
             <h3 className="text-lg font-bold text-gray-900">반경 확장으로 후보 늘리기</h3>
             <p className="text-gray-600 leading-relaxed">
               기본 2~3km에서 시작해 5km까지 넓혀보세요. 리스트 정렬을 거리순으로 두면 가까운 순서로 바로 확인 가능합니다. 심야 시간대에는 전체 약국 수 자체가 적기 때문에 처음부터 넓은 범위를 탐색하는 편이 유리할 수도 있습니다. 특히 주거 밀도가 낮은 외곽 지역이나 소도시라면 5~10km 범위까지 확장해야 영업 중인 약국을 찾을 수 있는 경우도 있으므로, 결과가 0~1개일 때는 즉시 범위를 넓히는 것을 추천합니다.
@@ -193,7 +194,7 @@ export default function BlogNightPharmacyChecklist() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
               <h3 className="text-base font-bold text-gray-900">밤 11시, 갑자기 아이가 열이 나는 경우</h3>
@@ -202,7 +203,7 @@ export default function BlogNightPharmacyChecklist() {
               해열제가 집에 없고 자정 마감 약국이 2km 거리에 있다면, 지금 당장 출발해야 할지 판단이 어렵습니다. 약국오늘에서 종료 시간 순 정렬로 자정 마감 약국을 찾고, 길찾기로 이동 시간을 확인한 뒤 10분 안에 도착 가능하다면 즉시 전화로 소아용 해열제 재고를 확인하고 출발하세요. 만약 이동 시간이 빠듯하다면 새벽 2시 마감 약국을 두 번째 후보로 동시에 확보해 두는 것이 안전합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
               <h3 className="text-base font-bold text-gray-900">여행 중 낯선 도시에서 두통약이 필요한 경우</h3>
@@ -211,7 +212,7 @@ export default function BlogNightPharmacyChecklist() {
               숙소 주변 약국을 직접 검색하기 어려울 때는 약국오늘에서 현재 위치 기반으로 탐색하면 반경 내 영업 중 약국 목록을 즉시 확인할 수 있습니다. 심야라면 영업 중 필터를 켜고 거리순으로 정렬해 가장 가까운 약국에 먼저 전화해 보세요. 지역 특성에 따라 심야 약국이 시내 중심부에 집중돼 있을 수 있으니, 반경을 1~2km씩 넓혀가며 확인하는 것이 효율적입니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
               <h3 className="text-base font-bold text-gray-900">새벽 1시, 가까운 약국이 이미 문을 닫은 경우</h3>
@@ -229,7 +230,7 @@ export default function BlogNightPharmacyChecklist() {
           {faqs.map((faq) => (
             <details
               key={faq.q}
-              className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
+              className="city-card border bg-white p-4 transition-shadow"
             >
               <summary className="cursor-pointer font-bold text-gray-900">
                 {faq.q}
@@ -240,7 +241,7 @@ export default function BlogNightPharmacyChecklist() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <section className="city-card border bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900">다음 단계</h2>
@@ -265,21 +266,21 @@ export default function BlogNightPharmacyChecklist() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+      <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/guide/night-weekend" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/guide/night-weekend" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">야간·주말 약국 찾기 완전 가이드</p>
             <p className="text-xs text-gray-500 mt-1">완전 가이드</p>
           </Link>
-          <Link href="/blog/night-pharmacy-3steps" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/night-pharmacy-3steps" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">야간 약국 찾기 3단계</p>
             <p className="text-xs text-gray-500 mt-1">단계별 방법</p>
           </Link>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -290,7 +291,7 @@ export default function BlogNightPharmacyChecklist() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

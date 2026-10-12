@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyAdminToken } from "@/lib/jwt";
+import { isMigrationStaging, isStagingMutation } from "@/lib/migration-staging";
 
 // 봇이 검색(?q=) 등 쿼리파라미터 URL을 대량 크롤하면 supplements/pharmacies LIKE
 // 풀스캔으로 Turso reads가 폭주한다. robots.txt에 공개한 검증된 페이지네이션과
@@ -50,15 +51,31 @@ export function isSafeCrawlerQuery(url: URL) {
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const staging = isMigrationStaging();
+  const finish = (response: NextResponse) => {
+    if (staging) response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+    return response;
+  };
+  if (staging && isStagingMutation(request.method, pathname)) {
+    return finish(NextResponse.json({ error: "Unavailable in staging" }, { status: 403 }));
+  }
   const isAdmin =
     pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
 
+  if (staging && pathname !== "/" && pathname.endsWith("/")) {
+    const url = new URL(request.url);
+    url.pathname = pathname.replace(/\/+$/, "");
+    return finish(NextResponse.redirect(url, 308));
+  }
+
   // 검색/API 쿼리는 계속 차단하되, robots.txt가 허용한 검증된 탐색 상태는 통과시킨다.
   // admin 경로는 아래 인증이 별도 처리하므로 제외한다.
-  if (!isAdmin && request.nextUrl.search) {
+  const crawlerGuarded = ["/api/wiki", "/api/nearby", "/wiki", "/blog"]
+    .some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+  if (!isAdmin && crawlerGuarded && request.nextUrl.search) {
     const ua = request.headers.get("user-agent") || "";
     if (BOT_UA.test(ua) && !isSafeCrawlerQuery(request.nextUrl)) {
-      return new NextResponse("Forbidden", { status: 403 });
+      return finish(new NextResponse("Forbidden", { status: 403 }));
     }
   }
 
@@ -66,14 +83,14 @@ export async function proxy(request: NextRequest) {
   if (isAdmin) {
     // Exclude Login Paths
     if (pathname === "/admin/login" || pathname === "/api/admin/login") {
-      return NextResponse.next();
+      return finish(NextResponse.next());
     }
 
     // Check JWT Token from Cookie
     const token = request.cookies.get("admin_token")?.value;
 
     if (!token) {
-      return handleUnauthorized(request, pathname);
+      return finish(handleUnauthorized(request, pathname));
     }
 
     // Verify JWT Token
@@ -82,11 +99,11 @@ export async function proxy(request: NextRequest) {
       // Token invalid or expired - clear cookie and redirect
       const response = handleUnauthorized(request, pathname);
       response.cookies.delete("admin_token");
-      return response;
+      return finish(response);
     }
   }
 
-  return NextResponse.next();
+  return finish(NextResponse.next());
 }
 
 function handleUnauthorized(request: NextRequest, pathname: string) {
@@ -102,12 +119,5 @@ function handleUnauthorized(request: NextRequest, pathname: string) {
 }
 
 export const config = {
-  matcher: [
-    "/admin/:path*",
-    "/api/admin/:path*",
-    "/api/wiki/:path*",
-    "/api/nearby/:path*",
-    "/wiki/:path*",
-    "/blog/:path*",
-  ],
+  matcher: ["/:path*"],
 };

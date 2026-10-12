@@ -92,9 +92,10 @@ export default function GuideSummerEmergencyKitPage() {
   };
 
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">가이드 · 여름 응급 키트</p>
+        <p className="city-eyebrow">FIELD GUIDE / PHARMACY</p>
         <h1 className="text-3xl font-bold leading-tight">여름 휴가철 휴대용 응급 키트 구성법</h1>
         <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -113,7 +114,7 @@ export default function GuideSummerEmergencyKitPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+      <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
         <h2 className="text-xl font-bold text-gray-900">이 가이드가 필요한 순간</h2>
         <p className="text-[var(--muted)] leading-relaxed">
           여름 휴가철에는 강렬한 자외선, 고온 다습한 환경, 낯선 음식, 벌레 등 다양한 건강 위협 요소가 한꺼번에 몰려옵니다.
@@ -141,7 +142,7 @@ export default function GuideSummerEmergencyKitPage() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
+      <section className="city-card border bg-emerald-50 p-6 space-y-3">
         <h2 className="text-xl font-semibold text-brand-800">빠른 체크리스트</h2>
         <ul className="list-disc list-inside space-y-1 text-emerald-900">
           {checklist.map((item) => (
@@ -155,7 +156,7 @@ export default function GuideSummerEmergencyKitPage() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">휴대용 키트 구성 팁</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">피부/벌레 대비</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               자외선 차단제(SPF 50+ 권장)와 애프터선, 항히스타민/소염 연고를 챙기고, 벌레 물림과 해파리 접촉을 대비하세요.
@@ -164,7 +165,7 @@ export default function GuideSummerEmergencyKitPage() {
               모기·등에·해파리 등 종류에 따라 증상이 다를 수 있으니, 붓기가 빠르게 번지거나 호흡에 이상이 생기면 즉시 의료기관을 방문하세요.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">소화/멀미 대비</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               소화제·지사제·멀미약을 기본으로 하고, 음주가 예상되면 간 보호제를 약사와 상담 후 준비하세요.
@@ -173,7 +174,7 @@ export default function GuideSummerEmergencyKitPage() {
               설사가 지속되거나 발열·구역이 동반된다면 단순 소화 불량이 아닐 수 있으니, 가까운 의료기관 또는 응급실을 방문하는 것이 안전합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">상처/타박 대비</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               소독제, 거즈, 밴드, 냉찜질 패드를 챙기고, 통증 시 적절한 진통제를 사용하세요.
@@ -182,7 +183,7 @@ export default function GuideSummerEmergencyKitPage() {
               상처가 깊거나 유리·날카로운 물체에 의한 것이라면 직접 압박 지혈 후 가까운 의료기관을 방문하는 것이 원칙입니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">열사병·탈수 대비</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               한국 여름 야외 기온이 35도를 넘는 날에는 고온 환경에 30분 이상 노출만으로도 열 탈진 증상이 나타날 수 있습니다.
@@ -197,7 +198,7 @@ export default function GuideSummerEmergencyKitPage() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
               <h3 className="text-base font-bold text-gray-900">해수욕장에서 해파리에 쏘였을 때</h3>
@@ -208,7 +209,7 @@ export default function GuideSummerEmergencyKitPage() {
               소염 연고를 바르고 항히스타민제를 복용하면 가려움과 붓기 완화에 도움이 되며, 호흡 곤란·전신 두드러기가 나타나면 즉시 119에 신고해야 합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
               <h3 className="text-base font-bold text-gray-900">캠핑 중 갑작스러운 설사·복통이 생겼을 때</h3>
@@ -219,7 +220,7 @@ export default function GuideSummerEmergencyKitPage() {
               38도 이상 고열이나 혈변이 동반된다면 단순 식중독이 아닐 수 있으므로 키트 사용과 동시에 가까운 의료기관 방문을 준비하세요.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
               <h3 className="text-base font-bold text-gray-900">장거리 드라이브 중 멀미가 심해졌을 때</h3>
@@ -239,7 +240,7 @@ export default function GuideSummerEmergencyKitPage() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="city-card border border-[var(--border)] bg-white p-4"
             >
               <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
               <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
@@ -248,7 +249,7 @@ export default function GuideSummerEmergencyKitPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
+      <section className="city-card border border-[var(--border)] bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">다음 단계</h2>
@@ -273,14 +274,14 @@ export default function GuideSummerEmergencyKitPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+      <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/blog/summer-first-aid-kit" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/summer-first-aid-kit" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">여름철 상비약 완전 정리</p>
             <p className="text-xs text-gray-500 mt-1">더위·벌레·소화 대비</p>
           </Link>
-          <Link href="/blog/skin-trouble-first-aid-kit" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/skin-trouble-first-aid-kit" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">피부 트러블 응급 처치 키트</p>
             <p className="text-xs text-gray-500 mt-1">화상·발진·가려움 대비</p>
           </Link>

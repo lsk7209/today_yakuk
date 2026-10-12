@@ -6,13 +6,15 @@ import {
   normalizeAnalyticsReferrer,
   trackAnalyticsEvent,
 } from "@/lib/client-analytics";
+import { useMigrationStaging } from "@/components/staging/StagingProvider";
 
 export default function AnalyticsTracker() {
   const pathname = usePathname();
+  const staging = useMigrationStaging();
   const lastDetailPath = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!pathname) return;
+    if (!pathname || staging) return;
     if (process.env.NODE_ENV === "production") {
       fetch("/api/analytics", {
         method: "POST",
@@ -38,9 +40,10 @@ export default function AnalyticsTracker() {
         });
       }
     }
-  }, [pathname]);
+  }, [pathname, staging]);
 
   useEffect(() => {
+    if (staging) return;
     function handleActionClick(event: MouseEvent) {
       const target = event.target;
       if (!(target instanceof Element)) return;
@@ -92,7 +95,7 @@ export default function AnalyticsTracker() {
       document.removeEventListener("click", handleActionClick, true);
       delete document.documentElement.dataset.analyticsReady;
     };
-  }, []);
+  }, [staging]);
 
   return null;
 }

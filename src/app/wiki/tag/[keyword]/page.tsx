@@ -114,7 +114,7 @@ export default async function TagPage({
     };
 
     return (
-        <div className="container py-8 sm:py-12 max-w-6xl space-y-8">
+        <div className="city-page city-route-article py-8 sm:py-12 max-w-6xl space-y-8">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: safeJsonStringify(breadcrumbLd) }}
@@ -122,7 +122,7 @@ export default async function TagPage({
             <Breadcrumb items={breadcrumbItems} />
 
             {/* Header */}
-            <header className="premium-card bg-gradient-to-br from-white to-brand-50/30 p-8 sm:p-12 rounded-[2.5rem] border border-gray-100 relative overflow-hidden">
+            <header className="city-card p-8 sm:p-12 border relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-brand-100/20 rounded-full translate-x-1/3 -translate-y-1/3 blur-3xl" />
 
                 <div className="relative z-10 space-y-4">
@@ -130,6 +130,7 @@ export default async function TagPage({
                         <Tag className="w-3.5 h-3.5" />
                         태그 검색 결과
                     </div>
+                    <p className="city-eyebrow">DATA WIKI / RECORD</p>
                     <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight">
                         {displayKeyword}
                     </h1>
@@ -141,7 +142,7 @@ export default async function TagPage({
 
             {/* Product Grid */}
             {!products || products.length === 0 ? (
-                <div className="premium-card bg-white py-24 rounded-3xl border border-dashed border-slate-200 text-center">
+                <div className="city-card bg-white py-24 border border-dashed text-center">
                     <div className="text-5xl mb-6">🔍</div>
                     <p className="text-xl text-slate-400 font-bold italic">&quot;{displayKeyword}&quot; 태그에 해당하는 제품을 준비 중입니다.</p>
                     <Link href="/wiki" className="mt-8 inline-block text-brand-600 font-black hover:underline">
@@ -233,7 +234,7 @@ export default async function TagPage({
                                 <Link
                                     key={post.href}
                                     href={post.href}
-                                    className="rounded-xl border border-gray-100 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+                                    className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
                                 >
                                     <p className="font-bold text-gray-900 text-sm">{post.label}</p>
                                     <p className="text-xs text-gray-500">{post.desc}</p>
@@ -256,11 +257,11 @@ function ProductCard({ product }: { product: Supplement }) {
     return (
         <Link
             href={buildWikiProductPath(product)}
-            className="group premium-card bg-white border border-gray-100 rounded-[2rem] p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full"
+            className="city-card group bg-white border p-6 transition-all duration-300 flex flex-col h-full"
         >
             <div className="flex items-start gap-4 mb-5">
                 {product.image_url ? (
-                    <div className="relative w-16 h-16 shrink-0 bg-slate-50 rounded-2xl border border-slate-100 overflow-hidden p-2">
+                    <div className="city-card relative w-16 h-16 shrink-0 bg-slate-50 border overflow-hidden p-2">
                         <Image
                             src={product.image_url}
                             alt={product.name}

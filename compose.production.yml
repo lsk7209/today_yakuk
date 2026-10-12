@@ -1,0 +1,53 @@
+services:
+  web:
+    image: ovh-todaypharm-production:local
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      args:
+        TURSO_DATABASE_URL: ${TODAYPHARM_BUILD_TURSO_DATABASE_URL:?Set the nonsecret build database URL}
+        NEXT_PUBLIC_GA_ID: ${TODAYPHARM_GA_ID:-G-NPMV2G9KPK}
+        NEXT_PUBLIC_ADSENSE_PUB_ID: ${TODAYPHARM_ADSENSE_PUB_ID:-ca-pub-3050601904412736}
+        NEXT_PUBLIC_ADSENSE_SERVING_ENABLED: ${TODAYPHARM_ADSENSE_SERVING_ENABLED:-false}
+        NEXT_PUBLIC_AFFILIATE_ADS_ENABLED: ${TODAYPHARM_AFFILIATE_ADS_ENABLED:-false}
+      secrets:
+        - turso_auth_token
+    env_file:
+      - path: ${TODAYPHARM_ENV_FILE:?Set TODAYPHARM_ENV_FILE to an absolute path outside this repository}
+        required: true
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_SITE_URL: https://todaypharm.kr
+    # The TLS ingress joins this network and reaches todaypharm-web:3000.
+    expose:
+      - "3000"
+    networks:
+      runtime:
+        aliases:
+          - todaypharm-web
+    restart: unless-stopped
+    # Next.js ISR and image optimization write to the container's ephemeral filesystem.
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m,mode=1777
+      - /app/.next/cache:rw,nosuid,size=128m,mode=1777
+    mem_limit: 768m
+    cpus: 1.0
+    pids_limit: 128
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  runtime:
+    name: todaypharm_runtime
+    driver: bridge
+
+secrets:
+  turso_auth_token:
+    environment: TURSO_AUTH_TOKEN

@@ -62,6 +62,7 @@ export default function Page() {
                 <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-600">
                     계절별 준비물
                 </span>
+                <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
                 <h1 className="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl">
                     캠핑·여행 필수! 피부 트러블 응급 처치 키트 구성하기
                 </h1>
@@ -73,7 +74,7 @@ export default function Page() {
 
             <AdSlotTop />
 
-            <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+            <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">이 키트가 필요한 순간</h2>
                 <p className="text-gray-700 leading-relaxed">
                     여름철 야외활동 중 갑작스러운 피부 트러블은 여행 전체를 망칠 수 있습니다. 가까운 약국을 찾기 어려운 캠핑장이나 해외 여행지에서는 미리 챙겨 온 응급 처치 키트 하나가 큰 차이를 만듭니다. 국내 야외 활동 인구가 연간 1,500만 명을 넘어서면서 피부 트러블 관련 상담 건수도 매년 여름마다 급증하는 추세입니다. 증상이 심해지기 전에 초기 대응만 제대로 해도 2차 감염이나 장기 흉터를 예방할 수 있습니다.
@@ -175,7 +176,7 @@ export default function Page() {
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
                 <div className="space-y-3">
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
                             <h3 className="text-base font-bold text-gray-900">캠핑장 저녁, 아이가 모기에 대여섯 군데 물렸을 때</h3>
@@ -184,7 +185,7 @@ export default function Page() {
                             텐트 안에서 잠들려는 아이가 모기에 집중적으로 물려 울음을 터뜨렸습니다. 이럴 때는 준비해 간 키즈 전용 바르는 항히스타민제를 즉시 도포하고, 차가운 물수건으로 2~3분간 냉찜질을 해 주면 빠르게 진정됩니다. 긁어서 상처가 생겼다면 항생제 연고를 덧바르고 밴드로 덮어 아이가 더 긁지 않도록 해 주세요.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
                             <h3 className="text-base font-bold text-gray-900">바닷가에서 온종일 수영 후 등과 어깨가 빨갛게 달아올랐을 때</h3>
@@ -193,7 +194,7 @@ export default function Page() {
                             선크림을 발랐지만 수영 후 재도포를 잊어 일광화상이 생긴 경우입니다. 숙소에 돌아오면 바로 시원한 샤워로 피부를 식히고, 냉장고에 보관해 둔 알로에 베라 겔을 넓게 도포합니다. 통증이 심하다면 이부프로펜 소염진통제를 복용하고, 화상 부위에는 비판텐 연고를 얇게 바른 뒤 느슨한 면 소재 옷을 입어 자극을 최소화하세요.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
                             <h3 className="text-base font-bold text-gray-900">등산 중 풀숲을 지나다 팔뚝 전체에 발진과 가려움이 퍼졌을 때</h3>
@@ -205,7 +206,7 @@ export default function Page() {
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-gray-100 bg-white p-6 sm:p-8 shadow-sm space-y-6">
+            <section className="city-card border bg-white p-6 sm:p-8 space-y-6">
                 <h2 className="text-xl font-bold text-gray-900">자주 묻는 질문</h2>
                 <div className="space-y-5 divide-y divide-gray-100">
                     <div className="pt-5 first:pt-0 space-y-2">
@@ -260,29 +261,29 @@ export default function Page() {
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+            <section className="city-card border bg-brand-50/40 p-6 space-y-3">
                 <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
                 <div className="grid gap-3 sm:grid-cols-2">
-                    <Link href="/blog/summer-first-aid-kit" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/blog/summer-first-aid-kit" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">여름철 상비약 완전 정리</p>
                         <p className="text-xs text-gray-500 mt-1">여름 대비 상비약</p>
                     </Link>
-                    <Link href="/guide/summer-emergency-kit" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/guide/summer-emergency-kit" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">여름 응급 키트 구성법</p>
                         <p className="text-xs text-gray-500 mt-1">휴가철 대비 키트</p>
                     </Link>
-                    <Link href="/blog/pharmacy-visit-checklist-3" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/blog/pharmacy-visit-checklist-3" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 3가지 확인</p>
                         <p className="text-xs text-gray-500 mt-1">영업·재고·처방 확인</p>
                     </Link>
-                    <Link href="/guide/call-scripts" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/guide/call-scripts" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 전화 확인 문장</p>
                         <p className="text-xs text-gray-500 mt-1">방문 전 문의 체크리스트</p>
                     </Link>
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+            <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -293,7 +294,7 @@ export default function Page() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

@@ -48,3 +48,5 @@ next-env.d.ts
 
 # local generated content (from scripts)
 /generated-content/
+/.migration-data/
+/.migration-evidence/

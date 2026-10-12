@@ -1,0 +1,63 @@
+# syntax=docker/dockerfile:1.7
+# Production image: build public snapshots from a scoped read-only Turso token.
+FROM node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS base
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+
+FROM base AS dependencies
+COPY package.json package-lock.json ./
+RUN npm ci --no-fund
+
+FROM base AS builder
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY . .
+ARG TURSO_DATABASE_URL
+ARG NEXT_PUBLIC_GA_ID=G-NPMV2G9KPK
+ARG NEXT_PUBLIC_ADSENSE_PUB_ID=ca-pub-3050601904412736
+ARG NEXT_PUBLIC_ADSENSE_SERVING_ENABLED=false
+ARG NEXT_PUBLIC_AFFILIATE_ADS_ENABLED=false
+ENV NODE_ENV=production \
+    NEXT_PUBLIC_SITE_URL=https://todaypharm.kr \
+    NEXT_PUBLIC_GA_ID=${NEXT_PUBLIC_GA_ID} \
+    NEXT_PUBLIC_ADSENSE_PUB_ID=${NEXT_PUBLIC_ADSENSE_PUB_ID} \
+    NEXT_PUBLIC_ADSENSE_SERVING_ENABLED=${NEXT_PUBLIC_ADSENSE_SERVING_ENABLED} \
+    NEXT_PUBLIC_AFFILIATE_ADS_ENABLED=${NEXT_PUBLIC_AFFILIATE_ADS_ENABLED} \
+    NODE_OPTIONS=--max-old-space-size=2048
+RUN --mount=type=secret,id=turso_auth_token,required=true \
+    set -eu; \
+    test ! -e .migration-data; \
+    test ! -e .env; \
+    test ! -e .env.production; \
+    test -n "$TURSO_DATABASE_URL"; \
+    case "$TURSO_DATABASE_URL" in libsql://*|https://*) ;; *) exit 1;; esac; \
+    test -z "${MIGRATION_STAGING:-}"; \
+    test -z "${NEXT_PUBLIC_MIGRATION_STAGING:-}"; \
+    TURSO_AUTH_TOKEN="$(cat /run/secrets/turso_auth_token)"; \
+    test -n "$TURSO_AUTH_TOKEN"; \
+    export TURSO_DATABASE_URL TURSO_AUTH_TOKEN; \
+    npm run build
+
+FROM base AS runner
+ARG NEXT_PUBLIC_GA_ID=G-NPMV2G9KPK
+ARG NEXT_PUBLIC_ADSENSE_PUB_ID=ca-pub-3050601904412736
+ARG NEXT_PUBLIC_ADSENSE_SERVING_ENABLED=false
+ARG NEXT_PUBLIC_AFFILIATE_ADS_ENABLED=false
+ENV NODE_ENV=production \
+    NEXT_PUBLIC_SITE_URL=https://todaypharm.kr \
+    NEXT_PUBLIC_GA_ID=${NEXT_PUBLIC_GA_ID} \
+    NEXT_PUBLIC_ADSENSE_PUB_ID=${NEXT_PUBLIC_ADSENSE_PUB_ID} \
+    NEXT_PUBLIC_ADSENSE_SERVING_ENABLED=${NEXT_PUBLIC_ADSENSE_SERVING_ENABLED} \
+    NEXT_PUBLIC_AFFILIATE_ADS_ENABLED=${NEXT_PUBLIC_AFFILIATE_ADS_ENABLED} \
+    HOSTNAME=0.0.0.0 \
+    PORT=3000 \
+    TZ=Asia/Seoul
+RUN groupadd --gid 1001 app && useradd --uid 1001 --gid 1001 --no-create-home app
+COPY --from=builder --chown=app:app /app/.next/standalone ./
+COPY --from=builder --chown=app:app /app/.next/static ./.next/static
+COPY --from=builder --chown=app:app /app/public ./public
+COPY --from=builder --chown=app:app /app/content ./content
+USER 1001:1001
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:3000/api/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+CMD ["sh", "-ec", ": \"${TURSO_DATABASE_URL:?required}\"; : \"${TURSO_AUTH_TOKEN:?required}\"; : \"${ADMIN_PASSWORD:?required}\"; : \"${JWT_SECRET:?required}\"; : \"${REVALIDATION_SECRET:?required}\"; exec node server.js"]

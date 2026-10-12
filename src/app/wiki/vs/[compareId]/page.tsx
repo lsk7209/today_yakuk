@@ -89,7 +89,7 @@ export default async function CompareProductsPage({
     };
 
     return (
-        <div className="container py-8 max-w-6xl">
+        <div className="city-page city-wiki-detail max-w-6xl">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: safeJsonStringify(breadcrumbLd) }}
@@ -101,11 +101,13 @@ export default async function CompareProductsPage({
             </Link>
 
             {/* Header */}
-            <div className="mb-8 text-center">
+            <div className="city-page-heading mb-8">
+                <p className="city-eyebrow">DATA WIKI / COMPARISON</p>
                 <div className="inline-flex items-center justify-center gap-4 mb-4">
                     <ArrowLeftRight className="w-8 h-8 text-brand-600" />
                 </div>
-                <h1 className="text-3xl font-bold mb-2">제품 비교</h1>
+                <p className="city-eyebrow">DATA WIKI / RECORD</p>
+                <h1 className="city-display-medium mb-2">제품 비교</h1>
                 <p className="text-[var(--muted)]">출처가 확인된 공개 필드만 비교합니다</p>
             </div>
 
@@ -119,7 +121,7 @@ export default async function CompareProductsPage({
             </div>
 
             {/* Nutrient Comparison Table */}
-            <div className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
+            <div className="city-card overflow-hidden">
                 <div className="p-6 bg-gray-50 border-b border-[var(--border)]">
                     <h2 className="text-xl font-bold">출처 확인 영양성분 필드 비교</h2>
                 </div>
@@ -165,7 +167,7 @@ export default async function CompareProductsPage({
 
 function ProductCard({ product }: { product: Supplement }) {
     return (
-        <div className="bg-white border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <div className="city-card p-6">
             <div className="flex items-start gap-4 mb-4">
                 {product.image_url ? (
                     <div className="relative w-20 h-20 flex-shrink-0">

@@ -1,0 +1,100 @@
+/* Approved CITY SIGNAL v1. Public template styles, without mockup data. */
+:root {
+  --ink: #172419; --lime: #d9fd4c; --coral: #f57851;
+  --coral-text: #ac452a; /* Accessible text companion; original coral remains decorative. */
+  --paper: #f4f4ec; --white: #fffefa; --fog: #e5ebdf;
+  --background: var(--paper); --foreground: var(--ink); --muted: #526354;
+  --card: var(--white); --border: #bfcbbb;
+  --brand: #304b32; --brand-light: var(--fog); --brand-soft: #526354;
+  --brand-strong: var(--ink); --brand-dark: var(--ink); --accent: #304b32;
+  --city-gutter: clamp(18px, 3.2vw, 48px);
+}
+body { font-family: Arial, "Malgun Gothic", system-ui, sans-serif; font-size: 16px; }
+:focus-visible { outline: 3px solid #ac452a; outline-offset: 4px; }
+.city-signal-bar { display:flex; justify-content:space-between; gap:16px; background:var(--lime); border-bottom:1px solid var(--ink); padding:8px var(--city-gutter); font:700 10px var(--font-geist-mono),monospace; }
+.city-site-header { position:relative; z-index:40; background:var(--paper); border-bottom:2px solid var(--ink); }
+.city-header-inner { max-width:1360px; margin:auto; padding:18px var(--city-gutter); display:flex; align-items:center; gap:24px; }
+.city-brand { display:inline-flex; align-items:center; gap:10px; font-size:26px; font-weight:900; letter-spacing:-1.5px; line-height:1.2; white-space:nowrap; }
+.city-brand small { display:block; font:700 9px var(--font-geist-mono),monospace; letter-spacing:1px; margin-top:5px; }
+.city-brand-mark { display:grid; place-items:center; background:var(--ink); color:var(--lime); width:40px; height:40px; border-radius:50%; font-size:35px; }
+.city-primary-nav { display:flex; align-items:center; gap:22px; margin-left:auto; }
+.city-primary-nav a { display:flex; align-items:center; min-height:44px; font-size:14px; font-weight:700; border-bottom:3px solid transparent; }
+.city-primary-nav a[aria-current=page] { border-color:var(--coral); }
+.city-nav-cta { display:flex; align-items:center; justify-content:center; min-height:44px; border:1px solid var(--ink); border-radius:50%; padding:8px 20px; font-size:13px; font-weight:700; }
+.city-menu-toggle { display:none; min-height:44px; border:1px solid var(--ink); padding:8px 12px; font-weight:700; }
+.city-site-footer { background:var(--ink); color:var(--paper); padding:40px var(--city-gutter) 20px; }
+.city-footer-top { max-width:1264px; margin:auto; display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:48px; }
+.city-site-footer p { font-size:14px; line-height:1.9; margin-top:22px; color:#d2dfd0; }
+.city-site-footer small { display:block; color:var(--lime); font:700 11px var(--font-geist-mono),monospace; margin-bottom:14px; }
+.city-site-footer nav a { display:block; min-height:44px; font-size:14px; padding:8px 0; }
+.city-site-footer a:hover { color:var(--lime); }
+.city-footer-micro { max-width:1264px; margin:30px auto 0; border-top:1px solid #526354; padding-top:20px; display:flex; justify-content:space-between; gap:16px; font-size:11px; }
+.city-page { max-width:1360px; margin:auto; padding:32px var(--city-gutter) 60px; }
+.city-page-heading { border-bottom:2px solid var(--ink); margin-bottom:32px; }
+.city-page-heading-copy { padding:24px 0 36px; }
+.city-page-heading-split { display:grid; grid-template-columns:1.15fr .85fr; }
+.city-page-heading-split .city-page-heading-copy { padding-right:32px; }
+.city-heading-art { display:grid; place-items:center; background:var(--lime); border:2px solid var(--ink); padding:24px; }
+.city-heading-art img { width:100%; max-height:300px; object-fit:contain; }
+.city-eyebrow { font:700 11px var(--font-geist-mono),monospace; letter-spacing:.08em; margin-bottom:22px; }
+.city-display-medium { font-size:clamp(37px,5.4vw,77px); font-weight:900; line-height:1.15; letter-spacing:-.065em; word-break:keep-all; overflow-wrap:break-word; }
+.city-lead { max-width:720px; margin-top:24px; line-height:1.9; color:var(--muted); }
+.city-panel { background:var(--white); border:2px solid var(--ink); padding:24px; }
+.city-button { display:inline-flex; min-height:44px; align-items:center; justify-content:center; gap:8px; padding:12px 22px; border:2px solid var(--ink); background:var(--lime); color:var(--ink); font-weight:800; }
+.city-button:hover { background:var(--fog); color:var(--ink); }
+.city-button-secondary { background:var(--white); }
+.city-button-dark { background:var(--ink); color:var(--lime); }
+.city-pill { display:inline-flex; align-items:center; min-height:44px; padding:9px 16px; border:1px solid var(--ink); border-radius:50%; font-size:14px; }
+.city-step-dark:hover { color: var(--paper); }
+.city-home-hero, .city-nearby-hero { border:2px solid var(--ink); display:grid; grid-template-columns:1.1fr .9fr; background:var(--paper); }
+.city-home-copy { padding:clamp(24px,4vw,48px); min-width:0; }
+.city-home-art { display:flex; flex-direction:column; justify-content:space-between; padding:30px; background:var(--lime); border-left:2px solid var(--ink); min-width:0; }
+.city-home-art img { width:100%; height:auto; max-height:340px; object-fit:contain; }
+.city-home-search { margin-top:30px; }
+.city-home-search input { min-width:0; }
+.city-home-results, .city-nearby-results { min-width:0; }
+.city-nearby-filters { border-block:2px solid var(--ink); padding:24px 0; }
+.city-directory { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:30px; align-items:start; }
+.city-call-first { background:var(--ink); color:var(--paper); padding:30px; border:2px solid var(--ink); }
+.city-call-first strong { display:block; font-size:clamp(32px,4vw,54px); line-height:1.1; color:var(--lime); letter-spacing:-.05em; margin-bottom:20px; }
+.city-call-first p { font-size:16px; line-height:1.8; }
+.city-pharmacy-heading { display:grid; grid-template-columns:1.1fr .9fr; border:2px solid var(--ink); background:var(--lime); }
+.city-pharmacy-heading > div { padding:30px; min-width:0; }
+.city-pharmacy-heading h1 { font-size:clamp(37px,5vw,68px); font-weight:900; line-height:1.2; letter-spacing:-.065em; word-break:keep-all; overflow-wrap:break-word; }
+.city-pharmacy-heading .city-call-first { border:0; }
+.city-facts { border:2px solid var(--ink); background:var(--white); padding:24px; }
+.city-card { border:2px solid var(--ink); background:var(--white); border-radius:0; box-shadow:none; }
+.city-source { border:2px solid var(--ink); border-radius:0; background:var(--fog); box-shadow:none; }
+.city-article { font-size:16px; line-height:2; }
+.city-article h1 { font-size:clamp(37px,5vw,70px); line-height:1.2; letter-spacing:-.065em; }
+.city-article h2 { border-top:2px solid var(--ink); padding-top:24px; }
+.city-policy { max-width:850px; margin:auto; font-size:16px; line-height:2; }
+.city-policy h1 { font-size:clamp(40px,6vw,77px); letter-spacing:-.065em; border-bottom:2px solid var(--ink); padding-bottom:24px; }
+.city-not-found { display:grid; grid-template-columns:1.2fr .8fr; gap:40px; align-items:center; }
+.city-empty-art { font-size:clamp(100px,20vw,240px); font-weight:900; line-height:1; color:var(--coral); letter-spacing:-.1em; }
+.city-wiki-detail table { font-size:16px; }
+.city-wiki-detail th { background:var(--fog); }
+.city-mobile-actions { width:max-content; max-width:calc(100% - 24px); }
+@media(max-width:1100px) { .city-primary-nav { gap:12px; } .city-header-inner { gap:16px; } }
+@media(max-width:850px) {
+  .city-menu-toggle { display:block; margin-left:auto; }
+  .city-primary-nav { display:none; position:absolute; left:0; right:0; top:100%; padding:16px var(--city-gutter); background:var(--paper); border-bottom:2px solid var(--ink); }
+  .city-primary-nav[data-open=true] { display:flex; flex-direction:column; align-items:stretch; gap:0; }
+  .city-primary-nav a { border-bottom:1px solid var(--border); padding:12px; }
+  .city-page-heading-split, .city-home-hero, .city-nearby-hero, .city-pharmacy-heading, .city-directory { grid-template-columns:1fr; }
+  .city-home-art { border-left:0; border-top:2px solid var(--ink); }
+  .city-home-art img { max-height:260px; }
+  .city-heading-art { margin-bottom:24px; }
+  .city-footer-top { gap:24px; }
+}
+@media(max-width:620px) {
+  .city-signal-bar span:last-child { display:none; }
+  .city-brand { font-size:22px; }
+  .city-nav-cta { display:none; }
+  .city-header-inner { padding:14px 18px; }
+  .city-page { padding-top:20px; }
+  .city-page-heading-copy { padding-right:0; }
+  .city-footer-top, .city-not-found { grid-template-columns:1fr; }
+  .city-footer-micro { flex-direction:column; }
+  .city-pharmacy-heading > div, .city-call-first { padding:24px; }
+}

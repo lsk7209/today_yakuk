@@ -1,0 +1,25 @@
+services:
+  web:
+    image: ovh-todaypharm-staging:c471f00
+    build:
+      context: .
+      dockerfile: Dockerfile.staging
+    # Internal network publishes no ports; access only through an SSH tunnel.
+    networks:
+      - fixture
+    restart: unless-stopped
+    mem_limit: 768m
+    cpus: 1.0
+    pids_limit: 128
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+networks:
+  fixture:
+    internal: true

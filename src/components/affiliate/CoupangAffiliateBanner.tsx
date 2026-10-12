@@ -4,6 +4,7 @@
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { canRequestAds, isAffiliateAdsEnabled } from "@/lib/ad-policy";
+import { useMigrationStaging } from "@/components/staging/StagingProvider";
 
 const DASHBOARD_BASE = "https://multi-dashboard-one.vercel.app";
 const SITE_KEY = "todaypharm";
@@ -14,8 +15,9 @@ const DISCLOSURE =
 
 export default function CoupangAffiliateBanner() {
   const pathname = usePathname() ?? "/";
+  const staging = useMigrationStaging();
 
-  if (!isAffiliateAdsEnabled() || !canRequestAds(pathname)) {
+  if (staging || !isAffiliateAdsEnabled() || !canRequestAds(pathname)) {
     return null;
   }
 

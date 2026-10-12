@@ -91,6 +91,7 @@ export default function Page() {
                 <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-600">
                     위기 탈출 가이드
                 </span>
+                <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
                 <h1 className="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl">
                     여행 중 처방전(약) 분실 시 당황하지 않고 대처하는 법
                 </h1>
@@ -102,7 +103,7 @@ export default function Page() {
 
             <AdSlotTop />
 
-            <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+            <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">이 가이드가 필요한 순간</h2>
                 <p className="text-gray-700 leading-relaxed">
                     여행 중 처방약을 분실하는 상황은 생각보다 자주 발생합니다. 짐을 분산하다 한 가방에만 약을 챙겼다가 그 가방을 잃어버리거나, 숙소를 옮기는 과정에서 약 파우치를 두고 오는 경우가 대표적입니다. 특히 고혈압·당뇨·갑상선 등 매일 빠짐없이 복용해야 하는 만성질환 약이라면 하루만 빠져도 불안감이 커질 수밖에 없습니다. 상황을 침착하게 파악하고 아래 순서대로 대처하면 대부분의 경우 24시간 이내에 약을 다시 구할 수 있습니다.
@@ -144,7 +145,7 @@ export default function Page() {
                     일부 병원은 이메일이나 의료정보 앱(건강e음, 나의건강기록)을 통한 전자처방전 전달도 지원하므로 전화 시 가능한 방법을 함께 확인하세요.
                     단, 병원 정책이나 의료법 규정에 따라 본인 확인 절차가 필요하거나 불가할 수도 있으니 반드시 전화로 먼저 문의하시기 바랍니다.
                 </p>
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 not-prose text-sm text-yellow-800">
+                <div className="city-card bg-yellow-50 p-4 border border-yellow-200 not-prose text-sm text-yellow-800">
                     <strong>Tip:</strong> 평소 처방전이나 약 봉투를 사진 찍어두면, 약 이름과 용량을 정확히 알 수 있어 대체 약 상담이나 재처방 시 매우 큰 도움이 됩니다. 스마트폰 사진첩 내 별도 폴더(예: &apos;내 처방전&apos;)에 보관해 두는 습관을 들이세요.
                 </div>
 
@@ -190,7 +191,7 @@ export default function Page() {
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
                 <div className="space-y-3">
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
                             <h3 className="text-base font-bold text-gray-900">주말 여행 중 혈압약을 숙소에 두고 왔어요</h3>
@@ -199,7 +200,7 @@ export default function Page() {
                             토요일 오전, 숙소를 체크아웃하고 나서야 혈압약을 방에 두고 온 것을 알았습니다. 먼저 스마트폰으로 건강보험심사평가원 앱에 접속해 처방 이력을 확인하고, 근처 문 연 내과를 찾아 약 이름과 용량을 보여주며 당일 재처방을 받았습니다. 주말에도 문을 여는 병원을 &apos;약국오늘&apos;에서 미리 검색해 두면 시간을 크게 절약할 수 있습니다.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
                             <h3 className="text-base font-bold text-gray-900">아이 항생제를 분실해서 치료 중단이 걱정됩니다</h3>
@@ -208,7 +209,7 @@ export default function Page() {
                             이틀째 항생제를 복용 중이던 아이의 약 파우치를 버스 안에 두고 내렸습니다. 항생제는 처방전 없이 구매할 수 없기 때문에 근처 소아과를 방문했고, 원래 처방 병원에서 팩스로 처방 내역을 전송받아 같은 성분의 항생제를 조제받을 수 있었습니다. 항생제는 치료 기간을 끝까지 지키는 것이 중요하므로 분실 즉시 대처하는 것이 바람직합니다.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
                             <h3 className="text-base font-bold text-gray-900">명절 연휴 중 인슐린 주사기를 잃어버렸어요</h3>
@@ -224,7 +225,7 @@ export default function Page() {
                 <h2 className="text-xl font-bold text-gray-900">자주 묻는 질문(FAQ)</h2>
                 <div className="space-y-3">
                     {faqs.map((faq, i) => (
-                        <div key={i} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm space-y-2">
+                        <div key={i} className="city-card border bg-white p-5 space-y-2">
                             <h3 className="text-base font-bold text-gray-900">Q. {faq.q}</h3>
                             <p className="text-sm text-gray-600 leading-relaxed">A. {faq.a}</p>
                         </div>
@@ -251,21 +252,21 @@ export default function Page() {
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+            <section className="city-card border bg-brand-50/40 p-6 space-y-3">
                 <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
                 <div className="grid gap-3 sm:grid-cols-2">
-                    <Link href="/blog/prescription-holiday-guide" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/blog/prescription-holiday-guide" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">처방전 약 연휴에 못 받을 때 대처법</p>
                         <p className="text-xs text-gray-500 mt-1">연휴 처방전 긴급 대처</p>
                     </Link>
-                    <Link href="/blog/pharmacy-visit-checklist-3" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/blog/pharmacy-visit-checklist-3" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 확인 3가지</p>
                         <p className="text-xs text-gray-500 mt-1">방문 전 체크리스트</p>
                     </Link>
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+            <section className="city-card border bg-gray-50 p-6 space-y-4">
               <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
               <div className="grid sm:grid-cols-2 gap-3">
                 {[
@@ -276,7 +277,7 @@ export default function Page() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+                    className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
                   >
                     <p className="font-bold text-gray-900 text-sm">{item.label}</p>
                     <p className="text-xs text-gray-500">{item.desc}</p>

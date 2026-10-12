@@ -63,7 +63,7 @@ export default async function IngredientDetailPage({
     };
 
     return (
-        <div className="container py-8 max-w-4xl">
+        <div className="city-page city-route-article py-8 max-w-4xl">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: safeJsonStringify(breadcrumbLd) }}
@@ -81,6 +81,7 @@ export default async function IngredientDetailPage({
 
             {/* Header */}
             <div className="mb-8 pb-8 border-b border-[var(--border)]">
+                <p className="city-eyebrow">DATA WIKI / RECORD</p>
                 <h1 className="text-4xl font-bold mb-4">{ingredient.name}</h1>
                 <div className="flex flex-wrap gap-2">
                     {(ingredient.tags || []).map((tag) => (
@@ -97,7 +98,7 @@ export default async function IngredientDetailPage({
             {/* Summary */}
             <section className="mb-8">
                 <h2 className="text-xl font-semibold mb-4">📖 3줄 요약</h2>
-                <div className="p-6 bg-blue-50 border border-blue-100 rounded-xl">
+                <div className="city-card p-6 bg-blue-50 border">
                     <p className="text-gray-800 leading-relaxed">{ingredient.summary || "정보가 없습니다."}</p>
                 </div>
             </section>
@@ -106,7 +107,7 @@ export default async function IngredientDetailPage({
             {ingredient.daily_value_guideline && (
                 <section className="mb-8">
                     <h2 className="text-xl font-semibold mb-4">💊 권장 섭취량</h2>
-                    <div className="p-6 bg-white border border-[var(--border)] rounded-xl">
+                    <div className="city-card p-6 bg-white border border-[var(--border)]">
                         <div className="flex items-center gap-4">
                             <div className="text-center flex-1 p-4 bg-green-50 rounded-lg">
                                 <p className="text-sm text-[var(--muted)] mb-1">최소</p>
@@ -133,7 +134,7 @@ export default async function IngredientDetailPage({
                 {/* Deficiency */}
                 <section>
                     <h2 className="text-xl font-semibold mb-4">⚠️ 부족하면?</h2>
-                    <div className="p-6 bg-red-50 border border-red-100 rounded-xl">
+                    <div className="city-card p-6 bg-red-50 border border-red-100">
                         <ul className="space-y-2">
                             {(ingredient.deficiency_symptoms || []).map((symptom, idx) => (
                                 <li key={idx} className="flex items-start gap-2 text-red-900">
@@ -151,7 +152,7 @@ export default async function IngredientDetailPage({
                 {/* Excess */}
                 <section>
                     <h2 className="text-xl font-semibold mb-4">🚨 과하면?</h2>
-                    <div className="p-6 bg-yellow-50 border border-yellow-100 rounded-xl">
+                    <div className="city-card p-6 bg-yellow-50 border border-yellow-100">
                         <ul className="space-y-2">
                             {(ingredient.excess_symptoms || []).map((symptom, idx) => (
                                 <li key={idx} className="flex items-start gap-2 text-yellow-900">
@@ -168,7 +169,7 @@ export default async function IngredientDetailPage({
             </div>
 
             {/* CTA */}
-            <section className="mt-12 p-6 bg-gray-50 rounded-xl border border-[var(--border)] text-center">
+            <section className="city-card mt-12 p-6 bg-gray-50 border border-[var(--border)] text-center">
                 <p className="text-sm text-[var(--muted)] mb-4">
                     이 정보는 식약처 공공데이터를 기반으로 제공되며, 의학적 조언을 대신할
                     수 없습니다.

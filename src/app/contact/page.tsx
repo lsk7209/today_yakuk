@@ -50,10 +50,10 @@ export default function ContactPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }}
       />
-      <div className="container py-10 sm:py-14 space-y-6">
-        <header className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+      <div className="city-template container py-10 sm:py-14 space-y-6">
+        <header className="city-page-heading rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8  space-y-4">
           <p className="text-xs font-black tracking-[0.18em] text-brand-700">CONTACT</p>
-          <h1 className="text-3xl sm:text-4xl font-black text-gray-900">문의하기</h1>
+          <h1 className="city-display-medium text-3xl sm:text-4xl font-black text-gray-900">문의하기</h1>
           <p className="max-w-3xl text-gray-600 leading-relaxed">
             약국 정보 수정 요청, 서비스 제안, 제휴 문의는 아래 연락처로 남겨주세요. 약국오늘은 공공데이터 기반
             서비스이므로, 실제 현장 정보와 다른 부분이 있으면 근거와 함께 알려주시면 더 빠르게 검토할 수 있습니다.
@@ -61,7 +61,7 @@ export default function ContactPage() {
         </header>
 
         <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <article className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
+          <article className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8  space-y-5">
             <div>
               <p className="text-sm font-black text-brand-700">기본 연락처</p>
               <p className="mt-2 text-lg font-black text-gray-900">support@todayyakuk.com</p>
@@ -71,7 +71,7 @@ export default function ContactPage() {
               <p className="text-sm font-black text-brand-700">빠른 처리 팁</p>
               <ul className="mt-3 space-y-3 text-sm text-gray-700 leading-relaxed">
                 {requestItems.map((item) => (
-                  <li key={item} className="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
+                  <li key={item} className="rounded-none border border-[var(--ink)] bg-gray-50 px-4 py-3">
                     {item}
                   </li>
                 ))}
@@ -79,11 +79,11 @@ export default function ContactPage() {
             </div>
           </article>
 
-          <article className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
+          <article className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8 ">
             <h2 className="text-2xl font-black text-gray-900">문의 처리 흐름</h2>
             <ol className="mt-5 space-y-3">
               {responseSteps.map((item, index) => (
-                <li key={item} className="flex gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4">
+                <li key={item} className="flex gap-3 rounded-none border border-[var(--ink)] bg-gray-50 px-4 py-4">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600 text-sm font-black text-white">
                     {index + 1}
                   </span>
@@ -92,31 +92,31 @@ export default function ContactPage() {
               ))}
             </ol>
 
-            <div className="mt-5 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-4 text-sm leading-relaxed text-emerald-900">
+            <div className="mt-5 rounded-none border border-emerald-100 bg-emerald-50 px-4 py-4 text-sm leading-relaxed text-emerald-900">
               개인정보가 포함된 자료를 보내실 때에는 꼭 필요한 정보만 남겨 주세요. 위치 정보나 민감한 건강 정보는
               문의 처리 목적 범위를 넘지 않도록 최소화해 주시는 것이 안전합니다.
             </div>
           </article>
         </section>
 
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
+        <section className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8 ">
           <h2 className="text-2xl font-black text-gray-900">관련 안내</h2>
           <div className="mt-4 flex flex-wrap gap-3">
             <Link
               href="/privacy"
-              className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-black text-gray-900 hover:border-brand-300 hover:text-brand-700"
+              className="inline-flex items-center rounded-full border border-[var(--ink)] bg-[var(--white)] px-4 py-2 text-sm font-black text-gray-900 hover:border-brand-300 hover:text-brand-700"
             >
               개인정보처리방침
             </Link>
             <Link
               href="/terms"
-              className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-black text-gray-900 hover:border-brand-300 hover:text-brand-700"
+              className="inline-flex items-center rounded-full border border-[var(--ink)] bg-[var(--white)] px-4 py-2 text-sm font-black text-gray-900 hover:border-brand-300 hover:text-brand-700"
             >
               이용약관
             </Link>
             <Link
               href="/about"
-              className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-black text-gray-900 hover:border-brand-300 hover:text-brand-700"
+              className="inline-flex items-center rounded-full border border-[var(--ink)] bg-[var(--white)] px-4 py-2 text-sm font-black text-gray-900 hover:border-brand-300 hover:text-brand-700"
             >
               서비스 소개
             </Link>

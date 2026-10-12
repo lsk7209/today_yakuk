@@ -1,0 +1,42 @@
+# Private fixture staging only. Build Linux native modules inside Linux.
+FROM node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS base
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+
+FROM base AS dependencies
+COPY package.json package-lock.json ./
+RUN npm ci --no-fund
+
+FROM base AS builder
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY . .
+ENV MIGRATION_STAGING=1 \
+    NEXT_PUBLIC_MIGRATION_STAGING=1 \
+    NEXT_PUBLIC_SITE_URL=http://127.0.0.1:18083 \
+    TURSO_DATABASE_URL=file:/app/.migration-data/todaypharm.sqlite \
+    TURSO_AUTH_TOKEN=fixture-only \
+    NODE_OPTIONS=--max-old-space-size=2048
+RUN npm run build
+
+FROM base AS runner
+ENV NODE_ENV=production \
+    MIGRATION_STAGING=1 \
+    NEXT_PUBLIC_MIGRATION_STAGING=1 \
+    NEXT_PUBLIC_SITE_URL=http://127.0.0.1:18083 \
+    TURSO_DATABASE_URL=file:/app/fixtures/todaypharm.sqlite \
+    TURSO_AUTH_TOKEN=fixture-only \
+    HOSTNAME=0.0.0.0 \
+    PORT=3000 \
+    TZ=Asia/Seoul
+RUN groupadd --gid 1001 app && useradd --uid 1001 --gid 1001 --no-create-home app
+COPY --from=builder --chown=app:app /app/.next/standalone ./
+COPY --from=builder --chown=app:app /app/.next/static ./.next/static
+COPY --from=builder --chown=app:app /app/public ./public
+COPY --from=builder --chown=app:app /app/content ./content
+COPY --from=builder /app/.migration-data/todaypharm.sqlite ./fixtures/todaypharm.sqlite
+RUN chmod 555 /app/fixtures && chmod 444 /app/fixtures/todaypharm.sqlite
+USER 1001:1001
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:3000/api/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+CMD ["node", "server.js"]

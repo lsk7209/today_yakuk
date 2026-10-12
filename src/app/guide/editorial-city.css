@@ -1,0 +1,115 @@
+/* Shared CITY SIGNAL treatment for the guide, journal, and wiki routes. */
+.city-editorial .city-route-article {
+  max-width: 1060px;
+  margin-inline: auto;
+  padding-block: 38px 70px;
+  color: var(--ink);
+}
+
+.city-editorial .city-route-article > header,
+.city-editorial .city-route-article > article > header {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 30px;
+  margin-bottom: 32px;
+}
+
+.city-editorial .city-route-article h1,
+.city-editorial .city-wiki-detail h1 {
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 1.16;
+  letter-spacing: -.055em;
+  font-weight: 900;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.city-editorial .city-route-article h2,
+.city-blog-post .city-article-content h2 {
+  border-top: 2px solid var(--ink);
+  margin-top: 32px;
+  padding-top: 22px;
+  font-weight: 850;
+  letter-spacing: -.035em;
+}
+
+.city-editorial .city-route-article p,
+.city-blog-post .city-article-content p {
+  line-height: 1.9;
+}
+
+.city-editorial .city-route-article .prose,
+.city-blog-post .city-article-content {
+  max-width: 760px;
+  color: var(--ink);
+  line-height: 1.9;
+}
+
+.city-editorial .city-route-article .city-card,
+.city-editorial .city-route-article .city-panel {
+  border-color: var(--ink);
+  border-width: 2px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.city-blog-post .city-article-content blockquote,
+.city-editorial .city-route-article blockquote {
+  border-left: 6px solid var(--coral);
+  background: var(--fog);
+  padding: 18px 24px;
+}
+
+.city-wiki-index .city-card,
+.city-wiki-detail .city-card,
+.city-wiki-detail .city-panel {
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.city-wiki-detail th,
+.city-wiki-detail thead {
+  background: var(--fog);
+}
+
+.city-wiki-detail td,
+.city-wiki-detail th {
+  border-bottom: 1px solid var(--border);
+}
+
+.city-editorial .text-slate-400,
+.city-editorial .text-gray-400,
+.city-wiki-detail .text-slate-300 {
+  color: var(--muted);
+}
+
+.city-blog-index > section > div > a:hover,
+.city-wiki-index .city-card:hover,
+.city-guide-index .city-card:hover {
+  background: var(--lime);
+}
+
+.city-editorial aside.city-source {
+  margin-inline: auto;
+  max-width: 1060px;
+}
+
+.city-editorial-toc {
+  max-width: 1060px;
+  margin: 26px auto 0;
+  padding: 18px 24px;
+  border: 2px solid var(--ink);
+  background: var(--fog);
+}
+
+.city-editorial-toc .city-eyebrow { margin-bottom: 12px; }
+.city-editorial-toc ol { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.city-editorial-toc a { display: inline-flex; gap: 8px; padding: 8px 0; font-size: 14px; font-weight: 700; }
+.city-editorial-toc a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.city-editorial-toc a span { color: var(--muted); font-family: var(--font-geist-mono), monospace; }
+
+@media (max-width: 640px) {
+  .city-editorial .city-route-article { padding-block: 20px 48px; }
+  .city-editorial .city-route-article .prose,
+  .city-blog-post .city-article-content { max-width: 100%; }
+}

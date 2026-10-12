@@ -92,9 +92,10 @@ export default function BlogNightRadiusTips() {
     })),
   };
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">블로그 · 심야 반경 활용</p>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl font-bold leading-tight">심야 약국 헛걸음 막는 거리·반경 활용법</h1>
         <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -115,7 +116,7 @@ export default function BlogNightRadiusTips() {
 
       <AdSlotTop />
 
-      <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+      <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
         <h2 className="text-xl font-bold text-gray-900">심야 헛걸음, 왜 반복될까</h2>
         <p className="text-[var(--muted)] leading-relaxed">
           심야에 약을 구하러 나갔다가 문이 잠긴 약국 앞에서 발길을 돌리는 경험은 생각보다 흔합니다.
@@ -143,7 +144,7 @@ export default function BlogNightRadiusTips() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
+      <section className="city-card border bg-emerald-50 p-6 space-y-3">
         <h2 className="text-xl font-semibold text-brand-800">빠른 체크리스트</h2>
         <ul className="list-disc list-inside space-y-1 text-emerald-900">
           {steps.map((item) => (
@@ -157,19 +158,19 @@ export default function BlogNightRadiusTips() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">반경·정렬 활용 팁</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">2km → 3km → 5km 순차 확대</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               심야 검색은 2km 반경에서 시작하는 것이 가장 합리적입니다. 도보나 단거리 이동으로 접근 가능한 범위이며, 여기서 운영 중인 약국을 찾으면 이동 시간을 최소화할 수 있습니다. 2km 내 결과가 없거나 모두 종료 임박 상태라면 3km로 확장하고, 그래도 마땅한 약국이 없으면 5km까지 넓히세요. TOP3 하이라이트 기능을 활용하면 각 반경에서 우선 방문 순서를 직관적으로 파악할 수 있어 선택에 걸리는 시간을 줄일 수 있습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">거리순 + 종료 임박 확인</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               위치 권한을 허용한 상태에서 거리순 정렬을 켜면 현재 위치에서 가장 가까운 약국이 상단에 표시됩니다. 여기서 한 걸음 더 나아가 종료 예정 시간도 함께 확인하는 것이 핵심입니다. 예를 들어 1km 거리의 약국이 15분 후 문을 닫는다면, 2km 거리지만 1시간 더 운영하는 약국을 선택하는 것이 현명합니다. 이동 시간과 잔여 운영 시간을 함께 고려하는 습관이 심야 헛걸음을 줄이는 가장 실용적인 방법입니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">전화 후 길찾기 실행</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               온라인 정보는 실시간이 아닐 수 있습니다. 약국에 전화를 걸어 현재 영업 중인지, 찾는 약품의 재고가 있는지 두 가지를 꼭 확인하세요. 실제로 야간 당번 약국이 공식 종료 시각보다 일찍 마감하는 경우가 있어 전화 확인은 매우 중요합니다. 재고와 영업을 확인한 뒤 길찾기 앱으로 도착 예정 시각을 계산해 보면, 남은 운영 시간 안에 도착 가능한지 판단할 수 있어 헛걸음 확률이 크게 낮아집니다.
@@ -181,7 +182,7 @@ export default function BlogNightRadiusTips() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
               <h3 className="text-base font-bold text-gray-900">새벽 1시, 해열제가 급하게 필요한 경우</h3>
@@ -190,7 +191,7 @@ export default function BlogNightRadiusTips() {
               자녀가 갑자기 고열이 나 새벽 1시에 해열제를 구해야 합니다. 2km 반경으로 검색하니 영업 중인 약국이 1곳뿐이고 20분 후 마감 예정입니다. 거리순 정렬에서 해당 약국이 1.3km로 표시되어 전화로 재고를 확인한 뒤 즉시 길찾기를 실행하면 15분 안에 도착 가능하다는 것을 확인하고 출발할 수 있습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
               <h3 className="text-base font-bold text-gray-900">3km 반경 확장 후 대체 약국 발견</h3>
@@ -199,7 +200,7 @@ export default function BlogNightRadiusTips() {
               처음 2km 반경으로 검색했을 때는 운영 중인 약국이 없었지만, 3km로 확장하니 2곳이 나타났습니다. 가까운 쪽에 전화를 했더니 원하는 약품 재고가 없었지만, 미리 두 번째 후보를 파악해 뒀기 때문에 바로 2.8km 약국에 전화해 재고를 확인하고 헛걸음 없이 방문할 수 있었습니다. TOP3 목록을 미리 확인하는 습관이 이런 상황에서 빛을 발합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
               <h3 className="text-base font-bold text-gray-900">종료 임박 정보로 방문 약국 순서 변경</h3>
@@ -217,7 +218,7 @@ export default function BlogNightRadiusTips() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="city-card border border-[var(--border)] bg-white p-4"
             >
               <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
               <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
@@ -226,7 +227,7 @@ export default function BlogNightRadiusTips() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
+      <section className="city-card border border-[var(--border)] bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">다음 단계</h2>
@@ -251,21 +252,21 @@ export default function BlogNightRadiusTips() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+      <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/guide/radius-selection" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/guide/radius-selection" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">반경 선택 기준 가이드</p>
             <p className="text-xs text-gray-500 mt-1">상황별 반경 설정 전략</p>
           </Link>
-          <Link href="/blog/night-pharmacy-checklist" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/night-pharmacy-checklist" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">심야 약국 방문 체크리스트</p>
             <p className="text-xs text-gray-500 mt-1">헛걸음 방지 6가지</p>
           </Link>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -276,7 +277,7 @@ export default function BlogNightRadiusTips() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

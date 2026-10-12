@@ -73,6 +73,7 @@ export default function DataUpdatePage() {
         <span className="inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-bold text-sky-700">
           로컬 검토용 초안 · 미발행
         </span>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl font-black leading-tight text-slate-950 sm:text-4xl">
           2026년 8월 약국·의약품·건강기능식품 데이터 업데이트
         </h1>
@@ -93,7 +94,7 @@ export default function DataUpdatePage() {
           [`${medicineCount.toLocaleString("ko-KR")}개`, "의약품 상세 페이지", "약국오늘 DB에 새로 생성"],
           [`+${pharmacyDelta.toLocaleString("ko-KR")}건`, "약국 원천 API 응답", `${pharmacyPrevious.toLocaleString("ko-KR")}건에서 ${pharmacyCurrent.toLocaleString("ko-KR")}건`],
         ].map(([value, label, note]) => (
-          <div key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div key={label} className="city-card border bg-white p-5">
             <p className="text-3xl font-black text-brand-700">{value}</p>
             <h2 className="mt-2 text-sm font-bold text-slate-900">{label}</h2>
             <p className="mt-1 text-xs leading-relaxed text-slate-500">{note}</p>
@@ -101,7 +102,7 @@ export default function DataUpdatePage() {
         ))}
       </section>
 
-      <section className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
+      <section className="city-card border border-amber-200 bg-amber-50 p-6">
         <h2 className="text-lg font-bold text-amber-950">먼저 알아둘 해석 기준</h2>
         <p className="mt-3 leading-relaxed text-amber-950/80">
           여기서 &ldquo;새로 반영&rdquo;은 약국오늘 데이터베이스에 새 행과 상세 경로가
@@ -112,7 +113,7 @@ export default function DataUpdatePage() {
         </p>
       </section>
 
-      <section className="space-y-5 rounded-2xl border border-sky-200 bg-sky-50 p-6 sm:p-8">
+      <section className="city-card space-y-5 border border-sky-200 bg-sky-50 p-6 sm:p-8">
         <div>
           <p className="text-xs font-black uppercase tracking-wide text-sky-700">8월 28일 후속 확인</p>
           <h2 className="mt-2 text-xl font-black text-slate-950">새 공개 경로는 0건이었습니다</h2>
@@ -148,7 +149,7 @@ export default function DataUpdatePage() {
         </p>
       </section>
 
-      <section className="space-y-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 sm:p-8">
+      <section className="city-card space-y-5 border border-emerald-200 bg-emerald-50 p-6 sm:p-8">
         <div>
           <p className="text-xs font-black uppercase tracking-wide text-emerald-800">10월 8일 누적 후속 확인</p>
           <h2 className="mt-2 text-xl font-black text-slate-950">
@@ -273,7 +274,7 @@ export default function DataUpdatePage() {
         </p>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+      <section className="city-card border bg-slate-50 p-6">
         <h2 className="text-lg font-bold text-slate-900">공식 원문 확인처</h2>
         <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-600">
           <li>
@@ -320,7 +321,7 @@ export default function DataUpdatePage() {
         </div>
       </section>
 
-      <p className="rounded-xl border border-slate-200 bg-white p-4 text-xs leading-relaxed text-slate-500">
+      <p className="city-card border bg-white p-4 text-xs leading-relaxed text-slate-500">
         작성 고지: 이 글은 공개 자료와 자동 집계 결과를 바탕으로 AI 도구의 도움을 받아
         정리했습니다. 의료 전문가의 검토나 개인 진료를 대신하지 않습니다.
       </p>

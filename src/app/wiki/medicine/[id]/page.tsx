@@ -10,6 +10,7 @@ import {
     buildWikiMedicinePath,
     buildWikiMedicineSlug,
     extractWikiEntityId,
+    isCanonicalWikiSlug,
 } from "@/lib/wiki-slug";
 
 // ISR: Revalidate every 24 hours
@@ -107,7 +108,7 @@ export default async function MedicineDetailPage({
         notFound();
     }
 
-    if (id !== buildWikiMedicineSlug(medicine)) {
+    if (!isCanonicalWikiSlug(id, buildWikiMedicineSlug(medicine))) {
         permanentRedirect(buildWikiMedicinePath(medicine));
     }
 
@@ -129,7 +130,7 @@ export default async function MedicineDetailPage({
     };
 
     return (
-        <div className="container py-8 max-w-4xl">
+        <div className="city-page city-route-article py-8 max-w-4xl">
             {/* SEO: JSON-LD */}
             <script
                 type="application/ld+json"
@@ -138,8 +139,8 @@ export default async function MedicineDetailPage({
 
             {/* Breadcrumb */}
             <nav className="text-sm text-[var(--muted)] mb-6 flex items-center" aria-label="Breadcrumb">
-                <Link href="/wiki" className="hover:text-brand-700">
-                    약품 위키
+                <Link href="/wiki?type=medicine" className="hover:text-brand-700">
+                    의약품 목록
                 </Link>
                 <span className="mx-2 text-gray-400">/</span>
                 <span className="font-medium text-gray-900 truncate max-w-[200px]">{medicine.name}</span>
@@ -167,7 +168,8 @@ export default async function MedicineDetailPage({
 
                     {/* Product Info */}
                     <div className="flex-1">
-                        <div className="flex items-start justify-between">
+                        <div>
+                            <p className="city-eyebrow">DATA WIKI / RECORD</p>
                             <h1 className="text-3xl font-bold mb-2 text-gray-900 leading-tight">
                                 {medicine.name}
                             </h1>
@@ -202,7 +204,7 @@ export default async function MedicineDetailPage({
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                         <span>💡</span> 이 약의 효능은 무엇입니까?
                     </h2>
-                    <div className="p-6 bg-blue-50 border border-blue-100 rounded-2xl shadow-sm">
+                    <div className="city-card p-6 bg-blue-50 border">
                         <p className="text-gray-800 leading-relaxed whitespace-pre-line">
                             {medicine.efficacy}
                         </p>
@@ -216,7 +218,7 @@ export default async function MedicineDetailPage({
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                         <span>📋</span> 이 약은 어떻게 사용합니까?
                     </h2>
-                    <div className="p-6 bg-white border border-[var(--border)] rounded-2xl shadow-sm">
+                    <div className="city-card p-6 bg-white border border-[var(--border)]">
                         <p className="text-gray-800 leading-relaxed whitespace-pre-line">
                             {medicine.use_method}
                         </p>
@@ -230,7 +232,7 @@ export default async function MedicineDetailPage({
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-red-700">
                         <span>⚠️</span> 사용 전 반드시 알아야 할 내용
                     </h2>
-                    <div className="p-6 bg-red-50 border border-red-200 rounded-2xl shadow-sm">
+                    <div className="city-card p-6 bg-red-50 border border-red-200">
                         <p className="text-gray-800 leading-relaxed whitespace-pre-line">
                             {medicine.warning_general}
                         </p>
@@ -244,7 +246,7 @@ export default async function MedicineDetailPage({
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                         <span>🔍</span> 사용상 주의사항
                     </h2>
-                    <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-2xl shadow-sm">
+                    <div className="city-card p-6 bg-yellow-50 border border-yellow-200">
                         <p className="text-gray-800 leading-relaxed whitespace-pre-line">
                             {medicine.warning_usage}
                         </p>
@@ -258,7 +260,7 @@ export default async function MedicineDetailPage({
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                         <span>🍽️</span> 주의해야 할 약 또는 음식
                     </h2>
-                    <div className="p-6 bg-white border border-[var(--border)] rounded-2xl shadow-sm">
+                    <div className="city-card p-6 bg-white border border-[var(--border)]">
                         <p className="text-gray-800 leading-relaxed whitespace-pre-line">
                             {medicine.interactions}
                         </p>
@@ -272,7 +274,7 @@ export default async function MedicineDetailPage({
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                         <span>🩺</span> 이상반응 (부작용)
                     </h2>
-                    <div className="p-6 bg-white border border-[var(--border)] rounded-2xl shadow-sm">
+                    <div className="city-card p-6 bg-white border border-[var(--border)]">
                         <p className="text-gray-800 leading-relaxed whitespace-pre-line">
                             {medicine.side_effects}
                         </p>
@@ -286,7 +288,7 @@ export default async function MedicineDetailPage({
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                         <span>📦</span> 보관 방법
                     </h2>
-                    <div className="p-6 bg-white border border-[var(--border)] rounded-2xl shadow-sm">
+                    <div className="city-card p-6 bg-white border border-[var(--border)]">
                         <p className="text-gray-800 leading-relaxed whitespace-pre-line">
                             {medicine.storage_method}
                         </p>
@@ -295,7 +297,7 @@ export default async function MedicineDetailPage({
             )}
 
             {/* CTA Section */}
-            <section className="mt-12 p-8 bg-brand-50 rounded-2xl border border-brand-100 text-center">
+            <section className="city-card mt-12 p-8 bg-brand-50 border text-center">
                 <MapPin className="w-10 h-10 mx-auto mb-3 text-brand-600" />
                 <h3 className="text-lg font-bold mb-2 text-brand-900">
                     주변 약국에 취급 여부를 확인하세요

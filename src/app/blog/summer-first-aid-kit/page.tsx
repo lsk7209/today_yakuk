@@ -94,9 +94,10 @@ export default function BlogSummerFirstAidKit() {
     })),
   };
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">블로그 · 여름 상비약</p>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl font-bold leading-tight">여름 휴가철 응급 상비약 리스트</h1>
         <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -117,7 +118,7 @@ export default function BlogSummerFirstAidKit() {
 
       <AdSlotTop />
 
-      <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+      <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
         <h2 className="text-xl font-bold text-gray-900">여름 상비약이 꼭 필요한 이유</h2>
         <p className="text-[var(--muted)] leading-relaxed">
           여름 휴가지는 대형 마트나 약국과 거리가 먼 경우가 많아, 갑작스러운 증상에 대처할 시간이 절대적으로 부족합니다. 강한 자외선, 높은 기온, 낯선 음식 등 여름 특유의 환경 요인은 피부 트러블·소화불량·탈수 같은 증상을 평소보다 2~3배 빠르게 악화시킵니다. 특히 어린이나 고령자를 동반한 여행이라면 체온 조절 능력 차이로 인해 응급 상황 발생 빈도가 더 높아집니다. 출발 전 약국에서 상황별 상비약을 미리 갖춰 두면, 현지에서 의약품을 찾아 헤매는 시간 낭비와 불안감을 크게 줄일 수 있습니다.
@@ -142,7 +143,7 @@ export default function BlogSummerFirstAidKit() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
+      <section className="city-card border bg-emerald-50 p-6 space-y-3">
         <h2 className="text-xl font-semibold text-brand-800">빠른 체크리스트</h2>
         <ul className="list-disc list-inside space-y-1 text-emerald-900">
           {checklist.map((item) => (
@@ -156,19 +157,19 @@ export default function BlogSummerFirstAidKit() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">휴대용 키트 구성 팁</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">피부/벌레 대비</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               자외선 차단제(SPF 50+ PA+++ 이상)와 애프터선 진정 젤을 챙기면 일광 화상 후 피부 진정에 즉각적인 도움이 됩니다. 벌레 기피제는 DEET 또는 이카리딘 성분이 함유된 제품이 효과적이며, 4~6시간마다 재도포하는 습관이 중요합니다. 해파리나 독충에 물렸을 때를 대비해 항히스타민 성분의 경구제와 스테로이드 외용 연고를 함께 준비하면 가려움과 부기를 빠르게 제어할 수 있습니다. 어린이 동반 시에는 연령별 사용 가능 여부를 약사에게 미리 확인하고, 별도의 소아용 제품을 선택하는 것이 안전합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">소화·멀미 대비</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               여름철 고온 환경에서는 음식이 빠르게 상하므로 소화제와 지사제를 기본으로 구비하는 것이 필수입니다. 소화효소제는 기름진 음식이나 과식 후 30분 이내 복용할 때 효과가 가장 좋고, 위산 과다 증상에는 제산제를 별도로 준비하면 더욱 든든합니다. 멀미약은 출발 30~60분 전에 복용해야 효과가 나타나므로, 승선·승차 일정을 미리 파악해 두는 것이 중요합니다. 음주가 예상된다면 간 보호 기능의 보조 성분을 약사와 상담해 추가로 챙기면 다음 날 컨디션 유지에 도움이 됩니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">상처/멍 대비</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               소독 거즈와 다양한 크기의 밴드는 최소 10개 이상 챙기면 인원수가 많은 여행에서도 여유 있게 활용할 수 있습니다. 포비돈 요오드 소독제는 소용량 개별 포장 제품을 선택하면 오염 걱정 없이 현장에서 바로 쓸 수 있어 편리합니다. 타박상이나 멍에는 먼저 냉찜질 패드로 부기를 가라앉힌 뒤 24시간 이후부터 온찜질로 혈액 순환을 촉진하면 회복이 빠릅니다. 발목 삐임 같은 염좌가 생겼을 때를 대비해 탄력 붕대 1개를 추가하면 고정과 압박에 유용하게 쓸 수 있습니다.
@@ -180,7 +181,7 @@ export default function BlogSummerFirstAidKit() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
               <h3 className="text-base font-bold text-gray-900">해수욕장에서 해파리에 쏘였을 때</h3>
@@ -189,7 +190,7 @@ export default function BlogSummerFirstAidKit() {
               물 밖으로 나온 즉시 바닷물(민물은 독소를 활성화할 수 있어 금지)로 해당 부위를 부드럽게 헹군 뒤, 핀셋으로 남은 촉수를 제거하세요. 준비해 둔 스테로이드 외용 연고를 얇게 바르고 항히스타민 경구제를 복용하면 가려움과 부기가 빠르게 가라앉습니다. 호흡이 불편하거나 전신에 두드러기가 퍼진다면 즉시 119에 연락해 응급 처치를 받아야 합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
               <h3 className="text-base font-bold text-gray-900">계곡 트레킹 중 발목을 삐었을 때</h3>
@@ -198,7 +199,7 @@ export default function BlogSummerFirstAidKit() {
               부상 직후에는 체중을 싣지 않고 그늘진 곳에 앉아 냉찜질 패드를 15~20분간 올려두면 붓기를 억제할 수 있습니다. 탄력 붕대로 발목을 8자 형태로 감아 안정시킨 뒤, 이부프로펜 성분의 진통 소염제를 복용하면 통증과 염증을 동시에 줄이는 데 도움이 됩니다. 발목이 심하게 붓거나 체중 부하가 불가능할 정도로 아프다면 골절 가능성이 있으니 가까운 의료기관을 방문하는 것이 안전합니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
               <h3 className="text-base font-bold text-gray-900">야외 바비큐 후 복통·설사가 생겼을 때</h3>
@@ -216,7 +217,7 @@ export default function BlogSummerFirstAidKit() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="city-card border border-[var(--border)] bg-white p-4"
             >
               <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
               <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
@@ -225,7 +226,7 @@ export default function BlogSummerFirstAidKit() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
+      <section className="city-card border border-[var(--border)] bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">다음 단계</h2>
@@ -250,21 +251,21 @@ export default function BlogSummerFirstAidKit() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+      <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/guide/summer-emergency-kit" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/guide/summer-emergency-kit" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">여름 응급 키트 구성법</p>
             <p className="text-xs text-gray-500 mt-1">휴가철 응급 키트</p>
           </Link>
-          <Link href="/blog/skin-trouble-first-aid-kit" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/skin-trouble-first-aid-kit" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">피부 트러블 응급 처치 키트</p>
             <p className="text-xs text-gray-500 mt-1">피부 트러블 대비</p>
           </Link>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -275,7 +276,7 @@ export default function BlogSummerFirstAidKit() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

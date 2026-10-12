@@ -78,6 +78,7 @@ export default function Page() {
                 <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-600">
                     임산부 건강 가이드
                 </span>
+                <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
                 <h1 className="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl">
                     임신 중 아플 때, 무조건 참는 게 정답일까요?
                 </h1>
@@ -89,7 +90,7 @@ export default function Page() {
 
             <AdSlotTop />
 
-            <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+            <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">이 가이드가 필요한 순간</h2>
                 <p className="text-sm text-gray-700 leading-relaxed">
                     임신과 수유 기간에는 몸이 평소와 달리 반응하는 경우가 많아, 감기 한 번에도 어떤 약을 선택해야 할지 막막할 수 있습니다.
@@ -163,7 +164,7 @@ export default function Page() {
 
                 <hr />
 
-                <div className="bg-pink-50 p-5 rounded-xl border border-pink-100">
+                <div className="city-card bg-pink-50 p-5 border border-pink-100">
                     <h4 className="flex items-center text-pink-700 m-0 mb-2">
                         <span className="text-xl mr-2">👶</span>
                         행복한 출산을 응원합니다
@@ -178,7 +179,7 @@ export default function Page() {
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
                 <div className="space-y-3">
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
                             <h3 className="text-base font-bold text-gray-900">임신 8주차, 갑자기 38.5도 고열이 났을 때</h3>
@@ -187,7 +188,7 @@ export default function Page() {
                             임신 초기 고열은 태아 신경관 발달에 영향을 줄 수 있으므로 빠른 대처가 중요합니다. 약국을 방문해 &apos;임신 8주차&apos;임을 알리면 약사가 아세트아미노펜 단일 성분 제제를 권장하고 용량과 복용 간격을 안내해 줍니다. 38도 이상 열이 24시간 이상 지속되거나 복통·질 출혈이 동반되면 즉시 산부인과 응급 진료를 받으세요.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
                             <h3 className="text-base font-bold text-gray-900">모유 수유 중 유선염으로 항생제를 처방받았을 때</h3>
@@ -196,7 +197,7 @@ export default function Page() {
                             수유 중 유선염에는 아목시실린·클래블라네이트 계열 항생제가 흔히 처방되며 수유 적합성이 비교적 높습니다. 약을 타기 전 조제 약사에게 &apos;현재 수유 중&apos;임을 다시 한번 알려 성분을 재검토 받으세요. 한국 의약품안전나라나 미국 NIH LactMed 데이터베이스에서 수유 안전 등급을 직접 조회하는 것도 좋은 방법입니다.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
                             <h3 className="text-base font-bold text-gray-900">심야에 갑작스러운 심한 속쓰림과 구역이 올 때</h3>
@@ -212,7 +213,7 @@ export default function Page() {
                 <h2 className="text-xl font-bold text-gray-900">자주 묻는 질문</h2>
                 <div className="space-y-3">
                     {faqs.map((faq, i) => (
-                        <div key={i} className="rounded-2xl border border-gray-100 bg-gray-50 p-5 space-y-2">
+                        <div key={i} className="city-card border bg-gray-50 p-5 space-y-2">
                             <p className="text-sm font-bold text-gray-900">Q. {faq.q}</p>
                             <p className="text-sm text-gray-600 leading-relaxed">A. {faq.a}</p>
                         </div>
@@ -239,14 +240,14 @@ export default function Page() {
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+            <section className="city-card border bg-brand-50/40 p-6 space-y-3">
                 <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
                 <div className="grid gap-3 sm:grid-cols-2">
-                    <Link href="/blog/kids-fever-medicine-comparison" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/blog/kids-fever-medicine-comparison" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">소아 발열 약 비교 가이드</p>
                         <p className="text-xs text-gray-500 mt-1">아이 해열제 기준</p>
                     </Link>
-                    <Link href="/blog/pharmacy-visit-checklist-3" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/blog/pharmacy-visit-checklist-3" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 확인 3가지</p>
                         <p className="text-xs text-gray-500 mt-1">방문 전 체크리스트</p>
                     </Link>

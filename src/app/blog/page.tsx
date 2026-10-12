@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import { AdSlotInFeed } from "@/components/ads/AdSlot";
 import { safeJsonStringify } from "@/components/seo/json-ld";
 import { Suspense } from "react";
+import PageHeading from "@/components/city-signal/page-heading";
 
 const STATIC_POSTS = [
   // 약국 찾기
@@ -199,7 +200,7 @@ export default function BlogIndexPage({
   searchParams,
 }: BlogIndexPageProps) {
   return (
-    <div className="container py-10 sm:py-14 space-y-8 bg-white min-h-screen">
+    <div className="city-page city-blog-index space-y-8 min-h-screen">
       <BlogHeader />
       <StaticGuideSection />
       <AdSlotInFeed className="my-2" />
@@ -302,9 +303,9 @@ async function BlogIndexContent({
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-xl hover:border-brand-300 transition-all flex flex-col h-full overflow-hidden"
+                className="city-card group flex flex-col h-full overflow-hidden"
               >
-                <div className="relative w-full aspect-[16/9] bg-gradient-to-br from-emerald-50 via-white to-indigo-50">
+                <div className="relative w-full aspect-[16/9] bg-[var(--fog)] border-b-2 border-[var(--ink)]">
                   <Image
                     src={getBlogFeaturedImage(
                       post.slug,
@@ -371,17 +372,11 @@ async function BlogIndexContent({
 
 function BlogHeader() {
   return (
-    <header className="space-y-3">
-      <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">
-        블로그
-      </p>
-      <h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">
-        약국 이용 인사이트
-      </h1>
-      <p className="text-base text-gray-600 leading-relaxed">
+    <PageHeading index="HEALTH JOURNAL / PHARMACY" title="약국 이용 인사이트" art="metro">
+      <p>
         공휴일·야간에도 빠르게 문 연 약국을 찾기 위한 실전 팁과 영양제 선택 가이드를 공유합니다.
       </p>
-    </header>
+    </PageHeading>
   );
 }
 
@@ -399,7 +394,7 @@ function StaticGuideSection() {
           <Link
             key={post.slug}
             href={`/blog/${post.slug}`}
-            className="group rounded-2xl border border-gray-200 bg-white p-5 hover:border-brand-300 hover:shadow-sm transition-all flex flex-col gap-2"
+            className="city-card group p-5 flex flex-col gap-2"
           >
             <span className="inline-flex w-fit items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold text-brand-700">
               {post.tag}

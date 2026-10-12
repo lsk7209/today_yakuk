@@ -221,118 +221,125 @@ async function Content({
 
   return (
     <article
-      className="container mx-auto py-8 sm:py-12 px-4 sm:px-6 space-y-8 bg-white min-h-screen max-w-5xl"
+      className="city-template container mx-auto py-8 sm:py-12 px-4 sm:px-6 space-y-8 bg-[var(--white)] min-h-screen max-w-5xl"
       data-pharmacy-id={pharmacy.hpid}
       data-source-surface="pharmacy_detail"
       data-opening-status="client-evaluated"
     >
       <Breadcrumb items={breadcrumbItems} />
 
-      {/* 상단 헤더 (단일 컬럼 와이드 레이아웃 + 카테고리 맞춤 자체 SVG 일러스트) */}
-      <header className="rounded-3xl border border-emerald-100 bg-gradient-to-br from-white via-emerald-50/20 to-teal-50/30 p-6 sm:p-10 shadow-sm">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-          <div className="lg:col-span-8 space-y-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <PharmacyStatus hours={pharmacy.operating_hours} initialIso={initialIso} badge />
-              {report.briefing.highlights.map((badge) => (
-                <span
-                  key={badge}
-                  className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-200"
-                >
-                  {badge}
-                </span>
-              ))}
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight leading-tight">
-              {pharmacy.name}
-            </h1>
-
-            <div className="space-y-2.5 pt-1">
-              <div className="text-base text-gray-700 font-semibold flex items-center gap-2.5 bg-white/90 rounded-xl px-4 py-3 border border-gray-200 shadow-2xs">
-                <MapPin className="h-5 w-5 text-brand-600 flex-shrink-0" />
-                <span className="flex-1">
-                  <span className="text-gray-500 font-medium mr-1.5">도로명 주소</span>
-                  <span className="text-gray-900 font-bold">{pharmacy.address}</span>
-                </span>
-                <CopyButton text={pharmacy.address} label="주소 복사" />
-              </div>
-
-              {callablePhone && (
-                <div className="text-base text-gray-700 font-semibold flex items-center gap-2.5 bg-brand-50/70 rounded-xl px-4 py-3 border border-brand-200">
-                  <Phone className="h-5 w-5 text-brand-600 flex-shrink-0" />
-                  <span className="flex-1">
-                    <span className="text-gray-600 font-medium mr-1.5">대표 전화</span>
-                    <a
-                      href={`tel:${callablePhone}`}
-                      className="text-brand-700 font-black hover:text-brand-800 underline decoration-2"
-                    >
-                      {callablePhone}
-                    </a>
+      {/* 상단 헤더 (카테고리 맞춤 자체 SVG 일러스트와 방문 전 확인 안내) */}
+      <header className="city-pharmacy-heading">
+        <div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            <div className="lg:col-span-8 space-y-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <PharmacyStatus hours={pharmacy.operating_hours} initialIso={initialIso} badge />
+                {report.briefing.highlights.map((badge) => (
+                  <span
+                    key={badge}
+                    className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-200"
+                  >
+                    {badge}
                   </span>
-                  <CopyButton text={callablePhone} label="전화번호 복사" />
+                ))}
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight leading-tight">
+                {pharmacy.name}
+              </h1>
+
+              <div className="space-y-2.5 pt-1">
+                <div className="text-base text-gray-700 font-semibold flex items-center gap-2.5 bg-white/90 rounded-xl px-4 py-3 border border-gray-200 shadow-2xs">
+                  <MapPin className="h-5 w-5 text-brand-600 flex-shrink-0" />
+                  <span className="flex-1">
+                    <span className="text-gray-500 font-medium mr-1.5">도로명 주소</span>
+                    <span className="text-gray-900 font-bold">{pharmacy.address}</span>
+                  </span>
+                  <CopyButton text={pharmacy.address} label="주소 복사" />
                 </div>
-              )}
-            </div>
-          </div>
 
-          <div className="lg:col-span-4">
-            <PharmacyCategoryIllustration
-              category={report.visualCategory}
-              className="w-full h-36 sm:h-40 rounded-2xl shadow-xs"
-            />
-          </div>
-        </div>
-
-        {/* 상단 즉시 실행 바 */}
-        <div className="mt-6 pt-6 border-t border-emerald-100/80 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-          <div className="rounded-xl border border-gray-200 bg-white px-4 py-3 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-gray-500 flex items-center gap-1.5">
-                <Timer className="h-3.5 w-3.5 text-emerald-600" />
-                오늘 정규 운영시간
-              </p>
-              <div className="mt-0.5">
-                <PharmacyTodayHours hours={pharmacy.operating_hours} initialIso={initialIso} />
+                {callablePhone && (
+                  <div className="text-base text-gray-700 font-semibold flex items-center gap-2.5 bg-brand-50/70 rounded-xl px-4 py-3 border border-brand-200">
+                    <Phone className="h-5 w-5 text-brand-600 flex-shrink-0" />
+                    <span className="flex-1">
+                      <span className="text-gray-600 font-medium mr-1.5">대표 전화</span>
+                      <a
+                        href={`tel:${callablePhone}`}
+                        className="text-brand-700 font-black hover:text-brand-800 underline decoration-2"
+                      >
+                        {callablePhone}
+                      </a>
+                    </span>
+                    <CopyButton text={callablePhone} label="전화번호 복사" />
+                  </div>
+                )}
               </div>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-800 border border-emerald-200">
-              <Clock className="h-3.5 w-3.5" />
-              <PharmacyStatus hours={pharmacy.operating_hours} initialIso={initialIso} />
-            </span>
+
+            <div className="lg:col-span-4">
+              <PharmacyCategoryIllustration
+                category={report.visualCategory}
+                className="w-full h-36 sm:h-40 rounded-2xl shadow-xs"
+              />
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-start sm:justify-end gap-2.5">
-            {callablePhone ? (
-              <a
-                className="inline-flex items-center gap-2 rounded-full bg-brand-700 text-white px-5 py-2.5 text-sm font-black hover:bg-brand-800 transition-colors shadow-sm"
-                href={`tel:${callablePhone}`}
+          {/* 상단 즉시 실행 바 */}
+          <div className="mt-6 pt-6 border-t border-emerald-100/80 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+            <div className="rounded-xl border border-gray-200 bg-white px-4 py-3 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold text-gray-500 flex items-center gap-1.5">
+                  <Timer className="h-3.5 w-3.5 text-emerald-600" />
+                  오늘 정규 운영시간
+                </p>
+                <div className="mt-0.5">
+                  <PharmacyTodayHours hours={pharmacy.operating_hours} initialIso={initialIso} />
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-800 border border-emerald-200">
+                <Clock className="h-3.5 w-3.5" />
+                <PharmacyStatus hours={pharmacy.operating_hours} initialIso={initialIso} />
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-start sm:justify-end gap-2.5">
+              {callablePhone ? (
+                <a
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-700 text-white px-5 py-2.5 text-sm font-black hover:bg-brand-800 transition-colors shadow-sm"
+                  href={`tel:${callablePhone}`}
+                >
+                  <Phone className="h-4 w-4" />
+                  전화 문의
+                </a>
+              ) : null}
+              <Link
+                className="inline-flex items-center gap-1.5 rounded-full border-2 border-[#03C75A] bg-white px-4 py-2 text-sm font-black text-[#03C75A] hover:bg-[#03C75A]/10 transition-colors"
+                href={naverMapUrl}
+                target="_blank"
+                rel="noreferrer"
               >
-                <Phone className="h-4 w-4" />
-                전화 문의
-              </a>
-            ) : null}
-            <Link
-              className="inline-flex items-center gap-1.5 rounded-full border-2 border-[#03C75A] bg-white px-4 py-2 text-sm font-black text-[#03C75A] hover:bg-[#03C75A]/10 transition-colors"
-              href={naverMapUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <span className="font-extrabold">N</span>
-              네이버 길찾기
-              <ExternalLink className="h-3.5 w-3.5" />
-            </Link>
-            <Link
-              className="inline-flex items-center gap-1.5 rounded-full border-2 border-[#FAE100] bg-white px-4 py-2 text-sm font-black text-[#3C1E1E] hover:bg-[#FAE100]/20 transition-colors"
-              href={kakaoMapUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <span className="font-extrabold">K</span>
-              카카오맵
-            </Link>
+                <span className="font-extrabold">N</span>
+                네이버 길찾기
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+              <Link
+                className="inline-flex items-center gap-1.5 rounded-full border-2 border-[#FAE100] bg-white px-4 py-2 text-sm font-black text-[#3C1E1E] hover:bg-[#FAE100]/20 transition-colors"
+                href={kakaoMapUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="font-extrabold">K</span>
+                카카오맵
+              </Link>
+            </div>
           </div>
         </div>
+        <aside className="city-call-first">
+          <strong>CALL FIRST.</strong>
+          <h2 className="text-2xl font-bold mb-4">방문 전, 먼저 확인하세요.</h2>
+          <p>등록 시간표와 실제 현장 운영은 다를 수 있습니다. 영업 여부와 재고를 전화로 확인한 뒤 방문하세요.</p>
+        </aside>
       </header>
 
       {/* 섹션 1: 핵심 3줄 요약 브리핑 */}

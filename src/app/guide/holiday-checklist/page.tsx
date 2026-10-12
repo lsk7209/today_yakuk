@@ -109,9 +109,10 @@ export default function GuideHolidayChecklistPage() {
   };
 
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">가이드 · 공휴일</p>
+        <p className="city-eyebrow">FIELD GUIDE / PHARMACY</p>
         <h1 className="text-3xl font-bold leading-tight">공휴일 대비 약국 이용 체크리스트</h1>
         <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -130,7 +131,7 @@ export default function GuideHolidayChecklistPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
+      <section className="city-card border bg-emerald-50 p-6 space-y-3">
         <h2 className="text-xl font-semibold text-brand-800">빠른 체크리스트</h2>
         <ul className="list-disc list-inside space-y-1 text-emerald-900">
           {checklist.map((item) => (
@@ -145,7 +146,7 @@ export default function GuideHolidayChecklistPage() {
         {steps.map((step) => (
           <div
             key={step.title}
-            className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2"
+            className="city-card border border-[var(--border)] bg-white p-6 space-y-2"
           >
             <h2 className="text-xl font-semibold">{step.title}</h2>
             <p className="text-[var(--muted)] leading-relaxed">{step.detail}</p>
@@ -159,7 +160,7 @@ export default function GuideHolidayChecklistPage() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="city-card border border-[var(--border)] bg-white p-4"
             >
               <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
               <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
@@ -168,7 +169,7 @@ export default function GuideHolidayChecklistPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
+      <section className="city-card border border-[var(--border)] bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">다음 단계</h2>
@@ -193,14 +194,14 @@ export default function GuideHolidayChecklistPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+      <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 블로그</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/blog/holiday-pharmacy-open-check" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/holiday-pharmacy-open-check" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">공휴일에 약국이 열려 있나요? 빠른 확인 방법</p>
             <p className="text-xs text-gray-500 mt-1">e-약은요·콜센터·약사회 활용법 포함</p>
           </Link>
-          <Link href="/blog/pharmacy-visit-checklist-3" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/pharmacy-visit-checklist-3" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 확인 3가지</p>
             <p className="text-xs text-gray-500 mt-1">영업·재고·처방전 유효기간 점검</p>
           </Link>

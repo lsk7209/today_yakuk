@@ -26,7 +26,8 @@ export async function POST(request: NextRequest) {
     }
 
     const origin = request.headers.get("origin");
-    if (!isSameOrigin(origin, request.nextUrl.origin)) {
+    const expectedOrigin = getExpectedOrigin(request.nextUrl.origin);
+    if (!expectedOrigin || !isSameOrigin(origin, expectedOrigin)) {
       return NextResponse.json({ ok: false }, { status: 403 });
     }
 
@@ -60,6 +61,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ ok: false }, { status: 503 });
+  }
+}
+
+function getExpectedOrigin(fallbackOrigin: string): string | null {
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (configuredUrl === undefined) return fallbackOrigin;
+
+  try {
+    const url = new URL(configuredUrl.trim());
+    if (
+      !["http:", "https:"].includes(url.protocol) ||
+      url.username ||
+      url.password ||
+      url.pathname !== "/" ||
+      url.search ||
+      url.hash
+    ) return null;
+    return url.origin;
+  } catch {
+    return null;
   }
 }
 

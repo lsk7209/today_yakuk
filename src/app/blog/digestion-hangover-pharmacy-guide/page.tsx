@@ -66,6 +66,7 @@ export default function Page() {
                 <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-600">
                     증상별 맞춤 가이드
                 </span>
+                <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
                 <h1 className="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl">
                     체했을 때 vs 숙취가 심할 때, 약국에서 뭐 달라고 하지?
                 </h1>
@@ -77,7 +78,7 @@ export default function Page() {
 
             <AdSlotTop />
 
-            <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+            <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">이 가이드가 필요한 순간</h2>
                 <p className="text-gray-700 leading-relaxed">
                     소화불량과 숙취는 매우 흔한 증상이지만, 약국에서 올바른 약을 고르지 못하면 오히려 증상이 악화될 수 있습니다.
@@ -150,7 +151,7 @@ export default function Page() {
                     </li>
                 </ul>
 
-                <div className="bg-brand-50 p-5 rounded-xl border border-brand-100">
+                <div className="city-card bg-brand-50 p-5 border">
                     <h4 className="flex items-center text-brand-700 m-0 mb-2">
                         <span className="text-xl mr-2">💊</span>
                         약사님께 이렇게 말해보세요
@@ -166,7 +167,7 @@ export default function Page() {
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
                 <div className="space-y-3">
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
                             <h3 className="text-base font-bold text-gray-900">회식 다음 날 아침, 두통과 구역감이 동시에</h3>
@@ -176,7 +177,7 @@ export default function Page() {
                             이런 경우 특정 진통제나 생약 제제를 임의로 함께 복용하지 말고, 물을 조금씩 마시며 쉬세요. 두통·구토가 심하거나 의식 변화, 심한 복통, 탈수 징후가 있으면 의료기관에 연락하세요. 약국에 문의할 때는 음주량과 마지막 음주 시각, 복용 중인 약을 함께 알려야 합니다.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
                             <h3 className="text-base font-bold text-gray-900">뷔페 후 꽉 막힌 느낌, 속 쓰림과 가스가 동시에</h3>
@@ -187,7 +188,7 @@ export default function Page() {
                             &quot;과식 후 속 쓰리고 가스도 차요&quot;라고 구체적으로 말씀하시면 약사가 한 번에 적합한 제품을 바로 안내해 드립니다.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
                             <h3 className="text-base font-bold text-gray-900">술자리 전, 복용 중인 약이 있을 때</h3>
@@ -204,7 +205,7 @@ export default function Page() {
                 <h2 className="text-xl font-bold text-gray-900">자주 묻는 질문</h2>
                 <div className="space-y-3">
                     {faqs.map((faq, index) => (
-                        <div key={index} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                        <div key={index} className="city-card border bg-white p-5 space-y-2">
                             <p className="text-sm font-bold text-gray-900">Q. {faq.q}</p>
                             <p className="text-sm text-gray-600 leading-relaxed">A. {faq.a}</p>
                         </div>
@@ -212,7 +213,7 @@ export default function Page() {
                 </div>
             </section>
 
-            <aside className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-900">
+            <aside className="city-card border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-900">
                 약물 복용 중에는 음주를 피하라는 식품의약품안전처 안전정보와 각 제품 표시사항을 우선합니다. 술을 마셨다는 이유만으로 다른 진통제를 자동 대체하지 마세요.{" "}
                 <a
                     href="https://impfood.mfds.go.kr/CFBBB02F02/getCntntsDetail?cntntsSn=281429"
@@ -224,7 +225,7 @@ export default function Page() {
                 </a>
             </aside>
 
-            <section className="rounded-2xl border border-gray-200 p-6 sm:p-8 mt-10">
+            <section className="city-card border p-6 sm:p-8 mt-10">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 className="text-xl font-bold text-gray-900">지금 바로 약국에 가야 한다면?</h2>
@@ -246,21 +247,21 @@ export default function Page() {
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+            <section className="city-card border bg-brand-50/40 p-6 space-y-3">
                 <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
                 <div className="grid gap-3 sm:grid-cols-2">
-                    <Link href="/guide/call-scripts" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/guide/call-scripts" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">전화 스크립트: 재고 확인 템플릿</p>
                         <p className="text-xs text-gray-500 mt-1">전화로 재고 확인하기</p>
                     </Link>
-                    <Link href="/blog/summer-first-aid-kit" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/blog/summer-first-aid-kit" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">여름철 상비약 완전 정리</p>
                         <p className="text-xs text-gray-500 mt-1">여름 대비 상비약</p>
                     </Link>
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+            <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -271,7 +272,7 @@ export default function Page() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

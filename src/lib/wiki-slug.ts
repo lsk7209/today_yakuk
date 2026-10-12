@@ -43,6 +43,10 @@ export function buildWikiMedicineSlug(item: WikiSlugEntity): string {
   return `${slugifyWikiName(item.name)}-${item.id}`;
 }
 
+export function isCanonicalWikiSlug(routeId: string, expectedSlug: string): boolean {
+  return safeDecode(routeId).normalize("NFKC") === expectedSlug;
+}
+
 export function buildWikiProductPath(item: WikiSlugEntity): string {
   return `/wiki/product/${buildWikiProductSlug(item)}`;
 }

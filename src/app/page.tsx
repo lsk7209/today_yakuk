@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   LocateFixed,
@@ -191,14 +192,12 @@ export default function Home() {
 
   const regionGrid = useMemo(
     () => (
-      <div
-        className="grid grid-cols-2 sm:grid-cols-4 gap-3"
-      >
+      <div className="city-region-grid grid grid-cols-2 gap-2 sm:grid-cols-4">
         {provinces.map((name) => (
           <Link
             key={name}
             href={`/${encodeURIComponent(name)}/전체`}
-            className="rounded-2xl border border-gray-200 bg-white px-4 py-4 text-sm font-bold text-gray-900 text-center hover:border-brand-300 hover:shadow-md hover:bg-gray-50 transition-all"
+            className="city-region-link border-2 border-[var(--ink)] bg-[var(--paper)] px-4 py-4 text-center text-sm font-black text-[var(--ink)] transition-colors hover:bg-[var(--lime)]"
           >
             {name}
           </Link>
@@ -209,123 +208,75 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container py-10 sm:py-16">
+    <div className="city-home min-h-screen bg-[var(--paper)] text-[var(--ink)]">
+      <div className="container py-8 sm:py-12">
         <JsonLd id="home-faq-schema" data={homeFaqSchema} />
-        <div className="flex gap-8 items-start">
-          {/* Main content */}
+        <div className="city-home-layout">
           <div className="min-w-0 flex-1 space-y-12">
-        {/* Hero */}
-        <section className="rounded-[2.5rem] border border-gray-100 bg-gradient-to-br from-white via-white to-emerald-50/50 p-8 sm:p-14 premium-card overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-100/30 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-
-          <div className="space-y-6 relative z-10">
-            <h1 className="text-4xl sm:text-6xl font-black leading-tight tracking-tight text-slate-900 text-balance">
-              지금 우리 동네 <br />
-              <span className="text-brand-700 relative">
-                문 연 약국
-                <span className="absolute bottom-1 left-0 w-full h-3 bg-brand-100 -z-10" />
-              </span> 찾기
-            </h1>
-            <p className="text-lg sm:text-xl text-slate-600 max-w-2xl leading-relaxed">
-              등록된 영업시간을 기준으로 가까운 약국과 현재 운영 상태를 확인하세요. <br className="hidden sm:block" />
-              실제 운영과 재고는 달라질 수 있으니 방문 전 전화 확인을 권장합니다.
-            </p>
-          </div>
-
-          {/* Search */}
-          <form onSubmit={onSubmit} className="mt-10 relative z-10">
-            <div className="max-w-3xl rounded-3xl border border-gray-200 bg-white/80 backdrop-blur-md shadow-2xl p-2 focus-within:ring-4 focus-within:ring-brand-500/10 transition-all">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <div className="flex-1 flex items-center gap-3 px-4 py-3 sm:py-0">
-                  <Search className="h-6 w-6 text-brand-600" />
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="동 이름 또는 건물명으로 찾기"
-                    aria-label="동 이름 또는 건물명 검색"
-                    className="flex-1 bg-transparent outline-none text-lg font-bold text-slate-900 placeholder:text-slate-400"
-                  />
-                </div>
-                <div className="flex items-center gap-2 p-1">
-                  <button
-                    type="button"
-                    onClick={() => void fetchNearby()}
-                    className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-sm font-black transition-all transform active:scale-95 ${geoAvailable
-                      ? "bg-brand-light text-brand-700 hover:bg-brand-100 ring-1 ring-brand-200"
-                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      }`}
-                    disabled={!geoAvailable}
-                  >
-                    <LocateFixed className="h-4 w-4" />
-                    현재 위치로 찾기
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-700 text-white px-8 py-4 text-sm font-black hover:bg-brand-800 transition-all shadow-lg hover:shadow-brand-700/30 transform active:scale-95"
-                  >
-                    지역·약국명 검색
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </form>
-
-          {status === "idle" ? (
-            <div className="mt-4 flex flex-col gap-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-              <p>
-                현재 위치로 찾기를 누르면 위치 권한 창이 열립니다. 위치는 검색에만 사용하고 저장하지 않습니다.
+        <section className="city-home-hero" aria-labelledby="city-home-title">
+          <div className="city-home-copy flex flex-col justify-between gap-8 bg-[var(--paper)] p-6 sm:p-10 lg:p-12">
+            <div>
+              <p className="city-eyebrow mb-5 text-xs font-black tracking-[0.15em]">01 / FIND YOUR PHARMACY</p>
+              <h1 id="city-home-title" className="city-display break-keep text-[clamp(2.25rem,5vw,5rem)] font-black leading-[1.08] tracking-[-0.075em]">
+                우리 동네<br /><span className="whitespace-nowrap">약국이 필요한</span><br /><span className="text-[var(--coral-text)]">바로 지금.</span>
+              </h1>
+              <p className="mt-6 max-w-lg text-base leading-relaxed sm:text-lg">
+                지역명이나 약국명으로 찾고 등록된 영업시간과 연락처를 확인하세요. 실제 운영과 재고는 달라질 수 있으니 방문 전 전화 확인을 권장합니다.
               </p>
-              <button
-                type="button"
-                onClick={() => void fetchNearby()}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-black text-white transition-colors hover:bg-slate-700"
-                disabled={!geoAvailable}
-              >
-                <LocateFixed className="h-4 w-4" />
-                현재 위치로 바로 찾기
-              </button>
             </div>
-          ) : null}
+            <div>
+              <form onSubmit={onSubmit} className="city-home-search flex flex-col border-2 border-[var(--ink)] bg-white sm:flex-row" role="search">
+                <label htmlFor="city-home-query" className="sr-only">지역명 또는 약국명</label>
+                <div className="flex min-w-0 flex-1 items-center gap-3 px-4">
+                  <Search className="h-5 w-5 shrink-0" aria-hidden="true" />
+                  <input id="city-home-query" value={query} onChange={(e) => setQuery(e.target.value)}
+                    placeholder="지역 또는 약국명 검색" autoComplete="off"
+                    className="min-h-14 w-full min-w-0 bg-transparent text-base font-bold outline-none placeholder:text-[#69806e]" />
+                </div>
+                <button type="submit" className="city-button min-h-14 border-t-2 border-[var(--ink)] px-6 text-sm font-black sm:border-l-2 sm:border-t-0">
+                  검색하기 <ArrowRight className="ml-1 inline h-4 w-4" />
+                </button>
+              </form>
+              <div className="city-home-quick-links mt-4 flex flex-wrap gap-x-6 gap-y-3 text-sm font-black">
+                <button type="button" onClick={() => void fetchNearby()} disabled={!geoAvailable} className="inline-flex min-h-11 items-center gap-1 underline underline-offset-4 disabled:opacity-50"><LocateFixed className="h-4 w-4" /> 현재 위치로 찾기</button>
+                <Link href="/guide/night-weekend" className="underline underline-offset-4">야간·주말 안내 ↗</Link>
+                <Link href="/guide/holiday-checklist" className="underline underline-offset-4">공휴일 체크 ↗</Link>
+                <Link href="/nearby" className="underline underline-offset-4">내 주변 전체 보기 ↗</Link>
+              </div>
+              {status === "idle" ? <p className="mt-5 text-xs leading-relaxed text-[var(--muted)]">현재 위치 검색 시 위치 권한 창이 열립니다. 위치는 검색에만 사용하고 저장하지 않습니다.</p> : null}
+            </div>
+          </div>
+          <div className="city-home-art min-h-[320px]">
+            <span className="city-eyebrow text-xs font-black tracking-[0.12em]">CITY / PHARMACY WAYFINDING SYSTEM</span>
+            <Image loading="eager" src="/city-signal/metro-map.svg" alt="가상의 도시 노선도에서 약국 위치를 강조한 일러스트" width={640} height={500} className="mx-auto max-h-[430px] w-full object-contain" />
+            <div className="flex justify-between gap-2 border-t border-[var(--ink)] pt-3 text-[10px] font-black sm:text-xs"><span>● LOCATION</span><span>● HOURS</span><span>● CALL FIRST</span></div>
+          </div>
+        </section>
+        <div className="city-home-ticker -mt-12 flex justify-around gap-2 bg-[var(--ink)] px-4 py-4 text-[10px] font-black tracking-widest text-[var(--lime)] sm:text-xs">
+          <span>FIND THE PLACE</span><span>↗</span><span>CHECK THE HOURS</span><span>↗</span><span>CALL BEFORE YOU GO</span>
+        </div>
 
-          {/* Filters */}
-          <div className="mt-6 flex flex-wrap gap-2">
-            <button className="h-10 rounded-full bg-brand-700 text-white px-5 text-sm font-black shadow-sm">
-              약국
-            </button>
-            <Link
-              href="/guide/night-weekend"
-              className="h-10 inline-flex items-center rounded-full bg-gray-100 px-5 text-sm font-bold text-gray-800 hover:bg-gray-200 transition-colors"
-            >
-              24시간 운영(가이드)
-            </Link>
-            <Link
-              href="/guide/holiday-checklist"
-              className="h-10 inline-flex items-center rounded-full bg-gray-100 px-5 text-sm font-bold text-gray-800 hover:bg-gray-200 transition-colors"
-            >
-              공휴일 체크
-            </Link>
-            <Link
-              href="/nearby"
-              className="h-10 inline-flex items-center rounded-full bg-gray-100 px-5 text-sm font-bold text-gray-800 hover:bg-gray-200 transition-colors"
-            >
-              내 주변 전체 보기
-            </Link>
+        <section className="city-home-steps" aria-labelledby="city-steps-title">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3"><div><p className="city-eyebrow text-xs font-black tracking-widest">WAYFINDING / HOW IT WORKS</p><h2 id="city-steps-title" className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">찾는 방법도, <span className="text-[var(--coral-text)]">명확하게.</span></h2></div><span className="text-xs font-black tracking-widest">3 STEPS / ZERO GUESSWORK</span></div>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <Link href="/서울/전체" className="city-step flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--fog)] p-5 hover:bg-[var(--lime)]"><span className="text-xs font-black tracking-widest">01 / LOCATION</span><strong className="text-2xl leading-tight">어디서<br />찾으세요?</strong><span className="border-t border-[var(--ink)] pt-2 text-xs font-black">지역별 목록 ↗</span></Link>
+            <Link href="/nearby" className="city-step flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--lime)] p-5 hover:bg-[var(--lime)]"><span className="text-xs font-black tracking-widest">02 / HOURS</span><strong className="text-2xl leading-tight">언제<br />필요하세요?</strong><span className="border-t border-[var(--ink)] pt-2 text-xs font-black">현재 위치·등록 시간표 ↗</span></Link>
+            <Link href="/guide/holiday-checklist" className="city-step city-step-dark flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--ink)] p-5 text-[var(--paper)] hover:bg-[var(--ink)]"><span className="text-xs font-black tracking-widest">03 / CONFIRM</span><strong className="text-2xl leading-tight">가기 전에<br />전화부터.</strong><span className="border-t border-[var(--paper)] pt-2 text-xs font-black">영업·재고 직접 확인 ↗</span></Link>
           </div>
         </section>
 
         {/* List header */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-lg font-black text-gray-900">내 주변 추천 약국</h2>
+        <section className="city-home-results space-y-4">
+          <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-[var(--ink)] pb-4">
+            <div><p className="city-eyebrow text-xs font-black tracking-widest">02 / SEARCH RESULTS</p><h2 className="mt-2 text-3xl font-black tracking-tight">검색한 약국 <span className="text-[var(--coral-text)]">↗</span></h2></div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setSortMode("distance")}
-                className={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-bold border ${sortMode === "distance"
-                  ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                  : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                aria-pressed={sortMode === "distance"}
+                className={`city-pill inline-flex min-h-11 items-center gap-1 border border-[var(--ink)] px-4 py-2 text-sm font-bold ${sortMode === "distance"
+                  ? "bg-[var(--lime)]"
+                  : "bg-transparent hover:bg-[var(--fog)]"
                   }`}
               >
                 <SlidersHorizontal className="h-4 w-4" />
@@ -334,9 +285,10 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setSortMode("closing")}
-                className={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-bold border ${sortMode === "closing"
-                  ? "border-amber-200 bg-amber-50 text-amber-800"
-                  : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                aria-pressed={sortMode === "closing"}
+                className={`city-pill inline-flex min-h-11 items-center gap-1 border border-[var(--ink)] px-4 py-2 text-sm font-bold ${sortMode === "closing"
+                  ? "bg-[var(--lime)]"
+                  : "bg-transparent hover:bg-[var(--fog)]"
                   }`}
               >
                 <Navigation className="h-4 w-4" />
@@ -352,7 +304,7 @@ export default function Home() {
               {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm animate-pulse"
+                  className="city-panel border border-[var(--ink)] bg-white p-4 animate-pulse"
                 >
                   <div className="h-4 w-1/3 bg-slate-200 rounded" />
                   <div className="h-4 w-2/3 bg-slate-100 rounded mt-3" />
@@ -362,13 +314,13 @@ export default function Home() {
           ) : null}
 
           {message ? (
-            <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-800">
+            <div role="status" className="city-panel border-l-4 border-[var(--coral)] bg-[var(--fog)] p-4 text-sm font-bold">
               {message}
             </div>
           ) : null}
 
           {status === "success" && sorted.length === 0 ? (
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-3">
+            <div className="city-panel border-2 border-[var(--ink)] bg-white p-6 space-y-3">
               <p className="text-sm text-gray-600">
                 아직 추천 목록이 비어있습니다. 위치를 설정하거나 지역별로 찾아보세요.
               </p>
@@ -376,7 +328,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => void fetchNearby()}
-                  className="inline-flex items-center justify-center rounded-full bg-brand-700 text-white px-5 py-2 text-sm font-black hover:bg-brand-800"
+                  className="city-button inline-flex items-center justify-center border-2 border-[var(--ink)] bg-[var(--lime)] px-5 py-2 text-sm font-black hover:bg-[var(--lime)]"
                   disabled={!geoAvailable}
                 >
                   <LocateFixed className="h-4 w-4 mr-2" />
@@ -384,7 +336,7 @@ export default function Home() {
                 </button>
                 <Link
                   href="/서울/전체"
-                  className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-5 py-2 text-sm font-bold text-gray-800 hover:bg-gray-50"
+                  className="city-button city-button-secondary inline-flex items-center justify-center px-5 py-2 text-sm font-bold"
                 >
                   서울에서 찾기
                 </Link>
@@ -393,14 +345,14 @@ export default function Home() {
           ) : null}
 
           {sorted.length > 0 ? (
-            <div className="space-y-3">
+            <div className="city-directory-list border-t-2 border-[var(--ink)]">
               {sorted.slice(0, 8).map((p, index) => {
                 const s = getOperatingStatusAt(p.operating_hours, new Date(time ?? Number.NaN));
                 const callablePhone = hasValidPhone(p.tel) ? p.tel : null;
                 return (
                   <div
                     key={p.hpid}
-                    className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm hover:border-brand-200 hover:shadow-md transition-all"
+                    className="city-directory-item border-b border-[#9baa9d] bg-[var(--paper)] px-1 py-6 transition-colors hover:bg-[var(--fog)]"
                     data-pharmacy-id={p.hpid}
                     data-source-surface="home_results"
                     data-opening-status={s.label}
@@ -410,40 +362,40 @@ export default function Home() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-black ring-1 ring-inset ${s.label === "영업 중"
-                              ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                            className={`city-status inline-flex items-center border px-2 py-1 text-xs font-black ${s.label === "영업 중"
+                              ? "border-[#7bba92] bg-[#e1fae9] text-[#155c3c]"
                               : s.label === "곧 종료"
-                                ? "bg-amber-50 text-amber-800 ring-amber-200"
-                                : "bg-slate-100 text-slate-700 ring-slate-200"
+                                ? "border-[#deb078] bg-[#fff0dc] text-[#6b4819]"
+                                : "border-[#a9a39a] bg-[#f3eddf] text-[#685d4b]"
                               }`}
                           >
                             {s.label} · 시간표 기준
                           </span>
                           <Link
                             href={`/pharmacy/${p.hpid}`}
-                            className="text-base sm:text-lg font-black text-gray-900 truncate hover:text-brand-700"
+                            className="truncate text-lg font-black text-[var(--ink)] hover:underline sm:text-2xl"
                           >
                             {p.name}
                           </Link>
                         </div>
-                        <p className="mt-1 text-sm text-gray-600 truncate flex items-center gap-1">
+                        <p className="mt-2 flex items-center gap-1 truncate text-sm text-[var(--muted)]">
                           <MapPin className="h-4 w-4 text-gray-400" />
                           {p.address}
                         </p>
                       </div>
                       <div className="flex flex-col items-end shrink-0">
-                        <p className="text-sm font-black text-gray-900">
+                        <p className="text-sm font-black text-[var(--ink)]">
                           {typeof p.distanceKm === "number"
                             ? `${Math.round(p.distanceKm * 1000)}m`
                             : "—"}
                         </p>
                       </div>
                     </div>
-                    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3">
+                    <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#9baa9d] pt-3">
                       {callablePhone ? (
                         <a
                           href={`tel:${callablePhone}`}
-                          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-700 px-5 py-2 text-sm font-black text-white hover:bg-brand-800"
+                          className="city-button inline-flex min-h-11 items-center justify-center gap-2 border-2 border-[var(--ink)] bg-[var(--lime)] px-5 py-2 text-sm font-black hover:bg-[var(--lime)]"
                           aria-label={`${p.name}에 전화하기`}
                         >
                           <Phone className="h-4 w-4" />
@@ -452,7 +404,7 @@ export default function Home() {
                       ) : null}
                       <Link
                         href={`/pharmacy/${p.hpid}`}
-                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2 text-sm font-black text-gray-800 hover:border-brand-300"
+                        className="city-button city-button-secondary inline-flex min-h-11 items-center justify-center gap-2 px-5 py-2 text-sm font-black"
                       >
                         상세·길찾기
                         <ArrowRight className="h-4 w-4" />
@@ -468,15 +420,15 @@ export default function Home() {
           ) : null}
 
           {/* 지역별 바로가기(권한 거부 대비) */}
-          <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+          <section className="city-home-regions space-y-4 border-2 border-[var(--ink)] bg-[var(--fog)] p-6 sm:p-8">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h3 className="text-lg font-black text-gray-900">지역별 바로 찾기</h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <h3 className="text-2xl font-black text-[var(--ink)]">지역별 바로 찾기</h3>
+                <p className="mt-1 text-sm text-[var(--muted)]">
                   위치 권한을 거부해도 지역별 목록으로 바로 이동할 수 있습니다.
                 </p>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-bold text-gray-700">
+              <div className="inline-flex items-center gap-2 border border-[var(--ink)] bg-[var(--lime)] px-4 py-2 text-sm font-bold">
                 <LocateFixed className="h-4 w-4 text-brand-700" />
                 반경 {radiusKm}km 기준 추천
               </div>
@@ -497,7 +449,7 @@ export default function Home() {
       {/* FAB */}
       <Link
         href="/nearby"
-        className="fixed bottom-7 right-5 sm:right-8 z-40 inline-flex items-center gap-2 rounded-full bg-gray-900 text-white px-5 py-3 shadow-2xl hover:shadow-3xl hover:bg-black transition-colors"
+        className="city-home-fab fixed bottom-7 right-8 z-40 hidden items-center gap-2 border-2 border-[var(--ink)] bg-[var(--lime)] px-5 py-3 text-sm font-black text-[var(--ink)] shadow-[5px_5px_0_var(--ink)] transition-colors hover:bg-[var(--lime)] lg:inline-flex"
       >
         <MapIcon className="h-5 w-5" />
         내 주변 약국 찾기

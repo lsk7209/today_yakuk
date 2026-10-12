@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import "../guide/editorial-city.css";
+import EditorialToc from "../guide/EditorialToc";
 
 const wikiSources = [
   {
@@ -20,10 +22,11 @@ const wikiSources = [
 
 export default function WikiLayout({ children }: { children: ReactNode }) {
   return (
-    <>
+    <div className="city-editorial city-editorial-wiki">
+      <EditorialToc section="wiki" />
       {children}
       <aside
-        className="container mb-12 mt-8 max-w-5xl rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
+        className="city-source container mb-12 mt-8 p-5"
         aria-labelledby="wiki-authority-sources"
       >
         <h2 id="wiki-authority-sources" className="text-base font-bold text-gray-900">
@@ -45,6 +48,6 @@ export default function WikiLayout({ children }: { children: ReactNode }) {
           ))}
         </ul>
       </aside>
-    </>
+    </div>
   );
 }

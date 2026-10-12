@@ -94,7 +94,7 @@ export function trackAnalyticsEvent(
   eventName: AnalyticsEventName,
   params: Record<string, AnalyticsParam | null | undefined>,
 ) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || process.env.NEXT_PUBLIC_MIGRATION_STAGING === "1") return;
   const payload = buildAnalyticsPayload(eventName, params);
 
   if (typeof window.gtag === "function") {

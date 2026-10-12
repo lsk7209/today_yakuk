@@ -1,0 +1,18 @@
+{
+    servers {
+        strict_sni_host on
+    }
+}
+# Attach the TLS ingress container to the todaypharm_runtime Docker network.
+# Resolve the dedicated service alias on that network.
+todaypharm.kr {
+    reverse_proxy todaypharm-web:3000 {
+        header_up X-Vercel-Forwarded-For {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Real-IP {remote_host}
+    }
+}
+
+www.todaypharm.kr {
+    redir https://todaypharm.kr{uri} permanent
+}

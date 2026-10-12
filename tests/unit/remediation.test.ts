@@ -643,6 +643,42 @@ async function main() {
     process.env.TURSO_DATABASE_URL = previousUrl;
   });
 
+  await run("analytics uses the configured public origin behind a proxy", async () => {
+    const { POST: postAnalytics } = await import("@/app/api/analytics/route");
+    const previousSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    const request = (origin: string, extraHeaders: Record<string, string> = {}) =>
+      new NextRequest("http://localhost:3000/api/analytics", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          origin,
+          ...extraHeaders,
+        },
+        body: JSON.stringify({ page: "/nearby", referrer: null }),
+      });
+
+    try {
+      process.env.NEXT_PUBLIC_SITE_URL = "https://todaypharm.kr";
+      assert.equal((await postAnalytics(request("https://todaypharm.kr"))).status, 200);
+      assert.equal((await postAnalytics(request("http://localhost:3000"))).status, 403);
+      assert.equal((await postAnalytics(request("not-a-url"))).status, 403);
+      assert.equal((await postAnalytics(request("https://todaypharm.kr.attacker.example"))).status, 403);
+      assert.equal((await postAnalytics(request("https://attacker.example", {
+        host: "attacker.example",
+        "x-forwarded-host": "attacker.example",
+        "x-forwarded-proto": "https",
+      }))).status, 403);
+
+      for (const invalidSiteUrl of ["", "not-a-url", "ftp://todaypharm.kr", "https://todaypharm.kr/path"]) {
+        process.env.NEXT_PUBLIC_SITE_URL = invalidSiteUrl;
+        assert.equal((await postAnalytics(request("http://localhost:3000"))).status, 403, invalidSiteUrl);
+      }
+    } finally {
+      if (previousSiteUrl === undefined) delete process.env.NEXT_PUBLIC_SITE_URL;
+      else process.env.NEXT_PUBLIC_SITE_URL = previousSiteUrl;
+    }
+  });
+
   await db.execute(`CREATE TABLE supplements (
     product_report_no TEXT PRIMARY KEY,
     name TEXT,
@@ -1401,6 +1437,7 @@ async function main() {
         if (id === "react") return { useEffect, useMemo, useRef, useState };
         if (id === "react/jsx-runtime") return jsxRuntime;
         if (id === "next/link") return { __esModule: true, default: "a" };
+        if (id === "next/image") return { __esModule: true, default: "img" };
         if (id === "lucide-react") return { LocateFixed: () => null, MapPin: () => null, ShieldCheck: () => null };
         if (id === "@/lib/seo") return { buildArticleJsonLd };
         if (id === "@/lib/hours") return { getOperatingStatus, getOperatingStatusAt: getOperatingStatus };

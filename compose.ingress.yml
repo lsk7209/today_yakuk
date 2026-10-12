@@ -1,0 +1,35 @@
+services:
+  ingress:
+    image: caddy:2@sha256:f2a1290d0463aad60660d4ec134943f183ee2a5f6c3eb7bf32dd984f2f020772
+    # Apply this file only after the recorded public-readiness gate passes.
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+    volumes:
+      - ./todaypharm.Caddyfile.example:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - runtime
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+networks:
+  runtime:
+    external: true
+    name: todaypharm_runtime
+volumes:
+  caddy_data:
+  caddy_config:

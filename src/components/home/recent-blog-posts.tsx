@@ -24,11 +24,11 @@ export default function RecentBlogPosts() {
   if (posts.length === 0) return null;
 
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+    <section className="city-trust-section rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8  space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-black tracking-[0.18em] text-brand-700">LATEST</p>
-          <h2 className="text-xl font-black text-gray-900 mt-1">최근 건강 정보 글</h2>
+          <h2 className="text-xl font-black text-[var(--ink)] mt-1">최근 건강 정보 글</h2>
         </div>
         <Link
           href="/blog"
@@ -42,13 +42,13 @@ export default function RecentBlogPosts() {
           <Link
             key={post.slug}
             href={`/blog/${post.slug}`}
-            className="group rounded-2xl border border-gray-100 bg-gray-50 p-4 hover:border-brand-200 hover:bg-brand-50/30 transition-all"
+            className="group rounded-none border border-[var(--border)] bg-[var(--fog)] p-4 hover:border-brand-200 hover:bg-brand-50/30 transition-all"
           >
-            <h3 className="text-sm font-bold text-gray-900 group-hover:text-brand-700 line-clamp-2 leading-snug">
+            <h3 className="text-sm font-bold text-[var(--ink)] group-hover:text-brand-700 line-clamp-2 leading-snug">
               {post.title}
             </h3>
             {post.ai_summary && (
-              <p className="mt-1.5 text-xs text-gray-500 line-clamp-2 leading-relaxed">
+              <p className="mt-1.5 text-xs text-[var(--muted)] line-clamp-2 leading-relaxed">
                 {post.ai_summary}
               </p>
             )}

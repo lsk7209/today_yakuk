@@ -107,6 +107,7 @@ export default function Page() {
                 <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-600">
                     영양제 선택 가이드
                 </span>
+                <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
                 <h1 className="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl">
                     마그네슘 부족 신호 6가지와 영양제 선택법: 산화마그네슘 vs 글리시네이트
                 </h1>
@@ -117,7 +118,7 @@ export default function Page() {
 
             <AdSlotTop />
 
-            <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+            <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">마그네슘 결핍이 흔한 이유</h2>
                 <p className="text-sm text-gray-700 leading-relaxed">
                     마그네슘은 체내 300가지 이상의 효소 반응에 관여하는 필수 미네랄이지만, 현대인의
@@ -250,7 +251,7 @@ export default function Page() {
 
                 <hr />
 
-                <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
+                <div className="city-card bg-blue-50 p-5 border">
                     <h4 className="text-blue-700 m-0 mb-2">뼈·근육 건강 제품 정보</h4>
                     <p className="m-0 text-gray-700">
                         마그네슘 외 뼈·근육 건강 관련 영양제 비교 정보는{" "}
@@ -271,7 +272,7 @@ export default function Page() {
                     {faqs.map((faq, i) => (
                         <div
                             key={i}
-                            className="rounded-2xl border border-gray-100 bg-gray-50 p-5 space-y-2"
+                            className="city-card border bg-gray-50 p-5 space-y-2"
                         >
                             <p className="text-sm font-bold text-gray-900">Q. {faq.q}</p>
                             <p className="text-sm text-gray-600 leading-relaxed">A. {faq.a}</p>
@@ -299,7 +300,7 @@ export default function Page() {
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+            <section className="city-card border bg-gray-50 p-6 space-y-4">
                 <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
                 <div className="grid sm:grid-cols-2 gap-3">
                     {[
@@ -310,7 +311,7 @@ export default function Page() {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+                            className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
                         >
                             <p className="font-bold text-gray-900 text-sm">{item.label}</p>
                             <p className="text-xs text-gray-500">{item.desc}</p>

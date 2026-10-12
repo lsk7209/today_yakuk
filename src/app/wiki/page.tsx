@@ -3,9 +3,11 @@ import Link from "next/link";
 import { unstable_cache } from "next/cache";
 import { getTursoClient, parseJson } from "@/lib/turso";
 import { Filter } from "lucide-react";
+import PageHeading from "@/components/city-signal/page-heading";
 import Image from "next/image";
 import WikiSearch from "@/components/wiki/WikiSearch";
-import { buildWikiProductPath } from "@/lib/wiki-slug";
+import { buildWikiMedicinePath, buildWikiProductPath } from "@/lib/wiki-slug";
+import { buildWikiPagePath, getWikiCatalogType, getWikiPageNumber, type WikiCatalogType } from "@/lib/wiki-catalog";
 import { safeJsonStringify } from "@/components/seo/json-ld";
 import { notFound } from "next/navigation";
 import { CATEGORIES, buildCategoryFilter } from "@/lib/wiki-category";
@@ -27,6 +29,15 @@ const getCachedTotalCount = unstable_cache(
   { revalidate: 3600 }
 );
 
+const getCachedMedicineCount = unstable_cache(
+  async () => {
+    const result = await getTursoClient().execute("SELECT COUNT(*) as cnt FROM medicines");
+    return Number(result.rows[0]?.cnt ?? 0);
+  },
+  ["medicines-total-count"],
+  { revalidate: 3600 }
+);
+
 interface Supplement {
     id: string;
     name: string;
@@ -38,33 +49,37 @@ interface Supplement {
 const ITEMS_PER_PAGE = 12;
 
 interface WikiHomePageProps {
-    searchParams: Promise<{ category?: string; page?: string }>;
+    searchParams: Promise<{ category?: string; page?: string; type?: string }>;
 }
 
 export async function generateMetadata({ searchParams }: WikiHomePageProps): Promise<Metadata> {
-    const { category, page } = await searchParams;
-    const isFilteredState = Boolean(category || page);
+    const { category, page, type } = await searchParams;
+    const isMedicine = type === "medicine";
+    const isFilteredState = Boolean(category || page || isMedicine);
     return {
-        title: "영양제 정보",
-        description: WIKI_DESCRIPTION,
-        alternates: { canonical: "/wiki" },
+        title: isMedicine ? "의약품 정보" : "영양제 정보",
+        description: isMedicine ? "의약품안전나라 공개 허가정보를 바탕으로 의약품 이름과 제조사를 검색해 확인하세요." : WIKI_DESCRIPTION,
+        alternates: { canonical: isMedicine ? "/wiki?type=medicine" : "/wiki" },
         robots: isFilteredState
             ? { index: false, follow: true }
             : { index: true, follow: true },
         openGraph: {
-            title: "영양제 정보",
-            description: "건강기능식품 성분, 기능성 원료, 첨가물과 제품 공개 정보를 검색해 확인하세요.",
+            title: isMedicine ? "의약품 정보" : "영양제 정보",
+            description: isMedicine ? "공개 허가정보 기반 의약품 목록을 확인하세요." : "건강기능식품 성분, 기능성 원료, 첨가물과 제품 공개 정보를 검색해 확인하세요.",
             type: "website",
         },
     };
 }
 
 export default async function WikiHomePage({ searchParams }: WikiHomePageProps) {
-    const { category, page: pageParam } = await searchParams;
+    const { category, page: pageParam, type: typeParam } = await searchParams;
+    const type = getWikiCatalogType(typeParam);
+    if (!type || (type === "medicine" && category)) notFound();
     const filter = buildCategoryFilter(category);
-    if (!filter.isAll && !CATEGORIES.some(({ slug }) => slug === filter.slug)) notFound();
+    if (type === "supplement" && !filter.isAll && !CATEGORIES.some(({ slug }) => slug === filter.slug)) notFound();
     const currentCategory = filter.slug;
     const page = getWikiPageNumber(pageParam);
+    if (!page) notFound();
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
     const db = getTursoClient();
@@ -72,7 +87,17 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
     let filteredCount: number;
     let productsRows: Record<string, unknown>[];
 
-    if (filter.isAll) {
+    if (type === "medicine") {
+        const [countResult, dataResult] = await Promise.all([
+            getCachedMedicineCount(),
+            db.execute({
+                sql: "SELECT id, name, manufacturer, image_url FROM medicines ORDER BY name, id LIMIT ? OFFSET ?",
+                args: [ITEMS_PER_PAGE, offset],
+            }),
+        ]);
+        filteredCount = countResult;
+        productsRows = dataResult.rows as Record<string, unknown>[];
+    } else if (filter.isAll) {
         const [countResult, dataResult] = await Promise.all([
             getCachedTotalCount(),
             db.execute(
@@ -101,7 +126,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
         name: r.name as string,
         manufacturer: r.manufacturer as string | null,
         image_url: r.image_url as string | null,
-        tags: parseJson(r.tags, null) as string[] | null,
+        tags: type === "medicine" ? null : parseJson(r.tags, null) as string[] | null,
     }));
 
     const count = filteredCount ?? 0;
@@ -124,22 +149,19 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
   };
 
     return (
-        <div className="container py-8 sm:py-12 max-w-6xl space-y-10">
+        <div className="city-page city-wiki-index space-y-10">
             {/* Hero Section */}
-            <div className="premium-card bg-gradient-to-br from-brand-600 to-brand-800 p-10 sm:p-16 rounded-[3rem] text-center text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full translate-x-1/3 -translate-y-1/3 blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-400/20 rounded-full -translate-x-1/4 translate-y-1/4 blur-2xl" />
-
-                <div className="relative z-10 space-y-4">
-                    <h1 className="text-4xl sm:text-6xl font-black tracking-tight mb-4">영양제 위키</h1>
-                    <p className="text-brand-50 text-lg sm:text-xl font-medium max-w-2xl mx-auto opacity-90 leading-relaxed">
-                        식약처 공공데이터 기반 <span className="text-white font-bold underline decoration-brand-300 underline-offset-4">성분·제품 정보</span>를 읽기 쉽게 확인하세요.
-                    </p>
-                </div>
-            </div>
+            <PageHeading index="DATA WIKI / READ THE LABEL" title={type === "medicine" ? "의약품 정보" : "영양제 위키"} art="wiki">
+                {type === "medicine" ? "의약품안전나라 공개 허가정보 기반 의약품을 이름과 제조사로 찾아보세요." : "식약처 공공데이터 기반 성분·제품 정보를 읽기 쉽게 확인하세요."}
+            </PageHeading>
 
             {/* Category Navigation & Search */}
-            <div className="sticky top-20 z-30 space-y-4 bg-[var(--background)]/80 backdrop-blur-md py-4">
+            <div className="city-panel space-y-4">
+                <nav aria-label="정보 종류" className="flex gap-2">
+                    <Link href="/wiki" aria-current={type === "supplement" ? "page" : undefined} className={`city-pill font-bold ${type === "supplement" ? "bg-[var(--lime)] text-[var(--ink)]" : "bg-[var(--white)] text-[var(--ink)]"}`}>영양제</Link>
+                    <Link href="/wiki?type=medicine" aria-current={type === "medicine" ? "page" : undefined} className={`city-pill font-bold ${type === "medicine" ? "bg-[var(--lime)] text-[var(--ink)]" : "bg-[var(--white)] text-[var(--ink)]"}`}>의약품</Link>
+                </nav>
+                {type === "supplement" && (
                 <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-2">
                     {CATEGORIES.map((cat) => {
                         const isActive = currentCategory === cat.slug;
@@ -147,9 +169,9 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                             <Link
                                 key={cat.slug}
                                 href={cat.slug === "all" ? "/wiki" : `/wiki?category=${cat.slug}`}
-                                className={`flex items-center gap-2 px-6 py-3 rounded-2xl whitespace-nowrap font-black text-sm transition-all shadow-sm ring-1 ${isActive
-                                    ? "bg-brand-600 text-white ring-brand-600 scale-105"
-                                    : "bg-white text-slate-500 ring-slate-100 hover:bg-slate-50 hover:text-slate-900"
+                                className={`city-pill flex items-center gap-2 whitespace-nowrap font-black text-sm ${isActive
+                                    ? "bg-[var(--lime)] text-[var(--ink)]"
+                                    : "bg-[var(--white)] text-[var(--ink)]"
                                     }`}
                             >
                                 <span className="text-lg">{cat.emoji}</span>
@@ -158,8 +180,9 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                         );
                     })}
                 </div>
+                )}
 
-                <WikiSearch currentCategory={currentCategory} />
+                <WikiSearch key={type} currentCategory={currentCategory} type={type} />
             </div>
 
             {/* Product Grid */}
@@ -168,24 +191,24 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                     <div className="flex items-center gap-2">
                         <Filter className="w-5 h-5 text-brand-600" />
                         <h2 className="text-2xl font-black text-slate-900 capitalize">
-                            {currentCategory === "all" ? "전체 목록" : CATEGORIES.find(c => c.slug === currentCategory)?.name}
+                            {type === "medicine" ? "의약품 전체 목록" : currentCategory === "all" ? "전체 목록" : CATEGORIES.find(c => c.slug === currentCategory)?.name}
                         </h2>
                         <span className="text-sm text-slate-400 font-bold ml-2">({count || 0}개)</span>
                     </div>
                 </div>
 
                 {!products || products.length === 0 ? (
-                    <div className="premium-card bg-white py-32 rounded-[2.5rem] border border-dashed border-slate-200 text-center">
+                    <div className="city-panel py-20 text-center">
                         <div className="text-6xl mb-6">🔍</div>
-                        <p className="text-xl text-slate-400 font-black italic">해당 카테고리의 제품을 준비 중입니다.</p>
-                        <Link href="/wiki" className="mt-8 inline-block text-brand-600 font-black hover:underline">
+                        <p className="text-xl text-slate-400 font-black italic">{type === "medicine" ? "등록된 의약품이 없습니다." : "해당 카테고리의 제품을 준비 중입니다."}</p>
+                        <Link href={type === "medicine" ? "/wiki?type=medicine" : "/wiki"} className="mt-8 inline-block text-brand-600 font-black hover:underline">
                             전체 목록으로 돌아가기 →
                         </Link>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {products.map((product: Supplement) => (
-                            <ProductCard key={product.id} product={product} />
+                            <ProductCard key={product.id} product={product} type={type} />
                         ))}
                     </div>
                 )}
@@ -195,7 +218,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                     <div className="flex justify-center items-center gap-2 pt-8">
                         {page > 1 && (
                             <Link
-                                href={`/wiki?${currentCategory !== "all" ? `category=${currentCategory}&` : ""}page=${page - 1}`}
+                                href={buildWikiPagePath(type, currentCategory, page - 1)}
                                 className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition-all font-bold text-slate-600 shadow-sm"
                             >
                                 ←
@@ -206,7 +229,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                         </div>
                         {page < totalPages && (
                             <Link
-                                href={`/wiki?${currentCategory !== "all" ? `category=${currentCategory}&` : ""}page=${page + 1}`}
+                                href={buildWikiPagePath(type, currentCategory, page + 1)}
                                 className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition-all font-bold text-slate-600 shadow-sm"
                             >
                                 →
@@ -217,25 +240,25 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
             </div>
 
             {/* Bottom Info Section */}
-            <div className="grid md:grid-cols-2 gap-8 pt-10">
-                <div className="p-8 bg-white border border-slate-50 rounded-[2.5rem] shadow-sm space-y-4">
+            {type === "supplement" && <div className="grid md:grid-cols-2 gap-8 pt-10">
+                <div className="city-panel space-y-4">
                     <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl">📊</div>
                     <h3 className="text-xl font-black text-slate-900">식약처 데이터 기반</h3>
                     <p className="text-slate-500 font-medium leading-relaxed">
                         약국오늘의 모든 정보는 식품의약품안전처 건강기능식품 공공데이터를 바탕으로 가공되었습니다. 주관적인 광고보다는 팩트에 집중합니다.
                     </p>
                 </div>
-                <div className="p-8 bg-white border border-slate-50 rounded-[2.5rem] shadow-sm space-y-4">
+                <div className="city-panel space-y-4">
                     <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl">🧪</div>
                     <h3 className="text-xl font-black text-slate-900">데이터 해설 안내</h3>
                     <p className="text-slate-500 font-medium leading-relaxed">
                         공개된 원재료와 성분 함량을 읽기 쉽게 정리한 참고 정보입니다. 섭취 전 제품 표시사항을 확인하고 필요한 경우 전문가와 상담하세요.
                     </p>
                 </div>
-            </div>
+            </div>}
 
             {/* Related Blog Posts */}
-            <section className="pt-6 border-t border-slate-100">
+            {type === "supplement" && <section className="pt-6 border-t border-slate-100">
                 <h2 className="text-xl font-black text-slate-900 mb-6">영양제 선택 가이드</h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[
@@ -246,36 +269,30 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                         <Link
                             key={item.href}
                             href={item.href}
-                            className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+                            className="city-card p-5 space-y-1"
                         >
                             <p className="font-bold text-gray-900 text-sm leading-snug">{item.label}</p>
                             <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
                         </Link>
                     ))}
                 </div>
-            </section>
-      <script
+            </section>}
+      {type === "supplement" && <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonStringify(collectionPageJsonLd) }}
-      />
+      />}
         </div>
     );
 }
 
-function getWikiPageNumber(pageParam?: string) {
-    const value = Number.parseInt(pageParam || "1", 10);
-    return Number.isFinite(value) && value >= 1 ? value : 1;
-}
-
-function ProductCard({ product }: { product: Supplement }) {
+function ProductCard({ product, type }: { product: Supplement; type: WikiCatalogType }) {
     return (
         <Link
-            href={buildWikiProductPath(product)}
-            className="group bg-white border border-slate-50 rounded-[2.5rem] p-6 hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 flex flex-col h-full shadow-sm"
+            href={type === "medicine" ? buildWikiMedicinePath(product) : buildWikiProductPath(product)}
+            className="city-card group p-6 flex flex-col h-full"
         >
             <div className="flex items-start gap-5 mb-6">
-                <div className="relative w-20 h-20 shrink-0 bg-slate-50 rounded-[1.5rem] border border-slate-100 overflow-hidden p-3 group-hover:bg-brand-50 transition-colors duration-500">
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-br from-brand-500/10 to-transparent transition-opacity duration-500" />
+                <div className="relative w-20 h-20 shrink-0 bg-[var(--fog)] border border-[var(--ink)] overflow-hidden p-3">
                     {product.image_url ? (
                         <Image
                             src={product.image_url}

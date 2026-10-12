@@ -10,6 +10,7 @@ import { getSiteUrl } from "@/lib/site-url";
 import {
   buildWikiProductPath,
   buildWikiProductSlug,
+  isCanonicalWikiSlug,
   extractWikiEntityId,
 } from "@/lib/wiki-slug";
 import { Breadcrumb } from "@/components/breadcrumb";
@@ -80,7 +81,7 @@ export default async function ProductDetailPage({
     notFound();
   }
 
-  if (id !== buildWikiProductSlug(supplement)) {
+  if (!isCanonicalWikiSlug(id, buildWikiProductSlug(supplement))) {
     permanentRedirect(buildWikiProductPath(supplement));
   }
 
@@ -150,7 +151,7 @@ export default async function ProductDetailPage({
   ];
 
   return (
-    <div className="container py-8 sm:py-12 max-w-5xl space-y-8">
+    <div className="city-page city-wiki-detail max-w-6xl space-y-8">
       {/* SEO: JSON-LD */}
       <script
         type="application/ld+json"
@@ -162,12 +163,11 @@ export default async function ProductDetailPage({
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Header Section */}
-      <header className="premium-card bg-white p-6 sm:p-10 rounded-[2.5rem] border border-gray-100 overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl opacity-60" />
+      <header className="city-panel city-wiki-record-header overflow-hidden relative">
 
         <div className="flex flex-col md:flex-row gap-10 items-start relative z-10">
           {/* Product Image */}
-          <div className="w-full md:w-64 h-64 bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden flex items-center justify-center shrink-0 shadow-inner relative">
+          <div className="w-full md:w-64 h-64 bg-[var(--fog)] border-2 border-[var(--ink)] overflow-hidden flex items-center justify-center shrink-0 relative">
             {supplement.image_url ? (
               <div className="relative w-full h-full p-4 hover:scale-105 transition-transform duration-500">
                 <Image
@@ -185,6 +185,7 @@ export default async function ProductDetailPage({
           {/* Product Info */}
           <div className="flex-1 space-y-6">
             <div>
+              <p className="city-eyebrow">DATA WIKI / RECORD</p>
               <h1 className="text-3xl sm:text-4xl font-black mb-2 text-slate-900 leading-tight">
                 {supplement.name}
               </h1>
@@ -201,7 +202,7 @@ export default async function ProductDetailPage({
                 <Link
                   key={tag}
                   href={`/wiki/tag/${encodeURIComponent(tag)}`}
-                  className="px-4 py-2 bg-slate-100 text-slate-600 text-sm font-bold rounded-full hover:bg-brand-600 hover:text-white transition-all transform hover:-translate-y-0.5"
+                  className="city-pill bg-[var(--white)]"
                 >
                   #{tag}
                 </Link>
@@ -224,21 +225,21 @@ export default async function ProductDetailPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           {/* Professional Analysis */}
-          <section className="premium-card bg-white p-6 sm:p-8 rounded-3xl border border-gray-100">
+          <section className="city-panel">
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3 text-slate-900">
               <span className="p-2 bg-blue-50 rounded-xl text-blue-600 text-xl">
                 📝
               </span>
               공공데이터 신고 정보
             </h2>
-            <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100">
+            <div className="city-card bg-slate-50/50 p-6 border">
               <div className="text-slate-800 text-lg leading-relaxed">
                 <p className="text-slate-700 leading-relaxed">
                   {generateTemplateContent(supplement)}
                 </p>
               </div>
             </div>
-            <div className="mt-5 rounded-2xl border border-sky-200 bg-sky-50 p-5 text-sm leading-relaxed text-sky-950">
+            <div className="city-card mt-5 border border-sky-200 bg-sky-50 p-5 text-sm leading-relaxed text-sky-950">
               구조화 영양성분이 비어 있어도 실제 제품에 해당 성분이 없다는 뜻은 아닙니다. 제품
               포장과 공식 조회 결과를 함께 확인하세요.{" "}
               <Link
@@ -251,7 +252,7 @@ export default async function ProductDetailPage({
           </section>
 
           {/* Nutrition Facts */}
-          <section className="premium-card bg-white p-6 sm:p-8 rounded-3xl border border-gray-100">
+          <section className="city-panel">
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3 text-slate-900">
               <span className="p-2 bg-emerald-50 rounded-xl text-emerald-600 text-xl">
                 📊
@@ -273,7 +274,7 @@ export default async function ProductDetailPage({
 
         <div className="space-y-8">
           {/* Additives Check */}
-          <section className="premium-card bg-white p-6 sm:p-8 rounded-3xl border border-gray-100">
+          <section className="city-panel">
             <h2 className="text-xl font-black mb-6 flex items-center gap-3 text-slate-900">
               <span className="p-2 bg-amber-50 rounded-xl text-amber-600 text-lg">
                 🔍
@@ -284,8 +285,7 @@ export default async function ProductDetailPage({
           </section>
 
           {/* CTA Section */}
-          <section className="premium-card bg-gradient-to-br from-brand-600 to-brand-800 p-8 rounded-3xl text-center text-white relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+          <section className="city-call-first text-center">
             <MapPin className="w-12 h-12 mx-auto mb-4 text-brand-100" />
             <h3 className="text-xl font-black mb-3">
               주변 약국에 <br />
@@ -300,7 +300,7 @@ export default async function ProductDetailPage({
               data-analytics-event="content_to_nearby_click"
               data-source-surface="wiki_product"
               data-cta-placement="sidebar"
-              className="w-full inline-flex items-center justify-center px-6 py-4 bg-white text-brand-700 font-black rounded-2xl hover:bg-brand-50 transition-all shadow-xl active:scale-95"
+              className="city-button w-full"
             >
               가까운 약국 찾기
             </Link>

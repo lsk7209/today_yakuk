@@ -1,6 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
+  skipTrailingSlashRedirect: process.env.MIGRATION_STAGING === "1",
+  outputFileTracingIncludes: {
+    "/*": ["./content/**/*", "./node_modules/@libsql/**/*"],
+  },
   images: {
+    localPatterns: [{ pathname: "/**", search: "" }, { pathname: "/api/og" }],
+    remotePatterns: [{
+      protocol: "https",
+      hostname: "nedrug.mfds.go.kr",
+      port: "",
+      pathname: "/pbp/cmn/itemImageDownload/**",
+      search: "",
+    }],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 2678400,
   },
@@ -11,6 +24,10 @@ const nextConfig = {
   },
   async headers() {
     return [
+      ...(process.env.MIGRATION_STAGING === "1" ? [{
+        source: "/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }],
+      }] : []),
       {
         source: "/(about|contact|terms|privacy|guide|guide/:path*)",
         headers: [

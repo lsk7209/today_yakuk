@@ -5,27 +5,34 @@ import { buildWikiMedicinePath, buildWikiProductPath } from "../src/lib/wiki-slu
 import type { SyncSource } from "./lib/sync-run-metrics";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://todaypharm.kr").replace(/\/$/, "");
+const PHARMACY_SITEMAP_CHUNK_SIZE = 1000;
 const SITEMAP_BY_SOURCE: Record<SyncSource, string> = {
   pharmacies: "pharmacies-0",
   hff: "supplements-0",
   medicines: "medicines-0",
 };
 
-async function latestPublicSample(db: ReturnType<typeof getRequiredTursoClient>, source: SyncSource) {
+export async function latestPublicSample(db: ReturnType<typeof getRequiredTursoClient>, source: SyncSource) {
   if (source === "pharmacies") {
     const result = await db.execute(`SELECT hpid FROM pharmacies ${PHARMACY_INDEXABLE_WHERE}
       ORDER BY updated_at DESC, hpid ASC LIMIT 1`);
     const hpid = String(result.rows[0]?.hpid ?? "");
-    return hpid ? `${SITE_URL}/pharmacy/${hpid}` : "";
+    if (!hpid) return { sampleUrl: "", sitemapId: SITEMAP_BY_SOURCE[source] };
+    const rank = await db.execute({
+      sql: `SELECT COUNT(*) AS preceding FROM pharmacies ${PHARMACY_INDEXABLE_WHERE} AND hpid < ?`,
+      args: [hpid],
+    });
+    const chunk = Math.floor(Number(rank.rows[0].preceding) / PHARMACY_SITEMAP_CHUNK_SIZE);
+    return { sampleUrl: `${SITE_URL}/pharmacy/${hpid}`, sitemapId: `pharmacies-${chunk}` };
   }
   const table = source === "hff" ? "supplements" : "medicines";
   const where = source === "hff" ? SUPPLEMENT_INDEXABLE_WHERE : MEDICINE_INDEXABLE_WHERE;
   const result = await db.execute(`SELECT id, name FROM ${table} ${where} ORDER BY created_at DESC LIMIT 1`);
   const item = result.rows[0];
-  if (!item) return "";
+  if (!item) return { sampleUrl: "", sitemapId: SITEMAP_BY_SOURCE[source] };
   const entity = { id: String(item.id), name: String(item.name) };
   const path = source === "hff" ? buildWikiProductPath(entity) : buildWikiMedicinePath(entity);
-  return `${SITE_URL}${path}`;
+  return { sampleUrl: `${SITE_URL}${path}`, sitemapId: SITEMAP_BY_SOURCE[source] };
 }
 
 async function markVerification(
@@ -46,9 +53,9 @@ async function main() {
   for (const source of selected) {
     if (!(source in SITEMAP_BY_SOURCE)) throw new Error(`unknown source: ${source}`);
     try {
-      const sampleUrl = await latestPublicSample(db, source);
+      const { sampleUrl, sitemapId } = await latestPublicSample(db, source);
       if (!sampleUrl) throw new Error(`${source} has no indexable database sample`);
-      const sitemapUrl = `${SITE_URL}/sitemap/${SITEMAP_BY_SOURCE[source]}.xml`;
+      const sitemapUrl = `${SITE_URL}/sitemap/${sitemapId}.xml`;
       const sitemapResponse = await fetch(sitemapUrl, { redirect: "error" });
       if (!sitemapResponse.ok) throw new Error(`${sitemapUrl} returned ${sitemapResponse.status}`);
       const sitemapXml = await sitemapResponse.text();
@@ -64,7 +71,9 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error("[post-sync] verification failed", error);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error("[post-sync] verification failed", error);
+    process.exitCode = 1;
+  });
+}
