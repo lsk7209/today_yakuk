@@ -22,6 +22,7 @@ import {
   getGoogleAnalyticsMeasurementId,
   getNaverSiteVerification,
 } from "@/lib/site-config";
+import { isAdsenseServingEnabled } from "@/lib/ad-policy";
 
 const siteUrl = getSiteUrl();
 const isProductionRuntime = process.env.NODE_ENV === "production" && !isMigrationStaging();
@@ -119,7 +120,9 @@ export default function RootLayout({
           <>
             <link rel="preconnect" href="https://www.googletagmanager.com" />
             <link rel="preconnect" href="https://www.google-analytics.com" />
-            <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+            {isAdsenseServingEnabled() ? (
+              <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+            ) : null}
           </>
         ) : null}
       </head>
