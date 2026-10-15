@@ -8,7 +8,7 @@ import { AdSlotTop, AdSlotBottom } from "@/components/ads/AdSlot";
 const metaTitle =
   "어린이 해열제 올바르게 고르는 법: 아세트아미노펜 vs 이부프로펜";
 const metaDescription =
-  "아세트아미노펜과 이부프로펜의 적용 나이·복용 간격·주의 사항을 식약처 공개 자료를 참고해 비교했습니다. 실제 복용 전에는 제품 허가사항과 의사·약사의 안내를 확인하세요.";
+  "아세트아미노펜과 이부프로펜의 적용 나이와 주의 사항을 식약처 공개 자료를 참고해 비교했습니다. 실제 복용 전에는 제품 허가사항과 의사·약사의 안내를 확인하세요.";
 const slug = "/blog/kids-fever-medicine-comparison";
 
 export const metadata: Metadata = {
@@ -34,23 +34,23 @@ export const metadata: Metadata = {
 const comparisonRows = [
   {
     label: "적용 연령",
-    acetaminophen: "생후 3개월 이상",
-    ibuprofen: "만 6개월 이상",
+    acetaminophen: "생후 4개월 이상 (식약처 안내)",
+    ibuprofen: "생후 6개월 이상 (식약처 안내)",
   },
   {
     label: "1회 용량",
-    acetaminophen: "10~15 mg/kg",
-    ibuprofen: "5~10 mg/kg",
+    acetaminophen: "연령·체중별 — 제품 라벨 용량표 확인",
+    ibuprofen: "연령·체중별 — 제품 라벨 용량표 확인",
   },
   {
     label: "복용 간격",
-    acetaminophen: "4~6시간",
-    ibuprofen: "6~8시간",
+    acetaminophen: "제품 라벨의 투여 간격 준수",
+    ibuprofen: "제품 라벨의 투여 간격 준수",
   },
   {
     label: "1일 최대 횟수",
-    acetaminophen: "4~5회",
-    ibuprofen: "3~4회",
+    acetaminophen: "제품 라벨의 1일 최대 횟수 준수",
+    ibuprofen: "제품 라벨의 1일 최대 횟수 준수",
   },
   {
     label: "소염(항염) 효과",
@@ -71,8 +71,8 @@ const faqs = [
     a: "한 번에는 한 가지 해열제만 복용해야 합니다. 먼저 복용한 뒤에도 고열이 지속되어 다른 계열의 해열제를 고려한다면, 의사의 처방과 복용 간격 안내를 따라야 합니다.",
   },
   {
-    q: "생후 3개월 미만 영아는 어떤 해열제를 사용해야 하나요?",
-    a: "생후 3개월 미만은 아세트아미노펜도 사용이 제한됩니다. 이 연령대의 발열은 지체 없이 소아과를 방문하는 것이 원칙입니다.",
+    q: "생후 4개월 미만 영아는 어떤 해열제를 사용해야 하나요?",
+    a: "생후 4개월 미만은 식약처 안내상 아세트아미노펜 사용 시작 연령 이전입니다. 이 연령대의 발열은 지체 없이 소아과를 방문하는 것이 원칙입니다.",
   },
   {
     q: "해열제를 복용했는데 1~2시간이 지나도 열이 안 내리면 어떻게 해야 하나요?",
@@ -80,7 +80,7 @@ const faqs = [
   },
   {
     q: "이부프로펜이 절대 금기인 상황은 언제인가요?",
-    a: "만 6개월 미만, 탈수 상태, 신장 질환, 수두 감염 중, 천식(아스피린 과민증), 위장 장애 소아에게는 사용하지 않아야 합니다. 보건복지부 안내에 따르면 수두 감염 중 이부프로펜 사용은 세균성 합병증 위험을 높일 수 있습니다.",
+    a: "만 6개월 미만, 탈수 상태, 신장 질환, 수두 감염 중, 천식(아스피린 과민증), 위장 장애 소아에게는 사용하지 않아야 합니다. 수두 감염 중 이부프로펜 사용은 피하라는 안내가 있으므로, 수두가 의심되면 복용 전 의사·약사에게 확인하세요.",
   },
   {
     q: "같은 성분의 해열제를 중복으로 줘도 되나요?",
@@ -193,7 +193,7 @@ export default function KidsFeverMedicineComparisonPage() {
             <p className="mt-1 text-sm leading-relaxed text-emerald-700">
               중추신경계 시상하부에 작용해 체온을 낮추고 통증을 완화하는
               해열·진통 성분. 식약처 허가 기준{" "}
-              <strong>생후 3개월 이상</strong> 영아부터 사용 가능하다.
+              <strong>생후 4개월 이상</strong> 영아부터 사용 가능하다.
               프로스타글란딘 합성 억제에 의한 항염 효과는 미미하다.
             </p>
           </div>
@@ -204,7 +204,7 @@ export default function KidsFeverMedicineComparisonPage() {
             <p className="mt-1 text-sm leading-relaxed text-emerald-700">
               비스테로이드성 항염증제(NSAID)로 COX 효소를 억제해 해열·진통·소염
               효과를 동시에 발휘하는 성분. 식약처 기준{" "}
-              <strong>만 6개월 이상</strong> 소아부터 사용 가능하며, 신장 기능이
+              <strong>생후 6개월 이상</strong> 소아부터 사용 가능하며, 신장 기능이
               미성숙한 영아, 탈수 상태, 위장 장애 시 주의가 필요하다.
             </p>
           </div>
@@ -228,7 +228,7 @@ export default function KidsFeverMedicineComparisonPage() {
           1. 두 성분 한눈에 — 비교표
         </h2>
         <p className="text-base leading-relaxed text-gray-700">
-          아래 표는 식약처 허가 기준 및 의약품 설명서를 근거로 작성했다. 실제
+          아래 표는 식약처 안내(연령 기준)를 근거로 작성했다. 실제
           제품마다 세부 용량이 다를 수 있으므로 복용 전 제품 라벨과 약사
           안내를 확인해야 한다.
         </p>
@@ -289,13 +289,13 @@ export default function KidsFeverMedicineComparisonPage() {
         {/* 사례 박스 1 — 생후 6개월 미만 */}
         <div className="city-card border border-amber-100 bg-amber-50 p-5 space-y-2">
           <p className="font-semibold text-amber-900">
-            사례 A — 생후 3~5개월 영아 (체중 약 6~7 kg)
+            사례 A — 생후 4~5개월 영아
           </p>
           <p className="text-sm leading-relaxed text-amber-800">
             이 연령대는 <strong>아세트아미노펜만 사용 가능</strong>하다.
-            이부프로펜은 만 6개월 미만에게 허가되지 않는다. 체중 6 kg 기준 1회
-            용량은 60~90 mg 수준이며, 제품 동봉 계량 기구로 정확히 계측해야
-            한다. 열이 38.5°C를 초과하더라도 복용 전 소아과 방문 여부를 약사와
+            이부프로펜은 생후 6개월 미만에게 사용하지 않는다. 용량은 제품 라벨의
+            체중·연령별 용량표 또는 의사·약사 안내에 따르고, 제품 동봉 계량
+            기구로 정확히 계측해야 한다. 열이 38.5°C를 초과하더라도 복용 전 소아과 방문 여부를 약사와
             상의하는 것이 권장된다.
           </p>
         </div>
@@ -303,12 +303,12 @@ export default function KidsFeverMedicineComparisonPage() {
         {/* 사례 박스 2 — 만 6개월~3세 */}
         <div className="city-card border border-sky-100 bg-sky-50 p-5 space-y-2">
           <p className="font-semibold text-sky-900">
-            사례 B — 만 8개월 영아 (체중 약 9~10 kg)
+            사례 B — 생후 8개월 영아
           </p>
           <p className="text-sm leading-relaxed text-sky-800">
-            두 성분 모두 사용 가능해진다. 체중 10 kg 기준{" "}
-            <strong>아세트아미노펜</strong> 1회 용량은 100~150 mg (4~6시간
-            간격), <strong>이부프로펜</strong>은 50~100 mg (6~8시간 간격)이다.
+            두 성분 모두 사용할 수 있는 연령이 된다. 1회 용량과 투여 간격은
+            제품마다 다르므로 라벨의 용량표를 확인하고, 불확실하면 약사에게
+            문의한다.
             탈수 증상(입술 건조, 소변 감소)이 있을 경우 이부프로펜 사용을 피하고
             아세트아미노펜을 선택한 뒤 즉시 수분을 보충해야 한다.
           </p>
@@ -317,14 +317,12 @@ export default function KidsFeverMedicineComparisonPage() {
         {/* 사례 박스 3 — 만 4세 이상 */}
         <div className="city-card border border-violet-100 bg-violet-50 p-5 space-y-2">
           <p className="font-semibold text-violet-900">
-            사례 C — 만 4세 유아 (체중 약 18~20 kg)
+            사례 C — 만 4세 유아
           </p>
           <p className="text-sm leading-relaxed text-violet-800">
-            체중 20 kg 기준 아세트아미노펜 1회 용량은 200~300 mg, 이부프로펜은
-            100~200 mg이다. 어린이집이나 유치원에서 흔한 편도염·중이염처럼
+            용량은 아이의 현재 체중과 제품 라벨의 용량표를 기준으로 정한다. 어린이집이나 유치원에서 흔한 편도염·중이염처럼
             염증 반응이 동반된 경우 소아과에서 이부프로펜 계열이 선택되는 경우가
-            있다. 단, 수두 감염 중이라면 이부프로펜을 사용하지 않아야 한다는
-            보건복지부 안내를 따른다.
+            있다. 단, 수두가 의심되면 이부프로펜 복용 전 의사·약사에게 확인한다.
           </p>
         </div>
       </section>
@@ -354,10 +352,9 @@ export default function KidsFeverMedicineComparisonPage() {
             용량 오차가 크므로 사용하지 않는다.
           </li>
           <li className="text-base leading-relaxed text-gray-700">
-            <span className="font-semibold text-brand-700">4단계.</span> 성분별
-            복용 간격을 지킨다. 아세트아미노펜은{" "}
-            <strong>4~6시간 이상</strong>, 이부프로펜은{" "}
-            <strong>6~8시간 이상</strong> 간격을 유지해야 한다.
+            <span className="font-semibold text-brand-700">4단계.</span> 제품
+            라벨에 적힌 <strong>투여 간격과 1일 최대 횟수</strong>를 지킨다.
+            성분이 달라도 임의로 번갈아 먹이지 않는다.
           </li>
           <li className="text-base leading-relaxed text-gray-700">
             <span className="font-semibold text-brand-700">5단계.</span> 48시간
@@ -419,8 +416,8 @@ export default function KidsFeverMedicineComparisonPage() {
                 위험이 높아진다.
               </li>
               <li>
-                <strong>수두 감염 중</strong> — 보건복지부 안내에 따르면 세균성
-                피부 합병증 위험이 증가한다.
+                <strong>수두 감염 중</strong> — 수두가 의심되면 복용 전 의사·약사에게
+                확인한다.
               </li>
               <li>
                 <strong>천식(아스피린 과민증)</strong> 소아 — 기관지 수축을
@@ -538,7 +535,7 @@ export default function KidsFeverMedicineComparisonPage() {
         <p className="text-xs leading-relaxed text-gray-500">
           이 글은 AI 도구를 활용해 식약처·보건복지부·건강보험심사평가원 등 공개된
           의료·정책 자료를 정리·요약한 결과입니다. 사실 확인은 각 출처 링크의
-          원문을 우선합니다. 최종 편집일: 2026년 5월 16일.
+          원문을 우선합니다. 용량·복용 간격 수치는 제품마다 다르므로 싣지 않았으며, 제품 설명서와 의약품안전나라(nedrug.mfds.go.kr)를 확인하세요. 최종 편집일: 2026년 10월 15일.
         </p>
       </footer>
 
