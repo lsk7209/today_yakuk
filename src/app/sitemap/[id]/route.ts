@@ -6,11 +6,12 @@ import { cacheDbRead } from "@/lib/db-read-cache";
 export const dynamic = "force-static";
 export const revalidate = 3600;
 
+// DB 장애는 오류로 전파한다(정상 Response(503)는 ISR이 캐시해 이전 사이트맵을 덮어씀).
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> },
 ) {
-  const { id: filename } = await params;
+  const { id: filename } = await context.params;
   if (!filename.endsWith(".xml")) return new Response("Not found", { status: 404 });
 
   const id = filename.slice(0, -4);

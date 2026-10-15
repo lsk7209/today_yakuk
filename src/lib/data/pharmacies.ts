@@ -2,6 +2,7 @@ import "server-only";
 
 import { getTursoClient, parseJson } from "@/lib/turso";
 import { cacheDbRead } from "@/lib/db-read-cache";
+import { DataReadError } from "@/lib/data/errors";
 import { Pharmacy } from "@/types/pharmacy";
 import { distanceKm } from "@/lib/geo-distance";
 import { PHARMACY_INDEXABLE_WHERE } from "@/lib/pharmacy-indexability";
@@ -144,7 +145,7 @@ export async function getPharmaciesByRegion(
     return result.rows.map(rowToPharmacy);
   } catch (e) {
     console.error("pharmacies region fetch exception", e);
-    return [];
+    throw new DataReadError("pharmacies region fetch exception", e);
   }
 }
 
@@ -178,7 +179,7 @@ export async function getPharmaciesByRegionPaginated(
     return { items: dataResult.rows.map(rowToPharmacy), total };
   } catch (e) {
     console.error("pharmacies paginated fetch exception", e);
-    return { items: [], total: 0 };
+    throw new DataReadError("pharmacies paginated fetch exception", e);
   }
 }
 
@@ -204,7 +205,7 @@ export async function getCitiesByProvince(
       }));
     } catch (error) {
       console.error("pharmacy city list exception", error);
-      return [];
+      throw new DataReadError("pharmacy city list exception", error);
     }
   });
 }
@@ -237,7 +238,7 @@ export async function getRegionSitemapEntries(): Promise<
       return Array.from(deduplicated.values());
     } catch (error) {
       console.error("region sitemap fetch exception", error);
-      return [];
+      throw new DataReadError("region sitemap fetch exception", error);
     }
   });
 }
@@ -253,7 +254,7 @@ async function getPharmacyCountUncached(): Promise<number> {
     return Number(result.rows[0]?.cnt ?? 0);
   } catch (e) {
     console.error("pharmacy count fetch exception", e);
-    return 0;
+    throw new DataReadError("pharmacy count fetch exception", e);
   }
 }
 
@@ -270,7 +271,7 @@ async function getIndexablePharmacyCountUncached(): Promise<number> {
     return Number(result.rows[0]?.cnt ?? 0);
   } catch (e) {
     console.error("indexable pharmacy count exception", e);
-    return 0;
+    throw new DataReadError("indexable pharmacy count exception", e);
   }
 }
 
@@ -299,7 +300,7 @@ async function getPharmacyHpidsChunkUncached(
     }));
   } catch (e) {
     console.error("pharmacy hpid chunk fetch exception", e);
-    return [];
+    throw new DataReadError("pharmacy hpid chunk fetch exception", e);
   }
 }
 
@@ -332,7 +333,7 @@ async function getPharmacySitemapChunkUncached(
     }));
   } catch (e) {
     console.error("pharmacy sitemap chunk fetch exception", e);
-    return [];
+    throw new DataReadError("pharmacy sitemap chunk fetch exception", e);
   }
 }
 
@@ -434,7 +435,7 @@ async function getSupplementByIdUncached(id: string): Promise<Supplement | null>
     return rowToSupplement(result.rows[0]);
   } catch (e) {
     console.error("supplement fetch exception", e);
-    return null;
+    throw new DataReadError("supplement fetch exception", e);
   }
 }
 
@@ -452,7 +453,7 @@ async function getIngredientBySlugUncached(slug: string): Promise<Ingredient | n
     return rowToIngredient(result.rows[0]);
   } catch (e) {
     console.error("ingredient fetch exception", e);
-    return null;
+    throw new DataReadError("ingredient fetch exception", e);
   }
 }
 
@@ -467,7 +468,7 @@ async function getSupplementCountUncached(): Promise<number> {
     return Number(result.rows[0]?.cnt ?? 0);
   } catch (e) {
     console.error("supplement count fetch exception", e);
-    return 0;
+    throw new DataReadError("supplement count fetch exception", e);
   }
 }
 
@@ -481,7 +482,7 @@ async function getSupplementSitemapChunkUncached(offset: number, limit: number):
   try {
     const db = getTursoClient();
     const result = await db.execute({
-      sql: `SELECT id, name, created_at FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      sql: `SELECT id, name, created_at FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} ORDER BY created_at DESC, id ASC LIMIT ? OFFSET ?`,
       args: [limit, offset],
     });
     return result.rows.map((r: Record<string, unknown>) => ({
@@ -491,7 +492,7 @@ async function getSupplementSitemapChunkUncached(offset: number, limit: number):
     }));
   } catch (e) {
     console.error("supplement sitemap chunk fetch exception", e);
-    return [];
+    throw new DataReadError("supplement sitemap chunk fetch exception", e);
   }
 }
 
@@ -506,7 +507,7 @@ async function getMedicineCountUncached(): Promise<number> {
     return Number(result.rows[0]?.cnt ?? 0);
   } catch (e) {
     console.error("medicine count fetch exception", e);
-    return 0;
+    throw new DataReadError("medicine count fetch exception", e);
   }
 }
 
@@ -520,7 +521,7 @@ async function getMedicineSitemapChunkUncached(offset: number, limit: number): P
   try {
     const db = getTursoClient();
     const result = await db.execute({
-      sql: `SELECT id, name, created_at FROM medicines ${MEDICINE_INDEXABLE_WHERE} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      sql: `SELECT id, name, created_at FROM medicines ${MEDICINE_INDEXABLE_WHERE} ORDER BY created_at DESC, id ASC LIMIT ? OFFSET ?`,
       args: [limit, offset],
     });
     return result.rows.map((r: Record<string, unknown>) => ({
@@ -530,6 +531,6 @@ async function getMedicineSitemapChunkUncached(offset: number, limit: number): P
     }));
   } catch (e) {
     console.error("medicine sitemap chunk fetch exception", e);
-    return [];
+    throw new DataReadError("medicine sitemap chunk fetch exception", e);
   }
 }

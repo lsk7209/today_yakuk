@@ -1,5 +1,6 @@
 import { getTursoClient, parseJson } from "@/lib/turso";
 import { cacheDbRead } from "@/lib/db-read-cache";
+import { DataReadError } from "@/lib/data/errors";
 import {
   CONTENT_ITEM_UPDATE_FIELDS,
   type ContentItemUpdate,
@@ -65,7 +66,7 @@ async function getPublishedContentBySlugUncached(slug: string): Promise<ContentI
     return rowToContent(result.rows[0]);
   } catch (e) {
     console.error("getPublishedContentBySlug exception", e);
-    return null;
+    throw new DataReadError("getPublishedContentBySlug exception", e);
   }
 }
 
@@ -106,7 +107,7 @@ async function listPublishedContentUncached(limit = 20): Promise<ContentItem[]> 
     return result.rows.map(rowToContent);
   } catch (e) {
     console.error("listPublishedContent exception", e);
-    return [];
+    throw new DataReadError("listPublishedContent exception", e);
   }
 }
 
@@ -123,7 +124,7 @@ async function getPublishedContentCountUncached(): Promise<number> {
     return Number(result.rows[0]?.cnt ?? 0);
   } catch (e) {
     console.error("getPublishedContentCount exception", e);
-    return 0;
+    throw new DataReadError("getPublishedContentCount exception", e);
   }
 }
 
@@ -145,7 +146,7 @@ async function getPublishedContentSitemapChunkUncached(
     const result = await db.execute({
       sql: `SELECT slug, updated_at, published_at FROM content_queue
             WHERE status = 'published'
-            ORDER BY CASE WHEN published_at IS NULL THEN 1 ELSE 0 END, published_at DESC, updated_at DESC
+            ORDER BY CASE WHEN published_at IS NULL THEN 1 ELSE 0 END, published_at DESC, updated_at DESC, slug ASC
             LIMIT ? OFFSET ?`,
       args: [limit, offset],
     });
@@ -156,7 +157,7 @@ async function getPublishedContentSitemapChunkUncached(
     }));
   } catch (e) {
     console.error("getPublishedContentSitemapChunk exception", e);
-    return [];
+    throw new DataReadError("getPublishedContentSitemapChunk exception", e);
   }
 }
 

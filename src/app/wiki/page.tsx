@@ -17,13 +17,10 @@ const WIKI_DESCRIPTION = "식약처 공공데이터 기반 영양제 성분, 기
 // searchParams makes this page dynamic — cache the expensive count separately
 const getCachedTotalCount = unstable_cache(
   async () => {
-    try {
-      const db = getTursoClient();
-      const result = await db.execute("SELECT COUNT(*) as cnt FROM supplements");
-      return Number(result.rows[0]?.cnt ?? 0);
-    } catch {
-      return 0;
-    }
+    // 조회 실패를 0건으로 바꾸지 않는다. 던진 오류는 unstable_cache에 저장되지 않는다.
+    const db = getTursoClient();
+    const result = await db.execute("SELECT COUNT(*) as cnt FROM supplements");
+    return Number(result.rows[0]?.cnt ?? 0);
   },
   ["supplements-total-count"],
   { revalidate: 3600 }
@@ -264,7 +261,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                     {[
                         { href: "/blog/omega3-selection-guide", label: "오메가3 알티지 vs 에틸에스텔 선택 가이드", desc: "흡수율·가격·형태별 차이와 복용법 완전 정리" },
                         { href: "/blog/probiotics-selection-guide", label: "유산균 균주 선택 가이드", desc: "CFU보다 균주 종류가 중요한 이유와 목적별 선택법" },
-                        { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "국내 성인 75% 부족 상태, 올바른 보충 방법" },
+                        { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "혈중 농도 기준과 섭취 기준·상한 안내" },
                     ].map((item) => (
                         <Link
                             key={item.href}

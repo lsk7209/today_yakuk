@@ -95,7 +95,7 @@ export async function getSitemapEntries(id: string): Promise<MetadataRoute.Sitem
       })),
       ...cityPages.map((entry) => ({
         url: `${siteUrl}/${encodeURIComponent(entry.province)}/${encodeURIComponent(entry.city)}`,
-        lastModified: latestSignificantDate(entry.updated_at),
+        // updated_at은 동기화 실행 때마다 갱신되므로 lastmod로 쓰지 않는다.
         changeFrequency: "daily" as const,
         priority: 0.7,
       })),
@@ -110,7 +110,7 @@ export async function getSitemapEntries(id: string): Promise<MetadataRoute.Sitem
     const items = await getPharmacySitemapChunk(offset, SITEMAP_CHUNK_SIZE);
     return items.map((item) => ({
       url: `${siteUrl}/pharmacy/${item.hpid}`,
-      lastModified: latestSignificantDate(item.updated_at),
+      // updated_at은 동기화 실행일이라 실제 내용 변경일이 아니다. lastmod를 생략한다.
       changeFrequency: "daily" as const,
       priority: 0.9,
     }));

@@ -39,7 +39,7 @@ import {
 } from "@/lib/data/pharmacies";
 import { distanceKm } from "@/lib/geo-distance";
 import { buildAiLessDetailTemplate } from "@/lib/pharmacy-detail-template";
-import { buildPharmacyIntelligenceReport } from "@/lib/pharmacy-intelligence";
+import { resolvePharmacyReport } from "@/lib/pharmacy-intelligence";
 import { getMapSearchAddress } from "@/lib/map";
 import { hasValidPhone, isIndexablePharmacy } from "@/lib/pharmacy-indexability";
 import { getPublishedContentByHpid } from "@/lib/data/content";
@@ -96,8 +96,8 @@ function buildPharmacyMetaDescription(pharmacy: Pharmacy, fallback: string): str
   const dong = extractDong(pharmacy.address) ?? "";
   const region = [city, dong].filter(Boolean).join(" ");
 
-  const first = `${pharmacy.name}${region ? `(${region})` : ""} 정규 영업시간, 조제 비용 가이드, 대중교통 도보 동선 및 방문자 체감 키워드 분석 리포트입니다.`;
-  const second = ` 주소·전화·주말 운영·주변 약국 비교 지표를 한눈에 확인하세요.`;
+  const first = `${pharmacy.name}${region ? `(${region})` : ""} 등록 영업시간·주소·전화·길찾기 안내입니다.`;
+  const second = ` 등록 시간표는 실제 운영과 다를 수 있어 방문 전 전화 확인이 필요합니다.`;
   const composed = `${first}${second}`.trim();
 
   const merged = composed.length >= 120 ? composed : `${composed} ${fallback}`.trim();
@@ -110,7 +110,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }) 
   if (!pharmacy) return {};
   const title = buildPharmacyMetaTitle(pharmacy);
   const rawDescription =
-    pharmacy.intelligence_report?.briefing.lines.join(" ") ||
+    resolvePharmacyReport(pharmacy).briefing.lines.join(" ") ||
     buildAiLessDetailTemplate(pharmacy).summary;
   const description = buildPharmacyMetaDescription(pharmacy, rawDescription);
   const indexable = isIndexablePharmacy(pharmacy);
@@ -134,7 +134,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }) 
       images: [
         {
           url: `/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(
-            `${pharmacy.city ?? pharmacy.province ?? ""} 약국 인텔리전스 리포트`,
+            `${pharmacy.city ?? pharmacy.province ?? ""} 약국 영업시간·전화·길찾기`,
           )}`,
           width: 1200,
           height: 630,
@@ -165,7 +165,7 @@ async function Content({
 
   const regionList =
     pharmacy.province && pharmacy.city
-      ? await getPharmaciesByRegion(pharmacy.province, pharmacy.city)
+      ? await getPharmaciesByRegion(pharmacy.province, pharmacy.city).catch(() => [])
       : [];
   const nearby = findNearbyWithinKm(pharmacy, regionList);
 
@@ -177,9 +177,7 @@ async function Content({
   const naverMapUrl = `https://map.naver.com/p/search/${mapQuery}`;
   const kakaoMapUrl = `https://map.kakao.com/link/search/${mapQuery}`;
 
-  const report =
-    pharmacy.intelligence_report ??
-    buildPharmacyIntelligenceReport(pharmacy, null, regionList);
+  const report = resolvePharmacyReport(pharmacy, regionList);
 
   const tmpl = buildAiLessDetailTemplate(pharmacy);
   const combinedFaq = report.faq.length > 0 ? report.faq : tmpl.faq.map((f) => ({ ...f, category: "이용 안내" }));
@@ -342,7 +340,7 @@ async function Content({
         </aside>
       </header>
 
-      {/* 섹션 1: 핵심 3줄 요약 브리핑 */}
+      {/* 섹션 1: 핵심 요약 */}
       <section
         aria-labelledby="section-briefing"
         className="rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50/70 via-white to-white p-6 sm:p-8 shadow-xs space-y-5"
@@ -355,12 +353,12 @@ async function Content({
                 Executive Briefing
               </span>
               <h2 id="section-briefing" className="text-xl sm:text-2xl font-black text-gray-900">
-                핵심 3줄 요약 브리핑
+                핵심 요약
               </h2>
             </div>
           </div>
           <span className="text-xs font-bold text-emerald-800 bg-emerald-100/80 px-3 py-1 rounded-full">
-            종합 인텔리전스 분석
+            등록 정보 기준
           </span>
         </div>
 
@@ -384,62 +382,37 @@ async function Content({
           })}
         </ol>
 
-        {(contentQueue?.ai_summary || pharmacy.gemini_summary) && (
+        {contentQueue?.ai_summary && (
           <div className="rounded-2xl bg-emerald-50/50 p-4 border border-emerald-100 text-sm text-gray-700 leading-relaxed">
-            {contentQueue?.ai_summary || pharmacy.gemini_summary}
+            <p className="mb-1 text-xs font-bold text-emerald-700">AI 보조 요약 · 검증 전 참고용</p>
+            {contentQueue.ai_summary}
           </div>
         )}
       </section>
 
-      {/* 섹션 2: 가격 및 비용 분석 */}
+      {/* 섹션 2: 비용 일반 안내 (약국별로 확인된 정보가 아님) */}
       <section
         aria-labelledby="section-cost"
-        className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-xs space-y-6"
+        className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-xs space-y-5"
       >
         <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
           <ReportSectionSvgIcon section="cost" className="w-8 h-8" />
           <div>
             <span className="text-xs font-extrabold uppercase tracking-wider text-sky-700">
-              Cost &amp; Fee Structure
+              General Guide
             </span>
             <h2 id="section-cost" className="text-xl sm:text-2xl font-black text-gray-900">
-              가격 및 비용 분석
+              조제 비용 일반 안내
             </h2>
           </div>
         </div>
 
         <p className="text-base text-gray-700 leading-relaxed">
-          {report.costAnalysis.summaryText}
+          {report.costGuide.summaryText}
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-sky-100 bg-sky-50/40 p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-sky-800 bg-sky-100 px-2.5 py-1 rounded-md">
-                표준 조제료 적용 구간
-              </span>
-              <span className="text-xs font-bold text-gray-500">건강보험 기본 수가</span>
-            </div>
-            <p className="text-sm sm:text-base font-bold text-gray-900 pt-1 leading-relaxed">
-              {report.costAnalysis.standardWindowText}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-amber-200 bg-amber-50/40 p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-amber-900 bg-amber-100 px-2.5 py-1 rounded-md">
-                야간·휴일 가산(30%) 구간
-              </span>
-              <span className="text-xs font-bold text-amber-800">법정 시간대 가산</span>
-            </div>
-            <p className="text-sm sm:text-base font-bold text-gray-900 pt-1 leading-relaxed">
-              {report.costAnalysis.surchargeWindowText}
-            </p>
-          </div>
-        </div>
-
         <div className="space-y-3 pt-1">
-          {report.costAnalysis.paymentAndCostPoints.map((point, idx) => (
+          {report.costGuide.points.map((point, idx) => (
             <div
               key={idx}
               className="flex items-start gap-3 rounded-xl bg-gray-50 px-4 py-3.5 border border-gray-100"
@@ -451,98 +424,95 @@ async function Content({
         </div>
       </section>
 
-      {/* 섹션 3: 이용자 체감 키워드 분석 */}
-      <section
-        aria-labelledby="section-keywords"
-        className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-xs space-y-6"
-      >
-        <div className="flex items-center justify-between flex-wrap gap-3 border-b border-gray-100 pb-4">
-          <div className="flex items-center gap-3">
-            <ReportSectionSvgIcon section="keywords" className="w-8 h-8" />
-            <div>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-violet-700">
-                User Experience &amp; Sentiment
-              </span>
-              <h2 id="section-keywords" className="text-xl sm:text-2xl font-black text-gray-900">
-                이용자 체감 키워드 분석
-              </h2>
+      {/* 섹션 3: 외부 장소 정보의 방문자 키워드 (매칭이 확인된 경우에만 표시) */}
+      {report.reviewInsights ? (
+        <section
+          aria-labelledby="section-keywords"
+          className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-xs space-y-6"
+        >
+          <div className="flex items-center justify-between flex-wrap gap-3 border-b border-gray-100 pb-4">
+            <div className="flex items-center gap-3">
+              <ReportSectionSvgIcon section="keywords" className="w-8 h-8" />
+              <div>
+                <span className="text-xs font-extrabold uppercase tracking-wider text-violet-700">
+                  External Place Data
+                </span>
+                <h2 id="section-keywords" className="text-xl sm:text-2xl font-black text-gray-900">
+                  외부 장소 정보의 방문자 키워드
+                </h2>
+              </div>
             </div>
+            {report.reviewInsights.visitorReviewCount !== null || report.reviewInsights.blogReviewCount !== null ? (
+              <div className="text-xs font-bold text-violet-800 bg-violet-50 px-3.5 py-1.5 rounded-full border border-violet-200">
+                {[
+                  report.reviewInsights.visitorReviewCount !== null
+                    ? `방문자 리뷰 ${report.reviewInsights.visitorReviewCount.toLocaleString()}건`
+                    : null,
+                  report.reviewInsights.blogReviewCount !== null
+                    ? `블로그 리뷰 ${report.reviewInsights.blogReviewCount.toLocaleString()}건`
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </div>
+            ) : null}
           </div>
 
-          {report.keywordAnalysis.visitorReviewCount + report.keywordAnalysis.blogReviewCount > 0 && (
-            <div className="flex items-center gap-2 text-xs font-bold text-violet-800 bg-violet-50 px-3.5 py-1.5 rounded-full border border-violet-200">
-              <span>누적 방문·블로그 리뷰 {(report.keywordAnalysis.visitorReviewCount + report.keywordAnalysis.blogReviewCount).toLocaleString()}건 기반</span>
-            </div>
-          )}
-        </div>
+          <p className="text-base text-gray-800 leading-relaxed bg-violet-50/40 rounded-2xl p-4 sm:p-5 border border-violet-100">
+            {report.reviewInsights.summaryText}
+          </p>
 
-        <p className="text-base text-gray-800 leading-relaxed bg-violet-50/40 rounded-2xl p-4 sm:p-5 border border-violet-100">
-          {report.keywordAnalysis.sentimentSummary}
-        </p>
-
-        {report.keywordAnalysis.topKeywords.length > 0 ? (
-          <div className="space-y-3.5">
-            <h3 className="text-sm font-black text-gray-700">
-              실사용자 응답 상위 키워드 분포 (참여자 {report.keywordAnalysis.votedUserCount.toLocaleString()}명)
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {report.keywordAnalysis.topKeywords.map((kw) => {
-                const categoryLabel =
-                  kw.category === "expertise"
-                    ? "복약·전문성"
-                    : kw.category === "price"
-                      ? "가격·품목"
-                      : kw.category === "facility"
-                        ? "시설·청결"
-                        : "응대·친절";
-                return (
+          {report.reviewInsights.topKeywords.length > 0 ? (
+            <div className="space-y-3.5">
+              <h3 className="text-sm font-black text-gray-700">
+                키워드 응답 상위 항목
+                {report.reviewInsights.votedUserCount !== null
+                  ? ` (참여자 ${report.reviewInsights.votedUserCount.toLocaleString()}명)`
+                  : ""}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {report.reviewInsights.topKeywords.map((kw) => (
                   <div
                     key={kw.label}
                     className="rounded-2xl border border-gray-200 bg-gray-50/60 p-4 space-y-2"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-violet-700 bg-violet-100 px-2 py-0.5 rounded">
-                          {categoryLabel}
-                        </span>
-                        <span className="font-black text-gray-900 text-sm sm:text-base">
-                          {kw.label}
-                        </span>
-                      </div>
+                      <span className="font-black text-gray-900 text-sm sm:text-base">{kw.label}</span>
                       <span className="text-xs font-extrabold text-gray-600">
-                        {kw.count}명 ({kw.ratioPercent}%)
+                        {kw.count}회 ({kw.ratioPercent}%
+                        {kw.ratioBasis === "voters" ? " · 참여자 대비" : " · 투표 합계 대비"})
                       </span>
                     </div>
                     <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-violet-500 to-emerald-500 rounded-full"
-                        style={{ width: `${Math.max(12, kw.ratioPercent)}%` }}
+                        style={{ width: `${kw.ratioPercent}%` }}
                       />
                     </div>
                   </div>
-                );
-              })}
+                ))}
+              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
 
-        {report.keywordAnalysis.specialtyTags.length > 0 && (
-          <div className="pt-2">
-            <p className="text-xs font-bold text-gray-500 mb-2.5">주요 이용 목적 및 특화 키워드</p>
-            <div className="flex flex-wrap gap-2">
-              {report.keywordAnalysis.specialtyTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-gray-100 px-3.5 py-1.5 text-sm font-bold text-gray-800 border border-gray-200"
-                >
-                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                  {tag}
-                </span>
-              ))}
+          {report.reviewInsights.specialtyTags.length > 0 && (
+            <div className="pt-2">
+              <p className="text-xs font-bold text-gray-500 mb-2.5">외부 장소 정보의 특징 키워드</p>
+              <div className="flex flex-wrap gap-2">
+                {report.reviewInsights.specialtyTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-gray-100 px-3.5 py-1.5 text-sm font-bold text-gray-800 border border-gray-200"
+                  >
+                    <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </section>
+          )}
+        </section>
+      ) : null}
 
       {/* 섹션 4: 방문 및 이용 실전 가이드 (대중교통 정류장 + 정규 운영시간표 통합) */}
       <section
@@ -576,9 +546,11 @@ async function Content({
               <Calendar className="h-5 w-5 text-brand-600" />
               요일별 정규 운영시간표
             </h3>
-            <span className="text-xs font-bold text-amber-900 bg-amber-100 px-3 py-1 rounded-full">
-              정기휴무 기준: {report.visitGuide.regularClosedSummary}
-            </span>
+            {report.visitGuide.closedNote ? (
+              <span className="text-xs font-bold text-amber-900 bg-amber-100 px-3 py-1 rounded-full">
+                외부 장소 정보의 휴무 안내: {report.visitGuide.closedNote}
+              </span>
+            ) : null}
           </div>
           <PharmacyWeeklyHours hours={pharmacy.operating_hours} initialIso={initialIso} />
         </div>
@@ -629,27 +601,31 @@ async function Content({
           </div>
         )}
 
-        {/* 주차 및 실전 체크 포인트 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
-            <p className="text-xs font-extrabold text-gray-500">주차 및 접근 여건</p>
-            <p className="text-sm sm:text-base font-medium text-gray-800 leading-relaxed">
-              {report.visitGuide.parkingNote}
-            </p>
+        {/* 주차·편의시설: 외부 장소 정보에서 확인된 경우에만 표시 */}
+        {report.visitGuide.parkingNote || report.visitGuide.facilities.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {report.visitGuide.parkingNote ? (
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
+                <p className="text-xs font-extrabold text-gray-500">주차 안내 (외부 장소 정보)</p>
+                <p className="text-sm sm:text-base font-medium text-gray-800 leading-relaxed">
+                  {report.visitGuide.parkingNote}
+                </p>
+              </div>
+            ) : null}
+            {report.visitGuide.facilities.length > 0 ? (
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
+                <p className="text-xs font-extrabold text-gray-500">편의시설 (외부 장소 정보)</p>
+                <p className="text-sm sm:text-base font-medium text-gray-800 leading-relaxed">
+                  {report.visitGuide.facilities.join(" · ")}
+                </p>
+              </div>
+            ) : null}
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
-            <p className="text-xs font-extrabold text-gray-500">편의시설 및 지원 항목</p>
-            <p className="text-sm sm:text-base font-medium text-gray-800 leading-relaxed">
-              {report.visitGuide.facilities.length > 0
-                ? report.visitGuide.facilities.join(" · ")
-                : "처방 조제 · 복약지도 · 상비 일반의약품 상담"}
-            </p>
-          </div>
-        </div>
+        ) : null}
 
         <div className="space-y-2.5">
-          <h3 className="text-sm font-black text-gray-700">방문 전 실전 체크리스트</h3>
-          {report.visitGuide.actionableTips.map((tip, i) => (
+          <h3 className="text-sm font-black text-gray-700">방문 전 확인 사항</h3>
+          {report.visitGuide.tips.map((tip, i) => (
             <div
               key={i}
               className="flex items-start gap-3 rounded-xl bg-amber-50/40 px-4 py-3 border border-amber-100"
@@ -666,50 +642,35 @@ async function Content({
         aria-labelledby="section-peer-comparison"
         className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-xs space-y-6"
       >
-        <div className="flex items-center justify-between flex-wrap gap-3 border-b border-gray-100 pb-4">
-          <div className="flex items-center gap-3">
-            <ReportSectionSvgIcon section="peers" className="w-8 h-8" />
-            <div>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-pink-700">
-                Regional Peer Benchmark
-              </span>
-              <h2 id="section-peer-comparison" className="text-xl sm:text-2xl font-black text-gray-900">
-                주변 동종 업계 비교 지표
-              </h2>
+        <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+          <ReportSectionSvgIcon section="peers" className="w-8 h-8" />
+          <div>
+            <span className="text-xs font-extrabold uppercase tracking-wider text-pink-700">
+              Nearby Pharmacies
+            </span>
+            <h2 id="section-peer-comparison" className="text-xl sm:text-2xl font-black text-gray-900">
+              인근 약국과 등록 시간표 비교
+            </h2>
+          </div>
+        </div>
+
+        {report.peerComparison ? (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600 leading-relaxed">{report.peerComparison.basisText}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {report.peerComparison.metrics.map((m) => (
+                <div
+                  key={m.metric}
+                  className="rounded-2xl border border-gray-200 bg-gray-50/50 p-5 space-y-2"
+                >
+                  <span className="text-xs font-extrabold text-gray-500">{m.metric}</span>
+                  <p className="text-base font-black text-gray-900">{m.pharmacyValue}</p>
+                  <p className="text-xs sm:text-sm font-medium text-gray-700">{m.benchmark}</p>
+                </div>
+              ))}
             </div>
           </div>
-          <span className="text-xs font-bold text-pink-800 bg-pink-50 px-3 py-1 rounded-full border border-pink-200">
-            {report.peerComparison.regionLabel} 비교군 기준
-          </span>
-        </div>
-
-        <p className="text-base text-gray-700 leading-relaxed">
-          {report.peerComparison.summaryText}
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {report.peerComparison.metrics.map((m) => (
-            <div
-              key={m.metric}
-              className="rounded-2xl border border-gray-200 bg-gray-50/50 p-5 space-y-3"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-extrabold text-gray-500">{m.metric}</span>
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                  {m.regionalBenchmark}
-                </span>
-              </div>
-              <p className="text-lg font-black text-gray-900">{m.pharmacyValue}</p>
-              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-brand-600 to-emerald-500 rounded-full"
-                  style={{ width: `${m.scorePercent}%` }}
-                />
-              </div>
-              <p className="text-xs sm:text-sm font-medium text-gray-700">{m.verdict}</p>
-            </div>
-          ))}
-        </div>
+        ) : null}
 
         {/* 반경 2km 내 대체 약국 안내 */}
         <div className="pt-4 border-t border-gray-100 space-y-4">

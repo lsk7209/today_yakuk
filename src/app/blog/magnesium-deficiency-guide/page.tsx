@@ -11,15 +11,15 @@ const metaDescription =
 const faqs = [
     {
         q: "산화마그네슘은 왜 설사를 유발하나요?",
-        a: "산화마그네슘은 흡수율이 약 4% 내외로 매우 낮습니다. 흡수되지 못한 마그네슘이 장 내 수분을 끌어당겨 삼투성 설사를 유발합니다. 이 성질을 역으로 이용해 변비약으로도 사용됩니다. 마그네슘 결핍 보충을 목적으로 한다면 흡수율이 높은 구연산마그네슘·글리시네이트·말산마그네슘 형태를 선택하는 것이 좋습니다.",
+        a: "산화마그네슘은 다른 형태에 비해 흡수율이 낮은 편으로 알려져 있습니다. 흡수되지 못한 마그네슘이 장 내 수분을 끌어당겨 삼투성 설사를 유발합니다. 이 성질을 역으로 이용해 변비약으로도 사용됩니다. 마그네슘 결핍 보충을 목적으로 한다면 구연산마그네슘·글리시네이트·말산마그네슘 등 다른 형태를 고려할 수 있으며, 어떤 형태가 맞는지는 약사와 상담하세요.",
     },
     {
         q: "칼슘과 마그네슘을 같이 먹어도 되나요?",
-        a: "칼슘과 마그네슘은 함께 복용하면 서로의 흡수를 일부 경쟁할 수 있습니다. 일반적으로 칼슘:마그네슘 비율 2:1(예: 칼슘 500 mg + 마그네슘 250 mg)로 복용하는 것이 권장됩니다. 고용량 칼슘과 마그네슘을 동시에 복용할 경우 아침·저녁으로 나누어 먹으면 흡수 경쟁을 줄일 수 있습니다.",
+        a: "칼슘과 마그네슘은 함께 복용하면 서로의 흡수를 일부 경쟁할 수 있습니다. 두 성분을 함께 복용 중이라면 제품 라벨의 섭취 방법을 따르고, 복용 시간 분리가 필요한지는 약사에게 확인하세요.",
     },
     {
         q: "마그네슘을 얼마나 먹어야 효과가 나타나나요?",
-        a: "마그네슘 보충 효과는 개인마다 다르지만, 수면 개선과 근육 경련 감소는 2~4주 꾸준히 복용 후부터 느끼는 경우가 많습니다. 단, 세포 내 마그네슘 농도가 정상화되려면 최소 6~8주 이상이 필요하다는 연구도 있습니다. 결핍이 심한 경우 초기에는 하루 300~400 mg(원소 마그네슘 기준)을 복용하고, 증상이 개선되면 150~200 mg 유지 용량으로 줄이는 방식을 활용할 수 있습니다.",
+        a: "마그네슘 보충 효과는 개인마다 다르며 정해진 기간을 단정하기 어렵습니다. 증상이 계속되면 영양제로 해결하려 하기보다 의료기관 진료를 받으세요. 용량은 제품 라벨의 섭취량을 따르고, 보충제 기준 상한(하루 350 mg, 식품 외 급원)을 넘기지 마세요.",
     },
 ];
 
@@ -90,13 +90,13 @@ export default function Page() {
                 "@type": "HowToStep",
                 position: 3,
                 name: "용량 결정",
-                text: "성인 기준 하루 원소 마그네슘 200~400 mg이 일반적인 보충 범위입니다. 제품 라벨에서 &ldquo;마그네슘으로서&rdquo;(원소 마그네슘 기준) 함량을 확인하세요. 총 화합물 중량과 원소 마그네슘 함량은 다릅니다.",
+                text: "용량은 제품 라벨의 1일 섭취량을 따르되, 보충제 등 식품 외 급원의 상한은 성인 기준 하루 350 mg입니다(한국인 영양소 섭취기준). 제품 라벨에서 &ldquo;마그네슘으로서&rdquo;(원소 마그네슘 기준) 함량을 확인하세요. 총 화합물 중량과 원소 마그네슘 함량은 다릅니다.",
             },
             {
                 "@type": "HowToStep",
                 position: 4,
                 name: "복용 시간 결정",
-                text: "수면 개선과 근육 이완 효과를 원한다면 취침 1~2시간 전 복용이 가장 효과적입니다. 소화 불편이 있다면 저녁 식후에 복용하세요. 변비 해소가 목적이라면 아침 공복 복용도 고려할 수 있습니다.",
+                text: "복용 시간은 제품 라벨을 따르세요. 소화 불편이 있다면 저녁 식후에 복용하세요. 변비 해소가 목적이라면 아침 공복 복용도 고려할 수 있습니다.",
             },
         ],
     };
@@ -164,9 +164,8 @@ export default function Page() {
                         관련 영양소 결핍을 점검해볼 필요가 있습니다.
                     </li>
                     <li>
-                        <strong>두통·편두통:</strong> 마그네슘이 부족하면 뇌혈관 수축·이완 조절이
-                        어려워져 긴장성 두통과 편두통 빈도가 높아진다는 연구들이 있습니다. 만성 편두통
-                        환자에서 혈중 마그네슘 수치가 낮은 경우가 많습니다.
+                        <strong>두통·편두통:</strong> 두통은 원인이 다양하므로 반복되면 마그네슘 부족으로 단정하지 말고
+                        진료를 받으세요.
                     </li>
                     <li>
                         <strong>불안감·예민함:</strong> 마그네슘은 스트레스 호르몬(코르티솔) 조절에
@@ -194,25 +193,25 @@ export default function Page() {
                         <tbody>
                             <tr>
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">산화마그네슘</td>
-                                <td className="border border-gray-200 px-3 py-2 text-gray-700">낮음 (~4%)</td>
+                                <td className="border border-gray-200 px-3 py-2 text-gray-700">상대적으로 낮은 편</td>
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">변비 해소, 저가 보충</td>
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">매우 저렴</td>
                             </tr>
                             <tr className="bg-gray-50">
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">구연산마그네슘</td>
-                                <td className="border border-gray-200 px-3 py-2 text-gray-700">높음 (~30%)</td>
+                                <td className="border border-gray-200 px-3 py-2 text-gray-700">상대적으로 높은 편</td>
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">일반 결핍 보충, 변비 겸용</td>
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">보통</td>
                             </tr>
                             <tr>
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">글리시네이트</td>
-                                <td className="border border-gray-200 px-3 py-2 text-gray-700">매우 높음 (~80%)</td>
+                                <td className="border border-gray-200 px-3 py-2 text-gray-700">상대적으로 높은 편</td>
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">수면 개선, 불안 완화, 근육 이완</td>
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">높음</td>
                             </tr>
                             <tr className="bg-gray-50">
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">말산마그네슘</td>
-                                <td className="border border-gray-200 px-3 py-2 text-gray-700">높음 (~40%)</td>
+                                <td className="border border-gray-200 px-3 py-2 text-gray-700">상대적으로 높은 편</td>
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">에너지 대사, 만성 피로</td>
                                 <td className="border border-gray-200 px-3 py-2 text-gray-700">보통~높음</td>
                             </tr>
@@ -222,12 +221,11 @@ export default function Page() {
 
                 <h3>3. 하루 권장량과 복용 타이밍</h3>
                 <p>
-                    한국 영양소 섭취 기준 마그네슘 권장량은 성인 남성 370 mg, 성인 여성 280 mg(원소
-                    마그네슘 기준)입니다. 보충제로는 하루 200~400 mg 범위가 일반적이며, 상한 섭취량은
-                    보충제 기준 350 mg입니다. 취침 1~2시간 전 복용이 수면 개선과 근육 이완에 가장
-                    효과적입니다. 마그네슘은 신경계를 안정시키고 멜라토닌 합성을 지원하므로 야간에
-                    효과를 발휘합니다. 소화가 약한 경우에는 저녁 식후에 복용하고, 변비 해소가 주목적이라면
-                    아침 공복이나 식간 복용도 고려할 수 있습니다.
+                    한국인 영양소 섭취기준(보건복지부·한국영양학회)에서 마그네슘 상한섭취량은 성인 하루
+                    350 mg이며, 이는 보충제 등 식품 외 급원에만 적용됩니다. 권장섭취량은 성별·연령별로
+                    다르므로 원문 표에서 확인하세요. 복용 시간은 제품 라벨을 따르고, 소화가 불편하면
+                    식후 복용을 고려할 수 있습니다. 복용 시간에 따른 효과 차이는 근거가 충분하지
+                    않아 단정하지 않습니다.
                 </p>
 
                 <h3>4. 주의사항</h3>

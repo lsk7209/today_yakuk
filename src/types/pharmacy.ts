@@ -1,5 +1,3 @@
-import type { PharmacyIntelligenceReport } from "@/lib/pharmacy-intelligence";
-
 export type OperatingHours = Record<
   string,
   {
@@ -19,7 +17,8 @@ export type Pharmacy = {
   operating_hours?: OperatingHours | null;
   description_raw?: string | null;
   gemini_summary?: string | null;
-  intelligence_report?: PharmacyIntelligenceReport | null;
+  // 저장된 원본 JSON. 형식·버전이 검증되지 않았으므로 parseStoredIntelligenceReport로만 읽는다.
+  intelligence_report?: unknown;
   enriched_at?: string | null;
   skipped_at?: string | null;
   province?: string | null;
