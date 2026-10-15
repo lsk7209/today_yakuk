@@ -382,9 +382,10 @@ async function Content({
           })}
         </ol>
 
-        {(contentQueue?.ai_summary || pharmacy.gemini_summary) && (
+        {contentQueue?.ai_summary && (
           <div className="rounded-2xl bg-emerald-50/50 p-4 border border-emerald-100 text-sm text-gray-700 leading-relaxed">
-            {contentQueue?.ai_summary || pharmacy.gemini_summary}
+            <p className="mb-1 text-xs font-bold text-emerald-700">AI 보조 요약 · 검증 전 참고용</p>
+            {contentQueue.ai_summary}
           </div>
         )}
       </section>
