@@ -108,6 +108,7 @@
 - 약국 상세: 인근 약국 조회 실패는 페이지 전체 500이 아니라 비교 섹션만 숨김.
 - 정류장 목록을 도보 시간순으로 정렬("가장 가까운" 문구 정확성), 점검 스크립트 이중 집계 수정.
 - **코드 준비 완료, 실행은 승인 필요(DB 쓰기)**: `scripts/enrich-pharmacies.ts --reenrich-legacy`로 v2가 아닌 기존 보강 약국을 후보에 포함(기본 동작 불변, 테스트 추가). 원인: 기존 v1 리포트 약국은 보강 스크립트가 `enriched_at IS NULL`만 고르므로 외부 장소 데이터(정류장·키워드·편의시설)가 복구되지 않음. v1 행 `enriched_at` 초기화 또는 후보 조건에 `version != 2` 추가 필요.
+- **읽기 전용 점검 실행(2026-10-15, 승인 후)**: `npm run audit:intelligence-reports`를 `E:\web	odaypharm\.env.local`의 libsql DB에 실행 → `intelligence_report`가 있는 행 0건(v1·v2·의심 문구 모두 0). 이 DB가 운영 DB와 같은지는 확인하지 못했다. 운영 DB가 맞다면 v1 복구 이슈는 해당 없음, 다른 DB라면 운영 DB에서 재실행 필요. 쓰기는 하지 않았다.
 - 확인 필요: 기본 배포는 AdSense `disabled`(게시자 ID 미설정). 키워드 "상위" 표현은 원천 정렬 순서에 의존.
 
 신규 대량 글은 만들지 않았다.
