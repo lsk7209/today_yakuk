@@ -113,12 +113,11 @@ export default function Page() {
 
         {/* Hook=H2 statistic — 첫 단락에 출처 있는 수치 1개 이상 */}
         <p className="text-base leading-relaxed text-gray-700">
-          건강보험심사평가원 자료에 따르면, 국내 만성질환자(고혈압·당뇨·고지혈증 등)는
-          1,500만 명을 넘어서며 전체 외래 진료의 약 40%를 차지한다. 이들 대부분은
-          정기적으로 처방약을 복용해야 하는데, 연휴가 길어질수록 처방전 유효기간과
-          약국 운영 여부가 복잡하게 얽힌다. 이 글에서는 처방전 유효기간 규정부터
+          고혈압·당뇨·고지혈증 등 만성질환으로 정기적으로 처방약을 복용하는 분들은
+          연휴가 길어질수록 처방전 유효기간과
+          약국 운영 여부를 미리 확인해야 한다. 이 글에서는 처방전 유효기간 규정부터
           연휴 중 약을 수령하는 단계별 방법, 그리고 응급 상황 대처까지
-          보건복지부·심평원 공식 자료를 근거로 정리한다.
+          공공기관 안내를 확인하는 방법 위주로 정리한다.
         </p>
 
         <div className="flex flex-wrap gap-2 pt-2">
@@ -172,17 +171,16 @@ export default function Page() {
             일수를 적용하지 말고, 불명확하면 발급 의료기관에 문의하세요.
           </li>
           <li>
-            <strong>만성질환자 1,500만 명 이상</strong> — 전체 외래 진료의 약
-            40% 해당, 연휴 처방약 공백에 가장 취약한 집단
-            (건강보험심사평가원)
+            <strong>복용 중인 약의 남은 일수 확인</strong> — 연휴 시작 전에 남은 약이
+            연휴 기간을 넘기는지 계산해 두세요.
           </li>
           <li>
-            <strong>비상약국 1일 평균 약 1만 3천여 곳 운영</strong> — 그러나
-            야간 운영은 권역별 1~3곳에 불과 (국민건강보험공단)
+            <strong>비상약국·야간 운영 약국은 날짜마다 다름</strong> — 방문 전
+            약국 운영 여부를 전화나 공식 조회로 확인
           </li>
           <li>
-            <strong>연휴 전 7일 이내 처방 권고</strong> — 보건복지부가 만성질환자에게
-            연휴 시작 최소 1주 전 충분한 처방을 받아 둘 것을 권고
+            <strong>연휴 전 미리 처방</strong> — 가능한 한 연휴 시작 전에 진료를 받아
+            필요한 일수만큼 처방받아 두세요(처방 일수는 의사가 판단)
           </li>
         </ul>
       </section>
@@ -301,10 +299,10 @@ export default function Page() {
               4단계 — 연휴 중 비상약국 또는 야간약국 활용
             </p>
             <p className="text-sm text-gray-600 leading-relaxed">
-              연휴 중 약이 부족한 경우 비상약국을 활용할 수 있다. 국민건강보험공단
-              자료에 따르면 연휴 기간 1일 평균 약 1만 3천여 곳의 비상약국이
-              운영되나, 야간에는 권역별 1~3곳에 불과하다. 보건복지부 상담전화
-              129 또는 119를 통해 가까운 운영 약국 안내를 받을 수 있다.
+              연휴 중 약이 부족한 경우 비상약국을 활용할 수 있다. 연휴에 운영하는 약국과
+              야간 운영 약국은 날짜와 지역마다 다르다. 방문 전 전화로 운영 여부와
+              재고를 확인하고, 보건복지부 상담전화 129 또는 119에서도
+              안내를 받을 수 있다.
             </p>
           </li>
           <li className="city-card border bg-white p-5">
@@ -314,8 +312,8 @@ export default function Page() {
             <p className="text-sm text-gray-600 leading-relaxed">
               처방전이 만료되었거나 약이 완전히 소진된 응급 상황에서는 응급실을
               방문해 원내 처방 및 조제 가능 여부를 확인할 수 있다. 단,
-              비응급 사유로 응급실을 방문할 경우 대기가 매우 길고 비용이 높아질 수
-              있으므로, 사전 비상약국 확인이 선행되어야 한다.
+              비응급 사유로 응급실을 방문할 경우 대기가 매우 길고 본인부담 등 비용이
+              달라질 수 있으므로, 사전 비상약국 확인이 선행되어야 한다.
             </p>
           </li>
         </ol>
@@ -336,9 +334,8 @@ export default function Page() {
           연휴 전 vs 연휴 중 — 약 수령 방법 비교
         </h2>
         <p className="text-base leading-relaxed text-gray-700">
-          국민건강보험공단 자료를 바탕으로 세 가지 경로를 비교하면 아래와 같다.
-          처방약 수령 경로에 따라 접근성과 비용 차이가 크게 벌어진다는 점에서,
-          연휴 전 미리 처방을 받아 두는 것이 가장 효율적이다.
+          세 가지 경로를 비교하면 아래와 같다. 경로에 따라 접근성과 대기 시간이
+          다를 수 있으므로, 연휴 전 미리 처방을 받아 두는 편이 안전하다.
         </p>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-sm">
@@ -367,7 +364,7 @@ export default function Page() {
                   일반 의원·약국 전체
                 </td>
                 <td className="border border-gray-200 px-4 py-3 text-gray-600">
-                  1일 1만 3천여 곳(야간 1~3곳/권역)
+                  날짜·지역별로 다름(전화 확인)
                 </td>
                 <td className="border border-gray-200 px-4 py-3 text-gray-600">
                   권역별 응급의료센터
@@ -384,7 +381,7 @@ export default function Page() {
                   기존 처방전 필요
                 </td>
                 <td className="border border-gray-200 px-4 py-3 text-gray-600">
-                  응급 처방 가능
+                  의료진 판단에 따름
                 </td>
               </tr>
               <tr>
@@ -406,13 +403,13 @@ export default function Page() {
                   비용
                 </td>
                 <td className="border border-gray-200 px-4 py-3 text-gray-600">
-                  정상 (건강보험 적용)
+                  건강보험 적용(본인부담은 기관·처방별로 다름)
                 </td>
                 <td className="border border-gray-200 px-4 py-3 text-gray-600">
-                  정상 (건강보험 적용)
+                  건강보험 적용(본인부담은 기관·처방별로 다름)
                 </td>
                 <td className="border border-gray-200 px-4 py-3 text-gray-600">
-                  응급실 가산 요금 발생 가능
+                  비응급 이용 시 본인부담이 달라질 수 있어 의료기관에 확인
                 </td>
               </tr>
             </tbody>
@@ -470,9 +467,8 @@ export default function Page() {
           앞으로의 변화 — 연휴 처방 정책 전망
         </h2>
         <p className="text-base leading-relaxed text-gray-700">
-          건강보험심사평가원 통계는 만성질환 외래 진료 비중이 매년 증가 추세임을
-          보여준다. 향후 변수는 두 가지다. 첫째, 고령 인구 증가에 따른 만성질환자
-          수 확대로 연휴 처방 수요가 더 늘어날 가능성이다. 둘째, 디지털 처방전
+          향후 변수는 두 가지다. 첫째, 고령 인구 증가로 연휴 처방 수요가 늘어날
+          가능성이다. 둘째, 디지털 처방전
           확대 또는 비대면 진료 제도화 여부다. 보건복지부가 연휴 비대면 진료
           한시 허용 범위를 어떻게 조정하는지가, 향후 연휴 처방 공백 문제의
           완화 신호로 작동할 것으로 보인다.
@@ -536,8 +532,8 @@ export default function Page() {
       >
         <p className="mb-2">
           이 글은 AI 도구를 활용해 보건복지부·건강보험심사평가원·국민건강보험공단·식품의약품안전처
-          등 공개된 의료·정책 자료를 정리·요약한 결과입니다. 사실 확인은 출처 링크의 원문을
-          우선합니다.
+          등 공개된 안내를 참고해 작성했습니다. 통계 수치는 싣지 않았고, 비용·운영 여부는
+          의료기관·약국에 직접 확인하세요. 사실 확인은 출처 링크의 원문을 우선합니다. 최종 편집일: 2026년 10월 15일.
         </p>
         {/* ── YMYL Disclaimer ── */}
         <p className="border-l-4 border-amber-400 bg-amber-50 pl-3 py-2 text-amber-800">
