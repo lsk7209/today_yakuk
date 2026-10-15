@@ -31,7 +31,7 @@ async function main() {
       counts.unparsable += 1;
     }
     if (parseStoredIntelligenceReport(parsed)) counts.validV2 += 1;
-    else counts.legacyOrInvalid += 1;
+    else if (parsed !== null) counts.legacyOrInvalid += 1;
 
     for (const [label, pattern] of SUSPECT_PATTERNS) {
       if (!pattern.test(raw)) continue;

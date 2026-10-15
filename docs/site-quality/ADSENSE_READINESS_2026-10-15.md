@@ -102,6 +102,14 @@
 - 임신·만성질환 글: 용량·기준 수치와 복용 지시 제거, "의사·약사 확인" 안내로 대체(커밋 dd021aa). 의료 검수는 여전히 필요.
 - 남은 확인: 의료 검수 전 표기 금지, 위 수치 원문 대조, 신규 수집 중단은 워크플로우 변경이라 미실행.
 
+### 4-2. 독립 리뷰(code-reviewer) 반영
+
+- 사이트맵 503 가드 제거: 라우트가 `force-static`+`revalidate`라 정상 Response(503)가 ISR에 캐시되어 이전 정상 사이트맵을 덮어쓸 수 있음(Next 소스 기준 판단, 실서버 재현은 못 함). 오류를 그대로 던져 이전 캐시를 유지하도록 변경, 테스트 12a 교체.
+- 약국 상세: 인근 약국 조회 실패는 페이지 전체 500이 아니라 비교 섹션만 숨김.
+- 정류장 목록을 도보 시간순으로 정렬("가장 가까운" 문구 정확성), 점검 스크립트 이중 집계 수정.
+- **미해결(승인 필요, DB 쓰기)**: 기존 v1 리포트 약국은 보강 스크립트가 `enriched_at IS NULL`만 고르므로 외부 장소 데이터(정류장·키워드·편의시설)가 복구되지 않음. v1 행 `enriched_at` 초기화 또는 후보 조건에 `version != 2` 추가 필요.
+- 확인 필요: 기본 배포는 AdSense `disabled`(게시자 ID 미설정). 키워드 "상위" 표현은 원천 정렬 순서에 의존.
+
 신규 대량 글은 만들지 않았다.
 
 ## 5. QA 결과
@@ -110,7 +118,7 @@
 |---|---|---|---|
 | `npm run test` (unit + intelligence + ads + robots + data-failure + api-content) | **PASS** (기존 42건 포함, 신규 약 30건) | 모의·로컬 sqlite | 기존 테스트 기대값은 약화하지 않았음 |
 | 필수 회귀 1~10 | PASS (`pharmacy-facts.test.ts`) | 모의 | |
-| 11·12 (없는 ID vs 장애, 복구) | PASS (`data-failure.test.ts`) + 로컬 dev 장애 주입으로 사이트맵 503·`no-store` 확인 | 로컬 파일 DB | |
+| 11·12 (없는 ID vs 장애, 복구) | PASS (`data-failure.test.ts`) + 로컬 dev 장애 주입으로 사이트맵 비정상 응답 확인(이후 독립 리뷰로 503 가드 제거, 아래 4-2 참조) | 로컬 파일 DB | |
 | 13~15 (광고 상태) | PASS (`adsense-config.test.ts`) | 모의 | |
 | 17 (robots 정책표) | PASS (`robots-policy.test.ts`) | — | |
 | 로컬 dev 렌더링 (fixture 6종 + 비교군) | PASS: 시간표 없음/심야/일요일만/요일상이/옛 v1/손상 리포트 모두 렌더, 금지 문구 0건, 비교군 표본·기준 문구 노출 | 로컬 fixture | HTTP 상태는 dev 스트리밍상 전부 200이라 5xx/404 구분은 **미검증** |
@@ -137,7 +145,7 @@
 | 운영 데이터 보정 | 계획만 | ① `npm run audit:intelligence-reports`로 건수 확인 ② 백업(Turso 스냅샷/덤프) ③ 필요 시 `enrich` 재실행(v2) — 별도 승인 |
 | 캐시 갱신 | 계획만 | `/pharmacy/*`는 ISR 24h. 즉시 반영하려면 `/api/revalidate`(secret) 경로별 호출. 범위: `/pharmacy/[id]`, `/[province]/[city]`, `/sitemap*` |
 | 롤백 | 이전 이미지 태그로 복귀. 코드 변경은 DB 스키마·데이터 변경 없음 | |
-| 배포 후 재검증 | `curl -I` 없는 hpid → 404 / DB 장애 시뮬레이션 → 5xx·사이트맵 503 / `/sitemap.xml`·`/ads.txt` 헤더·내용 / `/robots.txt` / 상세 페이지 금지 문구 0건 / GSC URL 검사(홈·상세·블로그·위키) | |
+| 배포 후 재검증 | `curl -I` 없는 hpid → 404 / DB 장애 시뮬레이션 → 5xx·사이트맵 5xx(이전 캐시가 있으면 유지) / `/sitemap.xml`·`/ads.txt` 헤더·내용 / `/robots.txt` / 상세 페이지 금지 문구 0건 / GSC URL 검사(홈·상세·블로그·위키) | |
 | 별도 승인 필요한 외부 작업 | push·배포, 운영 DB 쓰기, 애드센스 등록·검토 요청, GSC 설정, 문의 메일 수신 확인, EEA/영국/스위스 대상 광고 시 인증 CMP 도입 여부 | |
 
 ## 7. 알려진 한계·미확인

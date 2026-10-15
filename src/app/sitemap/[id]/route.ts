@@ -2,20 +2,16 @@ import { getSitemapEntries } from "@/lib/sitemap-content";
 import { parseSitemapId } from "@/lib/sitemap-id";
 import { getSitemapIds } from "@/lib/sitemap";
 import { cacheDbRead } from "@/lib/db-read-cache";
-import { withSitemapFailureGuard } from "@/lib/sitemap-response";
 
 export const dynamic = "force-static";
 export const revalidate = 3600;
 
-export function GET(
+// DB 장애는 오류로 전파한다(정상 Response(503)는 ISR이 캐시해 이전 사이트맵을 덮어씀).
+export async function GET(
   _request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  return withSitemapFailureGuard(() => buildSitemap(context.params));
-}
-
-async function buildSitemap(paramsPromise: Promise<{ id: string }>) {
-  const { id: filename } = await paramsPromise;
+  const { id: filename } = await context.params;
   if (!filename.endsWith(".xml")) return new Response("Not found", { status: 404 });
 
   const id = filename.slice(0, -4);

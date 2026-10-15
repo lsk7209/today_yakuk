@@ -165,7 +165,7 @@ async function Content({
 
   const regionList =
     pharmacy.province && pharmacy.city
-      ? await getPharmaciesByRegion(pharmacy.province, pharmacy.city)
+      ? await getPharmaciesByRegion(pharmacy.province, pharmacy.city).catch(() => [])
       : [];
   const nearby = findNearbyWithinKm(pharmacy, regionList);
 

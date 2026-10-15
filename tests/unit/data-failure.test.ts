@@ -7,7 +7,6 @@ import { resetTursoClientForTest } from "../../src/lib/turso";
 import { DataReadError } from "../../src/lib/data/errors";
 import { getIndexablePharmacyCount, getPharmaciesByRegionPaginated } from "../../src/lib/data/pharmacies";
 import { getSitemapIds } from "../../src/lib/sitemap";
-import { withSitemapFailureGuard } from "../../src/lib/sitemap-response";
 
 const dir = mkdtempSync(join(tmpdir(), "todaypharm-failure-"));
 
@@ -35,16 +34,11 @@ async function main() {
   await assert.rejects(() => getSitemapIds(), DataReadError, "sitemap ids must not collapse to ['static']");
   console.log("PASS 11. DB failure rejects instead of returning 0 / [] / empty sitemap ids");
 
-  const failed = await withSitemapFailureGuard(async () => {
-    await getSitemapIds();
-    return new Response("ok");
-  });
-  assert.equal(failed.status, 503);
-  assert.match(failed.headers.get("Cache-Control") ?? "", /no-store/);
-  assert.ok(failed.headers.get("Retry-After"));
-  const passthrough = await withSitemapFailureGuard(async () => new Response("<urlset/>", { status: 200 }));
-  assert.equal(passthrough.status, 200);
-  console.log("PASS 12a. sitemap guard returns uncacheable 503 on failure and passes success through");
+  // 12a. 사이트맵 라우트는 가드 없이 오류를 던져야 ISR이 이전 캐시를 유지한다(정상 Response 503은 캐시됨).
+  const routeSource = readFileSync("src/app/sitemap/[id]/route.ts", "utf8") + readFileSync("src/app/sitemap-index.xml/route.ts", "utf8");
+  assert.doesNotMatch(routeSource, /status:\s*503/);
+  assert.doesNotMatch(routeSource, /catch\s*\(/);
+  console.log("PASS 12a. sitemap routes propagate DB errors instead of returning a cacheable 503");
 
   // Recovery: nothing from the failed period is remembered.
   switchDatabase(`file:${healthyPath}`);

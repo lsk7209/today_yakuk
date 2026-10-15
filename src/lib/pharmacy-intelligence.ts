@@ -225,7 +225,9 @@ function buildTransitStops(
       walkMeters: b.walkMeters,
       routes: b.routes.slice(0, 8),
     })),
-  ].slice(0, 4);
+  ]
+    .sort((a, b) => (a.walkMinutes ?? Infinity) - (b.walkMinutes ?? Infinity))
+    .slice(0, 4);
 }
 
 function pickVisualCategory(
