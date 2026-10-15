@@ -226,6 +226,16 @@ async function main() {
     assert.equal(batch.length, 2);
     const provinces = new Set(batch.map((p) => p.province));
     assert.equal(provinces.size, 2, "Must sample evenly across distinct provinces and exclude skipped_at rows");
+
+    // 이미 보강된 행: A1=v1, A2=v2, B1=깨진 JSON. 기본 선택에서는 모두 제외, includeLegacy에서는 v1·깨진 JSON만 포함.
+    await db.batch([
+      { sql: "UPDATE pharmacies SET enriched_at = '2026-10-01', intelligence_report = ? WHERE hpid = 'A1'", args: ['{"version":1}'] },
+      { sql: "UPDATE pharmacies SET enriched_at = '2026-10-01', intelligence_report = ? WHERE hpid = 'A2'", args: ['{"version":2}'] },
+      { sql: "UPDATE pharmacies SET enriched_at = '2026-10-01', intelligence_report = ? WHERE hpid = 'B1'", args: ["{broken"] },
+    ]);
+    assert.equal((await selectCategoryBalancedBatch(db, 10)).length, 0);
+    const legacy = (await selectCategoryBalancedBatch(db, 10, true)).map((p) => p.hpid).sort();
+    assert.deepEqual(legacy, ["A1", "B1"]);
     db.close();
   });
 }

@@ -580,16 +580,23 @@ export function formatStatsTable(stats: CategoryStatRow[]): string {
   return lines.join("\n");
 }
 
+// 기본은 미보강 약국만. includeLegacy=true면 이미 보강됐지만 저장 리포트가 v2가 아닌 약국도 다시 고른다.
+// (v1 리포트는 화면에서 무시되므로 외부 장소 데이터 복구에 필요. json_valid로 깨진 JSON 오류를 피한다.)
+const NEEDS_ENRICHMENT_SQL = "enriched_at IS NULL";
+const NEEDS_V2_REENRICHMENT_SQL = `(enriched_at IS NULL OR CASE WHEN json_valid(intelligence_report) THEN json_extract(intelligence_report, '$.version') END IS NOT 2)`;
+
 export async function selectCategoryBalancedBatch(
   db: Client,
   limit: number,
+  includeLegacy = false,
 ): Promise<Pharmacy[]> {
+  const pendingSql = includeLegacy ? NEEDS_V2_REENRICHMENT_SQL : NEEDS_ENRICHMENT_SQL;
   const categoriesRes = await withDbRetry(() =>
     db.execute(`
       SELECT DISTINCT province
       FROM pharmacies
       WHERE ${PHARMACY_INDEXABLE_PREDICATE}
-        AND enriched_at IS NULL
+        AND ${pendingSql}
         AND skipped_at IS NULL
         AND province IS NOT NULL
       ORDER BY province ASC
@@ -609,7 +616,7 @@ export async function selectCategoryBalancedBatch(
           SELECT *
           FROM pharmacies
           WHERE ${PHARMACY_INDEXABLE_PREDICATE}
-            AND enriched_at IS NULL
+            AND ${pendingSql}
             AND skipped_at IS NULL
             AND province = ?
           ORDER BY updated_at DESC, hpid ASC
@@ -723,7 +730,11 @@ async function runCli() {
     return;
   }
 
-  const candidates = await selectCategoryBalancedBatch(db, limit);
+  const candidates = await selectCategoryBalancedBatch(
+    db,
+    limit,
+    args.includes("--reenrich-legacy"),
+  );
   console.log(`\n🚀 [Enrich Batch] 총 ${candidates.length}건 카테고리 균등 샘플링 배치 시작 (요청 limit=${limit})`);
 
   let enrichedCount = 0;
