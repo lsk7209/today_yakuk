@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { canRequestAds, isAdsenseServingEnabled } from "@/lib/ad-policy";
+import { getAdsenseClientId } from "@/lib/site-config";
 import { useMigrationStaging } from "@/components/staging/StagingProvider";
 
 declare global {
@@ -36,9 +37,7 @@ export default function AdSlot({
   const pathname = usePathname() ?? "/";
   const staging = useMigrationStaging();
 
-  const pubId = process.env.NEXT_PUBLIC_ADSENSE_PUB_ID ||
-    process.env.NEXT_PUBLIC_ADSENSE_ID ||
-    "ca-pub-3050601904412736";
+  const pubId = getAdsenseClientId();
   const servingAllowed = !staging && isAdsenseServingEnabled() && canRequestAds(pathname, pageEligible);
 
   useEffect(() => {

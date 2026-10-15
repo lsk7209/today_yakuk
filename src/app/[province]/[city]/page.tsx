@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -30,6 +31,11 @@ type SearchParams = {
 
 const PAGE_SIZE = 50;
 
+// generateMetadata와 본문이 같은 요청에서 같은 조회 결과를 쓰도록 요청 단위로 공유한다(추가 DB 읽기 없음).
+const loadRegionPage = cache((province: string, city: string, offset: number) =>
+  getPharmaciesByRegionPaginated(province, city, PAGE_SIZE, offset),
+);
+
 export async function generateMetadata({
   params,
   searchParams,
@@ -45,6 +51,9 @@ export async function generateMetadata({
   const currentPage = getPageNumber(pageParam);
   const basePath = `/${encodeURIComponent(canonicalProvince)}/${encodeURIComponent(city)}`;
   const canonicalPath = currentPage > 1 ? `${basePath}?page=${currentPage}` : basePath;
+  const { items } = await loadRegionPage(canonicalProvince, city, (currentPage - 1) * PAGE_SIZE);
+  // 존재하지 않는 지역·페이지는 본문이 notFound이므로 색인·canonical 신호를 내지 않는다.
+  if (items.length === 0) return { robots: { index: false, follow: false } };
 
   const title = `${canonicalProvince} ${cityDisplay} 약국${currentPage > 1 ? ` ${currentPage}페이지` : ""} | 영업시간·전화 찾기`;
   const description = `${canonicalProvince} ${cityDisplay} 약국의 등록 영업시간과 현재 운영 상태, 전화번호를 확인하세요. 실제 운영과 재고는 방문 전 전화 확인을 권장합니다.`;
@@ -91,7 +100,7 @@ export default async function ProvinceCityPage({
   const offset = (currentPage - 1) * PAGE_SIZE;
 
   const [{ items, total }, cities] = await Promise.all([
-    getPharmaciesByRegionPaginated(canonicalProvince, city, PAGE_SIZE, offset),
+    loadRegionPage(canonicalProvince, city, offset),
     city === "전체" ? getCitiesByProvince(canonicalProvince) : Promise.resolve([]),
   ]);
 

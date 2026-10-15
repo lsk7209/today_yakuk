@@ -17,13 +17,10 @@ const WIKI_DESCRIPTION = "식약처 공공데이터 기반 영양제 성분, 기
 // searchParams makes this page dynamic — cache the expensive count separately
 const getCachedTotalCount = unstable_cache(
   async () => {
-    try {
-      const db = getTursoClient();
-      const result = await db.execute("SELECT COUNT(*) as cnt FROM supplements");
-      return Number(result.rows[0]?.cnt ?? 0);
-    } catch {
-      return 0;
-    }
+    // 조회 실패를 0건으로 바꾸지 않는다. 던진 오류는 unstable_cache에 저장되지 않는다.
+    const db = getTursoClient();
+    const result = await db.execute("SELECT COUNT(*) as cnt FROM supplements");
+    return Number(result.rows[0]?.cnt ?? 0);
   },
   ["supplements-total-count"],
   { revalidate: 3600 }

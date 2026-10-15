@@ -2,15 +2,20 @@ import { getSitemapEntries } from "@/lib/sitemap-content";
 import { parseSitemapId } from "@/lib/sitemap-id";
 import { getSitemapIds } from "@/lib/sitemap";
 import { cacheDbRead } from "@/lib/db-read-cache";
+import { withSitemapFailureGuard } from "@/lib/sitemap-response";
 
 export const dynamic = "force-static";
 export const revalidate = 3600;
 
-export async function GET(
+export function GET(
   _request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> },
 ) {
-  const { id: filename } = await params;
+  return withSitemapFailureGuard(() => buildSitemap(context.params));
+}
+
+async function buildSitemap(paramsPromise: Promise<{ id: string }>) {
+  const { id: filename } = await paramsPromise;
   if (!filename.endsWith(".xml")) return new Response("Not found", { status: 404 });
 
   const id = filename.slice(0, -4);

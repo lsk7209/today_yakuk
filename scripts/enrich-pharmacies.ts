@@ -761,12 +761,12 @@ async function runCli() {
       if (!peers && pharmacy.province) {
         const peerRes = await withDbRetry(() =>
           db.execute({
-            sql: "SELECT operating_hours FROM pharmacies WHERE province = ? LIMIT 100",
-            args: [pharmacy.province!],
+            sql: "SELECT hpid, operating_hours FROM pharmacies WHERE province = ? AND city = ?",
+            args: [pharmacy.province!, pharmacy.city ?? ""],
           }),
         );
         peers = peerRes.rows.map((r) => ({
-          hpid: "",
+          hpid: String(r.hpid),
           name: "",
           address: "",
           operating_hours: parseJson(r.operating_hours as string | null, null),
@@ -789,7 +789,7 @@ async function runCli() {
 
       enrichedCount += 1;
       console.log(
-        `[${i + 1}/${candidates.length}] OK   (${pharmacy.province} ${pharmacy.city}) ${pharmacy.name} -> 키워드 ${report.keywordAnalysis.topKeywords.length}개 / 정류장 ${report.visitGuide.transitStops.length}곳 보완 완료`,
+        `[${i + 1}/${candidates.length}] OK   (${pharmacy.province} ${pharmacy.city}) ${pharmacy.name} -> 키워드 ${(report.reviewInsights?.topKeywords.length ?? 0)}개 / 정류장 ${report.visitGuide.transitStops.length}곳 보완 완료`,
       );
     } catch (err) {
       if (err instanceof CircuitBreakerError) {

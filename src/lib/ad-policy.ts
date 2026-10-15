@@ -1,3 +1,5 @@
+import { getAdsenseClientId } from "@/lib/site-config";
+
 const AD_EXCLUDED_PREFIXES = [
   "/admin",
   "/api",
@@ -19,8 +21,17 @@ export function isAdExcludedPath(pathname: string): boolean {
   );
 }
 
+// 내부 구분이며 Google 계정 상태 명칭이 아니다.
+// disabled: 광고 요청 없음 / verification: 사이트 확인용 메타 태그만 / serving: 광고 요청 허용
+export type AdsenseState = "disabled" | "verification" | "serving";
+
+export function getAdsenseState(): AdsenseState {
+  if (!getAdsenseClientId()) return "disabled";
+  return isTruthyFlag(process.env.NEXT_PUBLIC_ADSENSE_SERVING_ENABLED) ? "serving" : "verification";
+}
+
 export function isAdsenseServingEnabled(): boolean {
-  return isTruthyFlag(process.env.NEXT_PUBLIC_ADSENSE_SERVING_ENABLED);
+  return getAdsenseState() === "serving";
 }
 
 export function isAffiliateAdsEnabled(): boolean {

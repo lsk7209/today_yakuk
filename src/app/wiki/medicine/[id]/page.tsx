@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -32,33 +33,30 @@ interface Medicine {
     created_at: string;
 }
 
-async function getMedicineById(id: string): Promise<Medicine | null> {
-    try {
-        const { getTursoClient } = await import("@/lib/turso");
-        const db = getTursoClient();
-        const result = await db.execute({ sql: "SELECT * FROM medicines WHERE id = ? LIMIT 1", args: [id] });
-        if (!result.rows.length) return null;
-        const r = result.rows[0];
-        return {
-            id: r.id as string,
-            item_seq: r.item_seq as string,
-            name: r.name as string,
-            manufacturer: r.manufacturer as string | null,
-            efficacy: r.efficacy as string | null,
-            use_method: r.use_method as string | null,
-            warning_general: r.warning_general as string | null,
-            warning_usage: r.warning_usage as string | null,
-            interactions: r.interactions as string | null,
-            side_effects: r.side_effects as string | null,
-            storage_method: r.storage_method as string | null,
-            image_url: r.image_url as string | null,
-            created_at: r.created_at as string,
-        };
-    } catch (e) {
-        console.error("medicine fetch exception", e);
-        return null;
-    }
-}
+// 같은 요청 안에서 generateMetadata와 본문이 같은 조회 결과를 쓰도록 요청 단위로 캐시한다.
+// 행이 없으면 null(404), DB 오류는 그대로 던져 오류 경계가 처리한다(영구 404로 캐시 금지).
+const getMedicineById = cache(async (id: string): Promise<Medicine | null> => {
+    const { getTursoClient } = await import("@/lib/turso");
+    const db = getTursoClient();
+    const result = await db.execute({ sql: "SELECT * FROM medicines WHERE id = ? LIMIT 1", args: [id] });
+    if (!result.rows.length) return null;
+    const r = result.rows[0];
+    return {
+        id: r.id as string,
+        item_seq: r.item_seq as string,
+        name: r.name as string,
+        manufacturer: r.manufacturer as string | null,
+        efficacy: r.efficacy as string | null,
+        use_method: r.use_method as string | null,
+        warning_general: r.warning_general as string | null,
+        warning_usage: r.warning_usage as string | null,
+        interactions: r.interactions as string | null,
+        side_effects: r.side_effects as string | null,
+        storage_method: r.storage_method as string | null,
+        image_url: r.image_url as string | null,
+        created_at: r.created_at as string,
+    };
+});
 
 export async function generateMetadata({
     params,

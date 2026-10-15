@@ -1,13 +1,18 @@
 import { getSiteUrl } from "@/lib/site-url";
 import { getSitemapIds } from "@/lib/sitemap";
 import { cacheDbRead } from "@/lib/db-read-cache";
+import { withSitemapFailureGuard } from "@/lib/sitemap-response";
 
 const siteUrl = getSiteUrl();
 
 export const dynamic = "force-static";
 export const revalidate = 3600;
 
-export async function GET() {
+export function GET() {
+  return withSitemapFailureGuard(buildSitemapIndex);
+}
+
+async function buildSitemapIndex() {
   const ids = await cacheDbRead(["sitemap-ids"], getSitemapIds);
   const items = ids
     .map(

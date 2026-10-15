@@ -1,5 +1,5 @@
 import type { Pharmacy } from "@/types/pharmacy";
-import { formatHourRange, hhmmToMinutes } from "@/lib/hours";
+import { computeHoursProfile } from "@/lib/pharmacy-hours-profile";
 import { getMapSearchAddress } from "@/lib/map";
 
 export type DetailFaq = { question: string; answer: string };
@@ -20,60 +20,13 @@ function extractDong(address?: string | null): string | null {
   return found ?? null;
 }
 
-function slotText(slot?: { open: string | null; close: string | null } | null) {
-  return formatHourRange(slot ?? undefined);
-}
-
-function hasHours(slot?: { open: string | null; close: string | null } | null) {
-  const open = hhmmToMinutes(slot?.open);
-  const close = hhmmToMinutes(slot?.close, true);
-  return open !== null && close !== null && open !== close;
-}
-
 function analyzePattern(pharmacy: Pharmacy) {
-  const h = pharmacy.operating_hours ?? null;
-  if (!h) {
-    return {
-      weekend: "주말 운영 정보 없음",
-      holiday: "공휴일 운영 정보 없음",
-      weekday: "평일 운영 정보 없음",
-    };
-  }
-
-  const sat = h.sat;
-  const sun = h.sun;
-  const hol = h["holiday"];
-  const mon = h.mon;
-  const tue = h.tue;
-  const wed = h.wed;
-  const thu = h.thu;
-  const fri = h.fri;
-
-  const weekdaySlots = [mon, tue, wed, thu, fri];
-  const knownWeekday = weekdaySlots.filter((s) => hasHours(s));
-  const weekday =
-    knownWeekday.length === 0
-      ? "평일 운영 정보 없음"
-      : (() => {
-          // 대표적으로 월~금 중 첫 번째를 보여주되, “대부분 동일” 여부를 함께 표기
-          const first = knownWeekday[0]!;
-          const firstText = slotText(first);
-          const allSame = knownWeekday.length === 5 && knownWeekday.every((s) => slotText(s) === firstText);
-          return allSame ? `평일(월~금) ${firstText}` : `평일은 요일별로 다를 수 있음(예: ${firstText})`;
-        })();
-
-  const weekend =
-    hasHours(sat) && hasHours(sun)
-      ? `주말 운영(토 ${slotText(sat)}, 일 ${slotText(sun)})`
-      : hasHours(sat) && !hasHours(sun)
-        ? `주말 운영(토 ${slotText(sat)}), 일요일은 정보 없음/휴무 가능`
-        : !hasHours(sat) && hasHours(sun)
-          ? `주말 운영(일 ${slotText(sun)}), 토요일은 정보 없음/휴무 가능`
-          : "주말 운영 정보 없음";
-
-  const holiday = hasHours(hol) ? `공휴일 ${slotText(hol)}` : "공휴일 운영 정보 없음";
-
-  return { weekday, weekend, holiday };
+  const profile = computeHoursProfile(pharmacy.operating_hours);
+  return {
+    weekday: profile.weekdayText,
+    weekend: `${profile.saturday.text}, ${profile.sunday.text}`,
+    holiday: profile.holiday.text,
+  };
 }
 
 import { withJosa } from "@/lib/korean-josa";

@@ -1,6 +1,7 @@
 import { Pharmacy } from "@/types/pharmacy";
 import {
   DAY_KEYS,
+  classifyHourSlot,
   formatHHMM,
   getOperatingStatus,
   getSeoulNow,
@@ -68,7 +69,7 @@ export function buildOpeningHoursSpecification(pharmacy: Pharmacy) {
   const hours = pharmacy.operating_hours;
   if (!hours) return [];
   return Object.entries(hours)
-    .filter(([, slot]) => slot?.open && slot?.close)
+    .filter(([, slot]) => classifyHourSlot(slot).kind === "range")
     .map(([day, slot]) => ({
       "@type": "OpeningHoursSpecification",
       dayOfWeek: DAY_TO_SCHEMA[day] ?? day,

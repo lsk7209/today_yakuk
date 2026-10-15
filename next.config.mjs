@@ -55,8 +55,10 @@ const nextConfig = {
           },
         ],
       },
+      // sitemap-index.xml / sitemap.xml은 라우트가 직접 Cache-Control을 정한다.
+      // 여기서 덮어쓰면 DB 장애 시 503 응답까지 하루 동안 CDN에 캐시될 수 있다.
       {
-        source: "/(sitemap-index.xml|sitemap.xml|rss.xml)",
+        source: "/(rss.xml)",
         headers: [
           {
             key: "Cache-Control",

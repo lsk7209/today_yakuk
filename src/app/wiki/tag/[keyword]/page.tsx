@@ -82,8 +82,9 @@ export default async function TagPage({
         count = Number(countResult.rows[0]?.cnt ?? 0);
         productsRows = dataResult.rows as Record<string, unknown>[];
     } catch (e) {
+        // DB 오류를 404로 바꾸지 않는다. 빈 결과만 아래에서 notFound 처리한다.
         console.error('Tag page fetch error:', e);
-        notFound();
+        throw e;
     }
 
     const products = productsRows!.map((r) => ({

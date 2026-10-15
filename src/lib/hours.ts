@@ -153,3 +153,32 @@ export function formatHHMM(value?: string | null) {
   return `${str.slice(0, 2)}:${str.slice(2)}`;
 }
 
+
+export type SlotClass =
+  | { kind: "range"; open: string; close: string; openMin: number; endMin: number; overnight: boolean }
+  | { kind: "unregistered" }
+  | { kind: "invalid" }
+  | { kind: "ambiguous" };
+
+// 시간표 한 칸을 "등록됨/미등록/형식 오류/시작=종료(휴무·24시간 판별 불가)"로 분류한다.
+// endMin은 익일 마감이면 1440을 더한 값이라 22:00~02:00 같은 심야 영업도 길이를 계산할 수 있다.
+export function classifyHourSlot(
+  slot?: { open: string | null; close: string | null } | null,
+): SlotClass {
+  const hasOpen = slot?.open !== null && slot?.open !== undefined && String(slot.open).trim() !== "";
+  const hasClose = slot?.close !== null && slot?.close !== undefined && String(slot.close).trim() !== "";
+  if (!hasOpen && !hasClose) return { kind: "unregistered" };
+  const openMin = hhmmToMinutes(slot?.open);
+  const closeMin = hhmmToMinutes(slot?.close, true);
+  if (openMin === null || closeMin === null) return { kind: "invalid" };
+  if (openMin === closeMin) return { kind: "ambiguous" };
+  const overnight = closeMin < openMin;
+  return {
+    kind: "range",
+    open: slot!.open!,
+    close: slot!.close!,
+    openMin,
+    endMin: overnight ? closeMin + 1440 : closeMin,
+    overnight,
+  };
+}

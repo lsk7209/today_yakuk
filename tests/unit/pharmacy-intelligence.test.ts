@@ -36,7 +36,7 @@ async function main() {
     assert.equal(withJosa("종로우리약국(서울 종로구)", "은/는"), "종로우리약국(서울 종로구)은");
   });
 
-  await run("intelligence report synthesis builds 5 proprietary sections without external images or ephemeral status", () => {
+  await run("intelligence report v2 builds only verified sections from registered hours and matched external data", () => {
     const pharmacy = {
       hpid: "A1100001",
       name: "종로우리약국",
@@ -83,19 +83,17 @@ async function main() {
     };
 
     const report = buildPharmacyIntelligenceReport(pharmacy, external);
-    assert.equal(report.version, 1);
-    assert.equal(report.briefing.lines.length, 3);
-    assert.match(report.briefing.lines[0], /종로우리약국은/);
-    assert.match(report.costAnalysis.surchargeWindowText, /30%/);
-    assert.equal(report.keywordAnalysis.topKeywords.length, 3);
+    assert.equal(report.version, 2);
+    assert.match(report.briefing.lines[0]!, /종로우리약국은/);
+    assert.equal(report.reviewInsights?.topKeywords.length, 3);
+    assert.equal(report.reviewInsights?.topKeywords[0]?.ratioBasis, "voters");
     assert.equal(report.visitGuide.transitStops.length, 1);
-    assert.equal(report.peerComparison.metrics.length, 4);
-    assert.equal(report.faq.length, 4);
+    assert.equal(report.peerComparison, null, "no peers supplied");
     assert.match(report.faq[0]!.question, /^종로우리약국은/);
 
     const serialized = JSON.stringify(report);
     assert.doesNotMatch(serialized, /https?:\/\/[^\s"]+\.(?:jpg|jpeg|png|webp|gif)/i);
-    assert.doesNotMatch(serialized, /원천 데이터|데이터 출처 검증/);
+    assert.doesNotMatch(serialized, /30%|표준 조제 수가|scorePercent/);
   });
 
   await run("anti-ban circuit breaker triggers immediately on 403, 429, or CAPTCHA HTML", async () => {
