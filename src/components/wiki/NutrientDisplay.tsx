@@ -69,7 +69,7 @@ export function NutrientDisplay({ nutrients }: NutrientDisplayProps) {
         return (
             <div
                 key={`${nutrient.name}-${index}`}
-                className={`nutrient-card group bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 hover:border-brand-300 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 ${isVisible ? 'animate' : ''}`}
+                className={`nutrient-card city-card group p-4 sm:p-5 ${isVisible ? 'animate' : ''}`}
                 style={{ animationDelay: `${(index + offset) * 0.1}s` }}
             >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -109,8 +109,7 @@ export function NutrientDisplay({ nutrients }: NutrientDisplayProps) {
                             ) : (
                                 <div className="h-10 flex items-center justify-end">
                                     <div className="text-right">
-                                        <span className="block text-[10px] text-slate-400 font-bold leading-none mb-1">고함량 원료</span>
-                                        <span className="text-xs text-brand-500 font-black italic">전문가 검증 품질</span>
+                                        <span className="text-xs text-[var(--muted)] font-bold">1일 기준치 또는 출처 정보 미표시</span>
                                     </div>
                                 </div>
                             )}

@@ -80,50 +80,50 @@ const featuredGuides = [
 export function HomeTrustSections() {
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
+      <section className="city-trust-section rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8 ">
         <div className="max-w-3xl space-y-3">
           <p className="text-xs font-black tracking-[0.18em] text-brand-700">WHY TODAYPHARM</p>
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-900">약국오늘이 제공하는 실제 가치</h2>
-          <p className="text-gray-600 leading-relaxed">
+          <h2 className="text-2xl sm:text-3xl font-black text-[var(--ink)]">약국오늘이 제공하는 실제 가치</h2>
+          <p className="text-[var(--muted)] leading-relaxed">
             약국오늘은 단순히 약국 목록을 모아두는 사이트가 아니라, 급하게 약국이 필요한 순간에
-            <strong className="font-black text-gray-900"> 빠르게 판단하고 바로 움직일 수 있게 돕는 도구형 서비스</strong>
+            <strong className="font-black text-[var(--ink)]"> 빠르게 판단하고 바로 움직일 수 있게 돕는 도구형 서비스</strong>
             입니다. 검색, 확인, 이동까지 이어지는 실제 사용 흐름을 기준으로 화면과 콘텐츠를 구성합니다.
           </p>
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {proofPoints.map((item) => (
-            <article key={item.title} className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
-              <h3 className="text-lg font-black text-gray-900">{item.title}</h3>
+            <article key={item.title} className="rounded-none border border-[var(--ink)] bg-[var(--fog)] p-5">
+              <h3 className="text-lg font-black text-[var(--ink)]">{item.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-700">{item.description}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
+      <section className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8 ">
         <div className="max-w-3xl space-y-3">
           <p className="text-xs font-black tracking-[0.18em] text-brand-700">EDITORIAL POLICY</p>
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-900">신뢰할 수 있는 정보 운영 기준</h2>
-          <p className="text-gray-600 leading-relaxed">
+          <h2 className="text-2xl sm:text-3xl font-black text-[var(--ink)]">신뢰할 수 있는 정보 운영 기준</h2>
+          <p className="text-[var(--muted)] leading-relaxed">
             약국오늘의 글과 검색 화면은 사용자가 광고보다 먼저 필요한 정보를 확인할 수 있도록 설계합니다. 의료적
             판단이 필요한 내용은 일반 정보와 구분하고, 공공데이터 기반 서비스의 한계를 화면 안에서 반복 안내합니다.
           </p>
         </div>
         <ul className="mt-5 grid gap-3 lg:grid-cols-3">
           {editorialStandards.map((item) => (
-            <li key={item} className="rounded-2xl border border-gray-200 bg-slate-50 px-4 py-4 text-sm leading-relaxed text-gray-700">
+            <li key={item} className="rounded-none border border-[var(--ink)] bg-slate-50 px-4 py-4 text-sm leading-relaxed text-gray-700">
               {item}
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
+      <section className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8 ">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-black tracking-[0.18em] text-brand-700">GUIDES</p>
-            <h2 className="text-2xl font-black text-gray-900">가이드 · 영양제 위키</h2>
+            <h2 className="text-2xl font-black text-[var(--ink)]">가이드 · 영양제 위키</h2>
           </div>
           <Link href="/blog" className="text-sm font-black text-brand-700 hover:text-brand-800">
             블로그 전체 보기
@@ -134,9 +134,9 @@ export function HomeTrustSections() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-2xl border border-gray-200 bg-gray-50 p-5 hover:border-brand-300 hover:bg-white hover:shadow-sm"
+              className="rounded-none border border-[var(--ink)] bg-[var(--fog)] p-5 hover:border-brand-300 hover:bg-[var(--white)] hover:"
             >
-              <h3 className="text-lg font-black text-gray-900">{item.title}</h3>
+              <h3 className="text-lg font-black text-[var(--ink)]">{item.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-700">{item.description}</p>
             </Link>
           ))}
@@ -144,15 +144,15 @@ export function HomeTrustSections() {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <article className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
-          <h2 className="text-2xl font-black text-gray-900">데이터 출처와 운영 원칙</h2>
-          <p className="mt-3 text-gray-600 leading-relaxed">
+        <article className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8 ">
+          <h2 className="text-2xl font-black text-[var(--ink)]">데이터 출처와 운영 원칙</h2>
+          <p className="mt-3 text-[var(--muted)] leading-relaxed">
             약국오늘은 공공데이터포털과 공개 위치 데이터를 기반으로 약국 정보를 정리합니다. 데이터 출처와 한계를
             함께 안내해 사용자가 정보를 과신하지 않도록 설계했습니다.
           </p>
           <ul className="mt-5 space-y-3 text-sm leading-relaxed text-gray-700">
             {operatingPrinciples.map((item) => (
-              <li key={item} className="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
+              <li key={item} className="rounded-none border border-[var(--ink)] bg-[var(--fog)] px-4 py-3">
                 {item}
               </li>
             ))}
@@ -168,21 +168,21 @@ export function HomeTrustSections() {
             </a>
             <Link
               href="/about"
-              className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-black text-gray-900 hover:border-brand-300 hover:text-brand-700"
+              className="inline-flex items-center rounded-full border border-[var(--ink)] bg-[var(--white)] px-4 py-2 text-sm font-black text-[var(--ink)] hover:border-brand-300 hover:text-brand-700"
             >
               서비스 소개 자세히 보기
             </Link>
           </div>
         </article>
 
-        <aside className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
-          <h2 className="text-2xl font-black text-gray-900">방문 전 체크리스트</h2>
-          <p className="mt-3 text-gray-600 leading-relaxed">
+        <aside className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8 ">
+          <h2 className="text-2xl font-black text-[var(--ink)]">방문 전 체크리스트</h2>
+          <p className="mt-3 text-[var(--muted)] leading-relaxed">
             약국 검색 결과를 본 뒤 바로 출발하기보다, 아래 항목을 확인하면 불필요한 이동을 크게 줄일 수 있습니다.
           </p>
           <ul className="mt-5 space-y-3 text-sm leading-relaxed text-gray-700">
             {visitChecklist.map((item) => (
-              <li key={item} className="rounded-2xl border border-gray-200 bg-emerald-50/60 px-4 py-3">
+              <li key={item} className="rounded-none border border-[var(--ink)] bg-emerald-50/60 px-4 py-3">
                 {item}
               </li>
             ))}
@@ -196,7 +196,7 @@ export function HomeTrustSections() {
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-black text-gray-900 hover:border-brand-300 hover:text-brand-700"
+              className="inline-flex items-center rounded-full border border-[var(--ink)] bg-[var(--white)] px-4 py-2 text-sm font-black text-[var(--ink)] hover:border-brand-300 hover:text-brand-700"
             >
               정보 수정 문의하기
             </Link>
@@ -204,25 +204,25 @@ export function HomeTrustSections() {
         </aside>
       </section>
 
-      <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
+      <section className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8 ">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-black tracking-[0.18em] text-brand-700">FAQ</p>
-            <h2 className="text-2xl font-black text-gray-900">자주 묻는 질문</h2>
+            <h2 className="text-2xl font-black text-[var(--ink)]">자주 묻는 질문</h2>
           </div>
           <div className="flex gap-3 text-sm">
-            <Link href="/privacy" className="font-bold text-gray-600 hover:text-brand-700">
+            <Link href="/privacy" className="font-bold text-[var(--muted)] hover:text-brand-700">
               개인정보처리방침
             </Link>
-            <Link href="/terms" className="font-bold text-gray-600 hover:text-brand-700">
+            <Link href="/terms" className="font-bold text-[var(--muted)] hover:text-brand-700">
               이용약관
             </Link>
           </div>
         </div>
         <div className="mt-5 space-y-3">
           {HOME_FAQ_ITEMS.map((item) => (
-            <details key={item.question} className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
-              <summary className="cursor-pointer font-black text-gray-900">{item.question}</summary>
+            <details key={item.question} className="rounded-none border border-[var(--ink)] bg-[var(--fog)] p-5">
+              <summary className="cursor-pointer font-black text-[var(--ink)]">{item.question}</summary>
               <p className="mt-2 text-sm leading-relaxed text-gray-700">{item.answer}</p>
             </details>
           ))}

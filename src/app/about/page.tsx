@@ -117,14 +117,14 @@ export default function AboutPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <div className="container py-10 sm:py-14 space-y-10">
+      <div className="city-template container py-10 sm:py-14 space-y-10">
         {/* Hero */}
-        <header className="rounded-3xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+        <header className="city-page-heading rounded-none border border-[var(--ink)] bg-[var(--white)]  overflow-hidden">
           <div className="relative p-6 sm:p-10">
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_15%_15%,rgba(5,150,105,0.12),transparent_40%)]" />
             <div className="relative grid gap-8 lg:grid-cols-[1.15fr_0.85fr] items-center">
               <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 shadow-sm">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[var(--ink)] bg-[var(--white)] px-3 py-1.5 ">
                   <span className="inline-flex items-center rounded-full bg-brand-100 text-brand-700 px-2 py-0.5 text-xs font-black">
                     NEW
                   </span>
@@ -133,7 +133,7 @@ export default function AboutPage() {
                   </span>
                 </div>
 
-                <h1 className="text-3xl sm:text-5xl font-black leading-[1.1] tracking-tight text-gray-900">
+                <h1 className="city-display-medium text-3xl sm:text-5xl font-black leading-[1.1] tracking-tight text-gray-900">
                   가장 빠르고 정확한
                   <br />
                   <span className="text-brand-700">약국오늘</span>으로 약국을 찾으세요
@@ -147,7 +147,7 @@ export default function AboutPage() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
                     href="/nearby"
-                    className="h-12 px-7 rounded-full bg-brand-600 text-white font-black text-base shadow-lg shadow-brand-600/25 hover:bg-brand-700 hover:-translate-y-0.5 transition-all inline-flex items-center justify-center gap-2"
+                    className="h-12 px-7 rounded-full bg-brand-600 text-white font-black text-base   hover:bg-brand-700 hover:-translate-y-0.5 transition-all inline-flex items-center justify-center gap-2"
                   >
                     <LocateFixed className="h-5 w-5" />
                     내 주변 약국 찾기
@@ -162,21 +162,21 @@ export default function AboutPage() {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-                  <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                  <div className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-4 ">
                     <p className="text-xs font-black text-brand-700 flex items-center gap-2 mb-2">
                       <BadgeCheck className="h-4 w-4" />
                       신뢰
                     </p>
                     <p className="font-bold text-gray-900">공공데이터 기반</p>
                   </div>
-                  <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                  <div className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-4 ">
                     <p className="text-xs font-black text-brand-700 flex items-center gap-2 mb-2">
                       <PhoneCall className="h-4 w-4" />
                       안전
                     </p>
                     <p className="font-bold text-gray-900">방문 전 전화 확인 권장</p>
                   </div>
-                  <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                  <div className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-4 ">
                     <p className="text-xs font-black text-brand-700 flex items-center gap-2 mb-2">
                       <Map className="h-4 w-4" />
                       행동
@@ -188,11 +188,11 @@ export default function AboutPage() {
 
               {/* Visual (no external image) */}
               <div className="w-full">
-                <div className="relative aspect-[4/3] rounded-3xl border border-gray-200 bg-gradient-to-br from-emerald-50 via-white to-white shadow-2xl overflow-hidden">
+                <div className="relative aspect-[4/3] rounded-none border border-[var(--ink)] bg-[var(--paper)]  overflow-hidden">
                   <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_70%_30%,rgba(5,150,105,0.18),transparent_45%)]" />
                   <div className="relative h-full p-6 flex flex-col justify-between">
                     <div className="flex items-center justify-between">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-white/80 border border-gray-200 px-3 py-1.5 text-xs font-black text-gray-700">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-[var(--white)]/80 border border-[var(--ink)] px-3 py-1.5 text-xs font-black text-gray-700">
                         <Info className="h-4 w-4 text-brand-700" />
                         큰 글씨·명확한 UI
                       </div>
@@ -201,13 +201,13 @@ export default function AboutPage() {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                      <div className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-4">
                         <p className="text-xs font-black text-gray-500">영업 상태</p>
                         <p className="mt-2 inline-flex items-center rounded-md bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 px-2 py-1 text-xs font-black">
                           영업 중
                         </p>
                       </div>
-                      <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                      <div className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-4">
                         <p className="text-xs font-black text-gray-500">바로가기</p>
                         <div className="mt-2 flex gap-2">
                           <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-700">
@@ -230,7 +230,7 @@ export default function AboutPage() {
         </header>
 
         {/* Data process */}
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-10 shadow-sm">
+        <section className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-10 ">
           <div className="text-center space-y-3">
             <h2 className="text-2xl sm:text-3xl font-black text-gray-900">데이터 처리 과정</h2>
             <p className="text-gray-600">
@@ -239,7 +239,7 @@ export default function AboutPage() {
           </div>
 
           <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-gray-200 via-brand-400 to-gray-200 -z-0" />
+            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-[var(--paper)] -z-0" />
 
             <ProcessCard
               icon={<Database className="h-10 w-10 text-brand-700" />}
@@ -284,7 +284,7 @@ export default function AboutPage() {
         </section>
 
         {/* User guide */}
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-10 shadow-sm">
+        <section className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-10 ">
           <div className="space-y-4 max-w-3xl">
             <p className="text-xs font-black tracking-[0.18em] text-brand-700">USER GUIDE</p>
             <h2 className="text-2xl sm:text-3xl font-black text-gray-900 leading-tight">
@@ -338,7 +338,7 @@ export default function AboutPage() {
           <div className="mt-10 flex justify-center">
             <Link
               href="/"
-              className="h-14 px-10 rounded-full bg-brand-600 text-white font-black text-lg shadow-xl shadow-brand-600/20 hover:scale-[1.03] hover:bg-brand-700 transition-all inline-flex items-center gap-3"
+              className="h-14 px-10 rounded-full bg-brand-600 text-white font-black text-lg   hover:scale-[1.03] hover:bg-brand-700 transition-all inline-flex items-center gap-3"
             >
               약국 찾기 시작하기
               <ArrowRight className="h-6 w-6" />
@@ -347,7 +347,7 @@ export default function AboutPage() {
         </section>
 
         {/* Disclaimer */}
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-10 shadow-sm">
+        <section className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-10 ">
           <div className="grid gap-6 md:grid-cols-[1fr_1.2fr] items-start">
             <div className="space-y-3">
               <p className="text-lg font-black text-gray-900">면책 조항 및 데이터 출처 안내</p>
@@ -369,7 +369,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+            <div className="rounded-none border border-[var(--ink)] bg-gray-50 p-5">
               <div className="flex items-start gap-3">
                 <Info className="h-5 w-5 text-brand-700 mt-0.5" />
                 <div className="space-y-2">
@@ -382,13 +382,13 @@ export default function AboutPage() {
                   <div className="pt-2 flex flex-wrap gap-2">
                     <Link
                       href="/guide/call-navigation-tips"
-                      className="inline-flex items-center rounded-full bg-white border border-gray-200 px-4 py-2 text-xs font-black text-gray-800 hover:border-brand-300 hover:text-brand-700"
+                      className="inline-flex items-center rounded-full bg-[var(--white)] border border-[var(--ink)] px-4 py-2 text-xs font-black text-gray-800 hover:border-brand-300 hover:text-brand-700"
                     >
                       전화·길찾기 팁 보기
                     </Link>
                     <Link
                       href="/contact"
-                      className="inline-flex items-center rounded-full bg-white border border-gray-200 px-4 py-2 text-xs font-black text-gray-800 hover:border-brand-300 hover:text-brand-700"
+                      className="inline-flex items-center rounded-full bg-[var(--white)] border border-[var(--ink)] px-4 py-2 text-xs font-black text-gray-800 hover:border-brand-300 hover:text-brand-700"
                     >
                       정보 수정 문의하기
                     </Link>
@@ -400,23 +400,23 @@ export default function AboutPage() {
         </section>
 
         {/* FAQ */}
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-10 shadow-sm">
+        <section className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-10 ">
           <h2 className="text-2xl font-black text-gray-900">자주 묻는 질문(FAQ)</h2>
           <div className="mt-4 space-y-3">
-            <details className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+            <details className="rounded-none border border-[var(--ink)] bg-gray-50 p-5">
               <summary className="cursor-pointer font-black text-gray-900">약국오늘의 영업 상태는 실시간인가요?</summary>
               <p className="mt-2 text-gray-700 leading-relaxed">
                 영업 상태는 등록된 영업시간 정보를 기준으로 계산합니다. 실제 현장 운영은 변동될 수 있으니 방문 전 전화 확인을
                 권장합니다.
               </p>
             </details>
-            <details className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+            <details className="rounded-none border border-[var(--ink)] bg-gray-50 p-5">
               <summary className="cursor-pointer font-black text-gray-900">공휴일에도 검색이 가능한가요?</summary>
               <p className="mt-2 text-gray-700 leading-relaxed">
                 네. 공휴일/주말 운영 정보를 함께 표시합니다. 다만 공휴일 운영은 변동이 잦아 전화 확인이 가장 안전합니다.
               </p>
             </details>
-            <details className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+            <details className="rounded-none border border-[var(--ink)] bg-gray-50 p-5">
               <summary className="cursor-pointer font-black text-gray-900">정보가 틀렸거나 업데이트가 필요하면 어떻게 하나요?</summary>
               <p className="mt-2 text-gray-700 leading-relaxed">
                 문의 페이지로 알려주시면 확인 후 반영합니다.{" "}
@@ -443,7 +443,7 @@ function ProcessCard({
 }) {
   return (
     <div className="relative z-10 flex flex-col items-center text-center gap-4 group">
-      <div className="h-24 w-24 rounded-full bg-white border-4 border-gray-100 flex items-center justify-center shadow-lg group-hover:border-brand-200 group-hover:scale-[1.05] transition-all duration-300">
+      <div className="h-24 w-24 rounded-full bg-[var(--white)] border-4 border-[var(--border)] flex items-center justify-center  group-hover:border-brand-200 group-hover:scale-[1.05] transition-all duration-300">
         {icon}
       </div>
       <div>
@@ -469,14 +469,14 @@ function StepCard({
 }) {
   return (
     <div
-      className={`group flex flex-col md:flex-row gap-6 p-6 md:p-8 rounded-3xl bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-all ${
+      className={`group flex flex-col md:flex-row gap-6 p-6 md:p-8 rounded-none bg-[var(--white)] border border-[var(--ink)]   transition-all ${
         reverse ? "md:flex-row-reverse" : ""
       }`}
     >
       <div className="w-full md:w-1/2">{visual}</div>
       <div className="flex flex-col justify-center flex-1 gap-3">
         <div className="flex items-center gap-3 mb-2">
-          <span className="flex items-center justify-center h-10 w-10 rounded-full bg-brand-600 text-white font-black text-lg shadow-md">
+          <span className="flex items-center justify-center h-10 w-10 rounded-full bg-brand-600 text-white font-black text-lg ">
             {num}
           </span>
           <h3 className="text-xl font-black text-gray-900">{title}</h3>
@@ -490,12 +490,12 @@ function StepCard({
 function StepVisual({ type }: { type: "gps" | "badge" | "call" }) {
   if (type === "gps") {
     return (
-      <div className="aspect-video rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white overflow-hidden relative flex items-center justify-center">
+      <div className="aspect-video rounded-none border border-[var(--ink)] bg-[var(--paper)] overflow-hidden relative flex items-center justify-center">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_50%,rgba(5,150,105,0.12),transparent_55%)]" />
-        <div className="relative rounded-full bg-gray-900 p-4 shadow-lg">
+        <div className="relative rounded-full bg-gray-900 p-4 ">
           <LocateFixed className="h-10 w-10 text-white" />
         </div>
-        <div className="absolute bottom-3 right-3 rounded-full bg-brand-600 text-white text-[11px] font-black px-3 py-1 shadow-lg">
+        <div className="absolute bottom-3 right-3 rounded-full bg-brand-600 text-white text-[11px] font-black px-3 py-1 ">
           여기 눌러요
         </div>
       </div>
@@ -503,13 +503,13 @@ function StepVisual({ type }: { type: "gps" | "badge" | "call" }) {
   }
   if (type === "badge") {
     return (
-      <div className="aspect-video rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white overflow-hidden relative flex items-center justify-center">
+      <div className="aspect-video rounded-none border border-[var(--ink)] bg-[var(--paper)] overflow-hidden relative flex items-center justify-center">
         <div className="relative flex gap-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-3 opacity-60 blur-[0.6px]">
+          <div className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-3 opacity-60 blur-[0.6px]">
             <div className="h-10 w-10 rounded-full bg-gray-200" />
             <div className="mt-2 h-3 w-20 rounded bg-gray-200" />
           </div>
-          <div className="rounded-2xl border-2 border-brand-300 bg-white p-3 shadow-xl scale-110 relative">
+          <div className="rounded-none border-2 border-brand-300 bg-[var(--white)] p-3  scale-110 relative">
             <div className="absolute -top-3 -right-3 rounded-full bg-brand-600 text-white text-[10px] font-black px-2 py-1">
               영업중
             </div>
@@ -518,7 +518,7 @@ function StepVisual({ type }: { type: "gps" | "badge" | "call" }) {
             </div>
             <div className="mt-2 text-sm font-black text-gray-900">가까운 약국</div>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-3 opacity-60 blur-[0.6px]">
+          <div className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-3 opacity-60 blur-[0.6px]">
             <div className="h-10 w-10 rounded-full bg-gray-200" />
             <div className="mt-2 h-3 w-20 rounded bg-gray-200" />
           </div>
@@ -527,8 +527,8 @@ function StepVisual({ type }: { type: "gps" | "badge" | "call" }) {
     );
   }
   return (
-    <div className="aspect-video rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white overflow-hidden relative flex items-center justify-center">
-      <div className="w-4/5 rounded-2xl border border-gray-200 bg-white p-4 shadow-xl flex items-center justify-between gap-4">
+    <div className="aspect-video rounded-none border border-[var(--ink)] bg-[var(--paper)] overflow-hidden relative flex items-center justify-center">
+      <div className="w-4/5 rounded-none border border-[var(--ink)] bg-[var(--white)] p-4  flex items-center justify-between gap-4">
         <div className="min-w-0">
           <p className="text-base font-black text-gray-900 truncate">약국오늘 예시</p>
           <p className="text-sm text-gray-600">02-1234-5678</p>

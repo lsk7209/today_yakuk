@@ -97,9 +97,10 @@ export default function BlogPrescriptionPrepTips() {
     })),
   };
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">블로그 · 처방전 준비</p>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl font-bold leading-tight">처방전 준비와 약국 방문 전 점검 7가지</h1>
         <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -120,14 +121,14 @@ export default function BlogPrescriptionPrepTips() {
 
       <AdSlotTop />
 
-      <aside className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
+      <aside className="city-card border bg-blue-50 p-4 text-sm text-blue-900">
         <p>사용기간 안내 수정: <time dateTime="2026-09-20">2026년 9월 20일</time>. 모든 처방전에 같은 일수가 적용된다는 기존 안내를 바로잡았습니다.</p>
         <p>의료법 시행규칙 제12조 제1항 제6호는 처방전에 발급일과 사용기간을 기재하도록 정합니다. 실제 처방전에 적힌 기간을 확인하고, 불명확하면 발급 의료기관에 문의하세요.</p>
         <a className="underline" href="https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1019641101" target="_blank" rel="noopener noreferrer">근거: 의료법 시행규칙 제12조</a>
       </aside>
 
 
-      <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+      <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
         <h2 className="text-xl font-bold text-gray-900">이 체크리스트가 필요한 순간</h2>
         <p className="text-base text-gray-700 leading-relaxed">
           처방전을 손에 쥐고 약국 문 앞에 섰을 때 &ldquo;오늘 영업을 안 하네&rdquo; 혹은 &ldquo;이 약 재고가 없어요&rdquo;라는 말을 들어본 적이 있다면, 사전 준비가 얼마나 중요한지 실감하셨을 것입니다. 특히 공휴일·야간처럼 대체 약국 선택지가 좁아지는 상황에서는 30분의 준비가 몇 시간의 이동을 줄여줍니다. 처방전에 기재된 사용기간과 방문할 약국의 운영 일정을 함께 확인하세요. 아래 7가지 체크리스트를 따라가면 예상치 못한 상황에서도 당황하지 않고 약을 받을 수 있습니다.
@@ -152,7 +153,7 @@ export default function BlogPrescriptionPrepTips() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
+      <section className="city-card border bg-emerald-50 p-6 space-y-3">
         <h2 className="text-xl font-semibold text-brand-800">빠른 점검 리스트</h2>
         <ul className="list-disc list-inside space-y-1 text-emerald-900">
           {steps.map((item) => (
@@ -166,19 +167,19 @@ export default function BlogPrescriptionPrepTips() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">꼭 기억할 팁</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">신분증/보험증 필수</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               공휴일·야간에도 보험 청구를 위해 신분증과 보험증(또는 건강보험 앱)을 반드시 지참하세요. 보험증을 분실했더라도 국민건강보험공단 앱(The건강보험)이나 모바일 신분증으로 대체가 가능한 경우가 많으니 미리 앱을 설치해 두는 것이 유용합니다. 외국인 환자라면 외국인등록증과 여권을 함께 지참해야 보험 적용 여부를 빠르게 확인받을 수 있습니다. 공휴일에는 가산료가 붙어 본인부담금이 소폭 올라가는 점도 미리 알고 준비하면 당황하지 않습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">전화 후 길찾기</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               조제 가능 여부와 대기 시간을 전화로 확인한 뒤, 길찾기로 도착 시각을 검증하면 시간을 크게 아낄 수 있습니다. 처방전에 기재된 약 이름을 읽어주면 약사가 재고를 즉시 확인해 주므로, 전화 전에 처방전을 손에 꺼내 두세요. 퇴근 시간대(18~20시)와 점심 시간대(12~13시)는 조제 대기가 30~40분까지 길어질 수 있어 시간 여유가 필요합니다. 네이버지도·카카오맵의 &lsquo;실시간 혼잡도&rsquo; 기능을 활용하면 도착 전 약국 상황을 예측하는 데 도움이 됩니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">대체 약국 확보</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               혼잡하거나 재고가 없을 경우를 대비해 반경 500m~1km를 넓혀 대체 약국을 1~2곳 미리 검색해 두세요. 공휴일에는 전체 약국 중 당번 약국만 운영되므로, 약국오늘의 공휴일 필터를 활용해 영업 중인 곳을 여러 곳 저장해 두는 것이 현명합니다. 특정 제약사 약품이나 냉장 보관 의약품은 모든 약국에 재고가 없을 수도 있으니, 주치의에게 대체 가능한 동일 성분 약품을 미리 물어두면 유용합니다. 이동 거리와 교통 수단에 따라 현실적으로 이동 가능한 약국 목록을 2개 이상 준비하면 긴급 상황에서도 침착하게 대응할 수 있습니다.
@@ -190,19 +191,19 @@ export default function BlogPrescriptionPrepTips() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">처방전 유효기간과 사전 준비 전략</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">처방전에 기재된 사용기간 확인</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               처방전 사용기간은 처방전에 기재된 기간을 확인하세요. 기간이 보이지 않거나 판단이 어려우면 처방전을 발급한 의료기관에 문의하세요. 발급일만으로 모든 처방전에 같은 기한을 계산하지 말고, 방문할 약국의 운영 일정도 함께 확인하세요.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">만성질환자의 반복 조제 활용법</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               고혈압·당뇨·고지혈증 등 만성질환으로 장기 복약 중이라면 담당 의사에게 반복처방 또는 장기처방을 요청할 수 있습니다. 반복처방전에는 조제 횟수가 기재되어 있어, 매번 병원을 방문하지 않고 정해진 횟수까지 약국에서 직접 조제를 받을 수 있습니다. 연휴나 장기 출장 전 최소 2주 전에 잔여 약량을 점검하고, 부족하면 진료 예약을 서두르는 것이 가장 안전한 전략입니다. 복용 중인 약의 이름·용량·복용 횟수를 메모 앱이나 카카오톡 자신에게 보내기 등으로 저장해 두면, 긴급 상황에서 의사나 약사에게 빠르게 정보를 전달할 수 있습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-2">
+          <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">처방전 사진·사본 보관의 실용 전략</h3>
             <p className="text-[var(--muted)] leading-relaxed">
               처방전 원본은 조제 후 약국이 보관하는 것이 원칙이므로, 발급 직후 스마트폰으로 촬영해 갤러리 또는 클라우드에 저장해 두세요. 이 사진은 분실 신고, 재발급 요청, 타 의료기관 방문 시 참고 자료로 활용할 수 있습니다. 다만 사진만으로 조제를 받는 것은 약국 재량이므로, 원본이 없는 상황에서는 반드시 먼저 전화로 확인한 뒤 방문해야 헛걸음을 막을 수 있습니다. 처방전에는 개인정보와 병명이 포함되어 있으므로, 사진 공유 시 민감 정보 유출에 주의하세요.
@@ -214,7 +215,7 @@ export default function BlogPrescriptionPrepTips() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
               <h3 className="text-base font-bold text-gray-900">추석 연휴 첫날, 처방전 유효기간 마지막 날</h3>
@@ -223,7 +224,7 @@ export default function BlogPrescriptionPrepTips() {
               금요일에 병원에서 처방전을 받았는데 추석 연휴가 토·일·월 3일간 이어지는 상황입니다. 처방전에 기재된 사용기간이 오늘까지라면, 공휴일 당번 약국을 즉시 검색해 영업 시간 종료 전에 도착하는 것이 최우선입니다. 약국오늘에서 &lsquo;지금 영업 중&rsquo; 필터로 가장 가까운 당번 약국을 찾고, 전화로 재고 여부를 확인한 뒤 이동하면 헛걸음을 막을 수 있습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
               <h3 className="text-base font-bold text-gray-900">야간에 처방전 약을 받아야 하는데 주변 약국이 문을 닫은 경우</h3>
@@ -232,7 +233,7 @@ export default function BlogPrescriptionPrepTips() {
               밤 10시에 응급실 진료 후 처방전을 받았지만 인근 약국이 모두 닫혀 있는 상황이라면, 24시간 야간 당번 약국을 먼저 검색해야 합니다. 각 지역 보건소나 119에서 야간 당번 약국 안내를 받을 수 있으며, 약국오늘의 야간 필터를 활용하면 반경 내 운영 중인 약국을 빠르게 확인할 수 있습니다. 이동이 어렵다면 응급실 내 원내 조제실에서 처방 약품을 받을 수 있는지 병원 담당자에게 먼저 문의해 보세요.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
               <h3 className="text-base font-bold text-gray-900">특수 의약품 재고가 없어 여러 약국을 전전하는 경우</h3>
@@ -250,7 +251,7 @@ export default function BlogPrescriptionPrepTips() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="city-card border border-[var(--border)] bg-white p-4"
             >
               <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
               <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
@@ -259,7 +260,7 @@ export default function BlogPrescriptionPrepTips() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
+      <section className="city-card border border-[var(--border)] bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">다음 단계</h2>
@@ -284,21 +285,21 @@ export default function BlogPrescriptionPrepTips() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+      <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/blog/prescription-holiday-guide" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/prescription-holiday-guide" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">처방전 약 연휴에 못 받을 때 대처법</p>
             <p className="text-xs text-gray-500 mt-1">연휴 처방전 긴급 대처</p>
           </Link>
-          <Link href="/blog/pharmacy-visit-checklist-3" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/pharmacy-visit-checklist-3" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 확인 3가지</p>
             <p className="text-xs text-gray-500 mt-1">영업·재고·처방전 점검</p>
           </Link>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -309,7 +310,7 @@ export default function BlogPrescriptionPrepTips() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

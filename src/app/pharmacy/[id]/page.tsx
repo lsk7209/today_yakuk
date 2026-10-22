@@ -216,21 +216,21 @@ async function Content({
 
   return (
     <article
-      className="container py-8 sm:py-12 space-y-8 bg-white min-h-screen max-w-5xl"
+      className="city-template container py-8 sm:py-12 space-y-8 bg-[var(--white)] min-h-screen max-w-5xl"
       data-pharmacy-id={pharmacy.hpid}
       data-source-surface="pharmacy_detail"
       data-opening-status="client-evaluated"
     >
       <Breadcrumb items={breadcrumbItems} />
 
-      <header className="premium-card bg-gradient-to-br from-white to-emerald-50/30 p-6 sm:p-10 rounded-[2rem] border border-gray-100 space-y-3">
+      <header className="city-pharmacy-heading">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex-1 min-w-0">
             <PharmacyStatus hours={pharmacy.operating_hours} initialIso={initialIso} badge />
             <h1 className="text-3xl sm:text-4xl font-black text-gray-900 leading-tight mt-2">
               {pharmacy.name}
             </h1>
-            <div className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-3 bg-gray-50 rounded-lg px-4 py-2 border border-gray-200">
+            <div className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-3 bg-gray-50 rounded-none px-4 py-2 border border-[var(--ink)]">
               <MapPin className="h-5 w-5 text-brand-600 flex-shrink-0" />
               <span className="flex-1">
                 <span className="text-gray-500 font-medium">주소:</span>{" "}
@@ -239,7 +239,7 @@ async function Content({
               <CopyButton text={pharmacy.address} label="주소 복사" />
             </div>
             {callablePhone && (
-              <div className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-2 bg-brand-50 rounded-lg px-4 py-2 border border-brand-200">
+              <div className="text-base text-gray-700 font-semibold flex items-center gap-2 mt-2 bg-brand-50 rounded-none px-4 py-2 border border-brand-200">
                 <Phone className="h-5 w-5 text-brand-600 flex-shrink-0" />
                 <span className="flex-1">
                   <span className="text-gray-600 font-medium">전화:</span>{" "}
@@ -255,11 +255,12 @@ async function Content({
             )}
           </div>
         </div>
+        <aside className="city-call-first"><strong>CALL FIRST.</strong><h2 className="text-2xl font-bold mb-4">방문 전, 먼저 확인하세요.</h2><p>등록 시간표와 실제 현장 운영은 다를 수 있습니다. 영업 여부와 재고를 전화로 확인한 뒤 방문하세요.</p></aside>
       </header>
 
       {/* 핵심 정보 카드 */}
-      <section className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
-        <div className="flex items-center justify-between flex-wrap gap-3 pb-4 border-b-2 border-gray-200">
+      <section className="city-facts">
+        <div className="flex items-center justify-between flex-wrap gap-3 pb-4 border-b-2 border-[var(--ink)]">
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-emerald-100 p-2">
               <Timer className="h-5 w-5 text-emerald-700" />
@@ -274,16 +275,16 @@ async function Content({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
-          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+          <div className="rounded-none border border-[var(--ink)] bg-gray-50 p-4">
             <p className="text-sm font-bold text-gray-600">오늘 영업시간</p>
             <PharmacyTodayHours hours={pharmacy.operating_hours} initialIso={initialIso} />
           </div>
-          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+          <div className="rounded-none border border-[var(--ink)] bg-gray-50 p-4">
             <p className="text-sm font-bold text-gray-600">빠른 행동</p>
             <div className="flex flex-wrap gap-3 mt-3">
               {callablePhone ? (
                 <a
-                  className="inline-flex items-center gap-2 rounded-full bg-brand-700 text-white px-5 py-2 font-black hover:bg-brand-800 transition-colors shadow-md"
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-700 text-white px-5 py-2 font-black hover:bg-brand-800 transition-colors "
                   href={`tel:${callablePhone}`}
                 >
                   <Phone className="h-4 w-4" />
@@ -291,7 +292,7 @@ async function Content({
                 </a>
               ) : null}
               <Link
-                className="inline-flex items-center gap-2 rounded-full border-2 border-[#03C75A] bg-white px-5 py-2 font-black text-[#03C75A] hover:bg-[#03C75A]/10 transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 rounded-full border-2 border-[#03C75A] bg-[var(--white)] px-5 py-2 font-black text-[#03C75A] hover:bg-[#03C75A]/10 transition-colors "
                 href={naverMapUrl}
                 target="_blank"
                 rel="noreferrer"
@@ -300,7 +301,7 @@ async function Content({
                 네이버 지도
               </Link>
               <Link
-                className="inline-flex items-center gap-2 rounded-full border-2 border-[#FAE100] bg-white px-5 py-2 font-black text-[#3C1E1E] hover:bg-[#FAE100]/20 transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 rounded-full border-2 border-[#FAE100] bg-[var(--white)] px-5 py-2 font-black text-[#3C1E1E] hover:bg-[#FAE100]/20 transition-colors "
                 href={kakaoMapUrl}
                 target="_blank"
                 rel="noreferrer"
@@ -317,7 +318,7 @@ async function Content({
 
       {/* 요약 (content_queue > gemini_summary > 템플릿 순서) */}
       {(contentQueue?.ai_summary || pharmacy.gemini_summary || finalSummary) && (
-        <section className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/30 p-6 shadow-md">
+        <section className="rounded-none border-2 border-emerald-200 bg-[var(--paper)] p-6 ">
           <div className="flex items-start gap-3 mb-4">
             <div className="rounded-full bg-emerald-100 p-2">
               <Sparkles className="h-5 w-5 text-emerald-700 flex-shrink-0" />
@@ -326,7 +327,7 @@ async function Content({
               <h2 className="text-xl font-black text-gray-900">약국 소개</h2>
             </div>
           </div>
-          <div className="bg-white/80 rounded-xl p-4 border border-emerald-100">
+          <div className="bg-[var(--white)]/80 rounded-none p-4 border border-emerald-100">
             <p className="text-base text-gray-800 leading-relaxed whitespace-pre-line">
               {contentQueue?.ai_summary || pharmacy.gemini_summary || finalSummary}
             </p>
@@ -334,16 +335,16 @@ async function Content({
         </section>
       )}
 
-      <section className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md space-y-5">
+      <section className="rounded-none border-2 border-[var(--ink)] bg-[var(--white)] p-6  space-y-5">
         <div className="flex flex-wrap gap-3 text-sm">
-          <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-4 py-2 text-gray-800 font-bold shadow-sm border border-emerald-200">
+          <span className="inline-flex items-center gap-2 rounded-full bg-[var(--paper)] px-4 py-2 text-gray-800 font-bold  border border-emerald-200">
             <Clock className="h-4 w-4 text-emerald-700" />
             <span>영업 상태:</span>
             <PharmacyStatus hours={pharmacy.operating_hours} initialIso={initialIso} />
           </span>
           {callablePhone ? (
             <a
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-600 to-brand-700 text-white px-5 py-2 font-black hover:from-brand-700 hover:to-brand-800 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="city-button city-button-dark"
               href={`tel:${callablePhone}`}
             >
               <Phone className="h-4 w-4" />
@@ -351,7 +352,7 @@ async function Content({
             </a>
           ) : null}
           <Link
-            className="inline-flex items-center gap-2 rounded-full border-2 border-[#03C75A] bg-white px-5 py-2 font-bold text-[#03C75A] hover:border-[#03C75A] hover:bg-[#03C75A]/10 transition-all shadow-sm hover:shadow-md"
+            className="inline-flex items-center gap-2 rounded-full border-2 border-[#03C75A] bg-[var(--white)] px-5 py-2 font-bold text-[#03C75A] hover:border-[#03C75A] hover:bg-[#03C75A]/10 transition-all  "
             href={naverMapUrl}
             target="_blank"
           >
@@ -368,7 +369,7 @@ async function Content({
             return (
               <div
                 key={idx}
-                className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                className="flex items-start gap-3 p-3 rounded-none bg-gray-50 hover:bg-gray-100 transition-colors"
               >
                 <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <p
@@ -381,8 +382,8 @@ async function Content({
         </div>
       </section>
 
-      <section className="rounded-2xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-white p-6 shadow-md space-y-5">
-        <div className="flex items-center gap-3 pb-3 border-b-2 border-gray-200">
+      <section className="rounded-none border-2 border-[var(--ink)] bg-[var(--paper)] p-6  space-y-5">
+        <div className="flex items-center gap-3 pb-3 border-b-2 border-[var(--ink)]">
           <div className="rounded-full bg-brand-100 p-2">
             <Info className="h-5 w-5 text-brand-700" />
           </div>
@@ -392,7 +393,7 @@ async function Content({
         {/* 중복 제거: 상단 '약국 소개'에 요약이 이미 있으므로 상세 정보에서는 повтор 노출하지 않음 */}
         {/* 중복 방지: 요약+주요특징 2개 블록만 유지 */}
         {aiBullets.length > 0 && (
-          <div className="bg-white rounded-xl p-5 border-2 border-emerald-100 space-y-3">
+          <div className="bg-[var(--white)] rounded-none p-5 border-2 border-emerald-100 space-y-3">
             <div className="flex items-center gap-2 mb-2">
               <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
               <h3 className="text-lg font-black text-gray-900">주요 특징</h3>
@@ -416,8 +417,8 @@ async function Content({
         {/* (AI 생성 중단) 지역 이용 팁/주변 주요 시설 섹션은 제거하고, 대신 FAQ/체크리스트로 안내합니다. */}
       </section>
 
-      <section className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md space-y-5">
-        <div className="flex items-center justify-between pb-3 border-b-2 border-gray-200">
+      <section className="rounded-none border-2 border-[var(--ink)] bg-[var(--white)] p-6  space-y-5">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-[var(--ink)]">
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-blue-100 p-2">
               <Calendar className="h-5 w-5 text-blue-700" />
@@ -437,7 +438,7 @@ async function Content({
 
 
       {/* 관련 가이드/지역 허브: 크롤 맥락 + 내부링크 강화 */}
-      <section className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
+      <section className="rounded-none border-2 border-[var(--ink)] bg-[var(--white)] p-6 ">
         <div className="flex items-center gap-3 mb-4">
           <div className="rounded-full bg-blue-100 p-2">
             <HelpCircle className="h-5 w-5 text-blue-700" />
@@ -450,33 +451,33 @@ async function Content({
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Link
             href="/guide/night-weekend"
-            className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-white hover:border-brand-200 transition-colors"
+            className="rounded-none border border-[var(--ink)] bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-[var(--white)] hover:border-brand-200 transition-colors"
           >
             야간·주말 약국 찾기 가이드
           </Link>
           <Link
             href="/guide/holiday-checklist"
-            className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-white hover:border-brand-200 transition-colors"
+            className="rounded-none border border-[var(--ink)] bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-[var(--white)] hover:border-brand-200 transition-colors"
           >
             공휴일 방문 체크리스트
           </Link>
           <Link
             href="/guide/call-scripts"
-            className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-white hover:border-brand-200 transition-colors"
+            className="rounded-none border border-[var(--ink)] bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-[var(--white)] hover:border-brand-200 transition-colors"
           >
             전화 문의 스크립트(확인 질문)
           </Link>
           {pharmacy.province && pharmacy.city ? (
             <Link
               href={`/${encodeURIComponent(pharmacy.province)}/${encodeURIComponent(pharmacy.city)}`}
-              className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-white hover:border-brand-200 transition-colors"
+              className="rounded-none border border-[var(--ink)] bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-[var(--white)] hover:border-brand-200 transition-colors"
             >
               {pharmacy.city} 약국 목록 더 보기
             </Link>
           ) : (
             <Link
               href="/nearby"
-              className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-white hover:border-brand-200 transition-colors"
+              className="rounded-none border border-[var(--ink)] bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-[var(--white)] hover:border-brand-200 transition-colors"
             >
               주변 약국 다시 찾기
             </Link>
@@ -484,14 +485,14 @@ async function Content({
         </div>
       </section>
 
-      <section className="space-y-4 rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-md">
+      <section className="space-y-4 rounded-none border-2 border-amber-200 bg-[var(--paper)] p-6 ">
         <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
           <div className="rounded-full bg-amber-100 p-2">
             <AlertCircle className="h-5 w-5 text-amber-700" />
           </div>
           <h2 className="text-2xl font-black text-gray-900">이 약국이 문 닫았나요?</h2>
         </div>
-        <div className="bg-white/80 rounded-xl p-4 border border-amber-200">
+        <div className="bg-[var(--white)]/80 rounded-none p-4 border border-amber-200">
           <p className="text-base text-gray-800 leading-relaxed font-semibold flex items-center gap-2">
             <span>반경 2km 내 영업 중인 약국을 바로 확인하세요. 혼잡 시 빠른 대안 방문을 돕습니다.</span>
           </p>
@@ -502,8 +503,8 @@ async function Content({
         }))} />
       </section>
 
-      <section className="space-y-4 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
-        <div className="flex items-center gap-3 pb-3 border-b-2 border-gray-200">
+      <section className="space-y-4 rounded-none border-2 border-[var(--ink)] bg-[var(--white)] p-6 ">
+        <div className="flex items-center gap-3 pb-3 border-b-2 border-[var(--ink)]">
           <div className="rounded-full bg-blue-100 p-2">
             <HelpCircle className="h-5 w-5 text-blue-700" />
           </div>
@@ -520,7 +521,7 @@ async function Content({
             return (
               <details
                 key={faq.question}
-                className="group rounded-xl border-2 border-gray-200 bg-gradient-to-r from-white to-gray-50 p-5 shadow-sm hover:shadow-lg hover:border-brand-300 transition-all"
+                className="group rounded-none border-2 border-[var(--ink)] bg-[var(--paper)] p-5   hover:border-brand-300 transition-all"
               >
                 <summary className="font-black text-gray-900 cursor-pointer list-none flex items-center gap-3 text-lg">
                   <span className="text-brand-600 font-black">Q{idx + 1}.</span>
@@ -529,7 +530,7 @@ async function Content({
                     ▼
                   </span>
                 </summary>
-                <div className="mt-4 pt-4 border-t-2 border-gray-200 text-base text-gray-800 leading-relaxed">
+                <div className="mt-4 pt-4 border-t-2 border-[var(--ink)] text-base text-gray-800 leading-relaxed">
                   <div className="flex items-start gap-3">
                     <span className="text-emerald-600 font-black mt-1">A.</span>
                     <div
@@ -545,7 +546,7 @@ async function Content({
       </section>
 
       {tmpl.usageGuide && (
-        <section className="rounded-2xl border-2 border-gray-200 bg-gray-50 p-6 shadow-md">
+        <section className="rounded-none border-2 border-[var(--ink)] bg-gray-50 p-6 ">
           <div className="flex items-start gap-4">
             <div className="rounded-full bg-gray-200 p-3">
               <Info className="h-6 w-6 text-gray-700" />
@@ -554,7 +555,7 @@ async function Content({
               <h2 className="text-2xl font-black text-gray-900 mb-3">
                 이용 안내
               </h2>
-              <div className="bg-white rounded-xl p-4 border border-gray-200">
+              <div className="bg-[var(--white)] rounded-none p-4 border border-[var(--ink)]">
                 <p className="text-base text-gray-800 leading-relaxed">
                   {tmpl.usageGuide}
                 </p>
@@ -565,8 +566,8 @@ async function Content({
       )}
 
       {extraSections.length > 0 && (
-        <section className="space-y-5 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
-          <div className="flex items-center gap-3 pb-3 border-b-2 border-gray-200">
+        <section className="space-y-5 rounded-none border-2 border-[var(--ink)] bg-[var(--white)] p-6 ">
+          <div className="flex items-center gap-3 pb-3 border-b-2 border-[var(--ink)]">
             <div className="rounded-full bg-indigo-100 p-2">
               <Info className="h-5 w-5 text-indigo-700" />
             </div>
@@ -582,10 +583,10 @@ async function Content({
               return (
                 <div
                   key={`${section.title}-${idx}`}
-                  className="rounded-xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-white p-5 shadow-sm hover:shadow-md transition-all"
+                  className="rounded-none border-2 border-[var(--ink)] bg-[var(--paper)] p-5   transition-all"
                 >
                   <h3 className="text-lg font-black text-gray-900 mb-3">{section.title}</h3>
-                  <div className="bg-white rounded-lg p-4 border border-gray-100">
+                  <div className="bg-[var(--white)] rounded-none p-4 border border-[var(--border)]">
                     <p
                       className="text-base text-gray-800 leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: highlighted }}
@@ -598,8 +599,8 @@ async function Content({
         </section>
       )}
 
-      <section className="space-y-4 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-md">
-        <div className="flex items-center justify-between pb-3 border-b-2 border-gray-200">
+      <section className="space-y-4 rounded-none border-2 border-[var(--ink)] bg-[var(--white)] p-6 ">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-[var(--ink)]">
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-purple-100 p-2">
               <MapPin className="h-5 w-5 text-purple-700" />
@@ -623,7 +624,7 @@ async function Content({
                 <Link
                   key={p.hpid}
                   href={`/pharmacy/${p.hpid}`}
-                  className="block rounded-xl border-2 border-gray-200 bg-gradient-to-r from-white to-gray-50 p-5 shadow-md hover:border-brand-400 hover:shadow-xl transition-all transform hover:scale-[1.02]"
+                  className="block rounded-none border-2 border-[var(--ink)] bg-[var(--paper)] p-5  hover:border-brand-400  transition-all transform hover:scale-[1.02]"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -648,7 +649,7 @@ async function Content({
             })}
           </div>
         ) : (
-          <div className="mt-4 p-5 bg-gray-50 rounded-xl border border-gray-200">
+          <div className="mt-4 p-5 bg-gray-50 rounded-none border border-[var(--ink)]">
             <p className="text-base text-gray-600 text-center font-medium">주변 약국 정보가 없습니다.</p>
           </div>
         )}
@@ -656,10 +657,10 @@ async function Content({
 
       {/* 하단 고정 액션: 모바일은 StickyFab만 사용(겹침 방지), 데스크톱은 버튼 2개만 노출 */}
       <div className="hidden sm:block fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
-        <div className="rounded-full border border-gray-200 bg-white shadow-xl px-4 py-3 flex items-center gap-2">
+        <div className="rounded-full border border-[var(--ink)] bg-[var(--white)]  px-4 py-3 flex items-center gap-2">
           <Link
             href={naverMapUrl}
-            className="inline-flex items-center gap-2 rounded-full border-2 border-[#03C75A] bg-white px-5 py-2 text-sm font-black text-[#03C75A] hover:bg-[#03C75A]/10"
+            className="inline-flex items-center gap-2 rounded-full border-2 border-[#03C75A] bg-[var(--white)] px-5 py-2 text-sm font-black text-[#03C75A] hover:bg-[#03C75A]/10"
             target="_blank"
             rel="noreferrer"
           >

@@ -30,13 +30,13 @@ export function PharmacyCard({
 
   return (
     <article
-      className="rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm flex gap-4 transition hover:shadow-lg hover:-translate-y-0.5"
+      className="city-card p-5 flex gap-4"
       data-pharmacy-id={pharmacy.hpid}
       data-source-surface={sourceSurface}
       data-opening-status={status?.label ?? "시간 확인 중"}
       data-result-rank={resultRank}
     >
-      <div className="flex-1 space-y-2">
+      <div className="min-w-0 flex-1 space-y-2">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <h3 className="text-lg font-bold text-[var(--foreground)]">{pharmacy.name}</h3>
@@ -67,7 +67,7 @@ export function PharmacyCard({
             지역: {pharmacy.city ?? pharmacy.province ?? "정보 없음"}
           </span>
           {distanceKm !== undefined ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1 border border-dashed border-[var(--border)]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--white)] px-2 py-1 border border-dashed border-[var(--border)]">
               거리: {distanceKm.toFixed(1)} km
             </span>
           ) : null}
@@ -82,7 +82,7 @@ export function PharmacyCard({
             </a>
           ) : null}
           <Link
-            className="inline-flex min-h-11 items-center gap-1 rounded-full border border-[var(--border)] bg-white px-4 py-2 font-semibold text-sm hover:border-brand-200"
+            className="inline-flex min-h-11 items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--white)] px-4 py-2 font-semibold text-sm hover:border-brand-200"
             href={`/pharmacy/${pharmacy.hpid}`}
           >
             상세 보기

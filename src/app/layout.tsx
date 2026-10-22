@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Link from "next/link";
+import SiteHeader from "@/components/city-signal/site-header";
+import SiteFooter from "@/components/city-signal/site-footer";
 import Script from "next/script";
 import { Suspense } from "react";
 import "./globals.css";
+import "./city-signal.css";
 import { getSiteUrl } from "@/lib/site-url";
 import AnalyticsTracker from "@/components/analytics/AnalyticsTracker";
 import CoupangAffiliateBanner from "@/components/affiliate/CoupangAffiliateBanner";
@@ -166,63 +168,10 @@ export default function RootLayout({
           본문으로 바로가기
         </a>
         <div className="min-h-screen flex flex-col">
-          <header className="border-b border-[var(--border)] bg-white/80 backdrop-blur">
-            <div className="container flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-4">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-90">
-                <div className="h-10 w-10 rounded-full bg-brand-100 border border-brand-200 flex items-center justify-center text-brand-700 font-semibold">
-                  약
-                </div>
-                <div>
-                  <p className="text-lg font-semibold">{SITE_NAME}</p>
-                </div>
-              </Link>
-              <nav className="flex w-full items-center gap-1 overflow-x-auto whitespace-nowrap text-sm text-[var(--muted)] sm:w-auto sm:gap-3">
-                <Link href="/" className="inline-flex min-h-11 items-center px-1 hover:text-brand-700">
-                  홈
-                </Link>
-                <Link href="/nearby" className="inline-flex min-h-11 items-center rounded-full bg-brand-700 px-3 font-black text-white hover:bg-brand-800">
-                  내 주변
-                </Link>
-                <Link href="/about" className="inline-flex min-h-11 items-center px-1 hover:text-brand-700">
-                  소개
-                </Link>
-                <Link href="/guide" className="inline-flex min-h-11 items-center px-1 hover:text-brand-700">
-                  가이드
-                </Link>
-                <Link href="/blog" className="inline-flex min-h-11 items-center px-1 hover:text-brand-700">
-                  블로그
-                </Link>
-                <Link href="/wiki" className="relative inline-flex min-h-11 items-center px-1 font-medium text-brand-700 hover:text-brand-800">
-                  영양제 정보
-                  <span className="absolute -top-1 -right-2 h-1.5 w-1.5 rounded-full bg-red-500" aria-label="New"></span>
-                </Link>
-              </nav>
-            </div>
-          </header>
+          <SiteHeader />
           <main id="main-content" className="flex-1">{children}</main>
           <CoupangAffiliateBanner />
-          <footer className="border-t border-[var(--border)] bg-white">
-            <div className="container py-6 text-sm text-[var(--muted)] flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p>© {new Date().getFullYear()} {SITE_NAME} TodayPharmacy</p>
-              <div className="flex gap-4">
-                <Link className="hover:text-brand-700" href="/nearby">
-                  내 주변 약국
-                </Link>
-                <Link className="hover:text-brand-700" href="/about">
-                  소개
-                </Link>
-                <Link className="hover:text-brand-700" href="/contact">
-                  문의
-                </Link>
-                <Link className="hover:text-brand-700" href="/terms">
-                  이용약관
-                </Link>
-                <Link className="hover:text-brand-700" href="/privacy">
-                  개인정보 처리방침
-                </Link>
-              </div>
-            </div>
-          </footer>
+          <SiteFooter />
         </div>
       </body>
     </html>

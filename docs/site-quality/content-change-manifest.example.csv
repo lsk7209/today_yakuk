@@ -1,0 +1,2 @@
+content_id,url,before_status,after_status,before_index_policy,after_index_policy,before_ads_policy,after_ads_policy,action,reason,replacement_url,source_content_hash,review_status,before_review_status,before_replacement_url,decision_at
+example-only,/blog/example,published,draft,index,noindex,false,false,HOLD,자료 및 전문 검토 필요,,sha256-example,needs_review,unreviewed,,2026-09-12T00:00:00Z

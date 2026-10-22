@@ -202,7 +202,7 @@ export default function BlogHolidayPharmacyOpenCheck() {
     })),
   };
   return (
-    <div className="container py-10 sm:py-14 max-w-2xl mx-auto bg-white min-h-screen">
+    <div className="city-page city-route-article py-10 sm:py-14 max-w-2xl mx-auto bg-white min-h-screen">
 
       {/* ── 카테고리 레이블 ── */}
       <p
@@ -219,6 +219,7 @@ export default function BlogHolidayPharmacyOpenCheck() {
       </p>
 
       {/* ── H1 ── */}
+      <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
       <h1
         style={{
           fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
@@ -574,7 +575,7 @@ export default function BlogHolidayPharmacyOpenCheck() {
         E-GEN과 대한약사회 휴일지킴이약국 링크를 참고하세요. 개별 약국의 실시간 운영 현황을 검증한 글은 아닙니다.
       </footer>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -585,7 +586,7 @@ export default function BlogHolidayPharmacyOpenCheck() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

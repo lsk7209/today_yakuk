@@ -2,6 +2,11 @@
 const nextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
+    localPatterns: [
+      { pathname: "/**", search: "" },
+      // The existing OG endpoint renders article titles from query parameters.
+      { pathname: "/api/og" },
+    ],
   },
   compress: true,
   poweredByHeader: false,

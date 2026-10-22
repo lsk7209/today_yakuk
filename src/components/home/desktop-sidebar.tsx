@@ -59,18 +59,18 @@ const regionLinks = [
 
 export default function DesktopSidebar() {
   return (
-    <aside className="hidden lg:flex flex-col gap-5 w-[300px] shrink-0">
+    <aside className="city-home-support mt-12 grid gap-3 lg:grid-cols-4" aria-label="약국 이용 자료와 지역 바로가기">
       {/* Guide links */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-        <h2 className="text-xs font-black tracking-[0.15em] text-brand-700 mb-3">약국 이용 가이드</h2>
+      <div className="city-panel border-2 border-[var(--ink)] bg-[var(--fog)] p-5">
+        <h2 className="mb-3 text-xs font-black tracking-[0.15em] text-[var(--ink)]">약국 이용 가이드</h2>
         <div className="space-y-1">
           {guideLinks.map(({ href, icon: Icon, title, desc }) => (
             <Link
               key={href}
               href={href}
-              className="group flex items-start gap-3 rounded-xl p-3 hover:bg-brand-50/40 transition-colors"
+              className="group flex items-start gap-3 border-b border-[#b5c5b5] p-3 transition-colors hover:bg-[var(--lime)]"
             >
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700 group-hover:bg-brand-100">
+              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center border border-[var(--ink)] bg-[var(--lime)] text-[var(--ink)]">
                 <Icon className="h-4 w-4" />
               </span>
               <div className="min-w-0">
@@ -83,14 +83,14 @@ export default function DesktopSidebar() {
       </div>
 
       {/* Region quick links */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-        <h2 className="text-xs font-black tracking-[0.15em] text-brand-700 mb-3">지역별 바로가기</h2>
+      <div className="city-panel border-2 border-[var(--ink)] bg-white p-5">
+        <h2 className="mb-3 text-xs font-black tracking-[0.15em] text-[var(--ink)]">지역별 바로가기</h2>
         <div className="grid grid-cols-4 gap-2">
           {regionLinks.map(({ name, href }) => (
             <Link
               key={name}
               href={href}
-              className="rounded-xl border border-gray-100 bg-gray-50 py-2 text-center text-xs font-bold text-gray-800 hover:border-brand-200 hover:bg-brand-50/40 hover:text-brand-700 transition-all"
+              className="border border-[var(--ink)] bg-[var(--paper)] py-2 text-center text-xs font-bold text-[var(--ink)] transition-colors hover:bg-[var(--lime)]"
             >
               {name}
             </Link>
@@ -99,9 +99,9 @@ export default function DesktopSidebar() {
       </div>
 
       {/* Recent Posts */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <div className="city-panel border-2 border-[var(--ink)] bg-white p-5">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-black tracking-[0.15em] text-brand-700">최신 블로그</h2>
+          <h2 className="text-xs font-black tracking-[0.15em] text-[var(--ink)]">최신 블로그</h2>
           <Link href="/blog" className="text-xs font-bold text-gray-400 hover:text-brand-700 flex items-center gap-0.5">
             전체 <ArrowRight className="h-3 w-3" />
           </Link>
@@ -111,7 +111,7 @@ export default function DesktopSidebar() {
             <Link
               key={href}
               href={href}
-              className="group flex items-start gap-2 rounded-xl p-2.5 hover:bg-brand-50/40 transition-colors"
+              className="group flex items-start gap-2 border-b border-[#b5c5b5] p-2.5 transition-colors hover:bg-[var(--lime)]"
             >
               <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500 group-hover:bg-brand-100 group-hover:text-brand-700">
                 <FileText className="h-3.5 w-3.5" />
@@ -126,8 +126,8 @@ export default function DesktopSidebar() {
       </div>
 
       {/* Blog CTA */}
-      <div className="rounded-2xl border border-brand-100 bg-gradient-to-br from-brand-50/60 to-white p-5">
-        <p className="text-xs font-black tracking-[0.15em] text-brand-700">HEALTH INFO</p>
+      <div className="city-panel border-2 border-[var(--ink)] bg-[var(--lime)] p-5">
+        <p className="text-xs font-black tracking-[0.15em] text-[var(--ink)]">HEALTH INFO</p>
         <p className="text-sm font-bold text-gray-900 mt-1 leading-snug">
           야간·명절 약국<br />이용 가이드 모음
         </p>

@@ -109,14 +109,14 @@ export default async function ProvinceCityPage({
   ]);
 
   return (
-    <div className="container py-10 sm:py-14 space-y-6">
+    <div className="city-template container py-10 sm:py-14 space-y-6">
       <JsonLd data={breadcrumbSchema} id="breadcrumb-schema" />
-      <header className="space-y-3">
+      <header className="city-page-heading city-page-heading-copy space-y-3">
         <p className="text-sm font-semibold text-brand-700">
           {canonicalProvince} · {city === "전체" ? "모든 지역" : city}
         </p>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <h1 className="text-3xl font-bold">
+          <h1 className="city-display-medium">
             {canonicalProvince} {city === "전체" ? "" : `${city} `}약국 영업시간·전화 찾기
           </h1>
           <p className="text-xs text-[var(--muted)]">
@@ -125,19 +125,19 @@ export default async function ProvinceCityPage({
         </div>
       </header>
 
-      <p className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-3 text-sm text-emerald-900">
+      <p className="rounded-none border border-emerald-100 bg-emerald-50/70 px-4 py-3 text-sm text-emerald-900">
         목록에서 전화로 실제 영업 여부와 재고를 확인한 뒤 길찾기를 이용하면 헛걸음을 줄일 수 있습니다.
       </p>
 
       {cities.length > 0 ? (
-        <nav className="rounded-2xl border border-gray-200 bg-white p-4" aria-label={`${canonicalProvince} 시군구 바로가기`}>
+        <nav className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-4" aria-label={`${canonicalProvince} 시군구 바로가기`}>
           <h2 className="text-base font-black text-gray-900">{canonicalProvince} 시·군·구별 약국</h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {cities.map(({ city: cityName, pharmacyCount }) => (
               <Link
                 key={cityName}
                 href={`/${encodeURIComponent(canonicalProvince)}/${encodeURIComponent(cityName)}`}
-                className="inline-flex min-h-11 items-center rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-bold text-gray-800 hover:border-brand-300 hover:bg-brand-50"
+                className="inline-flex min-h-11 items-center rounded-full border border-[var(--ink)] bg-gray-50 px-4 py-2 text-sm font-bold text-gray-800 hover:border-brand-300 hover:bg-brand-50"
               >
                 {cityName} <span className="ml-1 text-xs font-medium text-gray-500">{pharmacyCount}</span>
               </Link>
@@ -168,14 +168,14 @@ export default async function ProvinceCityPage({
       <Pagination currentPage={currentPage} totalPages={totalPages} province={canonicalProvince} city={city} />
 
       {/* 가이드 링크 — 내부 링크 강화 + 이탈률 감소 */}
-      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-3">
+      <section className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-5  space-y-3">
         <h2 className="text-base font-black text-gray-900">약국 이용 전 확인하세요</h2>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {GUIDE_LINKS.map(({ href, label, desc }) => (
             <Link
               key={href}
               href={href}
-              className="rounded-xl border border-gray-100 bg-gray-50 p-3 hover:border-brand-200 hover:bg-brand-50/30 transition-all"
+              className="rounded-none border border-[var(--border)] bg-gray-50 p-3 hover:border-brand-200 hover:bg-brand-50/30 transition-all"
             >
               <p className="text-xs font-bold text-gray-900 leading-snug">{label}</p>
               <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">{desc}</p>

@@ -1,0 +1,12 @@
+{
+  "checked_page_types": 20,
+  "preview_navigator_items": 20,
+  "validated_local_links_and_assets": 586,
+  "css_rule_count": 283,
+  "javascript_syntax_check": "passed",
+  "static_validation": "passed",
+  "errors": [],
+  "browser_runtime_validation": "not_run (Chromium policy URLBlocklist=* blocked local files and localhost)",
+  "live_site_functionality_validation": "not_run (design mockups only)",
+  "runtime_scope": "These tests validate only static package structure, not visual correctness at a real browser viewport."
+}

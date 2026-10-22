@@ -100,6 +100,7 @@ export default function Page() {
                 <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-600">
                     영양제 선택 가이드
                 </span>
+                <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
                 <h1 className="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl">
                     비타민D 결핍 신호 7가지와 올바른 보충 방법
                 </h1>
@@ -112,7 +113,7 @@ export default function Page() {
 
             <AdSlotTop />
 
-            <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+            <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">국내 비타민D 부족 현황</h2>
                 <p className="text-sm text-gray-700 leading-relaxed">
                     질병관리청 국민건강영양조사에 따르면 국내 성인 10명 중 7~8명은 혈중 비타민D 농도가
@@ -224,7 +225,7 @@ export default function Page() {
 
                 <hr />
 
-                <div className="bg-yellow-50 p-5 rounded-xl border border-yellow-100">
+                <div className="city-card bg-yellow-50 p-5 border border-yellow-100">
                     <h4 className="text-yellow-700 m-0 mb-2">뼈 건강 · 면역 영양제 정보</h4>
                     <p className="m-0 text-gray-700">
                         비타민D 관련 뼈 건강 제품은{" "}
@@ -252,7 +253,7 @@ export default function Page() {
                     {faqs.map((faq, i) => (
                         <div
                             key={i}
-                            className="rounded-2xl border border-gray-100 bg-gray-50 p-5 space-y-2"
+                            className="city-card border bg-gray-50 p-5 space-y-2"
                         >
                             <p className="text-sm font-bold text-gray-900">Q. {faq.q}</p>
                             <p className="text-sm text-gray-600 leading-relaxed">A. {faq.a}</p>
@@ -286,12 +287,12 @@ export default function Page() {
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+            <section className="city-card border bg-brand-50/40 p-6 space-y-3">
                 <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
                 <div className="grid gap-3 sm:grid-cols-2">
                     <Link
                         href="/blog/omega3-selection-guide"
-                        className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all"
+                        className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all"
                     >
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">
                             오메가3 선택 가이드
@@ -300,7 +301,7 @@ export default function Page() {
                     </Link>
                     <Link
                         href="/blog/probiotics-selection-guide"
-                        className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all"
+                        className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all"
                     >
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">
                             유산균 선택 가이드
@@ -310,7 +311,7 @@ export default function Page() {
                 </div>
             </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -322,7 +323,7 @@ export default function Page() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

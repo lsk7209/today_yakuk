@@ -123,6 +123,7 @@ export default function KidsFeverMedicineComparisonPage() {
         <p className="text-sm font-semibold text-brand-700">
           블로그 · 어린이 건강 · 해열제 가이드
         </p>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl">
           어린이 해열제 올바르게 고르는 법: 아세트아미노펜 vs 이부프로펜
         </h1>
@@ -164,7 +165,7 @@ export default function KidsFeverMedicineComparisonPage() {
 
       {/* ── Hook H1 (question) ── */}
       <section
-        className="rounded-2xl border border-blue-100 bg-blue-50 p-6 space-y-3"
+        className="city-card border bg-blue-50 p-6 space-y-3"
         aria-label="도입부"
       >
         <p className="text-lg font-semibold text-blue-900 leading-relaxed">
@@ -180,7 +181,7 @@ export default function KidsFeverMedicineComparisonPage() {
 
       {/* ── 정의 박스 ── */}
       <section
-        className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 space-y-5"
+        className="city-card border bg-emerald-50 p-6 space-y-5"
         aria-label="성분 정의"
       >
         <h2 id="h2-definition" className="text-xl font-bold text-emerald-900">성분 정의</h2>
@@ -286,7 +287,7 @@ export default function KidsFeverMedicineComparisonPage() {
         </p>
 
         {/* 사례 박스 1 — 생후 6개월 미만 */}
-        <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5 space-y-2">
+        <div className="city-card border border-amber-100 bg-amber-50 p-5 space-y-2">
           <p className="font-semibold text-amber-900">
             사례 A — 생후 3~5개월 영아 (체중 약 6~7 kg)
           </p>
@@ -300,7 +301,7 @@ export default function KidsFeverMedicineComparisonPage() {
         </div>
 
         {/* 사례 박스 2 — 만 6개월~3세 */}
-        <div className="rounded-2xl border border-sky-100 bg-sky-50 p-5 space-y-2">
+        <div className="city-card border border-sky-100 bg-sky-50 p-5 space-y-2">
           <p className="font-semibold text-sky-900">
             사례 B — 만 8개월 영아 (체중 약 9~10 kg)
           </p>
@@ -314,7 +315,7 @@ export default function KidsFeverMedicineComparisonPage() {
         </div>
 
         {/* 사례 박스 3 — 만 4세 이상 */}
-        <div className="rounded-2xl border border-violet-100 bg-violet-50 p-5 space-y-2">
+        <div className="city-card border border-violet-100 bg-violet-50 p-5 space-y-2">
           <p className="font-semibold text-violet-900">
             사례 C — 만 4세 유아 (체중 약 18~20 kg)
           </p>
@@ -384,7 +385,7 @@ export default function KidsFeverMedicineComparisonPage() {
         </h2>
 
         <div className="space-y-3">
-          <div className="rounded-2xl border border-red-100 bg-red-50 p-5 space-y-2">
+          <div className="city-card border border-red-100 bg-red-50 p-5 space-y-2">
             <p className="font-semibold text-red-800">
               아세트아미노펜 주의 사항
             </p>
@@ -404,7 +405,7 @@ export default function KidsFeverMedicineComparisonPage() {
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-orange-100 bg-orange-50 p-5 space-y-2">
+          <div className="city-card border border-orange-100 bg-orange-50 p-5 space-y-2">
             <p className="font-semibold text-orange-800">
               이부프로펜 주의 사항 및 절대 금기
             </p>
@@ -432,7 +433,7 @@ export default function KidsFeverMedicineComparisonPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+        <div className="city-card border bg-gray-50 p-5">
           <p className="text-sm font-semibold text-gray-700 mb-2">
             성분명 확인이 중요한 이유
           </p>
@@ -481,7 +482,7 @@ export default function KidsFeverMedicineComparisonPage() {
       </section>
 
       {/* ── Outro O4 (forecast) ── */}
-      <section className="rounded-2xl border border-brand-100 bg-brand-50 p-6 space-y-3">
+      <section className="city-card border bg-brand-50 p-6 space-y-3">
         <h2 id="h2-future" className="text-xl font-bold text-brand-900">
           앞으로의 변화와 주목할 신호
         </h2>
@@ -514,7 +515,7 @@ export default function KidsFeverMedicineComparisonPage() {
 
       {/* ── YMYL Disclaimer ── */}
       <aside
-        className="rounded-2xl border border-yellow-200 bg-yellow-50 p-5 space-y-2"
+        className="city-card border border-yellow-200 bg-yellow-50 p-5 space-y-2"
         aria-label="의료 정보 안내"
       >
         <p className="text-sm font-semibold text-yellow-800">
@@ -531,7 +532,7 @@ export default function KidsFeverMedicineComparisonPage() {
 
       {/* ── P4 AI Disclosure Footer ── */}
       <footer
-        className="rounded-2xl border border-gray-200 bg-gray-50 p-5"
+        className="city-card border bg-gray-50 p-5"
         aria-label="AI 도구 활용 공개"
       >
         <p className="text-xs leading-relaxed text-gray-500">

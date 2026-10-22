@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-labelledby="title desc">
+<title id="title">CITY SIGNAL 약국 탐색 그래픽</title><desc id="desc">도시 노선도에서 영감을 받은 가상의 경로 도식</desc>
+<defs><pattern id="grid" width="59" height="59" patternUnits="userSpaceOnUse"><path d="M 59 0 L 0 0 0 59" fill="none" stroke="#1e2d1c" stroke-opacity=".14" stroke-width="1.5"/></pattern></defs>
+<rect x="0" y="0" width="600" height="450" fill="#d9fd4c"/><rect x="26" y="12" width="555" height="417" fill="url(#grid)"/>
+<path d="M40 350H175L260 265V115H469L562 22" stroke="#172419" stroke-width="20" fill="none" stroke-linecap="square" stroke-linejoin="round"/>
+<path d="M40 350H175L260 265V115H469L562 22" stroke="#d9fd4c" stroke-width="8" fill="none" stroke-linejoin="round"/>
+<path d="M70 70L160 158H409L505 254V390" stroke="#f57851" stroke-width="16" fill="none" stroke-linejoin="round"/>
+<path d="M260 115V158" stroke="#172419" stroke-width="17"/>
+<circle cx="260" cy="158" r="39" fill="#d9fd4c" stroke="#172419" stroke-width="13"/><path d="M260 138V178M240 158H280" stroke="#172419" stroke-width="10" stroke-linecap="square"/>
+<circle cx="160" cy="158" r="13" fill="#f4f4ec" stroke="#172419" stroke-width="7"/>
+<circle cx="505" cy="330" r="34" fill="#f57851" stroke="#172419" stroke-width="11"/><circle cx="505" cy="330" r="10" fill="#172419"/>
+<g transform="translate(375 306) rotate(-8)"><rect width="182" height="127" x="0" y="0" fill="#f4f4ec" stroke="#172419" stroke-width="5"/><text x="17" y="35" font-size="29" font-family="Arial,sans-serif" font-weight="900" fill="#172419">YOUR CITY.</text><text x="17" y="66" font-size="29" font-family="Arial,sans-serif" font-weight="900" fill="#172419">YOUR WAY.</text><text x="17" y="100" font-size="12" font-family="monospace" font-weight="900" fill="#172419">PHARM / NOW ↗</text></g>
+</svg>

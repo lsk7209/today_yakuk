@@ -94,6 +94,7 @@ export default function Page() {
                 <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-600">
                     약국 이용 가이드
                 </span>
+                <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
                 <h1 className="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl">
                     약국에서 자주 묻는 질문 TOP10과 답변
                 </h1>
@@ -113,7 +114,7 @@ export default function Page() {
 
                 <div className="my-8 space-y-6">
                     {faqList.map((item, index) => (
-                        <div key={index} className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <div key={index} className="city-card border bg-white p-6 transition-shadow">
                             <h3 className="tex-xl font-bold text-gray-900 mb-3 flex items-start">
                                 <span className="mr-2 text-brand-600 shrink-0">Q.</span>
                                 {item.question.substring(item.question.indexOf(" ") + 1)}

@@ -1,0 +1,10 @@
+[
+  {
+    "content_id": "fixture-1",
+    "content": "검증용 원문",
+    "publication_status": "published",
+    "index_policy": "index",
+    "ads_eligible": false,
+    "review_status": "unreviewed"
+  }
+]

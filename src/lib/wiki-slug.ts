@@ -14,6 +14,10 @@ function safeDecode(value: string): string {
   }
 }
 
+export function isCanonicalWikiSlug(routeId: string, canonicalSlug: string): boolean {
+  return safeDecode(routeId) === canonicalSlug;
+}
+
 export function extractWikiEntityId(routeId: string): string {
   const decoded = safeDecode(routeId);
   const matches = decoded.match(UUID_PATTERN);

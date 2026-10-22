@@ -1,0 +1,2 @@
+content_id,url,before_status,after_status,before_index_policy,after_index_policy,before_ads_policy,after_ads_policy,action,reason,replacement_url,source_content_hash,review_status,before_review_status,before_replacement_url,decision_at
+fixture-1,/blog/fixture,published,draft,index,noindex,false,false,HOLD,test fixture,,d35ec7de7d93fc8843cb0fd2c9d8a5d5ca8085f8d43cc596ebd4971a3a055697,needs_review,unreviewed,,2026-09-12T00:00:00Z

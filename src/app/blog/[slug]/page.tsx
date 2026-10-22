@@ -165,9 +165,10 @@ export default async function BlogPostPage({ params }: Props) {
   };
 
   return (
-    <article className="container max-w-3xl py-12">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+    <article className="city-page city-article city-blog-post max-w-4xl">
+      <header className="mb-8 city-page-heading">
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
+        <h1 className="font-black mb-4">{post.title}</h1>
         <div className="flex flex-wrap items-center gap-4 text-sm">
           <time className="text-gray-500">
             {new Date(post.published_at || post.publish_at).toLocaleDateString(
@@ -187,7 +188,7 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </header>
 
-      <div className="relative w-full aspect-[1200/630] mb-8 rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-indigo-50 shadow-lg">
+      <div className="relative w-full aspect-[1200/630] mb-8 overflow-hidden bg-[var(--fog)] border-2 border-[var(--ink)]">
         <Image
           src={getBlogFeaturedImage(post.slug, post.title, post.image_url)}
           alt={post.title}
@@ -204,7 +205,7 @@ export default async function BlogPostPage({ params }: Props) {
       <TableOfContents contentHtml={contentWithIds} />
 
       <div
-        className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-p:text-gray-600 rich-content"
+        className="prose prose-lg max-w-none prose-headings:text-[var(--ink)] prose-p:text-[var(--muted)] rich-content city-article-content"
         dangerouslySetInnerHTML={{ __html: contentWithIds }}
       />
 
@@ -219,7 +220,7 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="space-y-6">
             {post.ai_faq.map(
               (item: { question: string; answer: string }, i: number) => (
-                <div key={i} className="bg-gray-50 p-6 rounded-lg">
+                <div key={i} className="city-panel">
                   <h3 className="font-bold text-lg mb-2 text-gray-900">
                     Q. {item.question}
                   </h3>
@@ -231,7 +232,7 @@ export default async function BlogPostPage({ params }: Props) {
         </section>
       )}
 
-      <section className="mt-12 rounded-3xl border border-brand-100 bg-emerald-50/70 p-6 sm:p-8">
+      <section className="city-panel mt-12 bg-[var(--fog)]">
         <h2 className="text-xl font-black text-slate-900">방문 가능한 약국을 찾고 계신가요?</h2>
         <p className="mt-2 text-sm leading-relaxed text-slate-600">
           등록된 영업시간을 기준으로 가까운 약국을 확인할 수 있습니다. 실제 운영과 재고는 달라질 수 있으니
@@ -242,7 +243,7 @@ export default async function BlogPostPage({ params }: Props) {
           data-analytics-event="content_to_nearby_click"
           data-source-surface="blog"
           data-cta-placement="article_bottom"
-          className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-700 px-6 py-3 text-sm font-black text-white hover:bg-brand-800"
+          className="city-button mt-5"
         >
           가까운 약국 찾기
         </Link>

@@ -83,13 +83,13 @@ for (const path of ["/", "/nearby"]) test(`${path} results refresh status and cl
     await context.setGeolocation({ latitude: 37.5, longitude: 127 });
     await page.goto(path);
     const trigger = path === "/"
-      ? page.getByRole("button", { name: "지역·약국명 검색", exact: true })
+      ? page.getByRole("button", { name: "검색하기", exact: true })
       : page.getByRole("button", { name: "현재 위치로 약국 찾기", exact: true });
     await expect(trigger).toBeVisible();
     await page.clock.install({ time: new Date("2026-09-14T21:29:50+09:00") });
     await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
     if (path === "/") {
-      await page.getByPlaceholder("동 이름 또는 건물명으로 찾기").fill("검증약국");
+      await page.getByPlaceholder("지역 또는 약국명 검색").fill("검증약국");
       await trigger.click();
     } else {
       await trigger.click();

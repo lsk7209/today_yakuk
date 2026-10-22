@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ArrowRight, LocateFixed, Database, BrainCircuit, Eye, Info } from "lucide-react";
 import { JsonLd, buildItemListSchema } from "@/components/seo/json-ld";
 import { getSiteUrl } from "@/lib/site-url";
+import PageHeading from "@/components/city-signal/page-heading";
 
 const siteUrl = getSiteUrl();
 
@@ -66,43 +67,33 @@ export default function GuideIndexPage() {
   });
 
   return (
-    <div className="bg-[var(--background)]">
+    <div className="city-page city-guide-index">
       <JsonLd data={itemListSchema} id="guide-list-schema" />
-      <div className="container py-10 sm:py-14 space-y-10">
+      <div className="space-y-10">
         {/* Hero */}
-        <header className="rounded-3xl border border-gray-200 bg-white shadow-lg overflow-hidden">
-          <div className="relative p-6 sm:p-10">
-            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_15%_15%,rgba(5,150,105,0.12),transparent_40%)]" />
-            <div className="relative grid gap-8 lg:grid-cols-[1.15fr_0.85fr] items-center">
-              <div className="space-y-5">
-                <p className="text-xs font-black tracking-[0.18em] text-brand-700">GUIDE</p>
-                <h1 className="text-3xl sm:text-5xl font-black leading-[1.1] tracking-tight text-gray-900">
-                  약국 이용 가이드 모음
-                </h1>
-                <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
-                  야간·주말·공휴일에도 문 연 약국을 더 빠르고 안전하게 찾기 위한 실전 팁을 정리했습니다. “전화 확인 →
-                  길찾기”까지 한 흐름으로 안내합니다.
-                </p>
+        <div className="city-guide-hero">
+          <div className="city-guide-hero-main">
+            <PageHeading index="FIELD GUIDE / PHARMACY" title="약국 이용 가이드 모음" art="metro">
+              야간·주말·공휴일에도 문 연 약국을 더 빠르고 안전하게 찾기 위한 실전 팁을 정리했습니다. “전화 확인 → 길찾기”까지 한 흐름으로 안내합니다.
+            </PageHeading>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
                     href="/nearby"
-                    className="h-12 px-7 rounded-full bg-brand-600 text-white font-black text-base shadow-lg shadow-brand-600/25 hover:bg-brand-700 hover:-translate-y-0.5 transition-all inline-flex items-center justify-center gap-2"
+                    className="city-button"
                   >
                     <LocateFixed className="h-5 w-5" />
                     내 주변 약국 찾기
                   </Link>
                   <Link
                     href="/"
-                    className="h-12 px-7 rounded-full bg-gray-100 text-gray-900 font-black text-base hover:bg-gray-200 transition-colors inline-flex items-center justify-center gap-2"
+                    className="city-button city-button-secondary"
                   >
                     홈으로 돌아가기
                     <ArrowRight className="h-5 w-5" />
                   </Link>
                 </div>
-              </div>
-
               <div className="w-full">
-                <div className="rounded-3xl border border-gray-200 bg-gradient-to-br from-emerald-50 via-white to-white shadow-2xl p-6">
+                <div className="city-panel">
                   <div className="flex items-start gap-3">
                     <Info className="h-5 w-5 text-brand-700 mt-0.5" />
                     <div className="space-y-2">
@@ -116,19 +107,17 @@ export default function GuideIndexPage() {
                   </div>
                 </div>
               </div>
-            </div>
           </div>
-        </header>
+        </div>
 
         {/* Data process (compact) */}
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-10 shadow-sm">
+        <section className="city-panel">
           <div className="text-center space-y-3">
             <h2 className="text-2xl sm:text-3xl font-black text-gray-900">정보가 만들어지는 방식</h2>
             <p className="text-gray-600">가이드는 실제 사용 흐름에 맞춰 “데이터 이해 → 확인 → 행동” 순서로 구성합니다.</p>
           </div>
 
           <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-gray-200 via-brand-400 to-gray-200 -z-0" />
             <ProcessCard
               icon={<Database className="h-10 w-10 text-brand-700" />}
               title="데이터 이해"
@@ -185,13 +174,13 @@ export default function GuideIndexPage() {
               <Link
                 key={guide.slug}
                 href={`/guide/${guide.slug}`}
-                className="group rounded-3xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg hover:border-brand-300 transition-all"
+                className="city-card group p-6"
               >
                 <div className="flex flex-wrap gap-2 mb-4">
                   {guide.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700"
+                      className="inline-flex items-center border border-[var(--ink)] bg-[var(--fog)] px-3 py-1 text-xs font-black text-[var(--ink)]"
                     >
                       {tag}
                     </span>
@@ -224,7 +213,7 @@ function ProcessCard({
 }) {
   return (
     <div className="relative z-10 flex flex-col items-center text-center gap-4 group">
-      <div className="h-24 w-24 rounded-full bg-white border-4 border-gray-100 flex items-center justify-center shadow-lg group-hover:border-brand-200 group-hover:scale-[1.05] transition-all duration-300">
+      <div className="h-24 w-24 bg-[var(--lime)] border-2 border-[var(--ink)] flex items-center justify-center">
         {icon}
       </div>
       <div>

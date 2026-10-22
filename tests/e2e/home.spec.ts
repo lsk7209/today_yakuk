@@ -7,11 +7,16 @@ test.beforeEach(async ({ page }) => {
             ? route.continue()
             : route.abort();
     });
+    await page.goto("/");
+    const toggle = page.locator(".city-menu-toggle");
+    if (await toggle.isVisible()) await toggle.click();
 });
 
 test.describe("Homepage", () => {
     test("should load homepage successfully", async ({ page }) => {
         await page.goto("/");
+        const toggle = page.locator(".city-menu-toggle");
+        if (await toggle.isVisible()) await toggle.click();
 
         // 페이지 제목 확인
         await expect(page).toHaveTitle(/약국오늘/);
@@ -22,6 +27,8 @@ test.describe("Homepage", () => {
 
     test("should have navigation links", async ({ page }) => {
         await page.goto("/");
+        const toggle = page.locator(".city-menu-toggle");
+        if (await toggle.isVisible()) await toggle.click();
 
         // 네비게이션 링크들 확인
         const nav = page.locator("header nav");
@@ -34,6 +41,8 @@ test.describe("Homepage", () => {
 
     test("should navigate to about page", async ({ page }) => {
         await page.goto("/");
+        const toggle = page.locator(".city-menu-toggle");
+        if (await toggle.isVisible()) await toggle.click();
 
         await Promise.all([
             page.waitForURL("/about"),
@@ -43,6 +52,8 @@ test.describe("Homepage", () => {
 
     test("should navigate to blog page", async ({ page }) => {
         await page.goto("/");
+        const toggle = page.locator(".city-menu-toggle");
+        if (await toggle.isVisible()) await toggle.click();
 
         await Promise.all([
             page.waitForURL("/blog"),
@@ -52,6 +63,8 @@ test.describe("Homepage", () => {
 
     test("should navigate to wiki page", async ({ page }) => {
         await page.goto("/");
+        const toggle = page.locator(".city-menu-toggle");
+        if (await toggle.isVisible()) await toggle.click();
 
         await Promise.all([
             page.waitForURL("/wiki"),
@@ -63,6 +76,8 @@ test.describe("Homepage", () => {
 test.describe("Footer", () => {
     test("should have footer links", async ({ page }) => {
         await page.goto("/");
+        const toggle = page.locator(".city-menu-toggle");
+        if (await toggle.isVisible()) await toggle.click();
 
         const footer = page.locator("footer");
         await expect(footer).toContainText("약국오늘");

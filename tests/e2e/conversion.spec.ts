@@ -54,8 +54,8 @@ test("keyword results expose a direct phone CTA and send privacy-bounded events"
   );
 
   await page.goto("/");
-  await page.getByPlaceholder("동 이름 또는 건물명으로 찾기").fill("강남 감기약");
-  await page.getByRole("button", { name: "지역·약국명 검색" }).click();
+  await page.getByPlaceholder("지역 또는 약국명 검색").fill("강남 감기약");
+  await page.getByRole("button", { name: "검색하기" }).click();
 
   await expect(page.getByText("테스트약국", { exact: true })).toBeVisible();
   const phone = page.getByRole("link", { name: "테스트약국에 전화하기" });

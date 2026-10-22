@@ -45,6 +45,7 @@ export default function SupplementLabelReadingGuidePage() {
         <span className="inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-bold text-sky-700">
           로컬 검토용 초안 · 미발행
         </span>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl font-black leading-tight text-slate-950 sm:text-4xl">
           {title}
         </h1>
@@ -58,7 +59,7 @@ export default function SupplementLabelReadingGuidePage() {
         </p>
       </header>
 
-      <section className="rounded-2xl border border-brand-200 bg-brand-50 p-6 sm:p-8">
+      <section className="city-card border bg-brand-50 p-6 sm:p-8">
         <h2 className="text-xl font-black text-slate-950">2분 안에 보는 핵심 순서</h2>
         <ol className="mt-4 grid gap-3 text-sm leading-relaxed text-slate-700 sm:grid-cols-2">
           {[
@@ -138,7 +139,7 @@ export default function SupplementLabelReadingGuidePage() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+      <section className="city-card border bg-slate-50 p-6">
         <h2 className="text-lg font-black text-slate-950">공식 원문 확인처</h2>
         <ul className="mt-4 space-y-3 text-sm leading-relaxed text-slate-600">
           <li>
@@ -191,7 +192,7 @@ export default function SupplementLabelReadingGuidePage() {
         </div>
       </section>
 
-      <p className="rounded-xl border border-slate-200 bg-white p-4 text-xs leading-relaxed text-slate-500">
+      <p className="city-card border bg-white p-4 text-xs leading-relaxed text-slate-500">
         작성 고지: 이 글은 위 공개자료와 약국오늘의 읽기 전용 점검 결과를 바탕으로 현재
         Codex 세션에서 직접 작성했습니다. 외부 글쓰기 API를 사용하지 않았으며, 의료 전문가의
         검토나 개인 진료를 대신하지 않습니다.

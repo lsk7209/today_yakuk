@@ -77,7 +77,7 @@ export default function Page() {
     ],
   };
   return (
-    <article className="container max-w-3xl py-12">
+    <article className="city-page city-route-article max-w-3xl py-12">
       {/* JSON-LD */}
       <JsonLd id="article-schema" data={articleSchema} />
       <JsonLd id="faq-schema" data={faqSchema} />
@@ -89,6 +89,7 @@ export default function Page() {
         <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">
           블로그 · 야간약국 가이드
         </p>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">
           야간 약국 찾는 법: 심야에 문 연 약국 찾기 3단계
         </h1>
@@ -484,7 +485,7 @@ export default function Page() {
           {faqItems.map((faq) => (
             <details
               key={faq.question}
-              className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
+              className="city-card border bg-white p-4 transition-shadow"
             >
               <summary className="cursor-pointer font-bold text-gray-900">
                 {faq.question}
@@ -545,7 +546,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -556,7 +557,7 @@ export default function Page() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

@@ -80,13 +80,14 @@ export default function WikiSearch({ currentCategory = "all" }: WikiSearchProps)
         <div className="relative max-w-2xl mx-auto wiki-search-container">
             <input
                 type="text"
+                aria-label="제품명이나 제조사 검색"
                 placeholder="찾으시는 제품명이나 제조사를 검색하세요"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => results.length > 0 && setShowResults(true)}
-                className="w-full px-12 py-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-brand-50 shadow-sm text-base font-medium"
+                className="w-full px-12 py-4 bg-[var(--white)] border-2 border-[var(--ink)] rounded-none focus:outline-none focus:ring-2 focus:ring-[var(--ink)] text-base font-medium"
             />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted)] w-5 h-5" />
 
             {isSearching && (
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -95,14 +96,14 @@ export default function WikiSearch({ currentCategory = "all" }: WikiSearchProps)
             )}
 
             {!isSearching && query.length >= 2 && (
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 bg-slate-50 text-slate-400 text-[10px] font-black rounded-md border border-slate-100">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 bg-slate-50 text-[var(--muted)] text-[10px] font-black rounded-md border border-slate-100">
                     {results.length}건
                 </div>
             )}
 
             {/* Search Results Dropdown */}
             {showResults && results.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl z-50 max-h-96 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--white)] border-2 border-[var(--ink)] rounded-none z-50 max-h-96 overflow-y-auto">
                     {results.map((product) => (
                         <Link
                             key={product.id}
@@ -110,7 +111,7 @@ export default function WikiSearch({ currentCategory = "all" }: WikiSearchProps)
                             className="flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-b-0"
                             onClick={() => setShowResults(false)}
                         >
-                            <div className="w-12 h-12 shrink-0 bg-slate-50 rounded-xl border border-slate-100 overflow-hidden flex items-center justify-center">
+                            <div className="w-12 h-12 shrink-0 bg-[var(--fog)] border border-[var(--ink)] overflow-hidden flex items-center justify-center">
                                 {product.image_url ? (
                                     <Image
                                         src={product.image_url}
@@ -125,12 +126,12 @@ export default function WikiSearch({ currentCategory = "all" }: WikiSearchProps)
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="font-bold text-slate-900 truncate">{product.name}</p>
-                                <p className="text-xs text-slate-400 truncate">{product.manufacturer || "공시 데이터 없음"}</p>
+                                <p className="text-xs text-[var(--muted)] truncate">{product.manufacturer || "공시 데이터 없음"}</p>
                             </div>
                         </Link>
                     ))}
                     {results.length >= 6 && (
-                        <div className="p-3 text-center text-sm text-slate-400 bg-slate-50 rounded-b-2xl">
+                        <div className="p-3 text-center text-sm text-[var(--muted)] bg-slate-50 rounded-none">
                             더 많은 결과를 보려면 구체적으로 검색하세요
                         </div>
                     )}
@@ -139,8 +140,8 @@ export default function WikiSearch({ currentCategory = "all" }: WikiSearchProps)
 
             {/* No results */}
             {showResults && query.length >= 2 && results.length === 0 && !isSearching && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl z-50 p-8 text-center">
-                    <p className="text-slate-400">검색 결과가 없습니다.</p>
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--white)] border-2 border-[var(--ink)] rounded-none z-50 p-8 text-center">
+                    <p className="text-[var(--muted)]">검색 결과가 없습니다.</p>
                 </div>
             )}
         </div>

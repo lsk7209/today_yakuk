@@ -62,6 +62,7 @@ import {
   startSyncRun,
 } from "../../scripts/lib/sync-run-metrics";
 import { isSafeCrawlerQuery } from "@/proxy";
+import { buildWikiProductSlug, extractWikiEntityId, isCanonicalWikiSlug } from "@/lib/wiki-slug";
 
 async function run(name: string, test: () => void | Promise<void>) {
   await test();
@@ -69,6 +70,17 @@ async function run(name: string, test: () => void | Promise<void>) {
 }
 
 async function main() {
+  await run("Korean wiki canonical slugs accept encoded params without redirect loops", () => {
+    const product = { id: "d5e1a9f0-1c2d-4a3b-8c4d-00000000c1a1", name: "화면검증 비타민 CITY-A (테스트)" };
+    const canonical = buildWikiProductSlug(product);
+    assert.equal(isCanonicalWikiSlug(canonical, canonical), true);
+    assert.equal(isCanonicalWikiSlug(encodeURIComponent(canonical), canonical), true);
+    assert.equal(extractWikiEntityId(encodeURIComponent(canonical)), product.id);
+    assert.equal(isCanonicalWikiSlug(product.id, canonical), false);
+    assert.equal(isCanonicalWikiSlug(`old-${product.id}`, canonical), false);
+    assert.equal(isCanonicalWikiSlug("%E0%A4%A", canonical), false);
+    assert.equal(isCanonicalWikiSlug(encodeURIComponent(encodeURIComponent(canonical)), canonical), false);
+  });
   await run("safe highlighting escapes source HTML before adding trusted markup", () => {
     const html = highlightSafeText('<img src=x onerror="alert(1)"> 02:30', [
       { pattern: /\d{2}:\d{2}/g, className: "time" },
@@ -1346,6 +1358,7 @@ async function main() {
         if (id === "react") return { useEffect, useMemo, useRef, useState };
         if (id === "react/jsx-runtime") return jsxRuntime;
         if (id === "next/link") return { __esModule: true, default: "a" };
+        if (id === "next/image") return { __esModule: true, default: "img" };
         if (id === "lucide-react") return { LocateFixed: () => null, MapPin: () => null, ShieldCheck: () => null };
         if (id === "@/lib/seo") return { buildArticleJsonLd };
         if (id === "@/lib/hours") return { getOperatingStatus, getOperatingStatusAt: getOperatingStatus };

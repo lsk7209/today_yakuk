@@ -17,6 +17,7 @@ export default defineConfig({
         baseURL: process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${port}`,
         trace: "on-first-retry",
         screenshot: "only-on-failure",
+        channel: process.env.PLAYWRIGHT_CHANNEL || undefined,
     },
 
     projects: [

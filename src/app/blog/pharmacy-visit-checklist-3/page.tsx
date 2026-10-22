@@ -118,20 +118,21 @@ export default function PharmacyVisitChecklist3() {
     ],
   };
   return (
-    <article className="container py-10 sm:py-14 space-y-10 bg-white min-h-screen">
+    <article className="city-page city-route-article py-10 sm:py-14 space-y-10 bg-white min-h-screen">
 
       {/* ── 헤더 ── */}
       <header className="space-y-4" aria-label="글 머리말">
         <p className="text-sm font-bold text-brand-700 uppercase tracking-wide">
           블로그 · 약국 방문 가이드
         </p>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">
           약국 방문 전 꼭 확인해야 할 것들: 영업·재고·처방 3가지
         </h1>
 
         {/* ── Hook H1 + 즉답 단락 (speakable .aeo-answer) ── */}
         <div
-          className="aeo-answer rounded-2xl border border-brand-200 bg-brand-50 p-5 space-y-2"
+          className="city-card aeo-answer border bg-brand-50 p-5 space-y-2"
           aria-label="핵심 답변"
         >
           <p className="text-base font-semibold text-brand-900 leading-relaxed">
@@ -177,7 +178,7 @@ export default function PharmacyVisitChecklist3() {
 
       <AdSlotTop />
 
-      <aside className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
+      <aside className="city-card border bg-blue-50 p-4 text-sm text-blue-900">
         <p>사용기간 안내 수정: <time dateTime="2026-09-20">2026년 9월 20일</time>. 모든 처방전에 같은 일수가 적용된다는 기존 안내를 바로잡았습니다.</p>
         <p>의료법 시행규칙 제12조 제1항 제6호는 처방전에 발급일과 사용기간을 기재하도록 정합니다. 실제 처방전에 적힌 기간을 확인하고, 불명확하면 발급 의료기관에 문의하세요.</p>
         <a className="underline" href="https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1019641101" target="_blank" rel="noopener noreferrer">근거: 의료법 시행규칙 제12조</a>
@@ -187,7 +188,7 @@ export default function PharmacyVisitChecklist3() {
       {/* ── L6 통념 vs 실제 contrast 박스 ── */}
       <section
         aria-label="흔한 오해와 실제"
-        className="rounded-2xl border border-amber-200 bg-amber-50 p-6 space-y-4"
+        className="city-card border border-amber-200 bg-amber-50 p-6 space-y-4"
       >
         <h2 id="h2-contrast" className="text-lg font-bold text-amber-900">
           흔한 오해 vs 실제 상황
@@ -250,7 +251,7 @@ export default function PharmacyVisitChecklist3() {
           </Link>
           을 이용하면 현재 영업 중인 약국만 필터링해 볼 수 있다.
         </p>
-        <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 space-y-2">
+        <div className="city-card border bg-gray-50 p-5 space-y-2">
           <p className="text-sm font-semibold text-gray-800">방문 전 확인 순서</p>
           <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
             <li>지도 앱 또는 약국오늘에서 &apos;영업 중&apos; 필터 켜기</li>
@@ -321,7 +322,7 @@ export default function PharmacyVisitChecklist3() {
           </Link>
           를 참고할 수 있다.
         </p>
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+        <div className="city-card border bg-white p-5 space-y-2">
           <p className="text-sm font-semibold text-gray-800">재고 확인 시 전달할 정보</p>
           <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
             <li>처방전 의약품명 또는 성분명</li>
@@ -368,7 +369,7 @@ export default function PharmacyVisitChecklist3() {
           함께 지참해야 건강보험 적용이 가능하다. 공휴일·야간에도 보험 청구는
           가능하지만, 약국별 처리 방식이 다를 수 있어 사전 확인이 권장된다.
         </p>
-        <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 space-y-2">
+        <div className="city-card border bg-gray-50 p-5 space-y-2">
           <p className="text-sm font-semibold text-gray-800">처방전 방문 전 체크리스트</p>
           <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
             <li>처방전 발급일과 사용기간 기재란 확인 → 불명확하면 발급 의료기관에 문의</li>
@@ -386,7 +387,7 @@ export default function PharmacyVisitChecklist3() {
           {faqs.map((faq) => (
             <details
               key={faq.question}
-              className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
+              className="city-card border bg-white p-4 transition-shadow"
             >
               <summary className="cursor-pointer font-bold text-gray-900 leading-snug">
                 {faq.question}
@@ -400,7 +401,7 @@ export default function PharmacyVisitChecklist3() {
       </section>
 
       {/* ── Outro O1 action ── */}
-      <section className="rounded-2xl border border-brand-200 bg-brand-50 p-6 space-y-4">
+      <section className="city-card border bg-brand-50 p-6 space-y-4">
         <div className="space-y-3">
           <h2 id="h2-action" className="text-xl font-bold text-brand-900">지금 바로 할 수 있는 3단계</h2>
           <ol className="list-decimal list-inside space-y-2 text-brand-800 font-medium">
@@ -429,7 +430,7 @@ export default function PharmacyVisitChecklist3() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -440,7 +441,7 @@ export default function PharmacyVisitChecklist3() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>
@@ -453,7 +454,7 @@ export default function PharmacyVisitChecklist3() {
 
       {/* ── YMYL disclaimer ── */}
       <aside
-        className="aw-ymyl-disclaimer rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-xs text-yellow-800 leading-relaxed"
+        className="city-card aw-ymyl-disclaimer border border-yellow-200 bg-yellow-50 p-4 text-xs text-yellow-800 leading-relaxed"
         aria-label="의료 정보 안내"
       >
         <strong>의료 정보 안내:</strong> 본 글은 보건복지부·건강보험심사평가원

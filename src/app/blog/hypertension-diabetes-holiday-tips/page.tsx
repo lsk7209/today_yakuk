@@ -90,6 +90,7 @@ export default function Page() {
                 <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-600">
                     만성질환 건강관리
                 </span>
+                <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
                 <h1 className="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl">
                     약 떨어지면 응급상황! 고혈압·당뇨 환자의 안전한 연휴 보내기
                 </h1>
@@ -101,7 +102,7 @@ export default function Page() {
 
             <AdSlotTop />
 
-            <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+            <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">이 글이 필요한 순간</h2>
                 <p className="text-sm text-gray-600 leading-relaxed">
                     고혈압·당뇨 같은 만성질환은 하루라도 약을 거르면 혈압·혈당이 급격히 흔들릴 수 있어 연휴는 특히 위험한 시기입니다.
@@ -144,7 +145,7 @@ export default function Page() {
                     연휴 중 식사 시간이 불규칙해지면 복약 시간을 놓치는 일이 잦아집니다.
                     약의 종류에 따라 대처법이 다르므로 반드시 아래 원칙을 기억해 두세요.
                 </p>
-                <div className="rounded-xl border border-red-100 bg-red-50 p-5">
+                <div className="city-card border border-red-100 bg-red-50 p-5">
                     <ul className="my-0">
                         <li>
                             <strong>고혈압약:</strong> 생각난 즉시 복용하세요. 단, 다음 복용 시간이 8시간도 남지 않았다면 이번 회차는 건너뛰고 다음 정해진 시간에 드세요. 절대 2배 용량을 드시면 안 됩니다(저혈압 쇼크 위험). 하루를 통째로 건너뛰었더라도 다음 날 정상 용량으로 재개하면 되며, 두통·어지럼증이 생기면 가까운 당직 의원을 방문하세요.
@@ -195,7 +196,7 @@ export default function Page() {
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
                 <div className="space-y-3">
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
                             <h3 className="text-base font-bold text-gray-900">연휴 3일째, 고혈압약이 딱 오늘 치 밖에 안 남은 상황</h3>
@@ -204,7 +205,7 @@ export default function Page() {
                             오늘 분은 정해진 시간에 복용하고, 휴일지킴이 약국이나 당직 의원을 찾아 처방전 재발급 또는 임시 처방을 요청하세요. 약국오늘에서 현재 운영 중인 인근 약국을 검색하면 빠르게 찾을 수 있습니다. 내일부터 복약이 중단되지 않도록 오늘 안에 반드시 해결해야 하며, 대처가 어렵다면 응급의료기관을 방문하는 것이 안전합니다.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
                             <h3 className="text-base font-bold text-gray-900">명절 저녁 풍성하게 먹었더니 식후 혈당이 250을 넘겼다</h3>
@@ -213,7 +214,7 @@ export default function Page() {
                             당장 집 근처를 20~30분 빠르게 걸으면 혈당을 자연스럽게 낮출 수 있습니다. 다음 식사는 탄수화물을 절반으로 줄이고 단백질과 채소 위주로 드세요. 혈당이 300mg/dL 이상이거나 구역·복통이 동반된다면 가까운 응급실을 방문해야 합니다.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+                    <div className="city-card border bg-white p-5 space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
                             <h3 className="text-base font-bold text-gray-900">여행지에서 약 봉투를 숙소에 두고 외출해 점심 복약을 놓쳤다</h3>
@@ -248,7 +249,7 @@ export default function Page() {
                 <h2 className="text-xl font-bold text-gray-900">자주 묻는 질문</h2>
                 <div className="space-y-3">
                     {faqs.map((faq, i) => (
-                        <div key={i} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm space-y-2">
+                        <div key={i} className="city-card border bg-white p-5 space-y-2">
                             <p className="text-sm font-bold text-gray-900">Q. {faq.q}</p>
                             <p className="text-sm text-gray-600 leading-relaxed">A. {faq.a}</p>
                         </div>
@@ -256,21 +257,21 @@ export default function Page() {
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+            <section className="city-card border bg-brand-50/40 p-6 space-y-3">
                 <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
                 <div className="grid gap-3 sm:grid-cols-2">
-                    <Link href="/blog/prescription-holiday-guide" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/blog/prescription-holiday-guide" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">처방전 약 연휴에 못 받을 때 대처법</p>
                         <p className="text-xs text-gray-500 mt-1">연휴 처방전 대처</p>
                     </Link>
-                    <Link href="/guide/holiday-checklist" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+                    <Link href="/guide/holiday-checklist" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
                         <p className="text-sm font-bold text-gray-900 hover:text-brand-700">공휴일 약국 이용 체크리스트</p>
                         <p className="text-xs text-gray-500 mt-1">공휴일 약국 가이드</p>
                     </Link>
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+            <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -281,7 +282,7 @@ export default function Page() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

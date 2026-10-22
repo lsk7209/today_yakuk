@@ -7,7 +7,8 @@ import { createClient } from '@libsql/client';
 import next from 'next';
 
 const root = resolve('.');
-const artifacts = resolve(root, '.goal-harness/reference-112-p0-20260920/runtime');
+const artifacts = resolve(root, process.env.TODAYPHARM_P0_ARTIFACTS || '.goal-harness/reference-112-p0-20260920/runtime');
+const port = Number(process.env.TODAYPHARM_P0_PORT || 3249);
 await mkdir(artifacts, { recursive: true });
 const databaseUrl = pathToFileURL(resolve(artifacts, 'fixture.sqlite')).href;
 if (!databaseUrl.startsWith('file:')) throw new Error('Fixture must use a local database');
@@ -29,6 +30,6 @@ for (const [index, [id, name, hours]] of fixtures.entries()) {
     args: [id, name, '테스트 서울 테스트구', '000-0000-0000', 37.5 + index * 0.001, 127, JSON.stringify(hours), '서울특별시', '테스트구', '2026-09-20T00:00:00Z'] });
 }
 db.close();
-const app = next({ dev: true, dir: root, hostname: '127.0.0.1', port: 3249 });
+const app = next({ dev: true, dir: root, hostname: '127.0.0.1', port });
 await app.prepare();
-createServer(app.getRequestHandler()).listen(3249, '127.0.0.1', () => console.log('Local P0 fixture ready on 3249 (UTC server)'));
+createServer(app.getRequestHandler()).listen(port, '127.0.0.1', () => console.log(`Local P0 fixture ready on ${port} (UTC server)`));

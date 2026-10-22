@@ -114,9 +114,10 @@ export default function GuideCallScriptsPage() {
   };
 
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10">
       <header className="space-y-3">
         <p className="text-sm font-semibold text-brand-700">가이드 · 전화 스크립트</p>
+        <p className="city-eyebrow">FIELD GUIDE / PHARMACY</p>
         <h1 className="text-3xl font-bold leading-tight">전화 스크립트: 영업·재고 확인 템플릿</h1>
         <p className="text-base text-[var(--muted)] leading-relaxed">{metaDescription}</p>
         <div className="flex flex-wrap gap-2">
@@ -135,7 +136,7 @@ export default function GuideCallScriptsPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border border-gray-50 bg-white p-6 sm:p-8 shadow-sm space-y-4">
+      <section className="city-card border bg-white p-6 sm:p-8 space-y-4">
         <h2 className="text-xl font-bold text-gray-900">이 가이드가 필요한 순간</h2>
         <p className="text-sm text-gray-700 leading-relaxed">
           지도 앱에 표시된 영업 시간은 최신 정보가 아닐 수 있으며, 당일 사정에 따라 조기 마감하는 약국도 적지 않습니다. 특히 공휴일이나 명절 연휴, 급하게 약이 필요한 심야 시간대에는 헛걸음의 피로와 시간 손실이 배가됩니다. 이 가이드의 전화 스크립트를 활용하면 출발 전 단 30초로 영업 여부·재고·대기 시간을 한 번에 확인할 수 있습니다. 스크립트를 외울 필요 없이 화면을 보면서 따라 읽기만 해도 됩니다.
@@ -164,11 +165,11 @@ export default function GuideCallScriptsPage() {
         {scripts.map((script) => (
           <div
             key={script.title}
-            className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm space-y-3"
+            className="city-card border border-[var(--border)] bg-white p-6 space-y-3"
           >
             <h2 className="text-xl font-semibold">{script.title}</h2>
             <p className="text-sm text-gray-600 leading-relaxed">{script.desc}</p>
-            <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 space-y-1">
+            <div className="city-card bg-gray-50 border p-4 space-y-1">
               <p className="text-xs font-semibold text-brand-700 mb-2">전화 스크립트</p>
               <ul className="list-disc list-inside space-y-1 text-[var(--muted)]">
                 {script.lines.map((line) => (
@@ -182,7 +183,7 @@ export default function GuideCallScriptsPage() {
         ))}
       </section>
 
-      <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 shadow-sm space-y-3">
+      <section className="city-card border bg-emerald-50 p-6 space-y-3">
         <h2 className="text-xl font-semibold text-brand-800">바로 실행 체크리스트</h2>
         <p className="text-sm text-emerald-800 leading-relaxed">
           전화 한 통으로 확인해야 할 항목을 순서대로 정리했습니다. 아래 순서대로 질문하면 30초 내에 방문 여부를 결정할 수 있습니다.
@@ -199,7 +200,7 @@ export default function GuideCallScriptsPage() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900">실전 시나리오</h2>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 1</span>
               <h3 className="text-base font-bold text-gray-900">퇴근 후 저녁 8시, 감기약이 필요한 경우</h3>
@@ -208,7 +209,7 @@ export default function GuideCallScriptsPage() {
               퇴근길에 감기 증상이 심해져 약이 필요하지만 주변 약국들이 대부분 오후 7~8시에 마감합니다. 가까운 약국 3곳에 미리 전화해 영업 종료 시간과 아세트아미노펜·종합감기약 재고를 확인하면, 퇴근 경로 중 들를 수 있는 약국을 찾아 단 한 번에 방문을 마칠 수 있습니다. 스크립트 없이 전화하면 당황해 필요한 정보를 빠뜨리기 쉬우니, 이 페이지를 켜놓고 읽어가며 통화하는 것이 가장 효율적입니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 2</span>
               <h3 className="text-base font-bold text-gray-900">처방전을 받고 조제 약국을 찾는 경우</h3>
@@ -217,7 +218,7 @@ export default function GuideCallScriptsPage() {
               병원에서 처방전을 받았지만 병원 근처 약국이 이미 복잡하거나 특정 약 재고가 없는 경우가 있습니다. 처방전에 적힌 약 이름을 그대로 읽으며 &ldquo;이 처방전 조제 가능한가요? 지금 방문하면 얼마나 기다려야 하나요?&rdquo;라고 물으면, 대기가 짧고 재고가 준비된 약국을 빠르게 찾을 수 있습니다. 방문 예정 시간을 미리 알려두면 약국에서 미리 조제를 준비해두는 경우도 있어 대기 시간을 크게 줄일 수 있습니다.
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-2">
+          <div className="city-card border bg-white p-5 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-brand-700 bg-brand-50 rounded-full px-2 py-0.5">상황 3</span>
               <h3 className="text-base font-bold text-gray-900">공휴일·명절에 당번 약국을 찾는 경우</h3>
@@ -235,7 +236,7 @@ export default function GuideCallScriptsPage() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-[var(--border)] bg-white p-4 shadow-sm"
+              className="city-card border border-[var(--border)] bg-white p-4"
             >
               <h3 className="font-semibold text-[var(--foreground)] mb-1">{faq.q}</h3>
               <p className="text-sm text-[var(--muted)] leading-relaxed">{faq.a}</p>
@@ -244,7 +245,7 @@ export default function GuideCallScriptsPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
+      <section className="city-card border border-[var(--border)] bg-white p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">다음 단계</h2>
@@ -269,14 +270,14 @@ export default function GuideCallScriptsPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 space-y-3">
+      <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/blog/pharmacy-visit-checklist-3" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/pharmacy-visit-checklist-3" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 확인 3가지</p>
             <p className="text-xs text-gray-500 mt-1">영업·재고·처방전 유효기간 점검</p>
           </Link>
-          <Link href="/blog/night-pharmacy-checklist" className="rounded-xl border border-white bg-white p-4 hover:border-brand-200 hover:shadow-sm transition-all">
+          <Link href="/blog/night-pharmacy-checklist" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">심야 약국 방문 체크리스트</p>
             <p className="text-xs text-gray-500 mt-1">헛걸음 방지 체크리스트</p>
           </Link>

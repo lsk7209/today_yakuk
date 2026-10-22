@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="영양제 성분 중복 점검 - TodayPharm">
+  <defs>
+    <linearGradient id="bg-editorial-supplement-overlap" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#eff6ff"/>
+      <stop offset="100%" style="stop-color:#dbeafe"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg-editorial-supplement-overlap)"/>
+  <!-- Decorative circle -->
+  <circle cx="950" cy="150" r="180" fill="#2563eb" opacity="0.06"/>
+  <circle cx="200" cy="500" r="120" fill="#2563eb" opacity="0.04"/>
+  <!-- Top bar -->
+  <rect x="0" y="0" width="1200" height="6" fill="#2563eb"/>
+  <!-- Brand -->
+  <text x="80" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" fill="#2563eb">TodayPharm</text>
+  <text x="80" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#6b7280">약국오늘 블로그</text>
+  <!-- Icon -->
+  <text x="80" y="320" font-size="80">🔍</text>
+  <!-- Title -->
+  <text x="200" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" fill="#1f2937">영양제 성분 중복 점검</text>
+  <!-- Subtitle -->
+  <text x="80" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#6b7280">안전한 복약 생활을 위한 실용 가이드</text>
+  <!-- Bottom decorative line -->
+  <rect x="80" y="500" width="120" height="4" rx="2" fill="#2563eb"/>
+  <!-- Domain -->
+  <text x="80" y="570" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#9ca3af">todaypharm.kr/blog</text>
+</svg>

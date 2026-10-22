@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import "../guide/editorial-city.css";
+import EditorialToc from "../guide/EditorialToc";
 
 const authoritySources = [
   {
@@ -20,10 +22,11 @@ const authoritySources = [
 
 export default function BlogLayout({ children }: { children: ReactNode }) {
   return (
-    <>
+    <div className="city-editorial city-editorial-blog">
+      <EditorialToc section="blog" />
       {children}
       <aside
-        className="container mb-12 mt-8 max-w-3xl rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
+        className="city-source container mb-12 mt-8 p-5"
         aria-labelledby="blog-authority-sources"
       >
         <h2 id="blog-authority-sources" className="text-base font-bold text-gray-900">
@@ -45,6 +48,6 @@ export default function BlogLayout({ children }: { children: ReactNode }) {
           ))}
         </ul>
       </aside>
-    </>
+    </div>
   );
 }

@@ -99,13 +99,14 @@ export default function Page() {
     ],
   };
   return (
-    <div className="container py-10 sm:py-14 space-y-10">
+    <div className="city-page city-route-article py-10 sm:py-14 space-y-10">
 
       {/* ── 헤더 ── */}
       <header className="space-y-4">
         <p className="text-sm font-semibold text-brand-700">
           블로그 · 처방전·연휴 대처
         </p>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">
           처방전 약 연휴에 못 받을 때 대처법 — 처방전 사용기간·비상약국·응급 절차
         </h1>
@@ -150,7 +151,7 @@ export default function Page() {
 
       <AdSlotTop />
 
-      <aside className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
+      <aside className="city-card border bg-blue-50 p-4 text-sm text-blue-900">
         <p>사용기간 안내 수정: <time dateTime="2026-09-20">2026년 9월 20일</time>. 모든 처방전에 같은 일수가 적용된다는 기존 안내를 바로잡았습니다.</p>
         <p>의료법 시행규칙 제12조 제1항 제6호는 처방전에 발급일과 사용기간을 기재하도록 정합니다. 실제 처방전에 적힌 기간을 확인하고, 불명확하면 발급 의료기관에 문의하세요.</p>
         <a className="underline" href="https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1019641101" target="_blank" rel="noopener noreferrer">근거: 의료법 시행규칙 제12조</a>
@@ -160,7 +161,7 @@ export default function Page() {
       {/* ── 핵심 수치 박스 1 (statistic box — macro=C 필수 ≥2) ── */}
       <section
         aria-label="핵심 수치"
-        className="rounded-2xl border border-green-100 bg-green-50 p-6 shadow-sm"
+        className="city-card border border-green-100 bg-green-50 p-6"
       >
         <h2 id="h2-stats" className="text-lg font-bold text-green-800 mb-4">
           처방전 연휴 수령 — 핵심 수치 한눈에
@@ -189,7 +190,7 @@ export default function Page() {
       {/* ── 핵심 정의 박스 ── */}
       <section
         aria-label="처방전 유효기간 정의"
-        className="rounded-2xl border-l-4 border-blue-400 border border-blue-100 bg-blue-50 p-6 shadow-sm"
+        className="city-card border-l-4 border bg-blue-50 p-6"
       >
         <h2 id="h2-definition" className="text-lg font-bold text-blue-800 mb-3">
           처방전 유효기간이란?
@@ -223,7 +224,7 @@ export default function Page() {
         </p>
 
         {/* 원인→결과 도식 (lens L3 시각화) */}
-        <div className="rounded-xl border border-amber-100 bg-amber-50 p-5">
+        <div className="city-card border border-amber-100 bg-amber-50 p-5">
           <p className="text-sm font-bold text-amber-800 mb-3">
             인과 흐름 (cause → effect)
           </p>
@@ -263,7 +264,7 @@ export default function Page() {
         </p>
 
         <ol className="space-y-4">
-          <li className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+          <li className="city-card border bg-white p-5">
             <p className="font-bold text-brand-700 mb-1">
               1단계 — 연휴 시작 최소 3~7일 전 처방 요청
             </p>
@@ -273,7 +274,7 @@ export default function Page() {
               처방을 받아 두도록 권고하고 있다.
             </p>
           </li>
-          <li className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+          <li className="city-card border bg-white p-5">
             <p className="font-bold text-brand-700 mb-1">
               2단계 — 연휴 운영 약국 사전 조회
             </p>
@@ -284,7 +285,7 @@ export default function Page() {
               미리 파악해 두는 것이 연휴 중 공백을 줄이는 가장 확실한 방법이다.
             </p>
           </li>
-          <li className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+          <li className="city-card border bg-white p-5">
             <p className="font-bold text-brand-700 mb-1">
               3단계 — 연휴 첫날 이전 조제 완료
             </p>
@@ -295,7 +296,7 @@ export default function Page() {
               확인하는 것이 안전하다.
             </p>
           </li>
-          <li className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+          <li className="city-card border bg-white p-5">
             <p className="font-bold text-brand-700 mb-1">
               4단계 — 연휴 중 비상약국 또는 야간약국 활용
             </p>
@@ -306,7 +307,7 @@ export default function Page() {
               129 또는 119를 통해 가까운 운영 약국 안내를 받을 수 있다.
             </p>
           </li>
-          <li className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+          <li className="city-card border bg-white p-5">
             <p className="font-bold text-brand-700 mb-1">
               5단계 — 응급 상황 시 응급실 방문
             </p>
@@ -425,7 +426,7 @@ export default function Page() {
       {/* ── 핵심 수치 박스 2 (statistic box #2 — macro=C 필수 ≥2) ── */}
       <section
         aria-label="처방약 임의 중단 관련 안내"
-        className="rounded-2xl border border-red-100 bg-red-50 p-6 shadow-sm"
+        className="city-card border border-red-100 bg-red-50 p-6"
       >
         <h2 className="text-base font-bold text-red-800 mb-3">
           처방약 임의 중단 — 반드시 알아야 할 사항
@@ -454,7 +455,7 @@ export default function Page() {
           {faqs.map((faq) => (
             <div
               key={faq.q}
-              className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm"
+              className="city-card border bg-white p-5"
             >
               <h3 className="font-semibold text-gray-900 mb-2">{faq.q}</h3>
               <p className="text-sm text-gray-600 leading-relaxed">{faq.a}</p>
@@ -506,7 +507,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-gray-50 p-6 space-y-4">
+      <section className="city-card border bg-gray-50 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
@@ -517,7 +518,7 @@ export default function Page() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md hover:border-brand-200 transition-all space-y-1"
+              className="city-card border bg-white p-4 hover:border-brand-200 transition-all space-y-1"
             >
               <p className="font-bold text-gray-900 text-sm">{item.label}</p>
               <p className="text-xs text-gray-500">{item.desc}</p>

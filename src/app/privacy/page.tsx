@@ -33,12 +33,12 @@ export default function PrivacyPage() {
   };
 
   return (
-    <div className="container py-12">
+    <div className="city-template container py-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
       />
-      <article className="prose prose-slate max-w-4xl">
+      <article className="city-policy prose prose-slate max-w-4xl">
         <h1>개인정보처리방침</h1>
         <p>
           약국오늘(이하 “서비스”)은 회원가입 없이 공공데이터와 오픈 정보를 제공하며, 이용자의

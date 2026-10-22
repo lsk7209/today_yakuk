@@ -34,12 +34,12 @@ export default function TermsPage() {
   };
 
   return (
-    <div className="container py-12">
+    <div className="city-template container py-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
       />
-      <article className="prose prose-slate max-w-4xl">
+      <article className="city-policy prose prose-slate max-w-4xl">
         <h1>이용약관</h1>
         <p>
           본 약관은 약국오늘(이하 “서비스”)이 제공하는 약국 검색, 가이드, 부가 정보 이용과 관련한 기본 조건을

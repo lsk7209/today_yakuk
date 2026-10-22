@@ -58,6 +58,7 @@ export default function SupplementAdditivesLabelGuidePage() {
         <span className="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800">
           로컬 검토용 초안 · 미발행
         </span>
+        <p className="city-eyebrow">HEALTH JOURNAL / ARTICLE</p>
         <h1 className="text-3xl font-black leading-tight text-slate-950 sm:text-4xl">
           {title}
         </h1>
@@ -75,7 +76,7 @@ export default function SupplementAdditivesLabelGuidePage() {
         </p>
       </header>
 
-      <section className="rounded-2xl border border-brand-200 bg-brand-50 p-6 sm:p-8">
+      <section className="city-card border bg-brand-50 p-6 sm:p-8">
         <h2 className="text-xl font-black text-slate-950">먼저 답부터</h2>
         <p className="mt-3 leading-relaxed text-slate-700">
           건강기능식품 라벨에서 기능정보는 신고된 기능성 내용을 확인하는 영역이고, 원료명은
@@ -143,7 +144,7 @@ export default function SupplementAdditivesLabelGuidePage() {
 
       <section className="grid gap-4">
         {signalRows.map((row) => (
-          <div key={row.label} className="rounded-2xl border border-slate-200 bg-white p-5">
+          <div key={row.label} className="city-card border bg-white p-5">
             <h3 className="font-black text-slate-950">{row.label}</h3>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">
               <strong className="text-slate-900">뜻:</strong> {row.meaning}
@@ -183,7 +184,7 @@ export default function SupplementAdditivesLabelGuidePage() {
         </p>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+      <section className="city-card border bg-slate-50 p-6">
         <h2 className="text-lg font-black text-slate-950">공식 원문 확인처</h2>
         <ul className="mt-4 space-y-3 text-sm leading-relaxed text-slate-600">
           <li>
@@ -254,7 +255,7 @@ export default function SupplementAdditivesLabelGuidePage() {
         </div>
       </section>
 
-      <p className="rounded-xl border border-slate-200 bg-white p-4 text-xs leading-relaxed text-slate-500">
+      <p className="city-card border bg-white p-4 text-xs leading-relaxed text-slate-500">
         작성 고지: 이 글은 위 공식 자료와 약국오늘 화면의 표시 계약을 바탕으로 현재 Codex
         세션에서 직접 작성했습니다. 외부 글쓰기 API를 사용하지 않았으며 의료 전문가의 검토,
         개인 진료 또는 제품 안전성 평가를 대신하지 않습니다.
