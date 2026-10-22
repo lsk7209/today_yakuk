@@ -44,8 +44,10 @@ export function isIndexablePharmacy(pharmacy: {
   tel?: string | null;
   operating_hours?: OperatingHours | null;
   enriched_at?: string | null;
+  intelligence_report?: unknown;
 }): boolean {
-  if (requiresEnrichmentForIndex() && !pharmacy.enriched_at) return false;
+  // sitemap(PHARMACY_INDEXABLE_WHERE)과 같은 기준: 보완 시각과 리포트가 모두 있어야 한다.
+  if (requiresEnrichmentForIndex() && (!pharmacy.enriched_at || !pharmacy.intelligence_report)) return false;
   if (!hasAddress(pharmacy.address ?? null)) return false;
   const useful = hasValidPhone(pharmacy.tel ?? null) || hasUsefulHours(pharmacy.operating_hours ?? null);
   return useful;

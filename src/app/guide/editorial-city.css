@@ -102,8 +102,9 @@
   background: var(--fog);
 }
 
-.city-editorial-toc .city-eyebrow { margin-bottom: 12px; }
-.city-editorial-toc ol { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.city-editorial:not(:has(.city-route-article)) .city-editorial-toc { display: none; }
+.city-editorial-toc .city-eyebrow { margin-bottom: 0; cursor: pointer; }
+.city-editorial-toc ol { display: flex; flex-wrap: wrap; gap: 4px 20px; margin-top: 12px; }
 .city-editorial-toc a { display: inline-flex; gap: 8px; padding: 8px 0; font-size: 14px; font-weight: 700; }
 .city-editorial-toc a:hover { text-decoration: underline; text-underline-offset: 4px; }
 .city-editorial-toc a span { color: var(--muted); font-family: var(--font-geist-mono), monospace; }

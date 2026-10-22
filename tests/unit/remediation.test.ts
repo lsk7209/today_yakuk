@@ -156,7 +156,8 @@ async function main() {
       assert.equal(isIndexablePharmacy(sample), true);
       process.env.PHARMACY_INDEX_REQUIRES_ENRICHMENT = "true";
       assert.equal(isIndexablePharmacy(sample), false);
-      assert.equal(isIndexablePharmacy({ ...sample, enriched_at: "2026-10-01T00:00:00Z" }), true);
+      assert.equal(isIndexablePharmacy({ ...sample, enriched_at: "2026-10-01T00:00:00Z" }), false);
+      assert.equal(isIndexablePharmacy({ ...sample, enriched_at: "2026-10-01T00:00:00Z", intelligence_report: { summary: "x" } }), true);
       delete process.env.PHARMACY_INDEX_REQUIRES_ENRICHMENT;
     }
   });

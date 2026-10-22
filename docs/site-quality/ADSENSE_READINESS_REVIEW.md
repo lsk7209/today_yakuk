@@ -34,6 +34,20 @@
 - 약국 상세 색인 강화: 환경변수 `PHARMACY_INDEX_REQUIRES_ENRICHMENT=true`일 때 고유 분석(intelligence report)이 있는 약국만 색인·sitemap 포함. 기본은 꺼짐(보완 비율을 모르는 상태에서 색인이 급감하는 것을 방지). `npm run enrich:pharmacies:stats`로 보완 비율을 확인한 뒤 켤 것. 보완 파이프라인은 영향 없음
 - Search Console 수치는 이 환경에 자격 증명이 없어 확인하지 못함 (`npm run gsc:sitemap:status`를 자격 증명이 있는 환경에서 실행 필요)
 
+## 2-2. 로컬 점검 결과 (2026-10-22)
+
+- 약국 보완 비율: 색인 대상 26,229개 중 0개(0.0%). DB 직접 조회도 `enriched_at`·`intelligence_report` 0건. `PHARMACY_INDEX_REQUIRES_ENRICHMENT`를 켜면 라이브 sitemap 32,489개 중 약국 26,235개(80.7%)가 빠지므로 꺼 둔다.
+- Search Console(28일, 09-22~10-19): `todaypharm.kr`·`www.todaypharm.kr` 속성 모두 노출 0·클릭 0. 홈은 "Google이 다른 canonical 선택(www)", 마지막 크롤링 08-23. 블로그 대표 글은 "URL is unknown to Google". 라이브 canonical(apex)과 www→apex 301은 정상이다. 콘솔에서 주요 URL 색인 요청, 갱신이 멈춘 `/sitemap-index.xml`(07-08, 6,247개) 제출 삭제가 필요하다. 수동 조치·보안 문제는 API로 확인할 수 없어 콘솔에서 확인한다.
+- 모바일 CWV(PSI 실험실, CrUX 데이터 없음): CLS가 홈·`/blog` 0.273, 블로그 글 0.647, 약국 상세 0.101로 기준 초과. `/blog` LCP 4.7s, 약국 상세 LCP 2.9s·TBT 850ms.
+- CLS·LCP·상태 코드 수정(로컬 운영 빌드에서 확인):
+  - `loading.tsx` 3개 삭제(루트, `pharmacy/[id]`, `[province]/[city]`): 모든 페이지 HTML이 스피너·스켈레톤 fallback으로 시작한 뒤 본문으로 교체되며 푸터를 밀어냈다. 스트림이 먼저 시작돼 상태 코드가 200으로 고정되는 문제도 함께 있었다. 라이브에서는 없는 약국·지역·글이 200(soft 404, 없는 지역은 `index, follow`)이고, 별칭 지역 주소는 200 뒤 클라이언트 리다이렉트였다. 수정 후 404 + noindex, 서버 308로 바뀌었다.
+  - 페이지 헤더 일러스트(`/blog` 등의 LCP 이미지)에 `fetchPriority="high"` 추가.
+  - 로컬 측정(Moto G4, CPU 4배·저속 네트워크, 3회 중앙값): 홈 1.40s, `/blog` 1.44s, 블로그 글 1.58s, 약국 상세 1.78s, 시·군 1.58s, CLS 모두 0. 라이브와는 네트워크 조건이 달라 절대 비교는 배포 후 PSI로 한다.
+  - `EditorialToc`: 하이드레이션 후 본문 위에 목차를 끼워 넣던 방식을, 서버 HTML에 접힌 `<details>` 틀을 먼저 렌더하는 방식으로 변경. 본문이 없는 목록 페이지는 CSS `:has()`로 숨긴다.
+  - `.city-menu-toggle`에 `white-space:nowrap` 추가: 웹폰트 교체 때 버튼이 두 줄에서 한 줄로 바뀌며 헤더 높이가 27px 줄던 문제.
+  - `isIndexablePharmacy`를 sitemap 조건과 맞춤: 플래그를 켰을 때 `enriched_at`과 `intelligence_report`가 모두 있어야 색인한다.
+- 배포 전 로컬 확인: 삭제한 4개 주소는 308(영구 이동)로 대표 글에 이동, sitemap·RSS·ai-index·llms.txt에 삭제 주소 없음, `/privacy`·`/contact`·`/about`에 `cs@todaypharm.kr`와 새 문구 표시. 라이브 사이트 콘솔 오류와 4xx 응답 없음.
+
 ## 3. 발견 사항 (우선순위순)
 
 ### P0. 신청 전에 해결할 것
