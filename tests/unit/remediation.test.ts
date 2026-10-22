@@ -151,6 +151,14 @@ async function main() {
     assert.equal(hasValidPhone("031-000-0000"), false);
     assert.equal(hasValidPhone("12345"), false);
     assert.equal(isIndexablePharmacy({ address: "서울특별시 중구 테스트로 1", tel: "031-000-0000" }), false);
+    {
+      const sample = { address: "서울특별시 중구 테스트로 1", tel: "02-123-4567" };
+      assert.equal(isIndexablePharmacy(sample), true);
+      process.env.PHARMACY_INDEX_REQUIRES_ENRICHMENT = "true";
+      assert.equal(isIndexablePharmacy(sample), false);
+      assert.equal(isIndexablePharmacy({ ...sample, enriched_at: "2026-10-01T00:00:00Z" }), true);
+      delete process.env.PHARMACY_INDEX_REQUIRES_ENRICHMENT;
+    }
   });
 
   await run("detail metadata and sitemap share non-empty indexability rules", () => {

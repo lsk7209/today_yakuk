@@ -31,7 +31,7 @@
   - `holiday-open-pharmacy-tips` → `holiday-pharmacy-open-check`
   - `kids-fever-meds-check` → `kids-fever-medicine-comparison`
   - 블로그 목록, sitemap, RSS, ai-index, 가이드 페이지의 내부 링크도 정리. `prescription-holiday-guide`는 처방전 의도로 구분되어 유지
-- 약국 상세 색인 기준 강화는 Search Console 수치 없이 정하면 색인 손실 위험이 있어 보류
+- 약국 상세 색인 강화: 환경변수 `PHARMACY_INDEX_REQUIRES_ENRICHMENT=true`일 때 고유 분석(intelligence report)이 있는 약국만 색인·sitemap 포함. 기본은 꺼짐(보완 비율을 모르는 상태에서 색인이 급감하는 것을 방지). `npm run enrich:pharmacies:stats`로 보완 비율을 확인한 뒤 켤 것. 보완 파이프라인은 영향 없음
 - Search Console 수치는 이 환경에 자격 증명이 없어 확인하지 못함 (`npm run gsc:sitemap:status`를 자격 증명이 있는 환경에서 실행 필요)
 
 ## 3. 발견 사항 (우선순위순)

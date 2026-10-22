@@ -5,6 +5,15 @@ function hasUsefulHours(hours?: OperatingHours | null): boolean {
   return Object.values(hours).some((slot) => !!slot?.open && !!slot?.close);
 }
 
+/**
+ * 애드센스 신청 기간용 선택 기능: 공공데이터 외 고유 분석(intelligence report)이 붙은
+ * 약국만 색인한다. 보완 파이프라인이 사용하는 PHARMACY_INDEXABLE_PREDICATE에는 영향을 주지 않는다.
+ * 보완 비율을 `npm run enrich:pharmacies:stats`로 확인한 뒤 켠다.
+ */
+export function requiresEnrichmentForIndex(): boolean {
+  return process.env.PHARMACY_INDEX_REQUIRES_ENRICHMENT?.trim().toLowerCase() === "true";
+}
+
 export function hasValidPhone(tel?: string | null): boolean {
   if (!tel) return false;
   const digits = tel.replace(/\D/g, "");
@@ -34,7 +43,9 @@ export function isIndexablePharmacy(pharmacy: {
   address?: string | null;
   tel?: string | null;
   operating_hours?: OperatingHours | null;
+  enriched_at?: string | null;
 }): boolean {
+  if (requiresEnrichmentForIndex() && !pharmacy.enriched_at) return false;
   if (!hasAddress(pharmacy.address ?? null)) return false;
   const useful = hasValidPhone(pharmacy.tel ?? null) || hasUsefulHours(pharmacy.operating_hours ?? null);
   return useful;
@@ -66,6 +77,7 @@ export const PHARMACY_INDEXABLE_PREDICATE = `
 
 export const PHARMACY_INDEXABLE_WHERE = `
 WHERE ${PHARMACY_INDEXABLE_PREDICATE}
+${requiresEnrichmentForIndex() ? "AND enriched_at IS NOT NULL AND intelligence_report IS NOT NULL" : ""}
 `;
 
 
