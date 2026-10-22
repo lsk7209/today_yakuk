@@ -92,30 +92,68 @@ export default function PrivacyPage() {
           이 경우에도 운영 목적 외 사용은 허용하지 않으며, 가능한 범위에서 비식별화와 접근 통제를 적용합니다.
         </p>
 
-        <h2>5. 이용자 권리</h2>
+        <h2>5. 광고·분석 도구 및 쿠키 고지</h2>
+        <ul>
+          <li>
+            Google을 포함한 제3자 공급업체는 쿠키를 사용하여 이용자가 이 사이트나 다른 사이트를
+            과거에 방문한 기록을 바탕으로 광고를 게재합니다.
+          </li>
+          <li>
+            Google은 광고 쿠키(DART 쿠키 등)를 사용하여 이용자의 이 사이트 및 다른 사이트 방문
+            기록을 기반으로 광고를 게재할 수 있습니다.
+          </li>
+          <li>
+            이용자는{" "}
+            <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">
+              Google 광고 설정
+            </a>
+            에서 맞춤 광고를 해제할 수 있으며,{" "}
+            <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer">
+              www.aboutads.info
+            </a>
+            에서 제3자 공급업체의 맞춤 광고용 쿠키 사용을 해제할 수 있습니다.
+          </li>
+          <li>
+            Google의 광고 및 개인정보 처리 방식은{" "}
+            <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">
+              Google 파트너 사이트 정책
+            </a>
+            에서 확인할 수 있습니다.
+          </li>
+          <li>
+            방문 통계 분석을 위해 Google Analytics를 사용할 수 있으며, 개인을 직접 식별하지 않는
+            형태의 이용 기록(방문 페이지, 기기·브라우저 유형, 대략적 지역)이 수집될 수 있습니다.
+          </li>
+          <li>
+            일부 페이지에는 쿠팡 파트너스 제휴 링크가 포함될 수 있으며, 링크를 통한 구매 시 운영자가
+            일정 수수료를 받을 수 있습니다. 제휴 링크에는 광고 표기가 함께 제공됩니다.
+          </li>
+        </ul>
+
+        <h2>6. 이용자 권리</h2>
         <ul>
           <li>위치 정보 제공 거부: 단말 설정에서 위치 접근을 차단할 수 있습니다.</li>
           <li>쿠키 거부: 브라우저에서 쿠키 차단 또는 삭제를 설정할 수 있습니다.</li>
           <li>문의/정정/삭제 요청: support@todayyakuk.com 으로 연락 주시면 신속히 처리합니다.</li>
         </ul>
 
-        <h2>6. 보안 조치</h2>
+        <h2>7. 보안 조치</h2>
         <p>
           서비스는 최소한의 수집 원칙을 따르며, 암호화 전송(HTTPS) 및 접근통제 정책으로 데이터를 보호합니다.
         </p>
 
-        <h2>7. 개인정보 보호책임자</h2>
+        <h2>8. 개인정보 보호책임자</h2>
         <p>
           이메일: support@todayyakuk.com<br />
           역할: 개인정보 보호 총괄 및 문의 대응
         </p>
 
-        <h2>8. 변경 고지</h2>
+        <h2>9. 변경 고지</h2>
         <p>
           본 방침이 변경될 경우 서비스 내 공지사항을 통해 개정 내용을 사전 안내합니다.
         </p>
 
-        <p className="text-sm text-slate-500">시행일: 2025-01-01</p>
+        <p className="text-sm text-slate-500">시행일: 2025-01-01 · 최종 개정일: 2026-10-22</p>
       </article>
     </div>
   );
