@@ -730,8 +730,16 @@ async function Content({
 
           <NearbyOpenPharmacies
             initialIso={initialIso}
-            items={nearby.map((item) => ({
-              ...item,
+            // 클라이언트에서 영업 여부를 계산할 카드 필드만 넘긴다. 시간표 없는 약국은 영업 중으로 판정되지 않으므로 제외(RSC 페이로드 축소).
+            items={nearby.filter((item) => item.operating_hours).map((item) => ({
+              hpid: item.hpid,
+              name: item.name,
+              address: item.address,
+              tel: item.tel,
+              province: item.province,
+              city: item.city,
+              description_raw: item.description_raw,
+              operating_hours: item.operating_hours,
               distanceKm: distanceKm(
                 pharmacy.latitude,
                 pharmacy.longitude,

@@ -45,6 +45,7 @@
   - 로컬 측정(Moto G4, CPU 4배·저속 네트워크, 3회 중앙값): 홈 1.40s, `/blog` 1.44s, 블로그 글 1.58s, 약국 상세 1.78s, 시·군 1.58s, CLS 모두 0. 라이브와는 네트워크 조건이 달라 절대 비교는 배포 후 PSI로 한다.
   - `EditorialToc`: 하이드레이션 후 본문 위에 목차를 끼워 넣던 방식을, 서버 HTML에 접힌 `<details>` 틀을 먼저 렌더하는 방식으로 변경. 본문이 없는 목록 페이지는 CSS `:has()`로 숨긴다.
   - `.city-menu-toggle`에 `white-space:nowrap` 추가: 웹폰트 교체 때 버튼이 두 줄에서 한 줄로 바뀌며 헤더 높이가 27px 줄던 문제.
+  - 약국 상세 TBT: 반경 2km 대체 약국 약 140곳의 전체 객체(좌표·리포트 등)가 클라이언트 컴포넌트로 직렬화되던 것을 카드·영업 판정 필드만 넘기도록 축소하고, 시간표 없는 약국은 제외(영업 중 판정 불가라 결과 동일). 같은 시각 라이브와 표시 약국 3곳 일치 확인. 로컬 측정 TBT 약 900ms → 약 350ms.
   - `isIndexablePharmacy`를 sitemap 조건과 맞춤: 플래그를 켰을 때 `enriched_at`과 `intelligence_report`가 모두 있어야 색인한다.
 - 배포 전 로컬 확인: 삭제한 4개 주소는 308(영구 이동)로 대표 글에 이동, sitemap·RSS·ai-index·llms.txt에 삭제 주소 없음, `/privacy`·`/contact`·`/about`에 `cs@todaypharm.kr`와 새 문구 표시. 라이브 사이트 콘솔 오류와 4xx 응답 없음.
 
