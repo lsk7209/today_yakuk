@@ -277,7 +277,7 @@ export default function GuideCallScriptsPage() {
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">약국 방문 전 확인 3가지</p>
             <p className="text-xs text-gray-500 mt-1">영업·재고·처방전 유효기간 점검</p>
           </Link>
-          <Link href="/blog/night-pharmacy-checklist" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
+          <Link href="/blog/night-pharmacy-3steps" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">심야 약국 방문 체크리스트</p>
             <p className="text-xs text-gray-500 mt-1">헛걸음 방지 체크리스트</p>
           </Link>

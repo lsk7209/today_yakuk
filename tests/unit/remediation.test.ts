@@ -1134,18 +1134,14 @@ async function main() {
       path.join(process.cwd(), "src/app/blog/kids-fever-medicine-comparison/page.tsx"),
       "utf8",
     );
-    const checklistSource = fs.readFileSync(
-      path.join(process.cwd(), "src/app/blog/kids-fever-meds-check/page.tsx"),
-      "utf8",
-    );
     const hangoverSource = fs.readFileSync(
       path.join(process.cwd(), "src/app/blog/digestion-hangover-pharmacy-guide/page.tsx"),
       "utf8",
     );
-    for (const source of [comparisonSource, checklistSource, hangoverSource]) {
+    for (const source of [comparisonSource, hangoverSource]) {
       assert.doesNotMatch(source, /const howToJsonLd|JSON\.stringify\(howToJsonLd\)/);
     }
-    for (const source of [comparisonSource, checklistSource]) {
+    for (const source of [comparisonSource]) {
       assert.doesNotMatch(source, /교차 투여할 수 있습니다|교대 투여를 검토/);
       assert.match(source, /한 번에는 한 가지 해열제만 복용해야 합니다|임의로 추가하거나 교대하지 마세요/);
       assert.match(source, /의사의 처방과 복용 간격 안내/);

@@ -550,8 +550,6 @@ export default function Page() {
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
-            { href: "/blog/night-pharmacy-checklist", label: "야간 약국 방문 체크리스트", desc: "심야 방문 전 확인할 항목 6가지" },
-            { href: "/blog/night-radius-tips", label: "야간·주말 반경 설정 팁", desc: "야간 약국을 놓치지 않는 반경 설정법" },
             { href: "/nearby", label: "내 주변 야간 약국 찾기 →", desc: "위치 기반 현재 영업 중인 약국 검색" },
           ].map((item) => (
             <Link

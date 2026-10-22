@@ -99,6 +99,15 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    // 의도가 겹치는 블로그 글을 대표 글로 통합 (301)
+    return [
+      { source: "/blog/night-pharmacy-checklist", destination: "/blog/night-pharmacy-3steps", permanent: true },
+      { source: "/blog/night-radius-tips", destination: "/blog/night-pharmacy-3steps", permanent: true },
+      { source: "/blog/holiday-open-pharmacy-tips", destination: "/blog/holiday-pharmacy-open-check", permanent: true },
+      { source: "/blog/kids-fever-meds-check", destination: "/blog/kids-fever-medicine-comparison", permanent: true },
+    ];
+  },
   async rewrites() {
     return [
       {

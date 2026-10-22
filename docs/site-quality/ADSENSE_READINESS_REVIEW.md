@@ -26,6 +26,12 @@
 - 문의·개인정보 책임자 메일을 `cs@todaypharm.kr`로 통일 (메일 수신 설정은 불필요하다고 확인)
 - 서비스 성격을 "의료 행위가 아닌 공공데이터 큐레이션"으로 보고, 약사 감수 대신 `/about#editorial-policy`에 데이터 출처·갱신 주기·AI 활용·면책을 공개
 - 쿠팡 파트너스 배너 컴포넌트, 레이아웃 삽입, 관련 테스트·개인정보 고지·`isAffiliateAdsEnabled`를 제거
+- 중복 블로그 글 4개를 대표 글로 301 통합 (`next.config.mjs`)
+  - `night-pharmacy-checklist`, `night-radius-tips` → `night-pharmacy-3steps`
+  - `holiday-open-pharmacy-tips` → `holiday-pharmacy-open-check`
+  - `kids-fever-meds-check` → `kids-fever-medicine-comparison`
+  - 블로그 목록, sitemap, RSS, ai-index, 가이드 페이지의 내부 링크도 정리. `prescription-holiday-guide`는 처방전 의도로 구분되어 유지
+- 약국 상세 색인 기준 강화는 Search Console 수치 없이 정하면 색인 손실 위험이 있어 보류
 - Search Console 수치는 이 환경에 자격 증명이 없어 확인하지 못함 (`npm run gsc:sitemap:status`를 자격 증명이 있는 환경에서 실행 필요)
 
 ## 3. 발견 사항 (우선순위순)

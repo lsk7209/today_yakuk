@@ -140,12 +140,6 @@ export default function KidsFeverMedicineComparisonPage() {
           >
             내 주변 약국 찾기
           </Link>
-          <Link
-            href="/blog/kids-fever-meds-check"
-            className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:border-brand-200"
-          >
-            해열제 구비 체크리스트
-          </Link>
         </div>
       </header>
 
@@ -501,12 +495,6 @@ export default function KidsFeverMedicineComparisonPage() {
             className="inline-flex items-center rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-brand-700"
           >
             의약품 위키 검색
-          </Link>
-          <Link
-            href="/blog/kids-fever-meds-check"
-            className="inline-flex items-center rounded-full border border-brand-200 bg-white px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-50"
-          >
-            해열제 구비 체크리스트
           </Link>
         </div>
       </section>

@@ -579,8 +579,6 @@ export default function BlogHolidayPharmacyOpenCheck() {
         <h2 className="text-lg font-bold text-gray-900">함께 읽으면 좋은 글</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
-            { href: "/blog/holiday-open-pharmacy-tips", label: "공휴일 문 연 약국 찾는 5가지 팁", desc: "위치 권한·종료 임박·전화 확인 방법" },
-            { href: "/blog/night-pharmacy-checklist", label: "야간 약국 방문 체크리스트", desc: "심야 방문 전 확인할 항목 6가지" },
             { href: "/nearby", label: "내 주변 약국 바로 찾기 →", desc: "위치 기반 현재 영업 중인 약국 검색" },
           ].map((item) => (
             <Link

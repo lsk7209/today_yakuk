@@ -17,27 +17,9 @@ const STATIC_POSTS = [
     tag: "공휴일",
   },
   {
-    slug: "holiday-open-pharmacy-tips",
-    title: "공휴일 문 연 약국 찾는 팁",
-    summary: "공휴일 당번 약국 조회 방법과 사전 준비 체크리스트",
-    tag: "공휴일",
-  },
-  {
     slug: "night-pharmacy-3steps",
     title: "야간 약국 찾기 3단계",
     summary: "심야에 약국을 빠르게 찾는 단계별 실전 방법",
-    tag: "야간",
-  },
-  {
-    slug: "night-pharmacy-checklist",
-    title: "야간 약국 방문 체크리스트",
-    summary: "심야 방문 전 확인할 항목 6가지",
-    tag: "야간",
-  },
-  {
-    slug: "night-radius-tips",
-    title: "야간·주말 약국 반경 설정 팁",
-    summary: "야간 약국을 놓치지 않는 반경 설정과 위치 권한 활용법",
     tag: "야간",
   },
   // 처방전·방문
@@ -76,12 +58,6 @@ const STATIC_POSTS = [
     slug: "kids-fever-medicine-comparison",
     title: "소아 발열 약 비교 가이드",
     summary: "아세트아미노펜 vs 이부프로펜, 연령별 용량 기준 정리",
-    tag: "소아·발열",
-  },
-  {
-    slug: "kids-fever-meds-check",
-    title: "소아 발열 약 구매 전 체크리스트",
-    summary: "연령·체중별 용량 계산과 구매 시 주의사항",
     tag: "소아·발열",
   },
   {

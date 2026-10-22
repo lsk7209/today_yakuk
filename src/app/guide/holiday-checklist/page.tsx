@@ -123,7 +123,7 @@ export default function GuideHolidayChecklistPage() {
             내 주변 바로 찾기
           </Link>
           <Link
-            href="/blog/holiday-open-pharmacy-tips"
+            href="/blog/holiday-pharmacy-open-check"
             className="inline-flex items-center rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--foreground)] hover:border-brand-200"
           >
             공휴일 팁 블로그 보기

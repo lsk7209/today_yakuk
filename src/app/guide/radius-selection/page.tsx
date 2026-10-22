@@ -270,10 +270,6 @@ export default function GuideRadiusSelectionPage() {
       <section className="city-card border bg-brand-50/40 p-6 space-y-3">
         <h2 className="text-lg font-bold text-gray-900">관련 가이드</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/blog/night-radius-tips" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
-            <p className="text-sm font-bold text-gray-900 hover:text-brand-700">심야 약국 거리·반경 활용법</p>
-            <p className="text-xs text-gray-500 mt-1">심야 헛걸음을 줄이는 반경 설정 실전</p>
-          </Link>
           <Link href="/blog/night-pharmacy-3steps" className="city-card border border-white bg-white p-4 hover:border-brand-200 transition-all">
             <p className="text-sm font-bold text-gray-900 hover:text-brand-700">야간 약국 찾기 3단계</p>
             <p className="text-xs text-gray-500 mt-1">단계별로 바로 찾는 방법</p>
