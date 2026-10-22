@@ -124,17 +124,13 @@ export default function PrivacyPage() {
             방문 통계 분석을 위해 Google Analytics를 사용할 수 있으며, 개인을 직접 식별하지 않는
             형태의 이용 기록(방문 페이지, 기기·브라우저 유형, 대략적 지역)이 수집될 수 있습니다.
           </li>
-          <li>
-            일부 페이지에는 쿠팡 파트너스 제휴 링크가 포함될 수 있으며, 링크를 통한 구매 시 운영자가
-            일정 수수료를 받을 수 있습니다. 제휴 링크에는 광고 표기가 함께 제공됩니다.
-          </li>
         </ul>
 
         <h2>6. 이용자 권리</h2>
         <ul>
           <li>위치 정보 제공 거부: 단말 설정에서 위치 접근을 차단할 수 있습니다.</li>
           <li>쿠키 거부: 브라우저에서 쿠키 차단 또는 삭제를 설정할 수 있습니다.</li>
-          <li>문의/정정/삭제 요청: support@todayyakuk.com 으로 연락 주시면 신속히 처리합니다.</li>
+          <li>문의/정정/삭제 요청: cs@todaypharm.kr 으로 연락 주시면 신속히 처리합니다.</li>
         </ul>
 
         <h2>7. 보안 조치</h2>
@@ -144,7 +140,7 @@ export default function PrivacyPage() {
 
         <h2>8. 개인정보 보호책임자</h2>
         <p>
-          이메일: support@todayyakuk.com<br />
+          이메일: cs@todaypharm.kr<br />
           역할: 개인정보 보호 총괄 및 문의 대응
         </p>
 

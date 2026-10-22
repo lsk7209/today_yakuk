@@ -1518,13 +1518,10 @@ async function main() {
     const layout = fs.readFileSync(path.join(process.cwd(), "src/app/layout.tsx"), "utf8");
     const notFound = fs.readFileSync(path.join(process.cwd(), "src/app/not-found.tsx"), "utf8");
     const adSlot = fs.readFileSync(path.join(process.cwd(), "src/components/ads/AdSlot.tsx"), "utf8");
-    const affiliate = fs.readFileSync(path.join(process.cwd(), "src/components/affiliate/CoupangAffiliateBanner.tsx"), "utf8");
     assert.doesNotMatch(layout, /<script[\s\S]*?pagead2\.googlesyndication\.com/);
     assert.match(notFound, /canonical:\s*null/);
     assert.match(adSlot, /pageEligible = false/);
     assert.match(adSlot, /isAdsenseServingEnabled\(\)/);
-    assert.match(affiliate, /isAffiliateAdsEnabled\(\)/);
-    assert.match(affiliate, /canRequestAds\(pathname\)/);
   });
 
   // --- TP-02: sync-time normalization must not collapse real 0 values ---

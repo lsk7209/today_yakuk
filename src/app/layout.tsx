@@ -8,7 +8,6 @@ import "./globals.css";
 import "./city-signal.css";
 import { getSiteUrl } from "@/lib/site-url";
 import AnalyticsTracker from "@/components/analytics/AnalyticsTracker";
-import CoupangAffiliateBanner from "@/components/affiliate/CoupangAffiliateBanner";
 import { StagingProvider } from "@/components/staging/StagingProvider";
 import { isMigrationStaging } from "@/lib/migration-staging";
 import { JsonLd, buildWebSiteSchema, buildOrganizationSchema } from "@/components/seo/json-ld";
@@ -177,7 +176,6 @@ export default function RootLayout({
           {staging ? <div className="bg-amber-100 py-2 text-center text-sm font-semibold text-amber-950">시험 환경 · 예시 데이터</div> : null}
           <SiteHeader />
           <main id="main-content" className="flex-1">{children}</main>
-          <CoupangAffiliateBanner />
           <SiteFooter />
         </div>
         </StagingProvider>

@@ -23,10 +23,6 @@ export function isAdsenseServingEnabled(): boolean {
   return isTruthyFlag(process.env.NEXT_PUBLIC_ADSENSE_SERVING_ENABLED);
 }
 
-export function isAffiliateAdsEnabled(): boolean {
-  return isTruthyFlag(process.env.NEXT_PUBLIC_AFFILIATE_ADS_ENABLED);
-}
-
 export function canRequestAds(pathname: string, pageEligible = false): boolean {
   return pageEligible && !isAdExcludedPath(pathname);
 }

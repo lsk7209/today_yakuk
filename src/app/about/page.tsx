@@ -399,6 +399,28 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* 데이터 출처·편집 정책 */}
+        <section id="editorial-policy" className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-10 ">
+          <h2 className="text-2xl font-black text-gray-900">데이터 출처와 편집 정책</h2>
+          <div className="mt-4 space-y-3 text-gray-700 leading-relaxed">
+            <p>
+              약국오늘은 의료 행위를 하지 않는 정보 큐레이션 서비스입니다. 약국의 위치·전화·영업시간은 공공데이터포털의
+              응급의료정보 등 공공데이터를 기반으로 하며, 약국 기본 정보는 매일 새벽 1회 자동으로 동기화합니다.
+              건강기능식품과 의약품 정보는 식품안전나라와 의약품안전나라의 공개 자료를 주 1회 갱신합니다.
+            </p>
+            <p>
+              가이드와 블로그 글은 보건복지부, 식품의약품안전처, 건강보험심사평가원 등 공공기관 자료를 바탕으로 AI 도구를
+              활용해 정리하고, 운영팀이 사실관계와 표현을 점검합니다. 진단, 처방, 복용 지시는 하지 않으며 의약품 복용 전에는
+              반드시 약사 또는 의료진과 상담하시기 바랍니다.
+            </p>
+            <p>
+              등록된 영업시간은 실제와 다를 수 있습니다. 오류를 발견하면{" "}
+              <Link href="/contact" className="font-black text-brand-700 hover:underline">문의 페이지</Link>로 알려주세요.
+              문의: cs@todaypharm.kr
+            </p>
+          </div>
+        </section>
+
         {/* FAQ */}
         <section className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-10 ">
           <h2 className="text-2xl font-black text-gray-900">자주 묻는 질문(FAQ)</h2>

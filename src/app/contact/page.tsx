@@ -64,7 +64,7 @@ export default function ContactPage() {
           <article className="rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8  space-y-5">
             <div>
               <p className="text-sm font-black text-brand-700">기본 연락처</p>
-              <p className="mt-2 text-lg font-black text-gray-900">support@todayyakuk.com</p>
+              <p className="mt-2 text-lg font-black text-gray-900">cs@todaypharm.kr</p>
               <p className="mt-2 text-sm text-gray-600">평일 10:00 ~ 18:00 (KST) 기준으로 순차 확인합니다.</p>
             </div>
             <div>
