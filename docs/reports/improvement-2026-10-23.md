@@ -41,3 +41,9 @@
 
 ## 실행한 검증
 `npm run test:unit`(remediation + nutrition-validation 8 + pharmacy-schedule 7 + draft-publication 3) 종료코드 0, `npm run test:api-content` 0, Playwright(Edge 채널, chromium) tests/e2e 전체 passed(mobile-search 8, 초안 익명 404 3 + 관리자 미리보기 본문 3 포함). lint/tsc/build는 규칙상 Stop hook이 처리하므로 직접 실행하지 않음. 변경 전후 스크린샷은 미캡처.
+
+## DB 읽기 전용 감사 결과 (2026-10-23, 쓰기 없음)
+- 대상 제품 49,036개 중 기존 저장 성분이 새 규칙에 걸리는 제품 694개(1.4%), 모든 성분이 제외되어 빈 상태가 되는 제품 574개.
+- 거부 사유: invalid-amount 565 · unsupported-unit 169 · invalid-name 48 · standard-or-test-term 29 · name-fragment 2.
+- 화면 읽기 경로가 같은 규칙으로 이미 걸러내므로 배포만으로 노출은 차단된다. DB 정정(backfill)은 운영 쓰기이므로 별도 승인 후 수행한다.
+- `invalid-amount`/`unsupported-unit`에는 CFU 단위 유산균처럼 정상 성분이 포함됐을 수 있어, backfill 전에 단위 허용 목록(CFU 등) 확장 여부를 사람이 판단해야 한다.
