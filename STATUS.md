@@ -4,7 +4,9 @@ Updated: 2026-10-23
 
 ## Current state
 
-- 2026-10-23: P0~P2 개선 로컬 구현 완료(미커밋). 상세·처리표·후속은 `docs/reports/improvement-2026-10-23.md`. 운영 반영/백필/의학 검토는 대기.
+- 2026-10-23: P0~P2 개선 커밋·push 완료(브랜치 `design/city-signal-20261012`, 드래프트 PR #7). 상세·처리표는 `docs/reports/improvement-2026-10-23.md`.
+  - 검증: `test:unit` exit 0, Playwright e2e 27 passed(Edge 채널, `PLAYWRIGHT_CHANNEL=msedge`), 390×844 로컬 캡처 확인. 운영 DB 읽기 전용 감사: 49,036개 중 624개 영향(쓰기 없음).
+  - 대기: Vercel 프리뷰 `Deployment was blocked`(팀 권한 확인 필요), 건강 콘텐츠 30개·토요일 요금 안내문 약사 검토, 영양성분 소스 결정(`sync:supplements`는 현재 성분 미생성), 운영 DB backfill·배포·Search Console 삭제 요청은 별도 승인.
 
 - Local working tree has six modified, uncommitted files implementing a nearby/pharmacy-sync bug-fix pass on top of remote `main` `cf635d7`:
   `scripts/sync-pharmacies.ts`, `src/app/api/nearby/route.ts`, `src/app/nearby/NearbyClient.tsx`, `src/app/page.tsx`, `src/lib/data/pharmacies.ts`, `tests/unit/remediation.test.ts`
