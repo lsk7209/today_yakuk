@@ -130,7 +130,7 @@ const STATIC_POSTS = [
   {
     slug: "vitamin-d-deficiency-guide",
     title: "비타민D 결핍 신호 7가지와 올바른 보충 방법",
-    summary: "국내 성인 75% 부족 상태, 혈중 농도 기준과 용량별 보충법",
+    summary: "결핍 신호, 혈중 농도 기준, 보충 시 주의점",
     tag: "영양제",
   },
   {

@@ -7,6 +7,7 @@ import {
 } from "./hours";
 import { getSiteUrl } from "./site-url";
 import { hasValidPhone } from "./pharmacy-indexability";
+import { normalizeWeeklySchedule } from "./operating-schedule";
 
 const siteUrl = getSiteUrl();
 
@@ -65,15 +66,14 @@ export function generateDescription(pharmacy: Pharmacy) {
 }
 
 export function buildOpeningHoursSpecification(pharmacy: Pharmacy) {
-  const hours = pharmacy.operating_hours;
-  if (!hours) return [];
-  return Object.entries(hours)
-    .filter(([, slot]) => slot?.open && slot?.close)
-    .map(([day, slot]) => ({
+  // 시간표·요약·FAQ와 같은 정규화 결과를 사용하고, 시작=종료처럼 해석이 불확실한 요일은 제외한다.
+  return normalizeWeeklySchedule(pharmacy.operating_hours)
+    .filter((day) => day.state === "open")
+    .map((day) => ({
       "@type": "OpeningHoursSpecification",
-      dayOfWeek: DAY_TO_SCHEMA[day] ?? day,
-      opens: formatHHMM(slot?.open),
-      closes: formatHHMM(slot?.close),
+      dayOfWeek: DAY_TO_SCHEMA[day.key] ?? day.key,
+      opens: day.open,
+      closes: day.close,
     }));
 }
 

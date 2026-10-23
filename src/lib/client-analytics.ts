@@ -4,7 +4,8 @@ export type AnalyticsEventName =
   | "pharmacy_detail_view"
   | "pharmacy_contact_intent"
   | "pharmacy_directions_intent"
-  | "content_to_nearby_click";
+  | "content_to_nearby_click"
+  | "location_permission_result";
 
 type AnalyticsParam = string | number | boolean;
 
@@ -31,6 +32,8 @@ const EVENT_PARAM_ALLOWLIST: Record<AnalyticsEventName, readonly string[]> = {
     "map_provider",
   ],
   content_to_nearby_click: ["source_surface", "cta_placement"],
+  // 위치 좌표는 보내지 않고 권한 결과만 기록한다 (granted | denied | unavailable | timeout)
+  location_permission_result: ["source_surface", "result"],
 };
 
 declare global {

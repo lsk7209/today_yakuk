@@ -5,6 +5,7 @@ import { Phone, MapPin, Clock } from "lucide-react";
 import { Pharmacy } from "@/types/pharmacy";
 import { formatHourRange, formatHHMM, getBadgeClass, getOperatingStatusAt, getSeoulDayKey } from "@/lib/hours";
 import { hasValidPhone } from "@/lib/pharmacy-indexability";
+import { findUnsupportedPharmacyClaims } from "@/lib/pharmacy-claims";
 import { useEvaluationTime } from "./use-evaluation-time";
 
 export type PharmacyCardProps = {
@@ -27,6 +28,13 @@ export function PharmacyCard({
   const status = instant ? getOperatingStatusAt(pharmacy.operating_hours, instant) : null;
   const callablePhone = hasValidPhone(pharmacy.tel) ? pharmacy.tel : null;
   const todaySlot = instant ? pharmacy.operating_hours?.[getSeoulDayKey(instant)] : undefined;
+  // 저장된 설명에 근거 없는 주장(리뷰·도보 시간·통계 등)이 있으면 카드에 노출하지 않는다.
+  const rawDescription = pharmacy.description_raw?.trim();
+  const description =
+    rawDescription && findUnsupportedPharmacyClaims(rawDescription, pharmacy).length === 0
+      ? rawDescription
+      : "상세 페이지에서 주소·전화·등록 영업시간을 확인하세요.";
+  const todayRange = formatHourRange(todaySlot);
 
   return (
     <article
@@ -55,13 +63,13 @@ export function PharmacyCard({
         </div>
 
         <p className="text-sm text-[var(--muted)] line-clamp-2">
-          {pharmacy.description_raw ?? "상세 페이지에서 주소·전화·등록 영업시간을 확인하세요."}
+          {description}
         </p>
 
         <div className="flex flex-wrap gap-2 text-xs text-[var(--muted)]">
           <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1">
             <Clock className="h-3 w-3" />
-            {instant ? `오늘 ${formatHourRange(todaySlot)}` : "시간 확인 중"}
+            {instant ? (todayRange === "정보 없음" ? "오늘 운영시간 정보 없음" : `오늘 ${todayRange} · 시간표 기준`) : "시간 확인 중"}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-emerald-700 font-semibold">
             지역: {pharmacy.city ?? pharmacy.province ?? "정보 없음"}

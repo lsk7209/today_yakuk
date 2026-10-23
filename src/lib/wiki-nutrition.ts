@@ -1,3 +1,5 @@
+import { getNutritionFactIssue } from "@/lib/nutrition-validation";
+
 export const FOOD_SAFETY_NUTRITION_SOURCE = "foodsafetykorea:C003" as const;
 
 export interface VerifiedNutritionFact {
@@ -23,6 +25,7 @@ export function getVerifiedNutritionFacts(value: unknown): VerifiedNutritionFact
       fact.amount > 0 &&
       typeof fact.unit === "string" &&
       fact.unit.trim().length > 0 &&
+      getNutritionFactIssue(fact) === null &&
       (fact.percent_dv === null ||
         (typeof fact.percent_dv === "number" && Number.isFinite(fact.percent_dv)))
     );

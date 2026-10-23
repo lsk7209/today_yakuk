@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyAdminToken } from "@/lib/jwt";
+import { isPrivateBlogSlug } from "@/lib/editorial-publication-manifest";
 
 // 봇이 검색(?q=) 등 쿼리파라미터 URL을 대량 크롤하면 supplements/pharmacies LIKE
 // 풀스캔으로 Turso reads가 폭주한다. robots.txt에 공개한 검증된 페이지네이션과
@@ -60,6 +61,20 @@ export async function proxy(request: NextRequest) {
     if (BOT_UA.test(ua) && !isSafeCrawlerQuery(request.nextUrl)) {
       return new NextResponse("Forbidden", { status: 403 });
     }
+  }
+
+  // 초안/비공개 글: 관리자 미리보기(로그인 쿠키) 외에는 404. noindex 메타만으로 비공개를 대신하지 않는다.
+  const blogSlug = pathname.match(/^\/blog\/([^/]+)\/?$/)?.[1];
+  if (blogSlug && isPrivateBlogSlug(decodeURIComponent(blogSlug))) {
+    const token = request.cookies.get("admin_token")?.value;
+    const isApprovedPreview = Boolean(token && (await verifyAdminToken(token)));
+    if (!isApprovedPreview) {
+      return new NextResponse("Not Found", { status: 404, headers: { "Cache-Control": "no-store" } });
+    }
+    const preview = NextResponse.next();
+    preview.headers.set("X-Robots-Tag", "noindex, nofollow");
+    preview.headers.set("Cache-Control", "private, no-store");
+    return preview;
   }
 
   // Admin PAGE or API protection

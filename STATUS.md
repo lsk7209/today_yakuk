@@ -1,8 +1,10 @@
 # Project Status
 
-Updated: 2026-09-30
+Updated: 2026-10-23
 
 ## Current state
+
+- 2026-10-23: P0~P2 개선 로컬 구현 완료(미커밋). 상세·처리표·후속은 `docs/reports/improvement-2026-10-23.md`. 운영 반영/백필/의학 검토는 대기.
 
 - Local working tree has six modified, uncommitted files implementing a nearby/pharmacy-sync bug-fix pass on top of remote `main` `cf635d7`:
   `scripts/sync-pharmacies.ts`, `src/app/api/nearby/route.ts`, `src/app/nearby/NearbyClient.tsx`, `src/app/page.tsx`, `src/lib/data/pharmacies.ts`, `tests/unit/remediation.test.ts`

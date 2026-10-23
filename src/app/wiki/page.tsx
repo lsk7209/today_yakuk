@@ -39,16 +39,24 @@ interface Supplement {
 const ITEMS_PER_PAGE = 12;
 
 interface WikiHomePageProps {
-    searchParams: Promise<{ category?: string; page?: string }>;
+    searchParams: Promise<{ category?: string; page?: string; [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ searchParams }: WikiHomePageProps): Promise<Metadata> {
-    const { category, page } = await searchParams;
-    const isFilteredState = Boolean(category || page);
+    const params = await searchParams;
+    const { category, page } = params;
+    // category/page 외의 알 수 없는 쿼리(?type= 등)도 색인 대상이 아닌 필터 상태로 본다.
+    const isFilteredState = Object.keys(params).length > 0;
+    // 서로 다른 목록 상태를 첫 페이지 canonical로 묶지 않고 자기 자신을 가리킨다 (noindex는 유지).
+    const canonicalQuery = new URLSearchParams();
+    if (category) canonicalQuery.set("category", category);
+    const pageNumber = getWikiPageNumber(page);
+    if (pageNumber > 1) canonicalQuery.set("page", String(pageNumber));
+    const canonicalSuffix = canonicalQuery.size > 0 ? `?${canonicalQuery.toString()}` : "";
     return {
         title: "영양제 정보",
         description: WIKI_DESCRIPTION,
-        alternates: { canonical: "/wiki" },
+        alternates: { canonical: `/wiki${canonicalSuffix}` },
         robots: isFilteredState
             ? { index: false, follow: true }
             : { index: true, follow: true },
@@ -234,7 +242,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
                     {[
                         { href: "/blog/omega3-selection-guide", label: "오메가3 알티지 vs 에틸에스텔 선택 가이드", desc: "흡수율·가격·형태별 차이와 복용법 완전 정리" },
                         { href: "/blog/probiotics-selection-guide", label: "유산균 균주 선택 가이드", desc: "CFU보다 균주 종류가 중요한 이유와 목적별 선택법" },
-                        { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "국내 성인 75% 부족 상태, 올바른 보충 방법" },
+                        { href: "/blog/vitamin-d-deficiency-guide", label: "비타민D 결핍 신호 7가지", desc: "결핍 신호와 보충 시 주의점" },
                     ].map((item) => (
                         <Link
                             key={item.href}

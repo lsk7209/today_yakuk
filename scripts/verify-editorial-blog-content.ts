@@ -70,13 +70,13 @@ assert(new Set(EDITORIAL_BLOG_POSTS.map((post) => post.imagePath)).size === EXPE
 const listSource = fs.readFileSync(path.join(root, "src", "app", "blog", "page.tsx"), "utf8");
 const detailSource = fs.readFileSync(path.join(root, "src", "app", "blog", "[slug]", "page.tsx"), "utf8");
 const sitemapSource = fs.readFileSync(path.join(root, "src", "app", "sitemap.ts"), "utf8");
-const middlewareSource = fs.readFileSync(path.join(root, "src", "middleware.ts"), "utf8");
+const middlewareSource = fs.readFileSync(path.join(root, "src", "proxy.ts"), "utf8");
 assert(listSource.includes("getPublicEditorialPosts") && listSource.includes("CURATED_POSTS"), "blog list does not use public editorial policy");
 assert(detailSource.includes("getPublicEditorialPostBySlug") && detailSource.includes("EditorialArticle"), "detail route does not enforce public editorial policy");
 assert(detailSource.includes("generateStaticParams") && detailSource.includes("getPublicEditorialPosts"), "editorial static params do not enforce public policy");
 assert(detailSource.includes("pageEligible={resolveEditorialPolicy(post).canServeAds}"), "editorial ads do not enforce ad policy");
 assert(sitemapSource.includes("getPublicEditorialPosts") && sitemapSource.includes("isIndexable"), "sitemap does not enforce editorial index policy");
-assert(middlewareSource.includes("isPrivateEditorialSlug") && middlewareSource.includes('status: 404'), "middleware does not return an explicit 404 for private editorial slugs");
+assert(middlewareSource.includes("isPrivateBlogSlug") && middlewareSource.includes('status: 404'), "proxy does not return an explicit 404 for private blog slugs");
 
 if (errors.length > 0) {
   console.error(`EDITORIAL_CONTENT_VERIFY_FAILED (${errors.length})`);

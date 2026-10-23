@@ -9,7 +9,7 @@ const FEED_DESCRIPTION = "지금 문 연 근처약국을 빠르게 찾고 영업
 const STATIC_FEED_ITEMS = [
   { slug: "magnesium-deficiency-guide", title: "마그네슘 부족 신호 6가지와 영양제 선택법", summary: "산화 vs 글리시네이트 형태별 흡수율 비교와 올바른 복용법", date: "2026-06-09" },
   { slug: "lutein-astaxanthin-guide", title: "루테인 vs 아스타잔틴: 눈 건강 영양제 비교", summary: "황반 보호·항산화력·병용 여부까지 눈 건강 영양제 완전 비교", date: "2026-06-09" },
-  { slug: "vitamin-d-deficiency-guide", title: "비타민D 결핍 신호 7가지와 올바른 보충 방법", summary: "국내 성인 75% 부족 상태, 혈중 농도 기준과 용량별 보충법", date: "2026-06-09" },
+  { slug: "vitamin-d-deficiency-guide", title: "비타민D 결핍 신호 7가지와 올바른 보충 방법", summary: "결핍 신호, 혈중 농도 기준, 보충 시 주의점", date: "2026-06-09" },
   { slug: "probiotics-selection-guide", title: "유산균 균주 선택 가이드", summary: "CFU보다 균주 종류가 중요한 이유와 목적별 선택법", date: "2026-06-09" },
   { slug: "omega3-selection-guide", title: "오메가3 알티지 vs 에틸에스텔 선택 가이드", summary: "흡수율·가격·형태별 차이와 복용법 완전 정리", date: "2026-06-09" },
   { slug: "summer-first-aid-kit", title: "여름 필수 구급 약품 목록", summary: "여름철 가정에 구비해야 할 상비약과 영양제 리스트", date: "2026-06-09" },

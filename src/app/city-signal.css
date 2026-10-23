@@ -82,6 +82,7 @@ body { font-family: Arial, "Malgun Gothic", system-ui, sans-serif; font-size: 16
   .city-primary-nav[data-open=true] { display:flex; flex-direction:column; align-items:stretch; gap:0; }
   .city-primary-nav a { border-bottom:1px solid var(--border); padding:12px; }
   .city-page-heading-split, .city-home-hero, .city-nearby-hero, .city-pharmacy-heading, .city-directory { grid-template-columns:1fr; }
+  .city-home-art, .city-home-ticker { display:none; }
   .city-home-art { border-left:0; border-top:2px solid var(--ink); }
   .city-home-art img { max-height:260px; }
   .city-heading-art { margin-bottom:24px; }

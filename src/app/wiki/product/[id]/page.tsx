@@ -109,14 +109,10 @@ export default async function ProductDetailPage({
     name: supplement.name,
     image: supplement.image_url ? [supplement.image_url] : [],
     description: factualDescription,
-    brand: {
-      "@type": "Brand",
-      name: supplement.manufacturer || "Unknown",
-    },
-    manufacturer: {
-      "@type": "Organization",
-      name: supplement.manufacturer || "Unknown",
-    },
+    // 원문에 브랜드 근거가 없으므로 제조사를 브랜드로 추정하지 않는다.
+    ...(supplement.manufacturer
+      ? { manufacturer: { "@type": "Organization", name: supplement.manufacturer } }
+      : {}),
     url: productUrl,
   };
 

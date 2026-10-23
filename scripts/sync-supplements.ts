@@ -112,7 +112,8 @@ async function syncSupplements() {
             const name = item.PRDUCT || item.PRDLST_NM || item.prdlst_nm;
             const manufacturer = item.BSSH_NM || item.MAKE_IT_NM || item.make_it_nm;
             const rawMaterials = item.RAWMTRL_NM || item.RAW_MATERIALS || item.raw_materials || "";
-            const nutritionStr = item.NUT_MTR || item.STDR_STND || item.stnd_stnd || "";
+            // STDR_STND(기준규격)는 안전·시험 기준이므로 영양성분 입력으로 사용하지 않는다.
+            const nutritionStr = item.NUT_MTR || "";
 
             if (!productReportNo || !name) {
                 throw new Error("Product report number or product name is missing in raw data");

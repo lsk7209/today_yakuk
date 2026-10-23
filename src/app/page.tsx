@@ -19,7 +19,7 @@ import { JsonLd, buildFAQSchema } from "@/components/seo/json-ld";
 import { HomeTrustSections, HOME_FAQ_ITEMS } from "@/components/home/home-trust-sections";
 import RecentBlogPosts from "@/components/home/recent-blog-posts";
 import DesktopSidebar from "@/components/home/desktop-sidebar";
-import { getOperatingStatusAt } from "@/lib/hours";
+import { formatHourRange, getOperatingStatusAt, getSeoulDayKey } from "@/lib/hours";
 import { useEvaluationTime } from "@/components/use-evaluation-time";
 import { bucketResultCount, trackAnalyticsEvent } from "@/lib/client-analytics";
 import { hasValidPhone } from "@/lib/pharmacy-indexability";
@@ -48,6 +48,14 @@ type NearbyPharmacy = PharmacyCardProps["pharmacy"] & { distanceKm?: number };
 type NearbyResponse = { items: NearbyPharmacy[]; total: number };
 const homeFaqSchema = buildFAQSchema(HOME_FAQ_ITEMS);
 
+/** 오늘(KST) 등록 시간표. 운영시간 원본이 없으면 "정보 없음"으로 구분해 표시한다. */
+function todayHoursText(p: NearbyPharmacy, time: number | null) {
+  if (time === null) return "오늘 운영시간 확인 중";
+  const slot = p.operating_hours?.[getSeoulDayKey(new Date(time))];
+  const range = formatHourRange(slot);
+  return range === "정보 없음" ? "오늘 운영시간 정보 없음" : `오늘 ${range} (등록 시간표 · 공휴일 미반영)`;
+}
+
 export default function Home() {
   const time = useEvaluationTime();
   const [query, setQuery] = useState("");
@@ -60,6 +68,10 @@ export default function Home() {
   // Guards against response inversion: only the most recently issued request
   // is allowed to update `items`/`status`/`message` when its response arrives.
   const requestSeqRef = useRef(0);
+  // 명시적 검색 제출 후에만 결과 영역으로 포커스를 옮긴다 (입력 중에는 화면을 움직이지 않는다).
+  const focusResultsRef = useRef(false);
+  const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
+  const lastSearchRef = useRef<{ mode: "gps" } | { mode: "keyword"; term: string }>({ mode: "gps" });
 
   async function fetchNearby() {
     trackAnalyticsEvent("pharmacy_search_submitted", {
@@ -73,6 +85,8 @@ export default function Home() {
       return;
     }
 
+    lastSearchRef.current = { mode: "gps" };
+    focusResultsRef.current = true;
     const requestId = ++requestSeqRef.current;
     setStatus("loading");
     setMessage("현재 위치를 확인하고 있습니다...");
@@ -82,6 +96,7 @@ export default function Home() {
         // already started; abandon this stale request instead of clobbering
         // the latest state.
         if (requestId !== requestSeqRef.current) return;
+        trackAnalyticsEvent("location_permission_result", { source_surface: "home", result: "granted" });
         try {
           const qs = new URLSearchParams({
             lat: String(pos.coords.latitude),
@@ -112,6 +127,11 @@ export default function Home() {
       },
       (err) => {
         if (requestId !== requestSeqRef.current) return;
+        trackAnalyticsEvent("location_permission_result", {
+          source_surface: "home",
+          result:
+            err.code === err.PERMISSION_DENIED ? "denied" : err.code === err.TIMEOUT ? "timeout" : "unavailable",
+        });
         setStatus("error");
         if (err.code === err.PERMISSION_DENIED) {
           setMessage("위치 권한이 거부되었습니다. 지역별 찾기를 이용해 주세요.");
@@ -128,6 +148,8 @@ export default function Home() {
       search_mode: "keyword",
       source_surface: "home",
     });
+    lastSearchRef.current = { mode: "keyword", term };
+    focusResultsRef.current = true;
     const requestId = ++requestSeqRef.current;
     setStatus("loading");
     setMessage("검색어로 약국을 찾고 있습니다...");
@@ -160,6 +182,22 @@ export default function Home() {
   useEffect(() => {
     setGeoAvailable(typeof navigator !== "undefined" && "geolocation" in navigator);
   }, []);
+
+  useEffect(() => {
+    if (!focusResultsRef.current || (status !== "success" && status !== "error")) return;
+    focusResultsRef.current = false;
+    const heading = resultsHeadingRef.current;
+    heading?.focus({ preventScroll: true });
+    heading?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }, [status]);
+
+  function retryLastSearch() {
+    const last = lastSearchRef.current;
+    if (last.mode === "keyword") void searchByKeyword(last.term);
+    else void fetchNearby();
+  }
+
+  const hasDistance = items.some((item) => typeof item.distanceKm === "number");
 
   const sorted = useMemo(() => {
     const base = [...items];
@@ -256,24 +294,17 @@ export default function Home() {
           <span>FIND THE PLACE</span><span>↗</span><span>CHECK THE HOURS</span><span>↗</span><span>CALL BEFORE YOU GO</span>
         </div>
 
-        <section className="city-home-steps" aria-labelledby="city-steps-title">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-3"><div><p className="city-eyebrow text-xs font-black tracking-widest">WAYFINDING / HOW IT WORKS</p><h2 id="city-steps-title" className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">찾는 방법도, <span className="text-[var(--coral-text)]">명확하게.</span></h2></div><span className="text-xs font-black tracking-widest">3 STEPS / ZERO GUESSWORK</span></div>
-          <div className="grid gap-2 sm:grid-cols-3">
-            <Link href="/서울/전체" className="city-step flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--fog)] p-5 hover:bg-[var(--lime)]"><span className="text-xs font-black tracking-widest">01 / LOCATION</span><strong className="text-2xl leading-tight">어디서<br />찾으세요?</strong><span className="border-t border-[var(--ink)] pt-2 text-xs font-black">지역별 목록 ↗</span></Link>
-            <Link href="/nearby" className="city-step flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--lime)] p-5 hover:bg-[var(--lime)]"><span className="text-xs font-black tracking-widest">02 / HOURS</span><strong className="text-2xl leading-tight">언제<br />필요하세요?</strong><span className="border-t border-[var(--ink)] pt-2 text-xs font-black">현재 위치·등록 시간표 ↗</span></Link>
-            <Link href="/guide/holiday-checklist" className="city-step city-step-dark flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--ink)] p-5 text-[var(--paper)] hover:bg-[var(--ink)]"><span className="text-xs font-black tracking-widest">03 / CONFIRM</span><strong className="text-2xl leading-tight">가기 전에<br />전화부터.</strong><span className="border-t border-[var(--paper)] pt-2 text-xs font-black">영업·재고 직접 확인 ↗</span></Link>
-          </div>
-        </section>
-
         {/* List header */}
         <section className="city-home-results space-y-4">
           <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-[var(--ink)] pb-4">
-            <div><p className="city-eyebrow text-xs font-black tracking-widest">02 / SEARCH RESULTS</p><h2 className="mt-2 text-3xl font-black tracking-tight">검색한 약국 <span className="text-[var(--coral-text)]">↗</span></h2></div>
+            <div><p className="city-eyebrow text-xs font-black tracking-widest">02 / SEARCH RESULTS</p><h2 ref={resultsHeadingRef} tabIndex={-1} className="mt-2 text-3xl font-black tracking-tight outline-offset-4">검색한 약국 <span className="text-[var(--coral-text)]">↗</span></h2></div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setSortMode("distance")}
-                aria-pressed={sortMode === "distance"}
+                disabled={!hasDistance}
+                title={hasDistance ? undefined : "현재 위치로 찾을 때 거리순을 쓸 수 있어요"}
+                aria-pressed={sortMode === "distance" && hasDistance}
                 className={`city-pill inline-flex min-h-11 items-center gap-1 border border-[var(--ink)] px-4 py-2 text-sm font-bold ${sortMode === "distance"
                   ? "bg-[var(--lime)]"
                   : "bg-transparent hover:bg-[var(--fog)]"
@@ -316,14 +347,24 @@ export default function Home() {
           {message ? (
             <div role="status" className="city-panel border-l-4 border-[var(--coral)] bg-[var(--fog)] p-4 text-sm font-bold">
               {message}
+              {status === "error" && lastSearchRef.current ? (
+                <button type="button" onClick={retryLastSearch} className="city-button ml-3 min-h-11 border-2 border-[var(--ink)] bg-[var(--lime)] px-4 text-sm font-black">
+                  다시 시도
+                </button>
+              ) : null}
             </div>
           ) : null}
+
+          <p role="status" className="sr-only">
+            {status === "success" ? `검색 결과 ${sorted.length}곳` : ""}
+          </p>
 
           {status === "success" && sorted.length === 0 ? (
             <div className="city-panel border-2 border-[var(--ink)] bg-white p-6 space-y-3">
               <p className="text-sm text-gray-600">
-                아직 추천 목록이 비어있습니다. 위치를 설정하거나 지역별로 찾아보세요.
+                검색 결과가 없습니다. 검색어를 바꾸거나 아래에서 시·도를 골라 지역별로 찾아보세요.
               </p>
+              {regionGrid}
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -334,12 +375,6 @@ export default function Home() {
                   <LocateFixed className="h-4 w-4 mr-2" />
                   위치로 찾기
                 </button>
-                <Link
-                  href="/서울/전체"
-                  className="city-button city-button-secondary inline-flex items-center justify-center px-5 py-2 text-sm font-bold"
-                >
-                  서울에서 찾기
-                </Link>
               </div>
             </div>
           ) : null}
@@ -382,14 +417,15 @@ export default function Home() {
                           <MapPin className="h-4 w-4 text-gray-400" />
                           {p.address}
                         </p>
-                      </div>
-                      <div className="flex flex-col items-end shrink-0">
-                        <p className="text-sm font-black text-[var(--ink)]">
-                          {typeof p.distanceKm === "number"
-                            ? `${Math.round(p.distanceKm * 1000)}m`
-                            : "—"}
+                        <p className="mt-1 text-sm font-bold" data-today-hours>
+                          {todayHoursText(p, time)}
                         </p>
                       </div>
+                      {typeof p.distanceKm === "number" ? (
+                        <div className="flex flex-col items-end shrink-0">
+                          <p className="text-sm font-black text-[var(--ink)]">{`${Math.round(p.distanceKm * 1000)}m`}</p>
+                        </div>
+                      ) : null}
                     </div>
                     <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#9baa9d] pt-3">
                       {callablePhone ? (
@@ -435,6 +471,15 @@ export default function Home() {
             </div>
             {regionGrid}
           </section>
+        </section>
+
+        <section className="city-home-steps" aria-labelledby="city-steps-title">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3"><div><p className="city-eyebrow text-xs font-black tracking-widest">WAYFINDING / HOW IT WORKS</p><h2 id="city-steps-title" className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">찾는 방법도, <span className="text-[var(--coral-text)]">명확하게.</span></h2></div><span className="text-xs font-black tracking-widest">3 STEPS / ZERO GUESSWORK</span></div>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <Link href="/서울/전체" className="city-step flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--fog)] p-5 hover:bg-[var(--lime)]"><span className="text-xs font-black tracking-widest">01 / LOCATION</span><strong className="text-2xl leading-tight">어디서<br />찾으세요?</strong><span className="border-t border-[var(--ink)] pt-2 text-xs font-black">지역별 목록 ↗</span></Link>
+            <Link href="/nearby" className="city-step flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--lime)] p-5 hover:bg-[var(--lime)]"><span className="text-xs font-black tracking-widest">02 / HOURS</span><strong className="text-2xl leading-tight">언제<br />필요하세요?</strong><span className="border-t border-[var(--ink)] pt-2 text-xs font-black">현재 위치·등록 시간표 ↗</span></Link>
+            <Link href="/guide/holiday-checklist" className="city-step city-step-dark flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--ink)] p-5 text-[var(--paper)] hover:bg-[var(--ink)]"><span className="text-xs font-black tracking-widest">03 / CONFIRM</span><strong className="text-2xl leading-tight">가기 전에<br />전화부터.</strong><span className="border-t border-[var(--paper)] pt-2 text-xs font-black">영업·재고 직접 확인 ↗</span></Link>
+          </div>
         </section>
 
         <RecentBlogPosts />

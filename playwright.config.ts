@@ -38,6 +38,8 @@ export default defineConfig({
         env: {
             TURSO_DATABASE_URL: "",
             TURSO_AUTH_TOKEN: "",
+            // 초안 글 승인 미리보기(관리자 쿠키) 검증용. 로컬 e2e 서버에서만 사용하는 값.
+            JWT_SECRET: "e2e-preview-secret",
         },
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,

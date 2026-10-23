@@ -37,6 +37,8 @@ import { getMapSearchAddress } from "@/lib/map";
 import { hasValidPhone, isIndexablePharmacy } from "@/lib/pharmacy-indexability";
 import { getPublishedContentByHpid } from "@/lib/data/content";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { SATURDAY_FEE_NOTICE } from "@/lib/fee-notice";
+import { selectPharmacySummary } from "@/lib/pharmacy-claims";
 import { highlightSafeText, type HighlightRule } from "@/lib/safe-highlight";
 
 type Params = { id: string };
@@ -185,6 +187,12 @@ async function Content({
   const faqList = tmpl.faq;
   const extraSections = tmpl.extraSections;
 
+  // 저장된 AI 소개문은 근거 없는 주장(리뷰·도보 시간·통계·주차·결제 등)이 없을 때만 사용한다.
+  const displaySummary = selectPharmacySummary(
+    pharmacy,
+    [contentQueue?.ai_summary, pharmacy.gemini_summary],
+    finalSummary,
+  );
   const descriptions = [finalSummary, ...aiBullets];
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -317,7 +325,7 @@ async function Content({
 
 
       {/* 요약 (content_queue > gemini_summary > 템플릿 순서) */}
-      {(contentQueue?.ai_summary || pharmacy.gemini_summary || finalSummary) && (
+      {displaySummary && (
         <section className="rounded-none border-2 border-emerald-200 bg-[var(--paper)] p-6 ">
           <div className="flex items-start gap-3 mb-4">
             <div className="rounded-full bg-emerald-100 p-2">
@@ -329,7 +337,7 @@ async function Content({
           </div>
           <div className="bg-[var(--white)]/80 rounded-none p-4 border border-emerald-100">
             <p className="text-base text-gray-800 leading-relaxed whitespace-pre-line">
-              {contentQueue?.ai_summary || pharmacy.gemini_summary || finalSummary}
+              {displaySummary}
             </p>
           </div>
         </section>
@@ -432,7 +440,18 @@ async function Content({
             </span>
           </div>
         </div>
-        <PharmacyWeeklyHours hours={pharmacy.operating_hours} initialIso={initialIso} />
+        <PharmacyWeeklyHours hours={pharmacy.operating_hours} initialIso={initialIso} />
+        <aside className="mt-4 text-sm text-gray-700" data-fee-notice>
+          <p className="font-bold">{SATURDAY_FEE_NOTICE.title}</p>
+          <p className="mt-1">{SATURDAY_FEE_NOTICE.body}</p>
+          <p className="mt-1 text-xs text-gray-500">
+            출처:{" "}
+            <a href={SATURDAY_FEE_NOTICE.source.url} target="_blank" rel="noreferrer" className="underline">
+              {SATURDAY_FEE_NOTICE.source.name}
+            </a>{" "}
+            · {SATURDAY_FEE_NOTICE.effectiveDate} 시행 · 사람 검토 전 안내
+          </p>
+        </aside>
       </section>
 
 

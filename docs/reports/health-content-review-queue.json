@@ -1,0 +1,507 @@
+{
+  "note": "키워드 탐지 결과이며 의학적 안전성의 승인이 아닙니다. 실제 검토자와 검토 기록이 생기기 전에는 reviewed로 표시하지 않습니다.",
+  "scannedDirs": [
+    "src/app/blog",
+    "src/lib/editorial-posts",
+    "src/app/guide"
+  ],
+  "count": 30,
+  "queue": [
+    {
+      "file": "src/app/blog/data-update-2026-08/page.tsx",
+      "topics": [
+        {
+          "topic": "interaction",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/digestion-hangover-pharmacy-guide/page.tsx",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 1
+        },
+        {
+          "topic": "lactation",
+          "count": 1
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 4
+        },
+        {
+          "topic": "interaction",
+          "count": 3
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/hypertension-diabetes-holiday-tips/page.tsx",
+      "topics": [
+        {
+          "topic": "chronic-disease",
+          "count": 27
+        },
+        {
+          "topic": "dosage",
+          "count": 4
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/kids-fever-medicine-comparison/page.tsx",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 25
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 10
+        },
+        {
+          "topic": "dosage",
+          "count": 7
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/kids-fever-meds-check/page.tsx",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 12
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/lost-prescription-action-guide/page.tsx",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 1
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 7
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/lutein-astaxanthin-guide/page.tsx",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 1
+        },
+        {
+          "topic": "lactation",
+          "count": 1
+        },
+        {
+          "topic": "interaction",
+          "count": 8
+        },
+        {
+          "topic": "dosage",
+          "count": 19
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/magnesium-deficiency-guide/page.tsx",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 1
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 5
+        },
+        {
+          "topic": "interaction",
+          "count": 3
+        },
+        {
+          "topic": "dosage",
+          "count": 12
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/night-pharmacy-3steps/page.tsx",
+      "topics": [
+        {
+          "topic": "chronic-disease",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/night-pharmacy-checklist/page.tsx",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/omega3-selection-guide/page.tsx",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 6
+        },
+        {
+          "topic": "pediatric",
+          "count": 1
+        },
+        {
+          "topic": "interaction",
+          "count": 4
+        },
+        {
+          "topic": "dosage",
+          "count": 12
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/page.tsx",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 3
+        },
+        {
+          "topic": "pediatric",
+          "count": 4
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 4
+        },
+        {
+          "topic": "interaction",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/pharmacy-faq-top10/page.tsx",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 3
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 3
+        },
+        {
+          "topic": "interaction",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/pregnancy-pharmacy-guide/page.tsx",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 56
+        },
+        {
+          "topic": "lactation",
+          "count": 15
+        },
+        {
+          "topic": "pediatric",
+          "count": 2
+        },
+        {
+          "topic": "interaction",
+          "count": 1
+        },
+        {
+          "topic": "dosage",
+          "count": 5
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/prescription-holiday-guide/page.tsx",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 2
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 18
+        },
+        {
+          "topic": "dosage",
+          "count": 1
+        },
+        {
+          "topic": "statistic-claim",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/prescription-prep-tips/page.tsx",
+      "topics": [
+        {
+          "topic": "chronic-disease",
+          "count": 6
+        },
+        {
+          "topic": "interaction",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/probiotics-selection-guide/page.tsx",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/skin-trouble-first-aid-kit/page.tsx",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 7
+        },
+        {
+          "topic": "interaction",
+          "count": 1
+        },
+        {
+          "topic": "dosage",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/summer-first-aid-kit/page.tsx",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 4
+        },
+        {
+          "topic": "interaction",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/supplement-label-reading-guide/page.tsx",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 1
+        },
+        {
+          "topic": "lactation",
+          "count": 1
+        },
+        {
+          "topic": "dosage",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/blog/vitamin-d-deficiency-guide/page.tsx",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 1
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 1
+        },
+        {
+          "topic": "interaction",
+          "count": 2
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/lib/editorial-posts/post-01-medicine-info-check.ts",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 1
+        },
+        {
+          "topic": "lactation",
+          "count": 1
+        },
+        {
+          "topic": "pediatric",
+          "count": 1
+        },
+        {
+          "topic": "interaction",
+          "count": 2
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/lib/editorial-posts/post-04-adverse-reaction-record.ts",
+      "topics": [
+        {
+          "topic": "interaction",
+          "count": 3
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/lib/editorial-posts/post-06-health-food-info.ts",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 1
+        },
+        {
+          "topic": "lactation",
+          "count": 1
+        },
+        {
+          "topic": "pediatric",
+          "count": 1
+        },
+        {
+          "topic": "interaction",
+          "count": 6
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/lib/editorial-posts/post-07-supplement-overlap-check.ts",
+      "topics": [
+        {
+          "topic": "chronic-disease",
+          "count": 3
+        },
+        {
+          "topic": "interaction",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/lib/editorial-posts/post-08-medication-schedule.ts",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 1
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 4
+        },
+        {
+          "topic": "interaction",
+          "count": 2
+        },
+        {
+          "topic": "dosage",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/lib/editorial-posts/post-09-travel-medicine-prep.ts",
+      "topics": [
+        {
+          "topic": "pregnancy",
+          "count": 1
+        },
+        {
+          "topic": "lactation",
+          "count": 1
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/lib/editorial-posts/post-10-pharmacy-counseling-record.ts",
+      "topics": [
+        {
+          "topic": "interaction",
+          "count": 4
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/guide/radius-selection/page.tsx",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 1
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    },
+    {
+      "file": "src/app/guide/summer-emergency-kit/page.tsx",
+      "topics": [
+        {
+          "topic": "pediatric",
+          "count": 4
+        },
+        {
+          "topic": "chronic-disease",
+          "count": 4
+        }
+      ],
+      "reviewStatus": "needs_pharmacist_review"
+    }
+  ]
+}

@@ -1,10 +1,28 @@
 import { expect, test } from "@playwright/test";
+import { SignJWT } from "jose";
 import audit from "../../content/data-audits/2026-08-27.json";
 import followUpAudit from "../../content/data-audits/2026-08-28.json";
 
 type CapturedEvent = [string, string, Record<string, unknown>];
 
-test.beforeEach(async ({ page }) => {
+const DRAFT_SLUGS = [
+  "data-update-2026-08",
+  "supplement-label-reading-guide",
+  "supplement-additives-label-guide",
+];
+
+async function previewCookie() {
+  const token = await new SignJWT({ role: "admin" })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("1h")
+    .sign(new TextEncoder().encode("e2e-preview-secret"));
+  return { name: "admin_token", value: token, url: `http://localhost:${process.env.PORT || "3000"}` };
+}
+
+// 승인된 미리보기(관리자 쿠키)에서만 초안 본문을 검증한다. 익명 접근은 아래 404 테스트가 보장한다.
+test.beforeEach(async ({ page, context }) => {
+  await context.addCookies([await previewCookie()]);
   await page.addInitScript(() => {
     const analyticsWindow = window as typeof window & {
       __analyticsCalls: unknown[][];
@@ -22,6 +40,20 @@ test.beforeEach(async ({ page }) => {
       ? route.continue()
       : route.abort();
   });
+});
+
+test.describe("익명 방문자", () => {
+  test.beforeEach(async ({ context }) => {
+    await context.clearCookies();
+  });
+
+  for (const slug of DRAFT_SLUGS) {
+    test(`초안 ${slug}는 직접 URL에서 404이고 본문이 노출되지 않는다`, async ({ page }) => {
+      const response = await page.goto(`/blog/${slug}`);
+      expect(response?.status()).toBe(404);
+      await expect(page.getByText("로컬 검토용 초안")).toHaveCount(0);
+    });
+  }
 });
 
 test("data update explains fresh records without calling them new approvals", async ({ page }) => {

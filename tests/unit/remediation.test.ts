@@ -296,7 +296,8 @@ async function main() {
     assert.equal(count(unavailable, />자료 없음</g), 3);
     for (const html of [matched, notMatched, unavailable]) {
       assert.match(html, /성분의 부재나 안전성 판정이 아닙니다/);
-      assert.match(html, /href="\/blog\/supplement-additives-label-guide"/);
+      // 해당 가이드는 초안(비공개)이므로 공개 화면에서 링크하지 않는다.
+      assert.doesNotMatch(html, /href="\/blog\/supplement-additives-label-guide"/);
     }
   });
 
@@ -975,7 +976,7 @@ async function main() {
     assert.match(additivesGuide, /law\.go\.kr\/LSW\/admRulInfoP\.do/);
     assert.match(additivesGuide, /impfood\.mfds\.go\.kr\/CFBDD02F01/);
     assert.doesNotMatch(additivesGuide, /build(?:Article|Faq|HowTo)Schema/);
-    assert.match(additiveSignal, /href="\/blog\/supplement-additives-label-guide"/);
+    assert.match(additiveSignal, /isPrivateBlogSlug\(ADDITIVES_GUIDE_SLUG\)/);
     assert.doesNotMatch(blogIndex, /supplement-additives-label-guide/);
     assert.doesNotMatch(sitemap, /supplement-additives-label-guide/);
     assert.match(autoEnrichment, /persistSupplementEnrichment/);

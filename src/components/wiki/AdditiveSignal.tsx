@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { isPrivateBlogSlug } from "@/lib/editorial-publication-manifest";
+
+const ADDITIVES_GUIDE_SLUG = "supplement-additives-label-guide";
 
 interface AdditiveData {
     has_preservatives?: boolean;
@@ -86,12 +89,15 @@ export function AdditiveSignal({ additives }: AdditiveSignalProps) {
             <p className="text-xs leading-relaxed text-slate-500">
                 이 신호는 공개 원재료 텍스트의 키워드 확인 결과입니다. 성분의 부재나 안전성 판정이
                 아닙니다.{" "}
-                <Link
-                    href="/blog/supplement-additives-label-guide"
-                    className="font-bold text-brand-700 underline underline-offset-4"
-                >
-                    첨가물 표시 해석 가이드
-                </Link>
+                {/* 비공개(초안) 글로는 링크하지 않는다 */}
+                {!isPrivateBlogSlug(ADDITIVES_GUIDE_SLUG) && (
+                    <Link
+                        href={`/blog/${ADDITIVES_GUIDE_SLUG}`}
+                        className="font-bold text-brand-700 underline underline-offset-4"
+                    >
+                        첨가물 표시 해석 가이드
+                    </Link>
+                )}
             </p>
         </div>
     );

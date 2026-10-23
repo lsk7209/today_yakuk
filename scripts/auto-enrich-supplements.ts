@@ -92,7 +92,8 @@ async function autoEnrichSupplements() {
       }
 
       const rawMaterials = rawItem.RAWMTRL_NM || "";
-      const nutritionStr = rawItem.NUT_MTR || rawItem.STDR_STND || "";
+      // STDR_STND(기준규격)는 안전·시험 기준이므로 영양성분 입력으로 사용하지 않는다.
+      const nutritionStr = rawItem.NUT_MTR || "";
 
       const analysis = analyzeProduct(name, rawMaterials, nutritionStr);
       const additives = detectAdditives(rawMaterials);
