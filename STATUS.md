@@ -6,6 +6,8 @@ Updated: 2026-10-23
 
 - 2026-10-23: P0~P2 개선 커밋·push 완료(브랜치 `design/city-signal-20261012`, 드래프트 PR #7). 상세·처리표는 `docs/reports/improvement-2026-10-23.md`.
   - 검증: `test:unit` exit 0, Playwright e2e 27 passed(Edge 채널, `PLAYWRIGHT_CHANNEL=msedge`), 390×844 로컬 캡처 확인. 운영 DB 읽기 전용 감사: 49,036개 중 624개 영향(쓰기 없음).
+  - API 델타(읽기 전용, 10-23): 기준 79,686→현재 80,278, 신규 592(건기식 500·약국 67·의약품 25), 변경 25,694(약국 25,333은 동기화 시각/파싱 수정 영향 추정, 실변경 아님). 작업계획 검토준비 25,601·원천필드부족 685·신규약국 P1 64. 자동 발행 없음.
+  - 다음: 신규 약국 P1 64곳 수동 검증 목록 → 약국 변경 25,333건 원인 분해 → 건기식 신규 중 성분검증 통과분 후보화.
   - 대기: Vercel 프리뷰 `Deployment was blocked`(팀 권한 확인 필요), 건강 콘텐츠 30개·토요일 요금 안내문 약사 검토, 영양성분 소스 결정(`sync:supplements`는 현재 성분 미생성), 운영 DB backfill·배포·Search Console 삭제 요청은 별도 승인.
 
 - Local working tree has six modified, uncommitted files implementing a nearby/pharmacy-sync bug-fix pass on top of remote `main` `cf635d7`:
