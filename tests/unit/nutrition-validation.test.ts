@@ -89,6 +89,14 @@ async function main() {
     assert.equal(getNutritionFactIssue(fact("비타민C", 10, "%")), "unsupported-unit");
   });
 
+  await run("활성 당량·CFU 단위의 실제 함량은 허용하고 0 함량은 계속 거부한다", () => {
+    assert.equal(getNutritionFactIssue(fact("비타민A", 700, "μg RAE")), null);
+    assert.equal(getNutritionFactIssue(fact("비타민 E", 6, "mg α-TE")), null);
+    assert.equal(getNutritionFactIssue(fact("엽산", 680, "μg DFE")), null);
+    assert.equal(getNutritionFactIssue(fact("유산균(프로바이오틱스)", 100, "억 CFU")), null);
+    assert.equal(getNutritionFactIssue(fact("유산균(프로바이오틱스)", 0, "억 CFU")), "invalid-amount");
+  });
+
   await run("기준규격 문구를 성격별로 분류한다", () => {
     assert.equal(classifyStandardText("카드뮴(mg/kg): 1.0 이하"), "heavy-metal");
     assert.equal(classifyStandardText("대장균군: 음성"), "microbe");

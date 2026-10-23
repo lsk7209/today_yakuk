@@ -70,7 +70,12 @@ export const ADDITIVE_SUBSTRINGS = [
   "활택제",
 ];
 
-export const ALLOWED_NUTRITION_UNITS = ["mg", "g", "μg", "IU"] as const;
+// 비타민 활성 당량(RAE·α-TE·DFE·NE)과 균수(CFU)는 정상 표시 단위다.
+export const ALLOWED_NUTRITION_UNITS = [
+  "mg", "g", "μg", "IU",
+  "μg RAE", "mg α-TE", "μg DFE", "mg NE",
+  "CFU", "억 CFU",
+] as const;
 const ALLOWED_UNITS = new Set<string>(ALLOWED_NUTRITION_UNITS);
 
 // 문장 조각 뒤에 붙는 조사 (예: "단B1은"). 알로에·무화과·오이처럼 실제 성분명으로 끝나는 글자는 제외

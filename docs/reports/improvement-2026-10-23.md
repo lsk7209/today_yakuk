@@ -47,3 +47,4 @@
 - 거부 사유: invalid-amount 565 · unsupported-unit 169 · invalid-name 48 · standard-or-test-term 29 · name-fragment 2.
 - 화면 읽기 경로가 같은 규칙으로 이미 걸러내므로 배포만으로 노출은 차단된다. DB 정정(backfill)은 운영 쓰기이므로 별도 승인 후 수행한다.
 - `invalid-amount`/`unsupported-unit`에는 CFU 단위 유산균처럼 정상 성분이 포함됐을 수 있어, backfill 전에 단위 허용 목록(CFU 등) 확장 여부를 사람이 판단해야 한다.
+- 후속: 정상 단위(μg RAE · mg α-TE · μg DFE · mg NE · CFU · 억 CFU)를 허용 목록에 추가해 재감사. 영향 제품 694→624, 단위 거부 169→3. 남은 `invalid-amount` 565건은 함량 0인 자리표시 값(태그 기반)이므로 계속 거부가 맞다. backfill 대상은 이 재감사 기준으로 잡는다.
