@@ -1,4 +1,4 @@
-import { Pharmacy } from "@/types/pharmacy";
+import { Pharmacy, PharmacyIntelligenceReport } from "@/types/pharmacy";
 import {
   DAY_KEYS,
   formatHHMM,
@@ -77,8 +77,42 @@ export function buildOpeningHoursSpecification(pharmacy: Pharmacy) {
     }));
 }
 
-export function buildPharmacyJsonLd(pharmacy: Pharmacy) {
+export function buildPharmacyJsonLd(
+  pharmacy: Pharmacy,
+  intelligence?: PharmacyIntelligenceReport | null,
+) {
   const openingHoursSpecification = buildOpeningHoursSpecification(pharmacy);
+
+  const amenityFeatures = [];
+  if (intelligence?.briefing?.highlights) {
+    for (const h of intelligence.briefing.highlights) {
+      amenityFeatures.push({
+        "@type": "LocationFeatureSpecification",
+        name: h,
+        value: true,
+      });
+    }
+  }
+
+  const specialServices = [
+    {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: "처방전 조제 및 복약지도",
+        serviceType: "Prescription Dispensing",
+      },
+    },
+    {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: "일반의약품 및 건강상담",
+        serviceType: "Health & OTC Consultation",
+      },
+    },
+  ];
+
   return {
     "@context": "https://schema.org",
     "@type": ["Pharmacy", "LocalBusiness"],
@@ -102,6 +136,8 @@ export function buildPharmacyJsonLd(pharmacy: Pharmacy) {
         : undefined,
     url: `${siteUrl}/pharmacy/${pharmacy.hpid}`,
     openingHoursSpecification,
+    ...(amenityFeatures.length > 0 && { amenityFeature: amenityFeatures }),
+    makesOffer: specialServices,
   };
 }
 

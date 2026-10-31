@@ -889,7 +889,7 @@ async function Content({
         </div>
       </div>
 
-      <JsonLd id="jsonld-pharmacy" data={buildPharmacyJsonLd(pharmacy)} />
+      <JsonLd id="jsonld-pharmacy" data={buildPharmacyJsonLd(pharmacy, report)} />
       <JsonLd id="jsonld-breadcrumbs" data={breadcrumbJsonLd} />
       <JsonLd id="jsonld-faq" data={faqJsonLd} />
 
