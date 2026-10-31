@@ -508,7 +508,7 @@ function analyzeHoursPattern(
     if (allSame && firstOpen && firstClose) {
       patterns.push(`평일(월-금) ${formatHHMM(firstOpen)}-${formatHHMM(firstClose)}`);
     } else {
-      patterns.push("평일 영업시간이 요일별로 상이합니다.");
+      patterns.push("평일 영업시간이 요일별로 상이합니다");
     }
   }
 
