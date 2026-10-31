@@ -80,6 +80,10 @@ const featuredGuides = [
 export function HomeTrustSections() {
   return (
     <div className="space-y-6">
+      <section className="city-v2-trust" aria-labelledby="city-v2-trust-title">
+        <div><p className="city-eyebrow">03 / SHOW WHAT WE KNOW</p><h2 id="city-v2-trust-title">모르는 건<br /><span>모른다고</span> 표시합니다.</h2><p>수집된 시간표와 직접 확인해야 하는 정보를 구분해 출발 전 판단을 돕습니다.</p><Link href="/about">출처와 표시 원칙 보기 ↗</Link></div>
+        <div className="city-v2-trust-facts"><article><small>우리가 알고 있는 것</small><h3>등록된 주소·전화·요일 시간표</h3><p>공개 자료의 등록 정보를 보여줍니다. 수집 시각은 현장 운영을 확인한 시각이 아닙니다.</p></article><article><small>확인이 필요한 것</small><h3>공휴일·임시휴무·의약품 재고</h3><p>요일 시간표만으로 실제 운영을 확정할 수 없습니다. 출발 전 약국에 전화해 확인하세요.</p></article></div>
+      </section>
       <section className="city-trust-section rounded-none border border-[var(--ink)] bg-[var(--white)] p-6 sm:p-8 ">
         <div className="max-w-3xl space-y-3">
           <p className="text-xs font-black tracking-[0.18em] text-brand-700">WHY TODAYPHARM</p>

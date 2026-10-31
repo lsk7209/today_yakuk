@@ -37,7 +37,7 @@ const faqs = [
   },
   {
     q: "공휴일에 보험 청구가 가능한가요?",
-    a: "대부분의 공휴일에도 건강보험 청구는 정상적으로 처리됩니다. 단, 약국별 단말기 운영 방식이나 전산 점검 일정에 따라 처리가 지연될 수 있으므로 신분증과 보험증(또는 건강보험 앱)을 반드시 지참하고 문의하세요. 공휴일 가산료가 적용되어 본인 부담금이 소폭 높아질 수 있습니다.",
+    a: "대부분의 공휴일에도 건강보험 청구는 정상적으로 처리됩니다. 단, 약국별 단말기 운영 방식이나 전산 점검 일정에 따라 처리가 지연될 수 있으므로 신분증과 보험증(또는 건강보험 앱)을 반드시 지참하고 문의하세요. 실제 본인부담금은 처방 내용과 보험 적용 여부 등에 따라 달라지므로 약국에서 확인하세요.",
   },
   {
     q: "대기 시간을 줄이려면?",
@@ -59,7 +59,7 @@ const faqs = [
 
 export default function BlogPrescriptionPrepTips() {
   const articleJsonLd = buildArticleJsonLd({
-    dateModified: "2026-09-20",
+    dateModified: "2026-10-23",
     datePublished: null,
     title: metaTitle,
     description: metaDescription,
@@ -170,7 +170,7 @@ export default function BlogPrescriptionPrepTips() {
           <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">
             <h3 className="text-lg font-semibold">신분증/보험증 필수</h3>
             <p className="text-[var(--muted)] leading-relaxed">
-              공휴일·야간에도 보험 청구를 위해 신분증과 보험증(또는 건강보험 앱)을 반드시 지참하세요. 보험증을 분실했더라도 국민건강보험공단 앱(The건강보험)이나 모바일 신분증으로 대체가 가능한 경우가 많으니 미리 앱을 설치해 두는 것이 유용합니다. 외국인 환자라면 외국인등록증과 여권을 함께 지참해야 보험 적용 여부를 빠르게 확인받을 수 있습니다. 공휴일에는 가산료가 붙어 본인부담금이 소폭 올라가는 점도 미리 알고 준비하면 당황하지 않습니다.
+              공휴일·야간에도 보험 청구를 위해 신분증과 보험증(또는 건강보험 앱)을 반드시 지참하세요. 보험증을 분실했더라도 국민건강보험공단 앱(The건강보험)이나 모바일 신분증으로 대체가 가능한 경우가 많으니 미리 앱을 설치해 두는 것이 유용합니다. 외국인 환자라면 외국인등록증과 여권을 함께 지참해야 보험 적용 여부를 빠르게 확인받을 수 있습니다. 실제 본인부담금은 처방 내용과 보험 적용 여부 등에 따라 달라지므로 약국에서 확인하세요.
             </p>
           </div>
           <div className="city-card border border-[var(--border)] bg-white p-6 space-y-2">

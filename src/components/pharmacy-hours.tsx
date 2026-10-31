@@ -3,6 +3,7 @@
 import type { OperatingHours, Pharmacy } from "@/types/pharmacy";
 import { formatHourRange, getBadgeClass, getOperatingStatusAt, getSeoulDayKey, isOperating } from "@/lib/hours";
 import { useEvaluationTime } from "./use-evaluation-time";
+import { TimeStrip } from "./city-signal/time-strip";
 import { PharmacyCard } from "./pharmacy-card";
 
 type Props = { hours?: OperatingHours | null; initialIso: string };
@@ -23,6 +24,7 @@ export function PharmacyTodayHours({ hours, initialIso }: Props) {
   const instant = new Date(time ?? initialIso);
   const status = getOperatingStatusAt(hours, instant);
   return <>
+    <TimeStrip hours={hours} time={time} />
     <p data-today-hours className="text-xl font-black text-gray-900 mt-1">{formatHourRange(hours?.[getSeoulDayKey(instant)])}</p>
     {status.continuesFromPreviousDay ? <p className="text-sm text-amber-800">이전 영업일의 심야 운영시간에 해당합니다.</p> : null}
     <p className="text-xs text-gray-500 mt-2">{basis}</p>

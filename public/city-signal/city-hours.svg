@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 500" fill="none">
+<rect width="640" height="500" fill="#F7F4EC"/><circle cx="430" cy="154" r="117" fill="#FF6147"/>
+<path d="M30 422V288H92V220H146V344H191V181L230 156L269 181V274H303V113H353V341H388V230H433V282H463V161H520V331H551V251H606V422Z" fill="#102C3D"/>
+<g stroke="#F7F4EC" stroke-width="4" stroke-dasharray="10 16"><path d="M54 308V409M119 240V409M216 203V409M242 203V409M319 137V409M337 137V409M407 252V409M483 183V409M502 183V409M575 273V409"/></g>
+<path d="M0 423H640M0 453H640" stroke="#102C3D" stroke-width="2"/>
+<rect x="42" y="96" width="208" height="90" fill="#DBEDAF" transform="rotate(-8 42 96)"/>
+<text x="65" y="125" fill="#102C3D" font-family="Arial,sans-serif" font-size="16" font-weight="700" transform="rotate(-8 65 125)">CITY HOURS ATLAS</text>
+<text x="69" y="156" fill="#102C3D" font-family="Arial,sans-serif" font-size="12" transform="rotate(-8 69 156)">FIND / CHECK / CALL</text>
+<g fill="#102C3D"><circle cx="98" cy="416" r="8"/><path d="M91 426H105L110 453H86Z"/><circle cx="371" cy="417" r="8"/><path d="M364 427H378L383 453H359Z"/></g>
+</svg>

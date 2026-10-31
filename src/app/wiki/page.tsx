@@ -10,21 +10,18 @@ import { buildWikiProductPath } from "@/lib/wiki-slug";
 import { safeJsonStringify } from "@/components/seo/json-ld";
 import { notFound } from "next/navigation";
 import { CATEGORIES, buildCategoryFilter } from "@/lib/wiki-category";
+import { SUPPLEMENT_INDEXABLE_WHERE } from "@/lib/wiki-indexability";
 
 const WIKI_DESCRIPTION = "식약처 공공데이터 기반 영양제 성분, 기능성 원료, 첨가물과 제품 공개 정보를 검색해 확인하세요.";
 
 // searchParams makes this page dynamic — cache the expensive count separately
 const getCachedTotalCount = unstable_cache(
   async () => {
-    try {
-      const db = getTursoClient();
-      const result = await db.execute("SELECT COUNT(*) as cnt FROM supplements");
-      return Number(result.rows[0]?.cnt ?? 0);
-    } catch {
-      return 0;
-    }
+    const db = getTursoClient();
+    const result = await db.execute(`SELECT COUNT(*) as cnt FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE}`);
+    return Number(result.rows[0]?.cnt ?? 0);
   },
-  ["supplements-total-count"],
+  ["supplements-indexable-total-count"],
   { revalidate: 3600 }
 );
 
@@ -85,7 +82,7 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
         const [countResult, dataResult] = await Promise.all([
             getCachedTotalCount(),
             db.execute(
-                `SELECT id, name, manufacturer, image_url, tags FROM supplements ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`
+                `SELECT id, name, manufacturer, image_url, tags FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`
             ),
         ]);
         filteredCount = countResult;
@@ -93,11 +90,11 @@ export default async function WikiHomePage({ searchParams }: WikiHomePageProps) 
     } else {
         const [countResult, dataResult] = await Promise.all([
             db.execute({
-                sql: `SELECT COUNT(*) as cnt FROM supplements WHERE ${filter.whereClause}`,
+                sql: `SELECT COUNT(*) as cnt FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} AND (${filter.whereClause})`,
                 args: filter.args,
             }),
             db.execute({
-                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements WHERE ${filter.whereClause} ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
+                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} AND (${filter.whereClause}) ORDER BY created_at DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
                 args: filter.args,
             }),
         ]);

@@ -1,17 +1,17 @@
-/* Approved CITY SIGNAL v1. Public template styles, without mockup data. */
+/* CITY SIGNAL V2. Public template styles, without mockup data. */
 :root {
-  --ink: #172419; --lime: #d9fd4c; --coral: #f57851;
-  --coral-text: #ac452a; /* Accessible text companion; original coral remains decorative. */
-  --paper: #f4f4ec; --white: #fffefa; --fog: #e5ebdf;
-  --background: var(--paper); --foreground: var(--ink); --muted: #526354;
-  --card: var(--white); --border: #bfcbbb;
-  --brand: #304b32; --brand-light: var(--fog); --brand-soft: #526354;
-  --brand-strong: var(--ink); --brand-dark: var(--ink); --accent: #304b32;
+  --ink: #102c3d; --navy: #102c3d; --lime: #dbedaf; --coral: #ff6147; --mint: #d2ece0;
+  --coral-text: #b43c28; /* Accessible text companion; original coral remains decorative. */
+  --paper: #f7f4ec; --white: #fffdf7; --fog: #edf0e6;
+  --background: var(--paper); --foreground: var(--ink); --muted: #53636c;
+  --card: var(--white); --border: #d8dbd2;
+  --brand: #102c3d; --brand-light: var(--fog); --brand-soft: #53636c;
+  --brand-strong: var(--ink); --brand-dark: var(--ink); --accent: #102c3d;
   --city-gutter: clamp(18px, 3.2vw, 48px);
 }
 body { font-family: Arial, "Malgun Gothic", system-ui, sans-serif; font-size: 16px; }
 :focus-visible { outline: 3px solid #ac452a; outline-offset: 4px; }
-.city-signal-bar { display:flex; justify-content:space-between; gap:16px; background:var(--lime); border-bottom:1px solid var(--ink); padding:8px var(--city-gutter); font:700 10px var(--font-geist-mono),monospace; }
+.city-signal-bar { display:flex; justify-content:space-between; gap:16px; background:var(--ink); color:var(--paper); border-bottom:1px solid var(--ink); padding:8px var(--city-gutter); font:700 10px var(--font-geist-mono),monospace; }
 .city-site-header { position:relative; z-index:40; background:var(--paper); border-bottom:2px solid var(--ink); }
 .city-header-inner { max-width:1360px; margin:auto; padding:18px var(--city-gutter); display:flex; align-items:center; gap:24px; }
 .city-brand { display:inline-flex; align-items:center; gap:10px; font-size:26px; font-weight:900; letter-spacing:-1.5px; line-height:1.2; white-space:nowrap; }
@@ -48,7 +48,7 @@ body { font-family: Arial, "Malgun Gothic", system-ui, sans-serif; font-size: 16
 .city-step-dark:hover { color: var(--paper); }
 .city-home-hero, .city-nearby-hero { border:2px solid var(--ink); display:grid; grid-template-columns:1.1fr .9fr; background:var(--paper); }
 .city-home-copy { padding:clamp(24px,4vw,48px); min-width:0; }
-.city-home-art { display:flex; flex-direction:column; justify-content:space-between; padding:30px; background:var(--lime); border-left:2px solid var(--ink); min-width:0; }
+.city-home-art { display:flex; flex-direction:column; justify-content:space-between; padding:30px; background:var(--paper); border-left:2px solid var(--ink); min-width:0; }
 .city-home-art img { width:100%; height:auto; max-height:340px; object-fit:contain; }
 .city-home-search { margin-top:30px; }
 .city-home-search input { min-width:0; }
@@ -98,4 +98,66 @@ body { font-family: Arial, "Malgun Gothic", system-ui, sans-serif; font-size: 16
   .city-footer-top, .city-not-found { grid-template-columns:1fr; }
   .city-footer-micro { flex-direction:column; }
   .city-pharmacy-heading > div, .city-call-first { padding:24px; }
+}
+
+/* V2: editorial paper, city silhouette and real registered-hour ribbons. */
+.city-home-layout { display:block; }
+.city-home-layout > aside { display:none; }
+.city-home-hero { border-width:0 0 1px; grid-template-columns:1.25fr .75fr; }
+.city-home-copy { padding-left:0; }
+.city-home-art { border-left:0; }
+.city-home-search { border-width:1px; border-color:var(--border); border-radius:4px; overflow:hidden; }
+.city-home-search .city-button { background:var(--coral); color:var(--ink); border:0; }
+.city-home-search .city-button:hover { background:#f2ad91; }
+.city-home-ticker, .city-home-fab { display:none; }
+.city-home-results .city-directory-item { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) auto; gap:24px; align-items:center; }
+.city-home-results .city-directory-item > div:last-child { margin-top:0; border-top:0; padding-top:0; max-width:220px; }
+.city-home-results .city-directory-item .city-status { order:2; }
+.city-home-results .city-directory-item > div:first-child > div:first-child > div:first-child { flex-wrap:wrap; }
+.city-home-results .city-directory-item > div:first-child > div:first-child > div:first-child a { white-space:normal; }
+.city-home-results .city-directory-item [data-today-hours] { display:none; }
+.city-time-strip { min-width:0; padding:12px 0; font-variant-numeric:tabular-nums; }
+.city-time-caption { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 12px; font-size:12px; }
+.city-time-caption strong { font-size:15px; }
+.city-time-rail { position:relative; height:16px; margin:14px 1px 8px; background:var(--fog); border-bottom:1px solid var(--border); }
+.city-time-range { position:absolute; top:0; height:12px; background:var(--coral); }
+.city-time-previous { background:var(--mint); border:1px dashed var(--ink); }
+.city-time-now { position:absolute; top:-5px; bottom:-5px; width:2px; background:var(--ink); }
+.city-time-ticks { display:flex; justify-content:space-between; font-size:10px; color:var(--muted); }
+.city-time-note { margin-top:8px; font-size:12px; line-height:1.6; color:var(--muted); }
+.city-card { border-width:1px; }
+.city-card [data-pharmacy-status] { white-space:normal; flex-shrink:0; max-width:130px; }
+.city-card h3, .city-card p { overflow-wrap:anywhere; }
+.city-step { min-height:230px; border-width:1px; }
+.city-step strong { font-size:clamp(24px,3vw,34px); }
+.city-home-regions { border-width:1px; }
+@media(max-width:1000px) { .city-home-results .city-directory-item { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .city-home-results .city-directory-item > div:last-child { grid-column:1/-1; max-width:none; } }
+@media(max-width:850px) { .city-home-hero { grid-template-columns:1fr; } .city-home-copy { padding:24px 0; } }
+@media(max-width:620px) { .city-home-results .city-directory-item { grid-template-columns:1fr; gap:6px; } .city-home-results .city-directory-item > div:last-child { grid-column:auto; } .city-home-search { flex-direction:column; } .city-home-search .city-button { width:100%; } .city-card > div > div:first-child { flex-wrap:wrap; } }
+
+.city-v2-trust { display:grid; grid-template-columns:1fr 1fr; gap:48px; padding:clamp(24px,4vw,48px); background:var(--ink); color:var(--paper); }
+.city-v2-trust h2 { font-size:clamp(30px,4vw,48px); font-weight:900; line-height:1.2; letter-spacing:-.05em; }
+.city-v2-trust h2 span { color:var(--lime); }
+.city-v2-trust p { margin-top:18px; line-height:1.8; }
+.city-v2-trust a { display:inline-flex; align-items:center; min-height:44px; margin-top:18px; text-decoration:underline; }
+.city-v2-trust-facts article { padding:20px 0; border-bottom:1px solid #66818d; }
+.city-v2-trust-facts small { color:var(--lime); }
+.city-v2-trust-facts h3 { font-size:20px; margin-top:8px; font-weight:800; }
+@media(max-width:620px) { .city-v2-trust { grid-template-columns:1fr; gap:24px; } }
+
+@media(max-width:850px) {
+  .city-home-art { display:flex; padding:12px 0 20px; border-top:0; }
+  .city-home-art img { max-height:180px; }
+  .city-home-art .city-eyebrow, .city-home-art > div { display:none; }
+}
+
+@media(max-width:850px) { .city-home-art { min-height:0; } }
+@media(max-width:620px) {
+  .city-header-inner { gap:8px; }
+  .city-menu-toggle { white-space:nowrap; flex-shrink:0; font-size:12px; padding:8px; }
+  .city-brand { gap:6px; }
+  .city-brand-mark { width:32px; height:32px; font-size:29px; }
+  .city-brand small { font-size:8px; letter-spacing:.5px; }
+  .city-home-copy { gap:20px; }
+  .city-home-search { margin-top:8px; }
 }

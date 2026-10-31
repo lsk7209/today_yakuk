@@ -9,7 +9,7 @@ import next from 'next';
 const root = resolve('.');
 const appRoot = process.env.CITY_SIGNAL_BASELINE_ROOT ? resolve(process.env.CITY_SIGNAL_BASELINE_ROOT) : root;
 const port = Number(process.env.CITY_SIGNAL_PORT || 3256);
-const artifacts = resolve(root, '.goal-harness/city-signal-20261012/runtime');
+const artifacts = resolve(root, process.env.CITY_SIGNAL_ARTIFACTS || '.goal-harness/city-signal-20261012/runtime');
 await mkdir(artifacts, { recursive: true });
 const url = pathToFileURL(resolve(artifacts, 'fixture.sqlite')).href;
 if (!url.startsWith('file:')) throw new Error('Local database required');

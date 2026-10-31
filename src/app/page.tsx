@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { TimeStrip } from "@/components/city-signal/time-strip";
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -21,7 +22,6 @@ import {
   HOME_FAQ_ITEMS,
 } from "@/components/home/home-trust-sections";
 import RecentBlogPosts from "@/components/home/recent-blog-posts";
-import DesktopSidebar from "@/components/home/desktop-sidebar";
 import {
   formatHourRange,
   getOperatingStatusAt,
@@ -301,22 +301,18 @@ export default function Home() {
               <div className="city-home-copy flex flex-col justify-between gap-8 bg-[var(--paper)] p-6 sm:p-10 lg:p-12">
                 <div>
                   <p className="city-eyebrow mb-5 text-xs font-black tracking-[0.15em]">
-                    01 / FIND YOUR PHARMACY
+                    CITY HOURS — PHARMACY
                   </p>
                   <h1
                     id="city-home-title"
                     className="city-display break-keep text-[clamp(2.25rem,5vw,5rem)] font-black leading-[1.08] tracking-[-0.075em]"
                   >
-                    우리 동네
+                    오늘 갈 약국,
                     <br />
-                    <span className="whitespace-nowrap">약국이 필요한</span>
-                    <br />
-                    <span className="text-[var(--coral-text)]">바로 지금.</span>
+                    <span className="text-[var(--coral-text)]">한눈에.</span>
                   </h1>
                   <p className="mt-6 max-w-lg text-base leading-relaxed sm:text-lg">
-                    지역명이나 약국명으로 찾고 등록된 영업시간과 연락처를
-                    확인하세요. 실제 운영과 재고는 달라질 수 있으니 방문 전 전화
-                    확인을 권장합니다.
+                    우리 동네 약국의 등록 운영시간을 살피고, 출발 전 필요한 사항을 전화로 확인하세요.
                   </p>
                 </div>
                 <div>
@@ -384,12 +380,12 @@ export default function Home() {
               </div>
               <div className="city-home-art min-h-[320px]">
                 <span className="city-eyebrow text-xs font-black tracking-[0.12em]">
-                  CITY / PHARMACY WAYFINDING SYSTEM
+                  THE NEIGHBORHOOD HOURS ATLAS
                 </span>
                 <Image
                   loading="eager"
-                  src="/city-signal/metro-map.svg"
-                  alt="가상의 도시 노선도에서 약국 위치를 강조한 일러스트"
+                  src="/city-signal/city-hours.svg"
+                  alt="등록 시간과 도시의 일상을 표현한 건물 실루엣 일러스트"
                   width={640}
                   height={500}
                   className="mx-auto max-h-[430px] w-full object-contain"
@@ -481,7 +477,7 @@ export default function Home() {
                   className="city-panel border-l-4 border-[var(--coral)] bg-[var(--fog)] p-4 text-sm font-bold"
                 >
                   {message}
-                  {status === "error" && lastSearchRef.current ? (
+                  {status === "error" ? (
                     <button
                       type="button"
                       onClick={retryLastSearch}
@@ -573,6 +569,7 @@ export default function Home() {
                             </div>
                           ) : null}
                         </div>
+                        <TimeStrip hours={p.operating_hours} time={time} />
                         <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#9baa9d] pt-3">
                           {callablePhone ? (
                             <a
@@ -635,58 +632,58 @@ export default function Home() {
                     id="city-steps-title"
                     className="mt-2 text-3xl font-black tracking-tight sm:text-4xl"
                   >
-                    찾는 방법도,{" "}
-                    <span className="text-[var(--coral-text)]">명확하게.</span>
+                    찾는 것만큼,{" "}
+                    <span className="text-[var(--coral-text)]">확인이 중요하니까.</span>
                   </h2>
                 </div>
                 <span className="text-xs font-black tracking-widest">
-                  3 STEPS / ZERO GUESSWORK
+                  LOCAL FIELD NOTES
                 </span>
               </div>
               <div className="grid gap-2 sm:grid-cols-3">
                 <Link
-                  href="/서울/전체"
+                  href="/guide/night-weekend"
                   className="city-step flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--fog)] p-5 hover:bg-[var(--lime)]"
                 >
                   <span className="text-xs font-black tracking-widest">
-                    01 / LOCATION
+                    FIELD NOTE / 001
                   </span>
                   <strong className="text-2xl leading-tight">
-                    어디서
+                    시간표를 읽는
                     <br />
-                    찾으세요?
+                    세 가지 기준
                   </strong>
                   <span className="border-t border-[var(--ink)] pt-2 text-xs font-black">
-                    지역별 목록 ↗
-                  </span>
-                </Link>
-                <Link
-                  href="/nearby"
-                  className="city-step flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--lime)] p-5 hover:bg-[var(--lime)]"
-                >
-                  <span className="text-xs font-black tracking-widest">
-                    02 / HOURS
-                  </span>
-                  <strong className="text-2xl leading-tight">
-                    언제
-                    <br />
-                    필요하세요?
-                  </strong>
-                  <span className="border-t border-[var(--ink)] pt-2 text-xs font-black">
-                    현재 위치·등록 시간표 ↗
+                    시간표 안내 ↗
                   </span>
                 </Link>
                 <Link
                   href="/guide/holiday-checklist"
+                  className="city-step flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--lime)] p-5 hover:bg-[var(--lime)]"
+                >
+                  <span className="text-xs font-black tracking-widest">
+                    FIELD NOTE / 002
+                  </span>
+                  <strong className="text-2xl leading-tight">
+                    공휴일이라면
+                    <br />
+                    한 번 더
+                  </strong>
+                  <span className="border-t border-[var(--ink)] pt-2 text-xs font-black">
+                    공휴일 확인 순서 ↗
+                  </span>
+                </Link>
+                <Link
+                  href="/guide/call-scripts"
                   className="city-step city-step-dark flex min-h-40 flex-col justify-between border-2 border-[var(--ink)] bg-[var(--ink)] p-5 text-[var(--paper)] hover:bg-[var(--ink)]"
                 >
                   <span className="text-xs font-black tracking-widest">
-                    03 / CONFIRM
+                    FIELD NOTE / 003
                   </span>
                   <strong className="text-2xl leading-tight">
-                    가기 전에
+                    전화하기 전,
                     <br />
-                    전화부터.
+                    이 문장부터.
                   </strong>
                   <span className="border-t border-[var(--paper)] pt-2 text-xs font-black">
                     영업·재고 직접 확인 ↗
@@ -701,7 +698,7 @@ export default function Home() {
           </div>
           {/* end main content */}
 
-          <DesktopSidebar />
+
         </div>
         {/* end flex row */}
       </div>

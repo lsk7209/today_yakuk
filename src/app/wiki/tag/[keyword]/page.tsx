@@ -9,7 +9,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { buildWikiProductPath } from "@/lib/wiki-slug";
 import { safeJsonStringify } from "@/components/seo/json-ld";
 import { buildCategoryFilter } from "@/lib/wiki-category";
-// SUPPLEMENT_INDEXABLE_PREDICATE: indexable predicate marker preserved for verification
+import { SUPPLEMENT_INDEXABLE_WHERE } from "@/lib/wiki-indexability";
 
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
@@ -71,11 +71,11 @@ export default async function TagPage({
     try {
         const [countResult, dataResult] = await Promise.all([
             db.execute({
-                sql: `SELECT COUNT(*) as cnt FROM supplements WHERE ${filter.whereClause}`,
+                sql: `SELECT COUNT(*) as cnt FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} AND (${filter.whereClause})`,
                 args: filter.args,
             }),
             db.execute({
-                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements WHERE ${filter.whereClause} ORDER BY created_at DESC, id ASC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
+                sql: `SELECT id, name, manufacturer, image_url, tags FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} AND (${filter.whereClause}) ORDER BY created_at DESC, id ASC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`,
                 args: filter.args,
             }),
         ]);

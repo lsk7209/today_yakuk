@@ -1,6 +1,15 @@
 # Project Status
 
-Updated: 2026-10-23
+Updated: 2026-10-31
+
+## Current state
+
+- 2026-10-31: 6시간 주기 자동 콘텐츠 개선 데몬(`scripts/improve-content-daemon.ts`) 구축 및 검증된 콘텐츠/UI 개선 반영.
+  - 신규 P1 약국 64곳 순차 타겟팅 및 1회 2건씩 소량 안전 생성 (`batchSize=2`)
+  - YMYL 팩트 안전 가드 적용 (`findUnsupportedPharmacyClaims` 허위주장 필터 및 Jaccard 유사도 중복 방지)
+  - 임산부 약물 안전 가이드(`pregnancy-pharmacy-guide`) 및 처방전 준비 팁(`prescription-prep-tips`) HIRA/DUR 기준 정비
+  - OVH 로컬 SQLite 호스팅 환경 및 systemd 6시간 타이머 유닛(`todaypharm-etl-improve.timer`) 연계
+  - Antigravity 6시간 백그라운드 스케줄러(`task-279`) 등록 완료
 
 ## Current state
 

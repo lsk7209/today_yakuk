@@ -131,7 +131,7 @@ export default function NearbyPage() {
           </div>
           <p className="mt-4 text-xs text-[var(--muted)]">위치 권한은 버튼을 누를 때 요청하며, 위치는 검색에만 사용하고 저장하지 않습니다.</p>
         </div>
-        <div className="city-nearby-art flex min-h-[280px] items-center border-t-2 border-[var(--ink)] bg-[var(--lime)] p-6 min-[851px]:border-l-2 min-[851px]:border-t-0"><Image loading="eager" src="/city-signal/metro-map.svg" alt="도시 안내 노선도 일러스트" width={640} height={500} className="mx-auto max-h-[370px] w-full object-contain" /></div>
+        <div className="city-nearby-art flex min-h-[280px] items-center border-t-2 border-[var(--ink)] bg-[var(--lime)] p-6 min-[851px]:border-l-2 min-[851px]:border-t-0"><Image loading="eager" src="/city-signal/city-hours.svg" alt="도시의 건물과 시간을 표현한 일러스트" width={640} height={500} className="mx-auto max-h-[370px] w-full object-contain" /></div>
       </header>
       <section className="city-nearby-filters border-b-2 border-[var(--ink)] py-5">
         <div className="mb-4"><p className="city-eyebrow text-xs font-black tracking-widest">SEARCH CONTROLS / {radiusKm} KM</p><h2 className="mt-2 text-2xl font-black">탐색 반경과 정렬</h2></div>

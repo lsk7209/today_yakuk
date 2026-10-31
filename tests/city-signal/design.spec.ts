@@ -6,7 +6,7 @@ const productBId = "d5e1a9f0-1c2d-4a3b-8c4d-00000000c1b2";
 const medicineId = "d5e1a9f0-1c2d-4a3b-8c4d-00000000c1c3";
 
 const routes = [
-  ["home", "/", /약국이 필요한/], ["nearby", "/nearby", /내 주변 약국/],
+  ["home", "/", /오늘 갈 약국/], ["nearby", "/nearby", /내 주변 약국/],
   ["region", "/서울특별시/강남구", /강남구.*약국/],
   ["pharmacy", "/pharmacy/CITY-TEST", /화면검증약국/],
   ["guide", "/guide", /약국 이용 가이드 모음/],
@@ -54,7 +54,7 @@ for (const [name, route, expectedHeading] of routes) {
     await expect(page.locator(".city-site-footer")).toContainText("개인정보 처리방침");
     expect(errors).toEqual([]);
     await expect(page.locator("h1")).toBeVisible();
-    await page.screenshot({ path: resolve(`.goal-harness/city-signal-20261012/runtime/after-${name}-${info.project.name}.png`), fullPage: true });
+    await page.screenshot({ path: resolve(`${process.env.CITY_SIGNAL_CAPTURE_ROOT || ".goal-harness/city-signal-20261012/runtime"}/after-${name}-${info.project.name}.png`), fullPage: true });
     await expect(page.locator("h1")).toBeVisible();
   });
 }
@@ -92,14 +92,14 @@ test("home keyword success, empty, error and short query", async ({ page }) => {
   state = "empty";
   await input.fill("없는약국");
   await page.getByRole("button", { name: "검색하기" }).click();
-  await expect(page.getByRole("status")).toContainText("검색 결과가 없습니다");
+  await expect(page.locator('div[role="status"]')).toContainText("검색 결과가 없습니다");
   state = "error";
   await input.fill("오류");
   await page.getByRole("button", { name: "검색하기" }).click();
-  await expect(page.getByRole("status")).toContainText("오류");
+  await expect(page.locator('div[role="status"]')).toContainText("오류");
   await input.fill("한");
   await page.getByRole("button", { name: "검색하기" }).click();
-  await expect(page.getByRole("status")).toContainText("2글자");
+  await expect(page.locator('div[role="status"]')).toContainText("2글자");
 });
 
 test("GPS permission granted and denied, nearby controls", async ({ page, context }) => {
@@ -117,7 +117,7 @@ test("GPS permission granted and denied, nearby controls", async ({ page, contex
   await page.addInitScript(() => Object.defineProperty(navigator, "geolocation", { configurable: true, value: { getCurrentPosition: (_success: unknown, failure: (error: { code: number }) => void) => failure({ code: 1 }) } }));
   await page.goto("/");
   await page.getByRole("button", { name: "현재 위치로 찾기", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText(/위치|권한/);
+  await expect(page.locator('div[role="status"]')).toContainText(/위치|권한/);
   await expect(page.getByRole("link", { name: "서울", exact: true }).first()).toBeVisible();
 });
 
@@ -128,8 +128,8 @@ test("pharmacy copy/maps and article TOC", async ({ page, context }) => {
   await expect(page.getByRole("link", { name: "카카오맵" })).toHaveAttribute("href", /^https:\/\/map\.kakao\.com\//);
   await page.getByRole("button", { name: "주소 복사" }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("테스트로 1");
-  await page.goto("/guide/night-weekend");
-  const anchor = page.locator('a[href^="#"]').filter({ hasText: /.+/ }).last();
+  await page.goto("/blog/holiday-pharmacy-open-check");
+  const anchor = page.locator('main a[href^="#"]:visible').filter({ hasText: /.+/ }).first();
   const target = await anchor.getAttribute("href");
   expect(target).toBeTruthy();
   await anchor.click();

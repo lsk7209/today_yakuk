@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { TimeStrip } from "./city-signal/time-strip";
 import { Phone, MapPin, Clock } from "lucide-react";
 import { Pharmacy } from "@/types/pharmacy";
 import { formatHourRange, formatHHMM, getBadgeClass, getOperatingStatusAt, getSeoulDayKey } from "@/lib/hours";
@@ -62,6 +63,7 @@ export function PharmacyCard({
           </span>
         </div>
 
+        <TimeStrip hours={pharmacy.operating_hours} time={time} />
         <p className="text-sm text-[var(--muted)] line-clamp-2">
           {description}
         </p>

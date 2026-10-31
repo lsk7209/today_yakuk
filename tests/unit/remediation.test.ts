@@ -44,6 +44,7 @@ import {
   persistSupplementEnrichment,
 } from "../../scripts/lib/supplement-enrichment";
 import { getVerifiedNutritionFacts } from "@/lib/wiki-nutrition";
+import { buildCategoryFilter } from "@/lib/wiki-category";
 import { getNextSlot } from "@/lib/scheduler";
 import { AdditiveSignal } from "@/components/wiki/AdditiveSignal";
 import { createClient } from "@libsql/client";
@@ -1190,7 +1191,48 @@ async function main() {
       }
     }
     assert.match(nearby, /ORDER BY \(\(latitude - \?\)/);
-    assert.match(tagPage, /SUPPLEMENT_INDEXABLE_PREDICATE/);
+    assert.match(tagPage, /SUPPLEMENT_INDEXABLE_WHERE/);
+  });
+
+  await run("wiki collection counts and rows share the indexability predicate", async () => {
+    const root = process.cwd();
+    const indexSource = fs.readFileSync(path.join(root, "src/app/wiki/page.tsx"), "utf8");
+    const tagSource = fs.readFileSync(path.join(root, "src/app/wiki/tag/[keyword]/page.tsx"), "utf8");
+    const cachedCountSource = indexSource.split("const getCachedTotalCount = unstable_cache(")[1]?.split("interface Supplement")[0];
+    assert.ok(cachedCountSource);
+    assert.doesNotMatch(cachedCountSource, /catch\s*\{/);
+    const countQuery = /SELECT COUNT\(\*\) as cnt FROM supplements \$\{SUPPLEMENT_INDEXABLE_WHERE\}/g;
+    const rowQuery = /SELECT id, name, manufacturer, image_url, tags FROM supplements \$\{SUPPLEMENT_INDEXABLE_WHERE\}/g;
+    assert.equal([...indexSource.matchAll(countQuery)].length, 2);
+    assert.equal([...indexSource.matchAll(rowQuery)].length, 2);
+    assert.equal([...tagSource.matchAll(countQuery)].length, 1);
+    assert.equal([...tagSource.matchAll(rowQuery)].length, 1);
+    for (const source of [indexSource, tagSource]) {
+      assert.equal([...source.matchAll(/AND \(\$\{filter\.whereClause\}\)/g)].length, 2);
+    }
+
+    const db = createClient({ url: ":memory:" });
+    await db.execute("CREATE TABLE supplements (id TEXT, name TEXT, nutrition_facts TEXT, tags TEXT)");
+    await db.batch([
+      { sql: "INSERT INTO supplements VALUES (?, ?, ?, ?)", args: ["verified", "비타민C 정품", '[{"name":"비타민C","amount":100,"unit":"mg","source":"foodsafetykorea:C003"}]', "[]"] },
+      { sql: "INSERT INTO supplements VALUES (?, ?, ?, ?)", args: ["invalid", "비타민C 오분류", '[{"name":"카드뮴","amount":1,"unit":"mg","source":"foodsafetykorea:C003"}]', '["vitamin-c"]'] },
+      { sql: "INSERT INTO supplements VALUES (?, ?, ?, ?)", args: ["tag-only", "비타민C 태그", "[]", '["vitamin-c"]'] },
+      { sql: "INSERT INTO supplements VALUES (?, ?, ?, ?)", args: ["other", "다른 제품", "[]", '["omega3"]'] },
+    ]);
+    const all = await db.execute(`SELECT id FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} ORDER BY id`);
+    assert.deepEqual(all.rows.map((row) => row.id), ["other", "tag-only", "verified"]);
+    const filter = buildCategoryFilter("vitamin-c");
+    const category = await db.execute({
+      sql: `SELECT id FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} AND (${filter.whereClause}) ORDER BY id`,
+      args: filter.args,
+    });
+    const count = await db.execute({
+      sql: `SELECT COUNT(*) as cnt FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} AND (${filter.whereClause})`,
+      args: filter.args,
+    });
+    assert.deepEqual(category.rows.map((row) => row.id), ["tag-only", "verified"]);
+    assert.equal(Number(count.rows[0]?.cnt), category.rows.length);
+    db.close();
   });
 
   await run("required Turso access, publish claims, and supplement predicates execute", async () => {
