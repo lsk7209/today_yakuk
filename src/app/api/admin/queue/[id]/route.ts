@@ -1,4 +1,4 @@
-import { updateContentItem, deleteContentItem } from "@/lib/data/content";
+import { updateContentItem, deleteContentItem, ContentReviewRequiredError, ContentUpdateConflictError } from "@/lib/data/content";
 import { NextResponse } from "next/server";
 import { submitToIndexNow } from "@/lib/naver-indexnow";
 import { getSiteUrl } from "@/lib/site-url";
@@ -40,6 +40,7 @@ export async function PUT(
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof ContentReviewRequiredError || error instanceof ContentUpdateConflictError) return NextResponse.json({ error: error.message }, { status: 409 });
     console.error("Queue update error:", error);
     return NextResponse.json({ error: "Update failed" }, { status: 500 });
   }

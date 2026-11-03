@@ -48,9 +48,9 @@ export function isCanonicalWikiSlug(routeId: string, expectedSlug: string): bool
 }
 
 export function buildWikiProductPath(item: WikiSlugEntity): string {
-  return `/wiki/product/${buildWikiProductSlug(item)}`;
+  return `/wiki/product/${encodeURIComponent(buildWikiProductSlug(item))}`;
 }
 
 export function buildWikiMedicinePath(item: WikiSlugEntity): string {
-  return `/wiki/medicine/${buildWikiMedicineSlug(item)}`;
+  return `/wiki/medicine/${encodeURIComponent(buildWikiMedicineSlug(item))}`;
 }

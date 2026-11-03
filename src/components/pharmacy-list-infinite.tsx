@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { Pharmacy } from "@/types/pharmacy";
-import { getOperatingStatusAt, isOperating, isNightShiftAt, hhmmToMinutes } from "@/lib/hours";
+import { getOperatingStatusAt, isOperating, isNightShiftAt, hasRegisteredHours } from "@/lib/hours";
 import { useEvaluationTime } from "./use-evaluation-time";
 import { PharmacyCard } from "./pharmacy-card";
 import { distanceKm } from "@/lib/geo-distance";
@@ -223,8 +223,6 @@ function isHolidayOpen(pharmacy: Pharmacy) {
   const hours = pharmacy.operating_hours;
   if (!hours) return false;
   const slot = hours.holiday;
-  const open = hhmmToMinutes(slot?.open);
-  const close = hhmmToMinutes(slot?.close, true);
-  return open !== null && close !== null && open !== close;
+  return hasRegisteredHours(slot);
 }
 

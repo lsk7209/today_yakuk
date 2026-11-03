@@ -1,7 +1,7 @@
 import { OperatingHours } from "@/types/pharmacy";
 
 type Status = {
-  label: "영업 중" | "곧 종료" | "영업 종료" | "정보 없음" | "확인 필요";
+  label: "영업 중" | "곧 종료" | "영업 종료" | "정보 없음" | "확인 필요" | "확인된 휴무";
   tone: "success" | "warning" | "muted";
   closesAt?: string;
   minutesUntilClose?: number;
@@ -43,6 +43,16 @@ export function getSeoulNow(): Date {
   return local;
 }
 
+export function isConfirmedClosed(slot?: OperatingHours[string] | null): boolean {
+  return slot?.closed === true && typeof slot.closure_source === "string" && slot.closure_source.trim().length > 0;
+}
+
+export function hasRegisteredHours(slot?: OperatingHours[string] | null): boolean {
+  const open = hhmmToMinutes(slot?.open);
+  const close = hhmmToMinutes(slot?.close, true);
+  return !isConfirmedClosed(slot) && open !== null && close !== null && open !== close;
+}
+
 export function hhmmToMinutes(value: string | null | undefined, allow24 = false): number | null {
   if (value === null || value === undefined) return null;
   const str = String(value).trim();
@@ -72,10 +82,9 @@ export function getOperatingStatusAt(
   if (!hours) return { label: "정보 없음", tone: "muted" };
   const { day, minutes: currentMin } = getSeoulTimeParts(instant);
   const dayKey = DAY_KEYS[day];
-  if (options.isHoliday === true && !hours.holiday) {
-    return { label: "확인 필요", tone: "muted" };
-  }
   const slot = options.isHoliday === true ? hours.holiday : hours[dayKey];
+
+  if (isConfirmedClosed(slot)) return { label: "확인된 휴무", tone: "muted" };
 
   const openMin = hhmmToMinutes(slot?.open ?? null);
   const closeMin = hhmmToMinutes(slot?.close ?? null, true);
@@ -88,7 +97,8 @@ export function getOperatingStatusAt(
   // Today's slot starts today. Only yesterday's slot can cover this morning.
   const active: { close: number; value: string; previous: boolean }[] = [];
   if (
-    options.isHoliday !== true && options.previousIsHoliday !== null &&
+    options.previousIsHoliday !== null &&
+    !isConfirmedClosed(previousSlot) &&
     previousOpen !== null &&
     previousClose !== null &&
     previousClose < previousOpen &&
@@ -117,6 +127,8 @@ export function getOperatingStatusAt(
     };
   }
 
+  if (options.isHoliday === true && !hours.holiday) return { label: "확인 필요", tone: "muted" };
+
   if (openMin === null || closeMin === null) {
     return { label: "정보 없음", tone: "muted" };
   }
@@ -124,15 +136,16 @@ export function getOperatingStatusAt(
   // Equal times are source-dependent (closed vs 24h), so never guess.
   if (openMin === closeMin) return { label: "확인 필요", tone: "muted" };
 
-  return { 
-    label: "영업 종료", 
-    tone: "muted", 
+  return {
+    label: "영업 종료",
+    tone: "muted",
     closesAt: slot?.close ?? undefined,
     emoji: "⚪",
   };
 }
 
-export function formatHourRange(slot?: { open: string | null; close: string | null }): string {
+export function formatHourRange(slot?: OperatingHours[string]): string {
+  if (isConfirmedClosed(slot)) return "확인된 휴무";
   const open = hhmmToMinutes(slot?.open);
   const close = hhmmToMinutes(slot?.close, true);
   if (open === null || close === null) return "정보 없음";
@@ -142,6 +155,7 @@ export function formatHourRange(slot?: { open: string | null; close: string | nu
 
 export function isNightShiftAt(hours: OperatingHours | null | undefined, instant: Date) {
   const slot = hours?.[getSeoulDayKey(instant)];
+  if (!hasRegisteredHours(slot)) return false;
   const open = hhmmToMinutes(slot?.open);
   const close = hhmmToMinutes(slot?.close, true);
   return open !== null && close !== null && open !== close && (close >= 22 * 60 || close < open);

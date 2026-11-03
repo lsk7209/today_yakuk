@@ -254,7 +254,7 @@ export async function generateSinglePharmacyContent(hpid: string, isDryRun = fal
       ai_faq: geminiContent.faq ?? null,
       ai_cta: geminiContent.cta ?? null,
       extra_sections: geminiContent.extra_sections ?? null,
-      status: "pending",
+      status: "review",
       publish_at: publishAt,
     };
 

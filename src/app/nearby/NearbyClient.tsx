@@ -129,7 +129,7 @@ export default function NearbyPage() {
             <button type="button" onClick={() => void fetchNearby()} disabled={!geoAvailable} className="city-button inline-flex min-h-11 items-center gap-2 border-2 border-[var(--ink)] bg-[var(--lime)] px-5 py-3 text-sm font-black disabled:opacity-50"><LocateFixed className="h-4 w-4" />현재 위치로 찾기</button>
             <Link href="/서울/전체" className="city-button city-button-secondary inline-flex min-h-11 items-center px-5 py-3 text-sm font-black">지역별 찾기 ↗</Link>
           </div>
-          <p className="mt-4 text-xs text-[var(--muted)]">위치 권한은 버튼을 누를 때 요청하며, 위치는 검색에만 사용하고 저장하지 않습니다.</p>
+          <p className="mt-4 text-xs text-[var(--muted)]">위치 권한은 버튼을 누를 때 요청하며, 검색을 위해 위치가 서버로 전송됩니다. 위치를 허용하지 않으면 지역·약국명으로 검색할 수 있습니다.</p>
         </div>
         <div className="city-nearby-art flex min-h-[280px] items-center border-t-2 border-[var(--ink)] bg-[var(--lime)] p-6 min-[851px]:border-l-2 min-[851px]:border-t-0"><Image loading="eager" src="/city-signal/metro-map.svg" alt="도시 안내 노선도 일러스트" width={640} height={500} className="mx-auto max-h-[370px] w-full object-contain" /></div>
       </header>
@@ -192,7 +192,7 @@ export default function NearbyPage() {
             <div className="space-y-1">
               <h2 className="text-lg font-black text-slate-900">GPS 연결 후 주변 약국을 찾습니다</h2>
               <p className="text-sm text-slate-600">
-                버튼을 누르면 브라우저 위치 권한 창이 열립니다. 위치는 검색에만 사용하고 저장하지 않습니다.
+                버튼을 누르면 브라우저 위치 권한 창이 열립니다. 검색을 위해 위치가 서버로 전송됩니다. 위치를 허용하지 않으면 지역·약국명으로 검색할 수 있습니다.
               </p>
             </div>
             <button

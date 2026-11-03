@@ -3,7 +3,7 @@ import { parseSitemapId } from "@/lib/sitemap-id";
 import { getSitemapIds } from "@/lib/sitemap";
 import { cacheDbRead } from "@/lib/db-read-cache";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 export async function GET(
@@ -19,12 +19,12 @@ export async function GET(
   }
 
   if (id !== "static") {
-    const availableIds = await cacheDbRead(["sitemap-ids"], getSitemapIds);
+    const availableIds = await cacheDbRead(["sitemap-ids-quality-v1"], getSitemapIds);
     if (!availableIds.includes(id)) return new Response("Not found", { status: 404 });
   }
 
   const entries = await cacheDbRead(
-    ["sitemap-entries-hpid-v2", id],
+    ["sitemap-entries-quality-v1", id],
     () => getSitemapEntries(id),
   );
   if (id !== "static" && entries.length === 0) {

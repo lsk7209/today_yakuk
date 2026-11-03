@@ -31,6 +31,8 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: "검색어는 2글자 이상 입력해주세요." }, { status: 400 });
     }
 
+    if (!process.env.TURSO_DATABASE_URL?.trim() || !process.env.TURSO_AUTH_TOKEN?.trim()) return NextResponse.json({ message: "검색 서비스를 일시적으로 사용할 수 없습니다." }, { status: 503 });
+
     try {
       const result = await db.execute({
         sql: "SELECT * FROM pharmacies WHERE name LIKE ? OR address LIKE ? LIMIT ?",
@@ -56,6 +58,8 @@ export async function GET(request: Request) {
       { status: 400 },
     );
   }
+
+  if (!process.env.TURSO_DATABASE_URL?.trim() || !process.env.TURSO_AUTH_TOKEN?.trim()) return NextResponse.json({ message: "검색 서비스를 일시적으로 사용할 수 없습니다." }, { status: 503 });
 
   // Reduce rows with a latitude-aware bounding box, then calculate exact distance.
   const { minLat, maxLat, minLon, maxLon } = getCoordinateBounds(lat, lon, radiusKm);

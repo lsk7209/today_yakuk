@@ -1,0 +1,135 @@
+{
+  "results": [
+    {
+      "route": "/blog/pregnancy-pharmacy-guide",
+      "width": 360,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 3,
+      "ads": 0
+    },
+    {
+      "route": "/blog/kids-fever-medicine-comparison",
+      "width": 360,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 4,
+      "ads": 0
+    },
+    {
+      "route": "/blog/vitamin-d-deficiency-guide",
+      "width": 360,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 3,
+      "ads": 0
+    },
+    {
+      "route": "/pharmacy/TEST-READINESS",
+      "width": 360,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 5,
+      "ads": 0
+    },
+    {
+      "route": "/blog/pregnancy-pharmacy-guide",
+      "width": 390,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 3,
+      "ads": 0
+    },
+    {
+      "route": "/blog/kids-fever-medicine-comparison",
+      "width": 390,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 4,
+      "ads": 0
+    },
+    {
+      "route": "/blog/vitamin-d-deficiency-guide",
+      "width": 390,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 3,
+      "ads": 0
+    },
+    {
+      "route": "/pharmacy/TEST-READINESS",
+      "width": 390,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 5,
+      "ads": 0
+    },
+    {
+      "route": "/blog/pregnancy-pharmacy-guide",
+      "width": 768,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 3,
+      "ads": 0
+    },
+    {
+      "route": "/blog/kids-fever-medicine-comparison",
+      "width": 768,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 4,
+      "ads": 0
+    },
+    {
+      "route": "/blog/vitamin-d-deficiency-guide",
+      "width": 768,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 3,
+      "ads": 0
+    },
+    {
+      "route": "/pharmacy/TEST-READINESS",
+      "width": 768,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 5,
+      "ads": 0
+    },
+    {
+      "route": "/blog/pregnancy-pharmacy-guide",
+      "width": 1366,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 3,
+      "ads": 0
+    },
+    {
+      "route": "/blog/kids-fever-medicine-comparison",
+      "width": 1366,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 4,
+      "ads": 0
+    },
+    {
+      "route": "/blog/vitamin-d-deficiency-guide",
+      "width": 1366,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 3,
+      "ads": 0
+    },
+    {
+      "route": "/pharmacy/TEST-READINESS",
+      "width": 1366,
+      "status": 200,
+      "overflow": 0,
+      "faqCount": 5,
+      "ads": 0
+    }
+  ],
+  "adsTxt": 200,
+  "real404": true,
+  "medicineBotNoindexReadable": true
+}

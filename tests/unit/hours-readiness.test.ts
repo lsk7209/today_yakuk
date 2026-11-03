@@ -1,0 +1,15 @@
+import { buildOpeningHoursSpecification } from "../../src/lib/seo";
+import assert from 'node:assert/strict';
+import { getOperatingStatusAt, formatHourRange, hasRegisteredHours, isNightShiftAt } from '../../src/lib/hours';
+const schedule = { mon:{open:'2200',close:'0200'}, tue:{open:null,close:null}, holiday:{open:'1000',close:'1500'} };
+assert.equal(getOperatingStatusAt(schedule,new Date('2026-11-02T16:00:00Z'),{isHoliday:true,previousIsHoliday:false}).label,'곧 종료');
+assert.equal(getOperatingStatusAt(schedule,new Date('2026-11-03T06:00:00Z'),{isHoliday:true}).label,'영업 종료');
+assert.equal(getOperatingStatusAt(schedule,new Date('2026-11-03T01:00:00Z'),{isHoliday:null}).label,'확인 필요');
+assert.equal(getOperatingStatusAt(schedule,new Date('2026-11-03T01:00:00Z'),{isHoliday:false}).label,'정보 없음');
+assert.equal(formatHourRange({open:null,close:null,closed:true,closure_source:"test:operator-record"}), '확인된 휴무');
+assert.equal(getOperatingStatusAt({tue:{open:null,close:null,closed:true,closure_source:"test:operator-record"}},new Date('2026-11-03T01:00:00Z')).label,'확인된 휴무');
+assert.equal(getOperatingStatusAt({mon:{open:'2200',close:'0200',closed:true,closure_source:'test:closed'}}, new Date('2026-11-02T16:00:00Z')).label, '정보 없음');
+assert.deepEqual(buildOpeningHoursSpecification({hpid:'closed',name:'fixture',address:'fixture',operating_hours:{mon:{open:'0900',close:'1800',closed:true,closure_source:'test:closed'}}}), []);
+assert.equal(hasRegisteredHours({open:'2200',close:'0200',closed:true,closure_source:'test:closed'}), false);
+assert.equal(isNightShiftAt({mon:{open:'2200',close:'0200',closed:true,closure_source:'test:closed'}},new Date('2026-11-02T14:00:00Z')),false);
+console.log('PASS hours: holiday override, previous-day overnight, exact close, unknown calendar and explicit closure');

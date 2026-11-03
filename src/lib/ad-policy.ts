@@ -1,4 +1,6 @@
 const AD_EXCLUDED_PREFIXES = [
+  "/",
+  "/about",
   "/admin",
   "/api",
   "/contact",
@@ -24,5 +26,5 @@ export function isAdsenseServingEnabled(): boolean {
 }
 
 export function canRequestAds(pathname: string, pageEligible = false): boolean {
-  return pageEligible && !isAdExcludedPath(pathname);
+  return pathname.startsWith("/blog/") && pageEligible && !isAdExcludedPath(pathname);
 }

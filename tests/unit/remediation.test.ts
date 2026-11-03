@@ -178,7 +178,7 @@ async function main() {
       percent_dv: null,
       source: "product-name-inference",
     };
-    const verifiedFact = { ...inferredFact, source: "foodsafetykorea:C003" };
+    const verifiedFact = { ...inferredFact, source: "foodsafetykorea:C003", raw_text: "1일 섭취량당 비타민C 1000mg", basis: "1일 섭취량당" };
     assert.equal(
       isIndexableSupplement({ name: "정상 제품", nutrition_facts: [inferredFact], tags: [] }),
       false,
@@ -228,6 +228,7 @@ async function main() {
           unit: "mg",
           percent_dv: 100,
           source: "foodsafetykorea:C003" as const,
+          raw_text: "1일 섭취량당 비타민C 100mg", basis: "1일 섭취량당",
         },
       ],
     };
@@ -276,6 +277,7 @@ async function main() {
       renderToStaticMarkup(
         createElement(AdditiveSignal, {
           additives: {
+            raw_materials: value === true ? "보존료 착색료 수크랄로스" : value === false ? "정제수" : undefined,
             has_preservatives: value,
             has_coloring: value,
             has_artificial_sweeteners: value,
@@ -290,7 +292,7 @@ async function main() {
 
     assert.equal(count(matched, />관련 키워드 표시</g), 3);
     assert.equal(count(notMatched, />지정 키워드 미확인</g), 4);
-    assert.equal(count(unavailable, />자료 없음</g), 3);
+    assert.equal(count(unavailable, />원문·추출 결과 대조 필요</g), 3);
     for (const html of [matched, notMatched, unavailable]) {
       assert.match(html, /성분의 부재나 안전성 판정이 아닙니다/);
       assert.match(html, /href="\/blog\/supplement-additives-label-guide"/);
@@ -525,6 +527,12 @@ async function main() {
       args: ["published-id"],
     });
     assert.equal(row.rows[0]?.title, "Published");
+  });
+
+  await run("published content cannot be edited without a matching review", async () => {
+    await assert.rejects(() => updateContentItem("published-id", {title:"Unreviewed replacement"}), /Review required/);
+    const row = await db.execute({sql:"SELECT title FROM content_queue WHERE id = ?",args:["published-id"]});
+    assert.equal(row.rows[0].title,"Published");
   });
 
   await run("route handlers reject malformed admin and nearby inputs", async () => {
@@ -763,6 +771,7 @@ async function main() {
             unit: "mg",
             percent_dv: 100,
             source: "foodsafetykorea:C003",
+            raw_text: "1일 섭취량당 비타민C 100mg", basis: "1일 섭취량당",
           },
         ]),
         "[]",
@@ -1196,7 +1205,7 @@ async function main() {
     assert.doesNotMatch(regionList, /@\/lib\/data\/pharmacies/);
     assert.match(manifest, /src: "\/icon"/);
     assert.doesNotMatch(manifest, /favicon\.ico/);
-    assert.match(sitemapRoute, /dynamic = "force-static"/);
+    assert.match(sitemapRoute, /dynamic = "force-dynamic"/);
     assert.match(sitemapRoute, /availableIds\.includes\(id\)/);
     for (const cachedRoute of [rssRoute, recentBlogRoute]) {
       assert.match(cachedRoute, /revalidate = 3600/);
@@ -1524,10 +1533,9 @@ async function main() {
     const notFound = fs.readFileSync(path.join(process.cwd(), "src/app/not-found.tsx"), "utf8");
     const adSlot = fs.readFileSync(path.join(process.cwd(), "src/components/ads/AdSlot.tsx"), "utf8");
     const head = layout.match(/<head>([\s\S]*?)<\/head>/)?.[1] || "";
-    assert.match(head, /!staging && adsenseId/);
-    assert.match(head, /<script\s+async[\s\S]*?pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=\$\{adsenseId\}/);
-    assert.match(head, /crossOrigin="anonymous"/);
-    assert.doesNotMatch(adSlot, /adsbygoogle\.js/);
+    assert.doesNotMatch(head, /<script[\s\S]*?adsbygoogle\.js/);
+    assert.match(layout, /"google-adsense-account": adsenseId/);
+    assert.match(adSlot, /<Script[\s\S]*?adsbygoogle\.js/);
     assert.equal(
       fs.readFileSync(path.join(process.cwd(), "public/ads.txt"), "utf8").trim(),
       "google.com, pub-3050601904412736, DIRECT, f08c47fec0942fa0",

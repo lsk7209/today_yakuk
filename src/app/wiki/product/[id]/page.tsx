@@ -1,3 +1,4 @@
+import { detectAdditives } from "@/lib/additive-analysis";
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -237,6 +238,8 @@ export default async function ProductDetailPage({
                 <p className="text-slate-700 leading-relaxed">
                   {generateTemplateContent(supplement)}
                 </p>
+                <p className="text-sm mt-3">서비스 레코드 생성 시각: {supplement.created_at || "미확인"}. 원본 기준일·최종 수집일은 별도로 확인되지 않았습니다.</p>
+                <a className="text-sm underline" href="https://www.foodsafetykorea.go.kr/" target="_blank" rel="noopener noreferrer">식품안전나라에서 위 신고번호로 원문 확인</a>
               </div>
             </div>
             <div className="city-card mt-5 border border-sky-200 bg-sky-50 p-5 text-sm leading-relaxed text-sky-950">
@@ -261,7 +264,13 @@ export default async function ProductDetailPage({
             </h2>
             <div className="overflow-hidden">
               {nutritionFacts.length > 0 ? (
-                <NutrientDisplay nutrients={nutritionFacts} />
+                <>
+                  <NutrientDisplay nutrients={nutritionFacts} />
+                  <details className="text-sm break-words mt-4"><summary>성분·섭취 기준 원문 확인</summary>
+                    {Array.from(new Set(verifiedNutritionFacts.map(f => f.raw_text))).map(text => <p key={text}>{text}</p>)}
+                    <p>섭취 기준: {Array.from(new Set(verifiedNutritionFacts.map(f => f.basis))).join(", ")}</p>
+                  </details>
+                </>
               ) : (
                 <div className="text-center py-12 text-slate-400 font-medium">
                   현재 약국오늘이 수집한 공개 데이터에 구조화된 영양소 함량이 표시되지
@@ -342,7 +351,7 @@ function generateTemplateContent(supplement: Supplement): string {
     );
   }
 
-  const additives = supplement.additives;
+  const additives = supplement.additives?.raw_materials?.trim() ? detectAdditives(supplement.additives.raw_materials) : null;
   if (additives) {
     const hasKnownClassification = [
       additives.has_preservatives,

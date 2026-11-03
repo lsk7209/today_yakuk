@@ -1,4 +1,6 @@
 import { getTursoClient, parseJson } from "@/lib/turso";
+import { hasPublicationReview } from "@/lib/publication-review";
+import publicationReviews from "../../../content/reviews/publication-reviews.json";
 import { cacheDbRead } from "@/lib/db-read-cache";
 import {
   CONTENT_ITEM_UPDATE_FIELDS,
@@ -160,6 +162,9 @@ async function getPublishedContentSitemapChunkUncached(
   }
 }
 
+export class ContentReviewRequiredError extends Error {}
+export class ContentUpdateConflictError extends Error {}
+
 // Write operations for admin routes
 export async function updateContentItem(id: string, updates: ContentItemUpdate): Promise<ContentItem | null> {
   try {
@@ -168,6 +173,18 @@ export async function updateContentItem(id: string, updates: ContentItemUpdate):
       Object.prototype.hasOwnProperty.call(updates, field),
     );
     if (!fields.length) return null;
+    const existing = await db.execute({sql: "SELECT * FROM content_queue WHERE id = ? LIMIT 1", args: [id]});
+    const snapshot = existing.rows[0];
+    if (!snapshot) return null;
+    const effectiveStatus = updates.status ?? snapshot.status;
+    const changesPublicContent = fields.some(field => ["title", "slug", "content_html", "ai_summary"].includes(field));
+    if (effectiveStatus === "published" && (updates.status === "published" || changesPublicContent) &&
+        !hasPublicationReview(rowToContent({...snapshot, ...updates}), publicationReviews)) {
+      throw new ContentReviewRequiredError("Review required for the resulting published content");
+    }
+    const snapshotFields = ["status", "hpid", "title", "slug", "content_html", "ai_summary", "ai_faq", "ai_bullets", "ai_cta", "extra_sections", "image_url"];
+    const snapshotCondition = snapshotFields.map(field => ` AND ${field} IS ?`).join("");
+
 
     const setClauses = fields.map((f) => `${f} = ?`).join(", ");
     const values = fields.map((f) => {
@@ -176,10 +193,11 @@ export async function updateContentItem(id: string, updates: ContentItemUpdate):
       return v as string | number | null;
     });
 
-    await db.execute({
-      sql: `UPDATE content_queue SET ${setClauses} WHERE id = ?`,
-      args: [...values, id],
+    const write = await db.execute({
+      sql: `UPDATE content_queue SET ${setClauses} WHERE id = ?${snapshotCondition}`,
+      args: [...values, id, ...snapshotFields.map(field => (snapshot[field] ?? null) as string | number | null)],
     });
+    if (write.rowsAffected !== 1) throw new ContentUpdateConflictError("Content changed; reload and review again");
 
     const result = await db.execute({ sql: "SELECT * FROM content_queue WHERE id = ? LIMIT 1", args: [id] });
     if (!result.rows.length) return null;

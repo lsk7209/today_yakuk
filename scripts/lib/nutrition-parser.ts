@@ -1,3 +1,4 @@
+import { extractSourceNutrition } from "../../src/lib/wiki-nutrition";
 /**
  * Nutrition Parser — Gemini 없이 Claude Code가 직접 작성한 규칙 기반 분석기
  * C003 식약처 API의 NUT_MTR / RAWMTRL_NM 텍스트를 파싱하여 구조화된 데이터로 변환
@@ -9,6 +10,8 @@ export interface NutritionFact {
   unit: string;
   percent_dv: number | null;
   source: "foodsafetykorea:C003" | "product-name-inference";
+  raw_text?: string;
+  basis?: string;
 }
 
 export interface AnalysisResult {
@@ -51,58 +54,8 @@ const DV_REFERENCE: Record<string, { dv: number; unit: string }> = {
   "나트륨": { dv: 2000, unit: "mg" },
 };
 
-// 영양소가 아닌 단순 원재료/첨가물 키워드
-const NON_NUTRIENT_KEYWORDS = [
-  "정제수", "글리세린", "착향료", "캡슐기제", "이산화규소", "스테아린산마그네슘",
-  "히드록시프로필메틸셀룰로오스", "HPMC", "미결정셀룰로오스", "포비돈", "크로스카르멜로오스나트륨",
-  "탈크", "이산화티타늄", "카르나우바납", "쉘락", "유화제", "산도조절제",
-  "감미료", "보존료", "착색료", "결합제", "활택제",
-];
-
-function isNonNutrient(name: string): boolean {
-  return NON_NUTRIENT_KEYWORDS.some(k => name.includes(k));
-}
-
-/**
- * C003 NUT_MTR 필드 파싱
- * 예: "비타민C 100mg(1일 섭취량의 100%), 아연 8.5mg(100%)"
- */
 export function parseNutritionFacts(nutStr: string): NutritionFact[] {
-  if (!nutStr || nutStr.trim() === "-" || nutStr.trim() === "") return [];
-
-  const results: NutritionFact[] = [];
-  const seen = new Set<string>();
-
-  // 패턴 1: "성분명 숫자단위(숫자%)" 또는 "성분명 숫자단위"
-  const pattern1 =
-    /([가-힣A-Za-z][가-힣A-Za-z0-9\s]*?)\s+([\d.]+)\s*(mg|g|μg|mcg|IU|ug|㎍)\s*(?:\([^)]*?([\d.]+)\s*%[^)]*\))?/gi;
-
-  let m: RegExpExecArray | null;
-  while ((m = pattern1.exec(nutStr)) !== null) {
-    const rawName = m[1].trim().replace(/\s+/g, "");
-    if (isNonNutrient(rawName) || rawName.length < 2) continue;
-    if (seen.has(rawName)) continue;
-    seen.add(rawName);
-
-    const amount = parseFloat(m[2]);
-    const rawUnit = m[3].replace(/mcg|ug|㎍/i, "μg");
-    const percentRaw = m[4] ? parseFloat(m[4]) : null;
-
-    const percent_dv =
-      percentRaw != null
-        ? Math.round(percentRaw)
-        : null;
-
-    results.push({
-      name: rawName,
-      amount,
-      unit: rawUnit,
-      percent_dv,
-      source: "foodsafetykorea:C003",
-    });
-  }
-
-  return results;
+  return extractSourceNutrition(nutStr || "");
 }
 
 /**

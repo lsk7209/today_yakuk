@@ -36,13 +36,13 @@ import {
   findNearbyWithinKm,
   getPharmacyByHpid,
   getPharmaciesByRegion,
+  getCanonicalProvinceSlug,
 } from "@/lib/data/pharmacies";
 import { distanceKm } from "@/lib/geo-distance";
 import { buildAiLessDetailTemplate } from "@/lib/pharmacy-detail-template";
 import { buildPharmacyIntelligenceReport } from "@/lib/pharmacy-intelligence";
 import { getMapSearchAddress } from "@/lib/map";
 import { hasValidPhone, isIndexablePharmacy } from "@/lib/pharmacy-indexability";
-import { getPublishedContentByHpid } from "@/lib/data/content";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { highlightSafeText, type HighlightRule } from "@/lib/safe-highlight";
 
@@ -96,8 +96,8 @@ function buildPharmacyMetaDescription(pharmacy: Pharmacy, fallback: string): str
   const dong = extractDong(pharmacy.address) ?? "";
   const region = [city, dong].filter(Boolean).join(" ");
 
-  const first = `${pharmacy.name}${region ? `(${region})` : ""} 정규 영업시간, 조제 비용 가이드, 대중교통 도보 동선 및 방문자 체감 키워드 분석 리포트입니다.`;
-  const second = ` 주소·전화·주말 운영·주변 약국 비교 지표를 한눈에 확인하세요.`;
+  const first = `${pharmacy.name}${region ? `(${region})` : ""} 등록 영업시간과 전화·주소를 확인하는 약국 방문 안내입니다.`;
+  const second = ` 요일별 시간표와 정보 한계를 확인하고 전화 후 출발하세요.`;
   const composed = `${first}${second}`.trim();
 
   const merged = composed.length >= 120 ? composed : `${composed} ${fallback}`.trim();
@@ -110,7 +110,6 @@ export async function generateMetadata({ params }: { params: Promise<Params> }) 
   if (!pharmacy) return {};
   const title = buildPharmacyMetaTitle(pharmacy);
   const rawDescription =
-    pharmacy.intelligence_report?.briefing.lines.join(" ") ||
     buildAiLessDetailTemplate(pharmacy).summary;
   const description = buildPharmacyMetaDescription(pharmacy, rawDescription);
   const indexable = isIndexablePharmacy(pharmacy);
@@ -157,10 +156,8 @@ async function Content({
   pharmacyPromise: Promise<Pharmacy | null>;
   hpid: string;
 }) {
-  const [pharmacy, contentQueue] = await Promise.all([
-    pharmacyPromise,
-    getPublishedContentByHpid(hpid).catch(() => null),
-  ]);
+  const pharmacy = await pharmacyPromise;
+  void hpid;
   if (!pharmacy) return notFound();
 
   const regionList =
@@ -177,9 +174,7 @@ async function Content({
   const naverMapUrl = `https://map.naver.com/p/search/${mapQuery}`;
   const kakaoMapUrl = `https://map.kakao.com/link/search/${mapQuery}`;
 
-  const report =
-    pharmacy.intelligence_report ??
-    buildPharmacyIntelligenceReport(pharmacy, null, regionList);
+  const report = buildPharmacyIntelligenceReport(pharmacy);
 
   const tmpl = buildAiLessDetailTemplate(pharmacy);
   const combinedFaq = report.faq.length > 0 ? report.faq : tmpl.faq.map((f) => ({ ...f, category: "이용 안내" }));
@@ -213,7 +208,7 @@ async function Content({
       label: pharmacy.city || "지역",
       href:
         pharmacy.province && pharmacy.city
-          ? `/${encodeURIComponent(pharmacy.province)}/${encodeURIComponent(pharmacy.city)}`
+          ? `/${encodeURIComponent(getCanonicalProvinceSlug(pharmacy.province))}/${encodeURIComponent(pharmacy.city)}`
           : undefined,
     },
     { label: pharmacy.name },
@@ -360,7 +355,7 @@ async function Content({
             </div>
           </div>
           <span className="text-xs font-bold text-emerald-800 bg-emerald-100/80 px-3 py-1 rounded-full">
-            종합 인텔리전스 분석
+            등록 정보와 방문 전 확인
           </span>
         </div>
 
@@ -384,13 +379,16 @@ async function Content({
           })}
         </ol>
 
-        {(contentQueue?.ai_summary || pharmacy.gemini_summary) && (
-          <div className="rounded-2xl bg-emerald-50/50 p-4 border border-emerald-100 text-sm text-gray-700 leading-relaxed">
-            {contentQueue?.ai_summary || pharmacy.gemini_summary}
-          </div>
-        )}
+
       </section>
 
+      <section className="city-card border p-5 space-y-2 text-sm" aria-label="정보 출처와 날짜">
+        <h2 className="font-bold">정보 출처와 날짜의 한계</h2>
+        <p>약국 식별자: {pharmacy.hpid} · 기본 정보는 공공데이터포털 응급의료기관 약국정보를 바탕으로 제공합니다.</p>
+        <p>동기화 기록 시각: {pharmacy.updated_at || "미확인"}. 원본 기관의 갱신일·현장 확인일과 같지 않습니다.</p>
+        <p>원본 기준일·임시휴무·실제 운영 여부는 확인되지 않았습니다. 방문 전 전화로 확인하세요.</p>
+        <a className="underline" href="https://www.data.go.kr/" target="_blank" rel="noopener noreferrer">공공데이터포털에서 원출처 확인</a>
+      </section>
       {/* 섹션 2: 가격 및 비용 분석 */}
       <section
         aria-labelledby="section-cost"
@@ -416,7 +414,7 @@ async function Content({
           <div className="rounded-2xl border border-sky-100 bg-sky-50/40 p-5 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-black text-sky-800 bg-sky-100 px-2.5 py-1 rounded-md">
-                표준 조제료 적용 구간
+                조제 비용 확인 안내
               </span>
               <span className="text-xs font-bold text-gray-500">건강보험 기본 수가</span>
             </div>
@@ -451,7 +449,7 @@ async function Content({
         </div>
       </section>
 
-      {/* 섹션 3: 이용자 체감 키워드 분석 */}
+      {/* 섹션 3: 외부 평가 정보의 한계 */}
       <section
         aria-labelledby="section-keywords"
         className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-xs space-y-6"
@@ -464,7 +462,7 @@ async function Content({
                 User Experience &amp; Sentiment
               </span>
               <h2 id="section-keywords" className="text-xl sm:text-2xl font-black text-gray-900">
-                이용자 체감 키워드 분석
+                외부 평가 정보의 한계
               </h2>
             </div>
           </div>
@@ -577,7 +575,7 @@ async function Content({
               요일별 정규 운영시간표
             </h3>
             <span className="text-xs font-bold text-amber-900 bg-amber-100 px-3 py-1 rounded-full">
-              정기휴무 기준: {report.visitGuide.regularClosedSummary}
+              휴무 정보: {report.visitGuide.regularClosedSummary}
             </span>
           </div>
           <PharmacyWeeklyHours hours={pharmacy.operating_hours} initialIso={initialIso} />
@@ -661,7 +659,7 @@ async function Content({
         </div>
       </section>
 
-      {/* 섹션 5: 주변 동종 업계 비교 지표 */}
+      {/* 섹션 5: 인근 약국과 거리 안내 */}
       <section
         aria-labelledby="section-peer-comparison"
         className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-xs space-y-6"
@@ -674,7 +672,7 @@ async function Content({
                 Regional Peer Benchmark
               </span>
               <h2 id="section-peer-comparison" className="text-xl sm:text-2xl font-black text-gray-900">
-                주변 동종 업계 비교 지표
+                인근 약국과 거리 안내
               </h2>
             </div>
           </div>
@@ -720,7 +718,7 @@ async function Content({
             </h3>
             {pharmacy.province && pharmacy.city ? (
               <Link
-                href={`/${encodeURIComponent(pharmacy.province)}/${encodeURIComponent(pharmacy.city)}`}
+                href={`/${encodeURIComponent(getCanonicalProvinceSlug(pharmacy.province))}/${encodeURIComponent(pharmacy.city)}`}
                 className="text-xs font-bold text-brand-700 hover:underline"
               >
                 {pharmacy.city} 전체 약국 보기 →

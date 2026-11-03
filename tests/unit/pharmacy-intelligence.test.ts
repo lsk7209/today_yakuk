@@ -36,7 +36,7 @@ async function main() {
     assert.equal(withJosa("종로우리약국(서울 종로구)", "은/는"), "종로우리약국(서울 종로구)은");
   });
 
-  await run("intelligence report synthesis builds 5 proprietary sections without external images or ephemeral status", () => {
+  await run("report uses registered facts without unattributed external claims", () => {
     const pharmacy = {
       hpid: "A1100001",
       name: "종로우리약국",
@@ -85,12 +85,12 @@ async function main() {
     const report = buildPharmacyIntelligenceReport(pharmacy, external);
     assert.equal(report.version, 1);
     assert.equal(report.briefing.lines.length, 3);
-    assert.match(report.briefing.lines[0], /종로우리약국은/);
-    assert.match(report.costAnalysis.surchargeWindowText, /30%/);
-    assert.equal(report.keywordAnalysis.topKeywords.length, 3);
-    assert.equal(report.visitGuide.transitStops.length, 1);
-    assert.equal(report.peerComparison.metrics.length, 4);
-    assert.equal(report.faq.length, 4);
+    assert.match(report.briefing.lines[0], /종로우리약국(?:\(.*?\))?은/);
+    assert.match(report.costAnalysis.surchargeWindowText, /토요일 오전/);
+    assert.equal(report.keywordAnalysis.topKeywords.length, 0);
+    assert.equal(report.visitGuide.transitStops.length, 0);
+    assert.equal(report.peerComparison.metrics.length, 0);
+    assert.equal(report.faq.length, 5);
     assert.match(report.faq[0]!.question, /^종로우리약국은/);
 
     const serialized = JSON.stringify(report);

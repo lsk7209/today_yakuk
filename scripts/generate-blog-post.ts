@@ -65,7 +65,7 @@ async function main() {
   // 5. DB 저장
   await db.execute({
     sql: `INSERT INTO content_queue (hpid, title, slug, region, theme, content_html, ai_summary, ai_faq, status, publish_at, updated_at)
-          VALUES (NULL, ?, ?, NULL, 'blog', ?, ?, ?, 'pending', ?, datetime('now'))`,
+          VALUES (NULL, ?, ?, NULL, 'blog', ?, ?, ?, 'review', ?, datetime('now'))`,
     args: [
       post.title,
       finalSlug,
@@ -76,7 +76,7 @@ async function main() {
     ],
   });
 
-  console.info("✨ 블로그 포스트가 성공적으로 예약되었습니다.");
+  console.info("✨ 블로그 초안이 검수 대기로 저장되었습니다. 검수 기록 없이는 공개되지 않습니다.");
 }
 
 main().catch((error) => {

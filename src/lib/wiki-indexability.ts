@@ -1,4 +1,4 @@
-import { hasVerifiedNutritionFacts } from "@/lib/wiki-nutrition";
+import { hasVerifiedNutritionFacts, NUTRITION_NAMES } from "@/lib/wiki-nutrition";
 
 function hasText(value?: string | null) {
   return typeof value === "string" && value.trim().length > 0;
@@ -36,6 +36,8 @@ export function isIndexableMedicine(input: {
   );
 }
 
+const NUTRITION_NAME_SQL = NUTRITION_NAMES.map(name => `'${name}'`).join(", ");
+
 export const SUPPLEMENT_INDEXABLE_PREDICATE = `
 TRIM(name) != ''
   AND LOWER(TRIM(name)) NOT LIKE 'test%'
@@ -47,6 +49,11 @@ TRIM(name) != ''
         CASE WHEN fact.type = 'object' THEN fact.value ELSE '{}' END,
         '$.source'
       ) = 'foodsafetykorea:C003'
+        AND NULLIF(TRIM(json_extract(CASE WHEN fact.type = 'object' THEN fact.value ELSE '{}' END, '$.raw_text')), '') IS NOT NULL
+        AND NULLIF(TRIM(json_extract(CASE WHEN fact.type = 'object' THEN fact.value ELSE '{}' END, '$.basis')), '') IS NOT NULL
+        AND json_extract(CASE WHEN fact.type = 'object' THEN fact.value ELSE '{}' END, '$.name') IN (${NUTRITION_NAME_SQL})
+        AND json_extract(CASE WHEN fact.type = 'object' THEN fact.value ELSE '{}' END, '$.unit') IN ('mg','g','μg','IU','mgα-TE','mgNE')
+        AND json_type(CASE WHEN fact.type = 'object' THEN fact.value ELSE '{}' END, '$.amount') IN ('integer','real')
         AND CAST(json_extract(
           CASE WHEN fact.type = 'object' THEN fact.value ELSE '{}' END,
           '$.amount'

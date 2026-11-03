@@ -59,7 +59,7 @@ export async function generateMetadata({ searchParams }: WikiHomePageProps): Pro
     return {
         title: isMedicine ? "의약품 정보" : "영양제 정보",
         description: isMedicine ? "의약품안전나라 공개 허가정보를 바탕으로 의약품 이름과 제조사를 검색해 확인하세요." : WIKI_DESCRIPTION,
-        alternates: { canonical: isMedicine ? "/wiki?type=medicine" : "/wiki" },
+        alternates: { canonical: isFilteredState ? buildWikiPagePath(getWikiCatalogType(type) || "supplement", category || "all", getWikiPageNumber(page) || 1) : "/wiki" },
         robots: isFilteredState
             ? { index: false, follow: true }
             : { index: true, follow: true },

@@ -114,13 +114,6 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
-        {!staging && adsenseId ? (
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
-            crossOrigin="anonymous"
-          />
-        ) : null}
         {isProductionRuntime && !staging ? (
           <>
             <link rel="preconnect" href="https://www.googletagmanager.com" />
@@ -143,7 +136,7 @@ export default function RootLayout({
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${gaId}');
+                gtag('config', '${gaId}', {send_page_view: false, page_location: window.location.origin + window.location.pathname, page_referrer: document.referrer ? new URL(document.referrer).origin : ''});
               `}
             </Script>
           </>

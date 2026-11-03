@@ -5,6 +5,8 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 import { getRequiredTursoClient, parseJson } from "../src/lib/turso";
 import { submitSitemapToGSC } from "../src/lib/google-indexing";
 import { getSiteUrl } from "../src/lib/site-url";
+import { hasPublicationReview } from "../src/lib/publication-review";
+import publicationReviews from "../content/reviews/publication-reviews.json";
 import type { Client } from "@libsql/client";
 
 type ContentQueueStatus = "pending" | "review" | "published" | "failed";
@@ -24,6 +26,7 @@ type ContentQueue = {
   extra_sections: { title: string; body: string }[] | null;
   status: ContentQueueStatus;
   publish_at: string;
+  image_url: string | null;
 };
 
 const siteUrl = getSiteUrl();
@@ -33,24 +36,28 @@ function ensureEnv() {
   if (!process.env.TURSO_AUTH_TOKEN) throw new Error("TURSO_AUTH_TOKEN이 필요합니다.");
 }
 
-export async function claimPendingContent(db: Client, id: string, now: string) {
+export async function claimPendingContent(db: Client, id: string, now: string, snapshot?: Record<string, unknown>) {
+  const fields = ["hpid", "title", "slug", "content_html", "ai_summary", "ai_faq", "ai_bullets", "ai_cta", "extra_sections", "image_url"];
+  const condition = snapshot ? fields.map(field => ` AND ${field} IS ?`).join("") : "";
   const result = await db.execute({
-    sql: `UPDATE content_queue SET status = 'published', published_at = ?, updated_at = ? WHERE id = ? AND status = 'pending'`,
-    args: [now, now, id],
+    sql: `UPDATE content_queue SET status = 'published', published_at = ?, updated_at = ? WHERE id = ? AND status = 'pending'${condition}`,
+    args: [now, now, id, ...(snapshot ? fields.map(field => (snapshot[field] ?? null) as string | number | null) : [])],
   });
   return result.rowsAffected === 1;
 }
 
 export async function publishPending(limit = 2, db = getRequiredTursoClient()) {
   const now = new Date().toISOString();
+  const reviewedSlugs = Array.from(new Set((publicationReviews as Array<{slug:string}>).map(review => review.slug)));
+  if (!reviewedSlugs.length) { console.info("No reviewed content approved for publication."); return; }
 
   const result = await db.execute({
-    sql: `SELECT id, hpid, title, slug, region, theme, content_html, ai_summary, ai_bullets, ai_faq, ai_cta, extra_sections, status, publish_at
+    sql: `SELECT id, hpid, title, slug, region, theme, content_html, ai_summary, ai_bullets, ai_faq, ai_cta, extra_sections, image_url, status, publish_at
           FROM content_queue
-          WHERE status = 'pending' AND publish_at <= ?
+          WHERE status = 'pending' AND publish_at <= ? AND slug IN (${reviewedSlugs.map(() => '?').join(',')})
           ORDER BY publish_at ASC
           LIMIT ?`,
-    args: [now, limit],
+    args: [now, ...reviewedSlugs, limit],
   });
 
   if (!result.rows.length) {
@@ -73,10 +80,13 @@ export async function publishPending(limit = 2, db = getRequiredTursoClient()) {
     extra_sections: parseJson(row.extra_sections, null),
     status: row.status as ContentQueueStatus,
     publish_at: row.publish_at as string,
+    image_url: row.image_url as string | null,
   }));
 
   const failed = pending.filter((item) => !item.content_html && !item.ai_summary);
-  const ready = pending.filter((item) => !!item.content_html || !!item.ai_summary);
+  const candidates = pending.filter((item) => !!item.content_html || !!item.ai_summary);
+  const ready = candidates.filter(item => hasPublicationReview(item, publicationReviews));
+  if (ready.length !== candidates.length) console.warn(`Review required: ${candidates.length - ready.length} pending item(s) retained without publication.`);
 
   if (failed.length > 0) {
     console.warn(`Marking ${failed.length} items as 'failed' due to missing content`);
@@ -97,7 +107,9 @@ export async function publishPending(limit = 2, db = getRequiredTursoClient()) {
 
   const publishResults = await Promise.all(
     ready.map(async (item) => {
-      const claimed = await claimPendingContent(db, item.id, now);
+      const snapshot = result.rows.find(row => row.id === item.id);
+      if (!snapshot) throw new Error("Missing reviewed snapshot");
+      const claimed = await claimPendingContent(db, item.id, now, snapshot);
       return { item, claimed };
     })
   );

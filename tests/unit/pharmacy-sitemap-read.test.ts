@@ -25,7 +25,7 @@ async function main() {
   assert.equal(JSON.stringify(statements.map(s=>s.args)),JSON.stringify([[1000,0],[1000,1000]]));
   assert.equal(JSON.stringify([...first,...second]),JSON.stringify(fixture));
   assert.equal(new Set([...first,...second].map(r=>r.hpid)).size,1501);
-  assert.match(fs.readFileSync("src/app/sitemap/[id]/route.ts","utf8"), /\["sitemap-entries-hpid-v2", id\]/);
+  assert.match(fs.readFileSync("src/app/sitemap/[id]/route.ts","utf8"), /\["sitemap-entries-quality-v1", id\]/);
   console.log("Pharmacy sitemap projection/order/cache-key/pagination contract PASS; network/productionSQL0.");
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

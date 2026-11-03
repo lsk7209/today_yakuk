@@ -83,3 +83,6 @@ testSearchAgainstSqlite().then(
   () => console.log("wiki catalog tests passed"),
   (error) => { console.error(error); process.exitCode = 1; },
 );
+
+assert.doesNotMatch(buildWikiProductPath({id:"11111111-1111-4111-8111-111111111111",name:"한글 제품"}), /[^\x00-\x7F]/, "canonical redirect target must be HTTP-header-safe");
+assert.doesNotMatch(buildWikiMedicinePath({id:"11111111-1111-4111-8111-111111111111",name:"한글 약품"}), /[^\x00-\x7F]/);

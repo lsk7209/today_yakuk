@@ -180,14 +180,9 @@ export default function Home() {
       void searchByKeyword(term);
       return;
     }
-    if (term.length === 1) {
-      // Do not fall back to an unrequested GPS/location prompt for a
-      // too-short query; ask the user to type more instead.
-      setStatus("error");
-      setMessage("검색어는 2글자 이상 입력해주세요.");
-      return;
-    }
-    void fetchNearby();
+    // Keyword search must never silently request device location.
+    setStatus("error");
+    setMessage("검색어는 2글자 이상 입력해주세요.");
   }
 
   const regionGrid = useMemo(
@@ -243,7 +238,7 @@ export default function Home() {
                 <Link href="/guide/holiday-checklist" className="underline underline-offset-4">공휴일 체크 ↗</Link>
                 <Link href="/nearby" className="underline underline-offset-4">내 주변 전체 보기 ↗</Link>
               </div>
-              {status === "idle" ? <p className="mt-5 text-xs leading-relaxed text-[var(--muted)]">현재 위치 검색 시 위치 권한 창이 열립니다. 위치는 검색에만 사용하고 저장하지 않습니다.</p> : null}
+              {status === "idle" ? <p className="mt-5 text-xs leading-relaxed text-[var(--muted)]">현재 위치 검색 시 위치 권한 창이 열립니다. 검색을 위해 위치가 서버로 전송됩니다. 위치를 허용하지 않으면 지역·약국명으로 검색할 수 있습니다.</p> : null}
             </div>
           </div>
           <div className="city-home-art min-h-[320px]">

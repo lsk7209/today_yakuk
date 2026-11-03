@@ -56,8 +56,8 @@ const STATIC_POSTS = [
   // 의약품·건강
   {
     slug: "kids-fever-medicine-comparison",
-    title: "소아 발열 약 비교 가이드",
-    summary: "아세트아미노펜 vs 이부프로펜, 연령별 용량 기준 정리",
+    title: "어린이 해열제 복용 전 상담 준비",
+    summary: "제품 농도·성분·복용기록을 준비해 확인할 질문",
     tag: "소아·발열",
   },
   {
@@ -68,8 +68,8 @@ const STATIC_POSTS = [
   },
   {
     slug: "pregnancy-pharmacy-guide",
-    title: "임산부 안전한 영양제 섭취 가이드",
-    summary: "엽산·철분·비타민D 필수 영양소와 임신 중 주의해야 할 성분",
+    title: "임신·수유 중 약국 상담 준비",
+    summary: "임신 주차·제품 성분표·복용기록을 준비하는 방법",
     tag: "임산부",
   },
   {
@@ -105,8 +105,8 @@ const STATIC_POSTS = [
   },
   {
     slug: "vitamin-d-deficiency-guide",
-    title: "비타민D 결핍 신호 7가지와 올바른 보충 방법",
-    summary: "국내 성인 75% 부족 상태, 혈중 농도 기준과 용량별 보충법",
+    title: "비타민D 검사·보충제 상담 전 확인할 것",
+    summary: "검사명·수치·단위와 복용 중인 제품 확인하기",
     tag: "영양제",
   },
   {

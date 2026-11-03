@@ -7,6 +7,7 @@ import { distanceKm } from "@/lib/geo-distance";
 import { PHARMACY_INDEXABLE_WHERE } from "@/lib/pharmacy-indexability";
 import {
   MEDICINE_INDEXABLE_WHERE,
+  isIndexableSupplement,
   SUPPLEMENT_INDEXABLE_WHERE,
 } from "@/lib/wiki-indexability";
 
@@ -372,8 +373,10 @@ export interface Supplement {
     unit: string;
     percent_dv: number | null;
     source?: string;
+    raw_text?: string;
+    basis?: string;
   }> | null;
-  additives: { has_preservatives?: boolean; has_coloring?: boolean; has_artificial_sweeteners?: boolean; details?: string[] } | null;
+  additives: { raw_materials?: string; parse_status?: "source_missing" | "parsed" | "extraction_failed"; has_preservatives?: boolean; has_coloring?: boolean; has_artificial_sweeteners?: boolean; details?: string[] } | null;
   ai_summary: string | null;
   tags: string[] | null;
   created_at: string;
@@ -457,7 +460,7 @@ async function getIngredientBySlugUncached(slug: string): Promise<Ingredient | n
 }
 
 export async function getSupplementCount(): Promise<number> {
-  return cacheDbRead(["supplement", "count"], () => getSupplementCountUncached());
+  return cacheDbRead(["supplement", "count-verified-v1"], () => getSupplementCountUncached());
 }
 
 async function getSupplementCountUncached(): Promise<number> {
@@ -472,7 +475,7 @@ async function getSupplementCountUncached(): Promise<number> {
 }
 
 export async function getSupplementSitemapChunk(offset: number, limit: number): Promise<{ id: string; name: string; created_at: string | null }[]> {
-  return cacheDbRead(["supplement", "sitemap", String(offset), String(limit)], () =>
+  return cacheDbRead(["supplement", "sitemap-verified-v1", String(offset), String(limit)], () =>
     getSupplementSitemapChunkUncached(offset, limit),
   );
 }
@@ -481,10 +484,10 @@ async function getSupplementSitemapChunkUncached(offset: number, limit: number):
   try {
     const db = getTursoClient();
     const result = await db.execute({
-      sql: `SELECT id, name, created_at FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      sql: `SELECT id, name, created_at, nutrition_facts, tags FROM supplements ${SUPPLEMENT_INDEXABLE_WHERE} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
       args: [limit, offset],
     });
-    return result.rows.map((r: Record<string, unknown>) => ({
+    return result.rows.filter((r: Record<string, unknown>) => isIndexableSupplement({name: String(r.name), nutrition_facts: parseJson(r.nutrition_facts, null), tags: parseJson(r.tags, null)})).map((r: Record<string, unknown>) => ({
       id: r.id as string,
       name: r.name as string,
       created_at: r.created_at as string | null,

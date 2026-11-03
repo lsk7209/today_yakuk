@@ -1,7 +1,7 @@
 import { Pharmacy, PharmacyIntelligenceReport } from "@/types/pharmacy";
 import {
   DAY_KEYS,
-  formatHHMM,
+  formatHHMM, hasRegisteredHours,
   getOperatingStatus,
   getSeoulNow,
 } from "./hours";
@@ -68,7 +68,7 @@ export function buildOpeningHoursSpecification(pharmacy: Pharmacy) {
   const hours = pharmacy.operating_hours;
   if (!hours) return [];
   return Object.entries(hours)
-    .filter(([, slot]) => slot?.open && slot?.close)
+    .filter(([day, slot]) => Boolean(DAY_TO_SCHEMA[day]) && hasRegisteredHours(slot))
     .map(([day, slot]) => ({
       "@type": "OpeningHoursSpecification",
       dayOfWeek: DAY_TO_SCHEMA[day] ?? day,
@@ -83,35 +83,7 @@ export function buildPharmacyJsonLd(
 ) {
   const openingHoursSpecification = buildOpeningHoursSpecification(pharmacy);
 
-  const amenityFeatures = [];
-  if (intelligence?.briefing?.highlights) {
-    for (const h of intelligence.briefing.highlights) {
-      amenityFeatures.push({
-        "@type": "LocationFeatureSpecification",
-        name: h,
-        value: true,
-      });
-    }
-  }
-
-  const specialServices = [
-    {
-      "@type": "Offer",
-      itemOffered: {
-        "@type": "Service",
-        name: "처방전 조제 및 복약지도",
-        serviceType: "Prescription Dispensing",
-      },
-    },
-    {
-      "@type": "Offer",
-      itemOffered: {
-        "@type": "Service",
-        name: "일반의약품 및 건강상담",
-        serviceType: "Health & OTC Consultation",
-      },
-    },
-  ];
+  void intelligence;
 
   return {
     "@context": "https://schema.org",
@@ -136,8 +108,6 @@ export function buildPharmacyJsonLd(
         : undefined,
     url: `${siteUrl}/pharmacy/${pharmacy.hpid}`,
     openingHoursSpecification,
-    ...(amenityFeatures.length > 0 && { amenityFeature: amenityFeatures }),
-    makesOffer: specialServices,
   };
 }
 

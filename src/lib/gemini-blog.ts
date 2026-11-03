@@ -93,13 +93,13 @@ export async function generateBlogTopic(): Promise<string | null> {
     const month = now.getMonth() + 1;
 
     const prompt = `
-      당신은 한국의 건강/약학 전문 에디터입니다.
+      당신은 약국 방문 안내 초안 작성자입니다.
       ${month}월 한국의 계절적 특성, 유행하는 질병, 또는 건강 이슈(예: 미세먼지, 알레르기, 독감, 영양제 등)를 고려하여,
       사람들이 가장 검색할 만한 "실용적인 건강 정보 및 약국 이용 팁" 주제 1가지를 추천해 주세요.
       
       조건:
       1. 약국 방문을 유도하거나 일반의약품/건강기능식품 정보를 포함할 수 있는 주제여야 합니다.
-      2. 전문적인 의학 진단보다는 "생활 속 관리법"과 "약국 활용법"에 초점을 맞추세요.
+      2. 전문적인 의학 진단보다는 "상담 준비"와 "약국 활용법"에 초점을 맞추세요.
       3. 오직 주제 제목(Title)만 텍스트로 반환하세요. (따옴표나 설명 없이)
     `;
 
@@ -118,135 +118,26 @@ export async function generateBlogTopic(): Promise<string | null> {
 export async function generateBlogPost(topic: string): Promise<BlogPost | null> {
   try {
     const prompt = `
-      **Role**: You are a professional health columnist and SEO specialist for "TodayYakuk" (Korean Pharmacy Finder Service).
-      **Target Audience**: General public in Korea looking for quick, reliable health info and pharmacy access.
-      **Topic**: "${topic}"
-
-      **Objective**: Write a high-converting, SEO-optimized blog post that encourages users to visit a pharmacy or consult a pharmacist.
-
-      **Content Structure (MUST follow this order)**:
-      1. **Key Takeaways Box** (REQUIRED at the very start):
-         <div class="key-takeaways">
-           <h3>📌 핵심 정리</h3>
-           <ul>
-             <li>Key point 1</li>
-             <li>Key point 2</li>
-             <li>Key point 3</li>
-           </ul>
-         </div>
-      
-      2. **Introduction**: Hook with a relatable problem (2-3 short paragraphs).
-      
-      3. **MANDATORY SECTIONS** (You MUST create at least 4-6 H2 sections):
-         The article must follow this structural template. Adapt section titles to fit the topic, but you MUST have at least 4 main H2 sections:
-         
-         Example structure (adapt titles as needed):
-         
-         <h2>1. [Main Topic] 이해하기: 왜 중요한가?</h2>
-           <h3>원인과 메커니즘</h3>
-           <h3>증상 및 신호</h3>
-           <h3>방치할 경우의 위험</h3>
-         
-         <h2>2. 약국에서 구할 수 있는 솔루션</h2>
-           <h3>일반의약품 추천</h3>
-           <h3>건강기능식품 옵션</h3>
-           <h3>복용 시 주의사항</h3>
-         
-         <h2>3. 전문가가 알려주는 실천 가이드</h2>
-           <h3>일상 관리법</h3>
-           <h3>식습관 및 생활습관 팁</h3>
-           <h3>효과적인 타이밍</h3>
-         
-         <h2>4. 약사에게 꼭 물어봐야 할 것들</h2>
-           <h3>상담이 필요한 경우</h3>
-           <h3>병원 방문 vs 약국 이용</h3>
-           <h3>예방 및 사후 관리</h3>
-         
-         **CRITICAL**: Each H2 section must have 2-4 H3 subsections with substantial content (150-250 words per subsection).
-      
-      4. **Expert Quote** (REQUIRED, at least 1):
-         <blockquote class="expert-quote">
-           <p>"약사의 조언이나 권위 있는 정보"</p>
-           <cite>— 약국오늘 전문 약사</cite>
-         </blockquote>
-      
-      5. **CTA**: Recommend checking "TodayYakuk" for nearby pharmacies.
-
-      **Rich Content Elements (MUST use at least 4 of these)**:
-      
-      - **Tables**: <table> for comparisons
-        <table>
-          <thead><tr><th>구분</th><th>특징</th><th>추천</th></tr></thead>
-          <tbody><tr><td>...</td><td>...</td><td>...</td></tr></tbody>
-        </table>
-      
-      - **Info Box**: <div class="info-box"><h3>💡 알아두세요</h3><p>...</p></div>
-      
-      - **Warning Box**: <div class="warning-box"><h3>⚠️ 주의사항</h3><p>...</p></div>
-      
-      - **Tip Box**: <div class="tip-box"><h3>💊 약사 팁</h3><p>...</p></div>
-      
-      - **Step Cards** (for procedures):
-        <div class="step-cards">
-          <div class="step-card"><span class="step-number">1</span><h4>Step Title</h4><p>Description</p></div>
-          <div class="step-card"><span class="step-number">2</span><h4>Step Title</h4><p>Description</p></div>
-        </div>
-      
-      - **Checklist**:
-        <ul class="checklist">
-          <li>✅ Item 1</li>
-          <li>✅ Item 2</li>
-        </ul>
-      
-      - **Stat Highlight** (for important numbers):
-        <div class="stat-highlight">
-          <span class="stat-number">85%</span>
-          <span class="stat-label">of patients see improvement</span>
-        </div>
-      
-      - **Pros/Cons Grid**:
-        <div class="pros-cons-grid">
-          <div class="pros-box"><h3>👍 장점</h3><ul><li>...</li></ul></div>
-          <div class="cons-box"><h3>👎 단점</h3><ul><li>...</li></ul></div>
-        </div>
-
-      **Content Length Requirements** (CRITICAL for SEO):
-      1. **Minimum Total Length**: 1,500 words in English (approximately 2,500-3,000 Korean characters including spaces).
-      2. **Main Sections (H2)**: MANDATORY 4-6 major sections (see structure template above).
-      3. **Subsections (H3)**: Each H2 MUST have 2-4 H3 subsections for depth.
-      4. **Paragraph Depth**: While keeping readability, each subsection should be 150-250 words. Provide thorough explanations, not just bullet points.
-
-      **Content Guidelines**:
-      1. **Tone**: Empathetic, Authoritative, yet Accessible (Grade 8 reading level).
-      2. **Short Paragraphs**: No chunk of text should exceed 3 lines, but ensure DEPTH through multiple paragraphs per subsection.
-      3. **SEO Keywords**: Naturally include "주말 약국", "야간 약국", "근처 약국", "영양제 추천" where relevant.
-      4. **Sources**: Do not invent pharmacist review, expert endorsements, clinical evidence, or a universal prescription validity period. For prescription use periods, direct readers to the period printed on their prescription and the issuing medical institution if unclear. Cite an exact primary source for factual rules; omit claims that cannot be supported. Medical Service Act Enforcement Rule Article 12 requires the issue date and use period to be written: https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1019641101 .
-      5. **Internal Links**: Mention "약국오늘에서 근처 약국 찾기" (will be auto-linked).
-      6. **Conclusion**: End with <div class="tip-box"> containing pharmacist's final note.
-
-      **Depth & Authority Guidelines** (REQUIRED for Google Ranking):
-      1. **Answer "Why" and "How"**: For every claim or recommendation, explain WHY it's true and HOW it works.
-      2. **Specific Statistics**: Include at least 3-5 concrete numbers or percentages (e.g., "85%의 환자가 개선", "하루 1,000mg 권장").
-      3. **Authoritative References**: Use phrases like:
-         - "식품의약품안전처에 따르면"
-         - "대한약사회 권장사항"
-         - "2024년 연구에서 밝혀진 바에 따르면"
-      4. **Real-World Examples**: Include 1-2 anonymized case scenarios or use cases (e.g., "30대 직장인 A씨의 경우...").
-      5. **Step-by-Step Details**: When recommending actions, provide specific steps with expected outcomes.
-
-      **GEO (Generative Engine Optimization) for AI Search**:
-      - Write clear, factual statements that AI can directly quote.
-      - Structure answers in Q&A format where appropriate.
-      - Include specific numbers, statistics, and measurable claims.
-      - Use authoritative language: "연구에 따르면", "전문가들은 권장합니다".
-      - Provide step-by-step instructions that AI assistants can relay.
-      - Target Featured Snippets: Start main sections with clear, quotable answers.
+      약국오늘은 헛걸음을 줄이는 약국 방문 정보 서비스입니다.
+      주제: ${JSON.stringify(topic)}
+      이 주제로 사람이 검수할 한국어 초안을 작성하세요. 이 출력은 검수 전 공개할 수 없습니다.
+      - 독자가 약국 후보 찾기, 등록 시간표와 한계 확인, 전화 확인, 길찾기·대체 약국 확인을 할 수 있게 돕습니다.
+      - 실제 복용약 목록·제품 포장·상담 기록 등 독자가 준비할 자료와 구체적인 상담 질문에 집중합니다.
+      - 약국이나 개인의 실제 방문·리뷰·사례·전문가 신원·검수일·통계·기관 인용·출처 URL을 만들어내지 마세요.
+      - 진단, 제품별 복용량·용법, 임신·수유·소아 안전성, 금기·상호작용, 자가요법을 추천하지 마세요.
+      - 직접 검증할 수 있는 원문이 제공되지 않았다면 해당 의학적·제도적 주장을 생략하세요. 기관 홈페이지 링크는 개별 주장의 검증을 대신하지 않습니다.
+      - 처방전 사용기간은 처방전에 적힌 기간과 발행 의료기관에 확인하도록 안내하세요. 일률적인 유효기간을 제시하지 마세요.
+      - 자료가 부족하면 짧게 작성하세요. 글자 수·섹션 수·표·통계·SEO 점수를 맞추려고 일반론으로 늘리지 마세요.
+      - 약사 검수 완료, 전문 약사 발언, 통계상 효과, 승인 확률, 구매 추천을 생성하지 마세요.
+      - 표나 FAQ는 실제로 다른 질문을 해결할 때만 사용하고, 반복 답변을 만들지 마세요.
+      - 본문은 의미에 맞는 h2/h3/p/ul/li/a HTML로 작성하고 스크립트·폼은 넣지 마세요.
+      - 필요한 경우 /nearby의 약국 찾기와 방문 전 전화 확인으로 연결하세요. 제목·요약은 실제 본문 범위만 설명하세요.
     `;
 
     const schema = {
       type: SchemaType.OBJECT,
       properties: {
-        title: { type: SchemaType.STRING, description: "Click-magnet title, exactly 1 line" },
+        title: { type: SchemaType.STRING, description: "Accurate Korean title describing the actual content" },
         slug_suggestion: { type: SchemaType.STRING, description: "SEO friendly slug" },
         summary: { type: SchemaType.STRING, description: "Meta description 120-155 chars" },
         content_html: { type: SchemaType.STRING, description: "Semantic HTML content with rich elements" },

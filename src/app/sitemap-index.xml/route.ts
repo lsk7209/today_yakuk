@@ -4,11 +4,11 @@ import { cacheDbRead } from "@/lib/db-read-cache";
 
 const siteUrl = getSiteUrl();
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 export async function GET() {
-  const ids = await cacheDbRead(["sitemap-ids"], getSitemapIds);
+  const ids = await cacheDbRead(["sitemap-ids-quality-v1"], getSitemapIds);
   const items = ids
     .map(
       (id) => `

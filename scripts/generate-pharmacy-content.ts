@@ -140,7 +140,7 @@ async function generateAndQueueContent(
       );
       return;
     }
-    if (status === "pending" && ai_summary && ai_faq) {
+    if ((status === "pending" || status === "review") && ai_summary && ai_faq) {
       console.info(
         `[SKIP] ${pharmacy.name} (${pharmacy.hpid}): 발행 대기 중인 컨텐츠 존재`,
       );
@@ -235,7 +235,7 @@ async function generateAndQueueContent(
 
     if (existing) {
       await db.execute({
-        sql: `UPDATE content_queue SET title=?, slug=?, region=?, content_html=?, ai_summary=?, ai_bullets=?, ai_faq=?, ai_cta=?, extra_sections=?, status='pending', publish_at=?, updated_at=? WHERE id=?`,
+        sql: `UPDATE content_queue SET title=?, slug=?, region=?, content_html=?, ai_summary=?, ai_bullets=?, ai_faq=?, ai_cta=?, extra_sections=?, status='review', publish_at=?, updated_at=? WHERE id=?`,
         args: [
           title,
           slug,
@@ -257,7 +257,7 @@ async function generateAndQueueContent(
     } else {
       await db.execute({
         sql: `INSERT INTO content_queue (hpid, title, slug, region, content_html, ai_summary, ai_bullets, ai_faq, ai_cta, extra_sections, status, publish_at, updated_at)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)`,
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?)`,
         args: [
           pharmacy.hpid,
           title,
@@ -312,7 +312,7 @@ async function generateBatchContent(limit: number = 10): Promise<void> {
     const placeholders = batchHpids.map(() => "?").join(",");
     const existingResult = await db.execute({
       sql: `SELECT hpid, status, ai_summary, ai_faq FROM content_queue
-            WHERE hpid IN (${placeholders}) AND status IN ('published', 'pending')`,
+            WHERE hpid IN (${placeholders}) AND status IN ('published', 'pending', 'review')`,
       args: batchHpids,
     });
     for (const item of existingResult.rows) {
@@ -323,7 +323,7 @@ async function generateBatchContent(limit: number = 10): Promise<void> {
       if (
         hpid &&
         (status === "published" ||
-          (status === "pending" && ai_summary && ai_faq))
+          ((status === "pending" || status === "review") && ai_summary && ai_faq))
       ) {
         completedHpidSet.add(hpid);
       }

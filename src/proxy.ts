@@ -41,8 +41,11 @@ export function isSafeCrawlerQuery(url: URL) {
   }
 
   if (url.pathname === "/wiki") {
-    if (!keys.every((key) => key === "category" || key === "page")) return false;
+    if (!keys.every((key) => key === "category" || key === "page" || key === "type")) return false;
+    const type = url.searchParams.get("type");
+    if (type !== null && type !== "medicine") return false;
     const category = url.searchParams.get("category");
+    if (type === "medicine" && category !== null) return false;
     return category === null || SAFE_WIKI_CATEGORIES.has(category);
   }
 

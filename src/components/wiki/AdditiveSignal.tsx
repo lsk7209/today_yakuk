@@ -1,17 +1,22 @@
 import Link from "next/link";
+import { detectAdditives } from "@/lib/additive-analysis";
 
 interface AdditiveData {
     has_preservatives?: boolean;
     has_coloring?: boolean;
     has_artificial_sweeteners?: boolean;
     details?: string[];
+    raw_materials?: string;
+    parse_status?: "source_missing" | "parsed" | "extraction_failed";
 }
 
 interface AdditiveSignalProps {
     additives: AdditiveData;
 }
 
-export function AdditiveSignal({ additives }: AdditiveSignalProps) {
+export function AdditiveSignal({ additives: stored }: AdditiveSignalProps) {
+    const additives: AdditiveData = stored.raw_materials?.trim() ? detectAdditives(stored.raw_materials) : {};
+    const unavailable = stored.parse_status === "source_missing" ? "원문 미제공" : "원문·추출 결과 대조 필요";
     const checks = [
         { label: "보존료", value: additives.has_preservatives },
         { label: "착색료", value: additives.has_coloring },
@@ -48,12 +53,13 @@ export function AdditiveSignal({ additives }: AdditiveSignalProps) {
                                 ? "관련 키워드 표시"
                                 : value === false
                                   ? "지정 키워드 미확인"
-                                  : "자료 없음"}
+                                  : unavailable}
                         </span>
                     </div>
                 ))}
             </div>
 
+            {stored.raw_materials ? <details className="text-sm break-words"><summary>분석한 원재료 원문</summary><p>{stored.raw_materials}</p></details> : null}
             {/* Additional Details */}
             {additives.details && additives.details.length > 0 && (
                 <div className="mt-6 p-5 bg-slate-50 border border-slate-100 rounded-2xl">

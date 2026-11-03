@@ -29,11 +29,11 @@ export async function POST() {
       content_html: post.content_html,
       ai_summary: post.summary,
       ai_faq: post.faq,
-      status: "pending",
+      status: "review",
       publish_at: nextSlot.toISOString(),
     });
 
-    return NextResponse.json({ success: true, title: post.title, publish_at: nextSlot });
+    return NextResponse.json({ success: true, title: post.title, status: "review", proposed_publish_at: nextSlot });
   } catch (error) {
     console.error("Manual blog trigger error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

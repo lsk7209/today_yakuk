@@ -16,6 +16,12 @@ export default function AnalyticsTracker() {
   useEffect(() => {
     if (!pathname || staging) return;
     if (process.env.NODE_ENV === "production") {
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "page_view", {
+          page_location: window.location.origin + pathname,
+          page_referrer: document.referrer ? new URL(document.referrer).origin : "",
+        });
+      }
       fetch("/api/analytics", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

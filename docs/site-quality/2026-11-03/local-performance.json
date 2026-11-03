@@ -1,0 +1,65 @@
+{
+  "scope": "single local Chromium lab samples; unthrottled; local SQLite; external requests blocked; not production/CrUX",
+  "samples": [
+    {
+      "route": "/",
+      "width": 390,
+      "status": 200,
+      "lcp": 264,
+      "cls": 0,
+      "ttfbMs": 18,
+      "domContentLoadedMs": 246.79999999981374,
+      "loadMs": 300.8999999994412
+    },
+    {
+      "route": "/blog/pregnancy-pharmacy-guide",
+      "width": 390,
+      "status": 200,
+      "lcp": 188,
+      "cls": 0,
+      "ttfbMs": 12.699999999254942,
+      "domContentLoadedMs": 95.19999999925494,
+      "loadMs": 235.19999999925494
+    },
+    {
+      "route": "/pharmacy/TEST-READINESS",
+      "width": 390,
+      "status": 200,
+      "lcp": 256,
+      "cls": 0,
+      "ttfbMs": 29.40000000037253,
+      "domContentLoadedMs": 292.09999999962747,
+      "loadMs": 292.5
+    },
+    {
+      "route": "/",
+      "width": 1366,
+      "status": 200,
+      "lcp": 244,
+      "cls": 0,
+      "ttfbMs": 11.099999999627471,
+      "domContentLoadedMs": 85.79999999981374,
+      "loadMs": 258
+    },
+    {
+      "route": "/blog/pregnancy-pharmacy-guide",
+      "width": 1366,
+      "status": 200,
+      "lcp": 196,
+      "cls": 0,
+      "ttfbMs": 7.199999999254942,
+      "domContentLoadedMs": 94.5,
+      "loadMs": 211.19999999925494
+    },
+    {
+      "route": "/pharmacy/TEST-READINESS",
+      "width": 1366,
+      "status": 200,
+      "lcp": 272,
+      "cls": 0,
+      "ttfbMs": 28.40000000037253,
+      "domContentLoadedMs": 294.5,
+      "loadMs": 308
+    }
+  ]
+}

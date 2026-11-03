@@ -30,6 +30,7 @@ interface Medicine {
     storage_method: string | null;
     image_url: string | null;
     created_at: string;
+    updated_at: string | null;
 }
 
 async function getMedicineById(id: string): Promise<Medicine | null> {
@@ -53,6 +54,7 @@ async function getMedicineById(id: string): Promise<Medicine | null> {
             storage_method: r.storage_method as string | null,
             image_url: r.image_url as string | null,
             created_at: r.created_at as string,
+            updated_at: r.updated_at as string | null,
         };
     } catch (e) {
         console.error("medicine fetch exception", e);
@@ -125,7 +127,7 @@ export default async function MedicineDetailPage({
         "url": medicineUrl,
         "manufacturer": {
             "@type": "Organization",
-            "name": medicine.manufacturer || "Unknown"
+            "name": medicine.manufacturer || undefined
         }
     };
 
@@ -178,13 +180,15 @@ export default async function MedicineDetailPage({
                         <p className="text-lg text-brand-600 font-medium mb-4 flex items-center gap-2">
                             {medicine.manufacturer}
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                식약처 허가
+                                공개 허가정보
                             </span>
                         </p>
 
                         <p className="text-xs text-[var(--muted)] mt-4">
                             품목기준코드: <span className="font-mono">{medicine.item_seq}</span>
                         </p>
+                        <p className="text-xs text-slate-500 mt-2">동기화 기록 시각: {medicine.updated_at || "미확인"}. 원본 기준일·현재 허가 상태는 이 시각만으로 확인할 수 없습니다.</p>
+                        <a className="text-sm underline" href={/^\d{9}$/.test(medicine.item_seq || "") ? `https://nedrug.mfds.go.kr/pbp/CCBBB01/getItemDetail?itemSeq=${medicine.item_seq}` : "https://nedrug.mfds.go.kr/"} target="_blank" rel="noopener noreferrer">의약품안전나라에서 품목 원문 확인</a>
                         <p className="text-xs text-slate-500 mt-2">
                             의약품안전나라 공개 허가정보 요약이며, 빈 항목이 주의사항이나 이상반응의 부재를 뜻하지 않습니다.{" "}
                             <Link

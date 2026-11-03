@@ -5,6 +5,8 @@ export type OperatingHours = Record<
   string,
   {
     open: string | null;
+    closed?: boolean;
+    closure_source?: string;
     close: string | null;
   }
 >;
