@@ -1,3 +1,4 @@
+import type { PharmacyIntelligenceReport } from "@/lib/pharmacy-intelligence";
 export type { PharmacyIntelligenceReport } from "@/lib/pharmacy-intelligence";
 
 export type OperatingHours = Record<

@@ -1523,7 +1523,15 @@ async function main() {
     const layout = fs.readFileSync(path.join(process.cwd(), "src/app/layout.tsx"), "utf8");
     const notFound = fs.readFileSync(path.join(process.cwd(), "src/app/not-found.tsx"), "utf8");
     const adSlot = fs.readFileSync(path.join(process.cwd(), "src/components/ads/AdSlot.tsx"), "utf8");
-    assert.doesNotMatch(layout, /<script[\s\S]*?pagead2\.googlesyndication\.com/);
+    const head = layout.match(/<head>([\s\S]*?)<\/head>/)?.[1] || "";
+    assert.match(head, /!staging && adsenseId/);
+    assert.match(head, /<script\s+async[\s\S]*?pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=\$\{adsenseId\}/);
+    assert.match(head, /crossOrigin="anonymous"/);
+    assert.doesNotMatch(adSlot, /adsbygoogle\.js/);
+    assert.equal(
+      fs.readFileSync(path.join(process.cwd(), "public/ads.txt"), "utf8").trim(),
+      "google.com, pub-3050601904412736, DIRECT, f08c47fec0942fa0",
+    );
     assert.match(notFound, /canonical:\s*null/);
     assert.match(adSlot, /pageEligible = false/);
     assert.match(adSlot, /isAdsenseServingEnabled\(\)/);

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import Script from "next/script";
 import { canRequestAds, isAdsenseServingEnabled } from "@/lib/ad-policy";
 import { useMigrationStaging } from "@/components/staging/StagingProvider";
 
@@ -68,15 +67,7 @@ export default function AdSlot({
   }
 
   return (
-    <>
-      <Script
-        id="adsense-serving-script"
-        async
-        strategy="afterInteractive"
-        crossOrigin="anonymous"
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${pubId}`}
-      />
-      <ins
+    <ins
       ref={adRef}
       className={`adsbygoogle ${className}`}
       style={{ display: "block", ...style }}
@@ -85,8 +76,7 @@ export default function AdSlot({
       data-ad-format={format}
       data-full-width-responsive="true"
       {...(layoutKey ? { "data-ad-layout-key": layoutKey } : {})}
-      />
-    </>
+    />
   );
 }
 
